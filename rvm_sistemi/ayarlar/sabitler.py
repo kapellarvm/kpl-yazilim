@@ -1,1 +1,10 @@
-deneme 2
+# Malzeme Tipleri
+MALZEME_PET = 1
+MALZEME_CAM = 2
+MALZEME_ALU = 3
+
+# Makine Durum Kodları
+DURUM_BEKLEMEDE = 0
+DURUM_CALISIYOR = 1
+DURUM_HATA = 2
+DURUM_BAKIM = 3

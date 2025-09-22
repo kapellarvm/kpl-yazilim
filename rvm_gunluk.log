@@ -1,0 +1,40 @@
+2025-09-22 14:02:24,439 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 14:02:24,439 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 14:02:24,439 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 14:02:24,605 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-22 14:02:24,605 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 14:02:24,608 - INFO - _internal -  * Restarting with stat
+2025-09-22 14:02:25,566 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 14:02:25,566 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 14:02:25,566 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 14:02:25,595 - WARNING - _internal -  * Debugger is active!
+2025-09-22 14:02:25,601 - INFO - _internal -  * Debugger PIN: 162-879-892
+2025-09-22 14:04:02,126 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "[32mGET /apidocs HTTP/1.1[0m" 308 -
+2025-09-22 14:04:02,165 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 14:04:02,521 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+2025-09-22 14:04:02,539 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /flasgger_static/swagger-ui.css HTTP/1.1" 200 -
+2025-09-22 14:04:02,544 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /flasgger_static/swagger-ui-bundle.js HTTP/1.1" 200 -
+2025-09-22 14:04:02,547 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /flasgger_static/lib/jquery.min.js HTTP/1.1" 200 -
+2025-09-22 14:04:02,731 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 14:04:02,783 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:02] "GET /flasgger_static/favicon-32x32.png HTTP/1.1" 200 -
+2025-09-22 14:04:07,600 - INFO - ana - Ana endpoint'e istek geldi.
+2025-09-22 14:04:07,602 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:07] "GET / HTTP/1.1" 200 -
+2025-09-22 14:04:08,757 - INFO - ana - Ana endpoint'e istek geldi.
+2025-09-22 14:04:08,764 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:04:08] "GET / HTTP/1.1" 200 -
+2025-09-22 14:08:12,231 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 14:08:12,325 - INFO - _internal -  * Restarting with stat
+2025-09-22 14:08:13,304 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 14:08:13,305 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 14:08:13,306 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 14:08:13,328 - WARNING - _internal -  * Debugger is active!
+2025-09-22 14:08:13,345 - INFO - _internal -  * Debugger PIN: 162-879-892
+2025-09-22 14:19:05,283 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 14:19:05,675 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 14:19:05,690 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 14:19:05,751 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 14:19:05,753 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 14:19:06,012 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:06] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 14:19:06,022 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:06] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
