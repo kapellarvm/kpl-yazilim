@@ -38,3 +38,631 @@
 2025-09-22 14:19:05,753 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:05] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
 2025-09-22 14:19:06,012 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:06] "GET /apispec_1.json HTTP/1.1" 200 -
 2025-09-22 14:19:06,022 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 14:19:06] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 20:50:18,209 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:50:18,209 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:50:18,209 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:50:18,277 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://127.0.0.1:4321
+2025-09-22 20:50:18,277 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 20:50:18,280 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:50:19,185 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:50:19,185 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:50:19,185 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:50:19,219 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:50:19,228 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 20:52:59,916 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\istemci.py', reloading
+2025-09-22 20:53:00,008 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:53:00,866 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:53:00,866 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:53:00,866 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:53:00,886 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:53:00,908 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 20:53:12,551 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:53:12,552 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:53:12,552 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:53:13,887 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 20:53:13,887 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 20:53:13,887 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:53:14,704 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:53:14,704 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:53:14,704 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:53:14,739 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:53:14,756 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 20:54:06,699 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 20:54:06,796 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:54:07,778 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:54:07,778 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:54:07,778 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:54:07,806 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:54:07,819 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 20:54:21,847 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 20:54:21,944 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:54:22,920 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:54:22,920 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:54:22,920 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:54:22,950 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:54:22,962 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 20:54:35,800 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 20:54:35,801 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 20:54:40,808 - ERROR - istemci - /checkUserId isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /checkUserId (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x00000257A13CEC90>, 'Connection to 192.168.53.1 timed out. (connect timeout=5)'))
+2025-09-22 20:54:40,809 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 20:54:40] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 20:54:40,897 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 20:54:40] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-22 20:59:48,485 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:59:48,485 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:59:48,485 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:59:49,837 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 20:59:49,837 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 20:59:49,840 - INFO - _internal -  * Restarting with stat
+2025-09-22 20:59:50,731 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 20:59:50,731 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 20:59:50,731 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 20:59:50,758 - WARNING - _internal -  * Debugger is active!
+2025-09-22 20:59:50,769 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:00:09,125 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:00:09,125 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:00:09,312 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-22 21:00:09,313 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:00:09] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:02:41,822 - INFO - _internal - 192.168.53.2 - - [22/Sep/2025 21:02:41] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 415 -
+2025-09-22 21:03:23,281 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\istemci.py', reloading
+2025-09-22 21:03:23,391 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:03:24,430 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:03:24,430 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:03:24,430 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:03:24,458 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:03:24,467 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:03:40,307 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:03:40,307 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:03:40,347 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:03:40,347 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:03:40] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:03:41,590 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:03:41,591 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:03:41,632 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:03:41,634 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:03:41] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:03:42,003 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:03:42,003 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:03:42,045 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:03:42,045 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:03:42] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:03:42,283 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:03:42,284 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:03:42,326 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:03:42,327 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:03:42] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:03:42,517 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:03:42,517 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:03:42,552 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:03:42,552 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:03:42] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:04:39,810 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:04:39,811 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:04:39,811 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:04:41,149 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:04:41,149 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:04:41,155 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:04:42,056 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:04:42,056 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:04:42,056 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:04:42,082 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:04:42,095 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:04:53,599 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:04:53,599 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:04:53,639 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 404, Body: <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+2025-09-22 21:04:53,639 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:04:53] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:05:37,382 - INFO - _internal - 192.168.53.2 - - [22/Sep/2025 21:05:37] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 415 -
+2025-09-22 21:07:02,387 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\istemci.py', reloading
+2025-09-22 21:07:02,495 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:07:03,443 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:07:03,443 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:07:03,443 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:07:03,470 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:07:03,483 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:09:00,396 - INFO - sunucu - check_user_id testi 'TEST_KULLANICI_123' için baþlatýldý.
+2025-09-22 21:09:00,396 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: TEST_KULLANICI_123
+2025-09-22 21:09:00,424 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-22 21:09:00,424 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:09:00] "[35m[1mGET /test/checkuser/TEST_KULLANICI_123 HTTP/1.1[0m" 500 -
+2025-09-22 21:11:46,282 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 21:11:46,376 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:15:43,255 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:15:43,255 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:15:43,255 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:15:44,590 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:15:44,590 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:15:44,590 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:15:45,454 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:15:45,454 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:15:45,454 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:15:45,485 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:15:45,496 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:15:52,130 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:15:52,507 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /flasgger_static/swagger-ui-bundle.js HTTP/1.1" 200 -
+2025-09-22 21:15:52,513 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+2025-09-22 21:15:52,522 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /flasgger_static/lib/jquery.min.js HTTP/1.1" 200 -
+2025-09-22 21:15:52,524 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /flasgger_static/swagger-ui.css HTTP/1.1" 200 -
+2025-09-22 21:15:52,777 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:15:52,797 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:15:52] "GET /flasgger_static/favicon-32x32.png HTTP/1.1" 200 -
+2025-09-22 21:16:00,765 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:00] "[31m[1mPOST /acceptPackage HTTP/1.1[0m" 415 -
+2025-09-22 21:16:01,953 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:01] "[31m[1mPOST /acceptPackage HTTP/1.1[0m" 415 -
+2025-09-22 21:16:06,528 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:06] "[31m[1mPOST /sessionEnd HTTP/1.1[0m" 415 -
+2025-09-22 21:16:07,477 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:07] "[31m[1mPOST /sessionEnd HTTP/1.1[0m" 415 -
+2025-09-22 21:16:08,437 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:08] "[31m[1mPOST /sessionEnd HTTP/1.1[0m" 415 -
+2025-09-22 21:16:21,366 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:21] "[31m[1mPOST /stopOperation HTTP/1.1[0m" 415 -
+2025-09-22 21:16:22,284 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:16:22] "[31m[1mPOST /stopOperation HTTP/1.1[0m" 415 -
+2025-09-22 21:17:43,315 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:17:43] "[31m[1mPOST /acceptPackage HTTP/1.1[0m" 415 -
+2025-09-22 21:19:52,991 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 21:19:52,992 - INFO - _internal - 192.168.53.2 - - [22/Sep/2025 21:19:52] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 21:20:21,234 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 21:20:21,330 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:20:22,341 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:20:22,344 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:20:22,344 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:20:22,365 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:20:22,377 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:20:33,883 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:20:33,883 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:20:33,883 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:20:35,281 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:20:35,281 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:20:35,288 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:20:36,183 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:20:36,183 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:20:36,183 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:20:36,210 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:20:36,221 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:20:48,637 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:48] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:20:48,971 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:48] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:20:48,980 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:48] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:20:48,982 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:48] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:20:48,985 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:48] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:20:49,162 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:49] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:20:49,165 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:49] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:20:55,606 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 21:20:55,607 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:55] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 21:20:56,962 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 21:20:56,962 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:20:56] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 21:21:10,729 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 21:21:10,729 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:21:10] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-22 21:21:12,984 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 21:21:12,989 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:21:12] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-22 21:23:15,795 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 21:23:15,899 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:23:16,821 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:23:16,821 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:23:16,821 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:23:16,852 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:23:16,865 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:23:49,073 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\sunucu.py', reloading
+2025-09-22 21:23:49,173 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:28:03,502 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:28:03,502 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:28:03,502 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:28:04,859 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:28:04,859 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:28:04,859 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:28:05,788 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:28:05,788 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:28:05,788 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:28:05,811 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:28:05,818 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:29:36,875 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\rvm_sistemi\\dimdb\\istemci.py', reloading
+2025-09-22 21:29:36,970 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:29:37,990 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:29:37,990 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:29:37,990 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:29:38,019 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:29:38,032 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:30:44,436 - INFO - _internal -  * Detected change in 'C:\\kapella-rvm\\kpl-yazilim\\ana.py', reloading
+2025-09-22 21:30:44,527 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:30:45,458 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:30:45,460 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:30:45,460 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:30:45,486 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:30:45,499 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:30:53,924 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:30:53,924 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:30:53,924 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:30:53,924 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:30:53,924 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:30:53,924 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:30:53,924 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:30:58,015 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:30:58,015 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:30:58,015 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:30:59,359 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:30:59,360 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:30:59,361 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:31:00,251 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:31:00,251 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:31:00,251 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:31:00,286 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:31:00,291 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:33:16,416 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:33:16,750 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:16,761 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:16,770 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:33:16,771 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:16,940 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:33:16,940 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:16] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:33:24,701 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:33:24,741 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:33:24,746 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:24,749 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:24,751 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:33:24,833 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:33:24,848 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:33:24] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:34:14,909 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:34:14,909 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:34:14,909 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:34:14,909 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:34:14,909 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:34:14,914 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:34:14,914 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:34:15,018 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:34:15,018 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:34:15,019 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:34:15,019 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:34:15,020 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:34:15,065 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:34:16,329 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:34:16,329 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:34:16,329 - INFO - _internal -  * Restarting with stat
+2025-09-22 21:34:17,382 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:34:17,384 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:34:17,384 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:34:17,403 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:34:17,417 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:34:54,986 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:54] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:34:55,295 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:34:55,306 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:34:55,321 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:34:55,325 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:34:55,393 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:34:55,398 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:34:55] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:35:00,842 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:35:00,842 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:35:00,842 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:35:00,842 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:35:00,842 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:35:00,846 - WARNING - _internal -  * Debugger is active!
+2025-09-22 21:35:00,846 - INFO - _internal -  * Debugger PIN: 123-785-270
+2025-09-22 21:35:36,723 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:35:36,725 - INFO - ana - RVM Sistemi baþlatýlýyor...
+2025-09-22 21:35:36,726 - INFO - ana - DÝM DB API Adresi: http://192.168.53.1:5432
+2025-09-22 21:35:36,726 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 21:35:36,726 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:35:38,045 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:35:38,045 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:36:36,727 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:36:36,776 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:36:49,632 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:49] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:36:49,956 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:49] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:36:49,973 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:49] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:36:49,977 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:49] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:36:49,978 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:49] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:36:50,062 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:50] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:36:50,064 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:36:50] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:37:36,781 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:37:36,836 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:38:36,838 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:38:36,905 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:39:36,906 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:39:37,015 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:40:37,022 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:40:37,076 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:41:19,143 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:41:19,143 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 21:41:19,143 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 21:41:19,143 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:41:20,469 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:41:20,469 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:41:28,241 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:41:28,582 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:28,592 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:41:28,594 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:28,598 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:28,759 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:41:28,763 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:28] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:41:30,938 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:30] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:41:30,980 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:30] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:41:30,986 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:30] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:30,988 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:30] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:30,989 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:30] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:41:31,073 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:31] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:41:31,084 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:41:31] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:41:41,795 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:41:41,795 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 21:41:41,795 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 21:41:41,796 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:41:43,134 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:41:43,134 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:42:41,797 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:42:41,847 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:43:41,848 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:43:41,915 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:44:41,917 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:44:41,962 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:45:41,964 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:45:42,172 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:46:42,181 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:46:42,229 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:47:42,230 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:47:42,283 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:48:42,284 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:48:42,346 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:49:42,348 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:49:42,415 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:50:42,416 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:50:42,475 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:51:04,065 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:51:04,384 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:51:04,406 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:51:04,424 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:51:04,426 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:51:04,532 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:51:04,536 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:51:04] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:53:28,025 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:53:28,025 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 21:53:28,025 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 21:53:28,025 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:53:28,074 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:53:28,074 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:53:51,808 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:51] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:53:52,108 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:53:52,125 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:53:52,133 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:53:52,133 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:53:52,208 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:53:52,220 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:52] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:53:55,170 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:53:55,222 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /flasgger_static/swagger-ui.css HTTP/1.1" 200 -
+2025-09-22 21:53:55,226 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /flasgger_static/swagger-ui-bundle.js HTTP/1.1" 200 -
+2025-09-22 21:53:55,227 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+2025-09-22 21:53:55,229 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /flasgger_static/lib/jquery.min.js HTTP/1.1" 200 -
+2025-09-22 21:53:55,420 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:53:55,425 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:53:55] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:54:28,031 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:54:28,064 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:54:54,860 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:54] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:54:54,905 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:54] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:54:54,912 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:54] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:54:54,914 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:54] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:54:54,916 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:54] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:54:55,069 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:55] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:54:55,076 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:54:55] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:55:28,068 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:55:28,104 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:56:45,885 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 21:56:45,885 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 21:56:45,885 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 21:56:45,885 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 21:56:45,933 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 21:56:45,933 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 21:56:57,062 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 21:56:57,380 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 21:56:57,396 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 21:56:57,401 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 21:56:57,401 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 21:56:57,500 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 21:56:57,502 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:56:57] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 21:57:06,531 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 21:57:06,531 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 21:57:06,549 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:06] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 21:57:27,526 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 21:57:27,526 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:27] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 21:57:28,370 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 21:57:28,370 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:28] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 21:57:45,482 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-241023-0213
+2025-09-22 21:57:45,482 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:45] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-22 21:57:45,891 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:57:45,947 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:57:46,232 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-241023-0213
+2025-09-22 21:57:46,232 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:46] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-22 21:57:54,570 - INFO - sunucu - GELEN ÝSTEK: /stopOperation | Barcode: 9999999999901
+2025-09-22 21:57:54,570 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:54] "POST /stopOperation HTTP/1.1" 200 -
+2025-09-22 21:57:56,180 - INFO - sunucu - GELEN ÝSTEK: /stopOperation | Barcode: 9999999999901
+2025-09-22 21:57:56,180 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 21:57:56] "POST /stopOperation HTTP/1.1" 200 -
+2025-09-22 21:58:45,948 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:58:46,010 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 21:59:46,013 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 21:59:46,066 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:00:46,068 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:00:46,117 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:01:15,280 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:01:15,280 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:01:15,281 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:01:15,281 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:01:15,324 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:01:15,325 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:01:23,144 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:01:23,494 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:01:23,496 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:01:23,501 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:01:23,503 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:01:23,705 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:01:23,709 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:23] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:01:35,346 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:01:35,346 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:35] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:01:36,314 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:01:36,315 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:36] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:01:52,308 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:01:52,309 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:01:52,334 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:52] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:01:53,868 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:01:53,869 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:01:53,875 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:01:53] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:02:15,282 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:02:15,340 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:05:45,058 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:05:45,058 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:05:45,058 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:05:45,069 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:05:45,108 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:05:45,108 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:06:48,031 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:06:48,031 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:06:48,031 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:06:48,031 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:06:48,077 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:06:48,077 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:06:57,440 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:06:57,761 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:06:57,777 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:06:57,782 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:06:57,784 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:06:57,957 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:06:57,957 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:06:57] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:07:05,965 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:07:05,965 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:05] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:07:07,655 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:07:07,655 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:07] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:07:18,237 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:07:18,237 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:07:18,260 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:18] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:07:46,397 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:07:46,397 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:07:46,397 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:07:46,397 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:07:46,438 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:07:46,438 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:07:50,206 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:07:50,549 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:07:50,555 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:07:50,556 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:07:50,559 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:07:50,664 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:07:50,670 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:50] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:07:55,886 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:07:55,886 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:55] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:07:57,193 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:07:57,193 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:07:57] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:08:05,833 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:08:05,833 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:08:05,853 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:08:05] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:08:06,837 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:08:06,837 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:08:06,841 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:08:06] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:08:46,401 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:08:46,433 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:09:46,441 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:09:46,486 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:10:46,490 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:10:46,512 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:11:34,197 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:11:34,197 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:11:34,197 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:11:34,197 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:11:34,252 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:11:34,252 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:11:48,970 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:48] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:11:49,258 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:11:49,302 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:11:49,310 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:11:49,312 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:11:49,488 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:11:49,494 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:49] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:11:55,720 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:11:55,720 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:55] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:11:57,294 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:11:57,294 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:11:57] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:12:09,905 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:12:09,915 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:12:09,936 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:12:09] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:12:10,915 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:12:10,915 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:12:10,919 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:12:10] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-22 22:12:34,198 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:12:34,234 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:13:34,238 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:13:34,288 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
