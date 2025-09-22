@@ -1,10 +1,26 @@
-# RVM (Reverse Vending Machine) System Dependencies
+# requirements.txt
 
-# Serial Communication
-pyserial>=3.5
+# API sunucusu için web framework
+Flask==3.0.0
 
-# GUI Framework
-PySide6>=6.5.0
+# Flask için Swagger/OpenAPI entegrasyonu
+flasgger==0.9.7.1
 
-# Configuration Management
-pydantic-settings>=2.0.0
+# Veritabanı ORM (Object-Relational Mapping) işlemleri için
+SQLAlchemy==2.0.23
+
+# DİM DB API'sine HTTP istekleri atmak için
+requests==2.31.0
+
+# Uzaktan izleme için MQTT protokolü istemcisi
+paho-mqtt==1.6.1
+
+# Motor, sensör gibi kartlarla seri port üzerinden haberleşmek için
+pyserial==3.5
+
+# Endüstriyel donanımlarla Modbus TCP/RTU haberleşmesi için
+pymodbus==3.6.3
+
+
+# .env dosyasından ortam değişkenlerini (API anahtarları vb.) okumak için
+python-dotenv==1.0.0
