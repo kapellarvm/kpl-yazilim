@@ -1,0 +1,10 @@
+# RVM (Reverse Vending Machine) System Dependencies
+
+# Serial Communication
+pyserial>=3.5
+
+# GUI Framework
+PySide6>=6.5.0
+
+# Configuration Management
+pydantic-settings>=2.0.0
