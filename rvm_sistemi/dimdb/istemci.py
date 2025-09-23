@@ -118,29 +118,72 @@ def check_user_id(user_id: str):
         logger.error(f"/checkUserId isteği gönderilirken ağ hatası oluştu: {e}")
         return False
 
+def get_all_products():
+    """
+    DİM DB'den tüm ürünlerin listesini çeker.
+    """
+    endpoint = f"{genel_ayarlar.DIMDB_API_URL}/getAllProducts"
+
+    body = {
+        "guid": str(uuid.uuid4()),
+        "rvm": "KRVM00010725",
+        "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    }
+
+    try:
+        headers = _imza_olustur(body)
+        logger.info(f"GIDEN İSTEK: /getAllProducts")
+
+        response = requests.post(endpoint, headers=headers, json=body, timeout=15) # Veri büyük olabileceği için timeout'u biraz artırdık
+
+        if response.status_code == 200:
+            data = response.json()
+            products = data.get('products', [])
+            logger.info(f"/getAllProducts isteği başarılı. {len(products)} adet ürün bilgisi alındı.")
+            # İsterseniz tüm ürünleri loglamak için aşağıdaki satırı aktif edebilirsiniz
+            # logger.debug(products) 
+            return products
+        else:
+            logger.error(f"/getAllProducts isteği başarısız oldu. Status: {response.status_code}, Body: {response.text}")
+            return None
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"/getAllProducts isteği gönderilirken ağ hatası oluştu: {e}")
+        return None
+
+
 def send_heartbeat():
     """
     RVM'nin anlık durumunu DİM DB'ye bildiren heartbeat mesajını gönderir.
     """
     endpoint = f"{genel_ayarlar.DIMDB_API_URL}/heartbeat"
+    
+    # GERÇEK VERİLERLE GÜNCELLENMİŞ BODY
     body = {
         "guid": str(uuid.uuid4()),
-        "rvm": "RVM_SERI_NO_12345",
+        "rvm": "KRVM00010725",             # <-- GERÇEK SERİ NUMARASI
         "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        "vendorName": "Kapella",
-        "firmwareVersion": "v1.0.0",
-        "state": 0,
+        "vendorName": "KapellaRvm",          # <-- GERÇEK ÜRETİCİ ADI
+        "firmwareVersion": "v1.0.1",          # <-- GERÇEK YAZILIM VERSİYONU
+        "state": 0,                         # 0: Operasyonel
         "stateMessage": "Sistem Normal",
         "binList": [
+            # TODO: Bu bölüm, makine modülünden gelen gerçek hazne doluluk
+            # bilgileriyle dinamik olarak doldurulmalıdır.
             {
                 "binId": 1,
-                "binContentType": "1",
-                "binOccupancyLevel": 75
+                "binContentType": "1", # 1: Pet
+                "binOccupancyLevel": 0
             },
             {
                 "binId": 2,
-                "binContentType": "2",
-                "binOccupancyLevel": 50
+                "binContentType": "2", # 2: Cam
+                "binOccupancyLevel": 0
+            },
+            {
+                "binId": 3,
+                "binContentType": "3", # 3: Alüminyum
+                "binOccupancyLevel": 0
             }
         ]
     }
@@ -148,6 +191,7 @@ def send_heartbeat():
     try:
         headers = _imza_olustur(body)
         logger.info(f"GIDEN İSTEK: /heartbeat")
+
         response = requests.post(endpoint, headers=headers, json=body, timeout=10)
 
         if response.status_code == 200:
@@ -160,5 +204,3 @@ def send_heartbeat():
     except requests.exceptions.RequestException as e:
         logger.error(f"/heartbeat isteği gönderilirken ağ hatası oluştu: {e}")
         return False
-
-# transactionResult gibi diğer giden metotlar buraya eklenecek...

@@ -196,3 +196,16 @@ def test_send_barcode(barkod):
         return f"'{barkod}' için getBarcode isteği gönderildi. Terminal loglarını kontrol edin."
     else:
         return f"'{barkod}' için getBarcode isteği GÖNDERİLEMEDİ.", 500
+    
+@dimdb_api_sunucusu.route('/test/getproducts')
+def test_get_products():
+    """
+    get_all_products fonksiyonunu test etmek için geçici endpoint.
+    """
+    logger.info("get_all_products testi başlatıldı.")
+    urunler = istemci.get_all_products()
+
+    if urunler is not None:
+        return f"Başarıyla {len(urunler)} adet ürün bilgisi alındı. Detaylar için terminal loglarını kontrol edin."
+    else:
+        return "Ürün bilgileri ALINAMADI. Hata için terminal loglarını kontrol edin.", 500

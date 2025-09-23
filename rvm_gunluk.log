@@ -666,3 +666,125 @@
 2025-09-22 22:12:34,234 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
 2025-09-22 22:13:34,238 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
 2025-09-22 22:13:34,288 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:16:27,450 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:16:27,450 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:16:27,450 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:16:27,450 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:16:27,496 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:16:27,496 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:17:13,159 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:17:13,479 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:17:13,494 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:17:13,497 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:17:13,497 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:17:13,675 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:17:13,682 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:13] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:17:18,747 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:17:18,748 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:17:18,748 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-22 22:17:18,789 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-22 22:17:18,789 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:18] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-22 22:17:19,976 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:17:19,976 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:17:19,977 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-22 22:17:20,015 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-22 22:17:20,015 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:17:20] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-22 22:17:27,453 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:17:27,501 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:18:27,502 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:18:27,545 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:18:51,472 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:18:51,472 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:18:51] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:18:53,035 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213
+2025-09-22 22:18:53,035 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:18:53] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-22 22:18:59,448 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901
+2025-09-22 22:18:59,448 - INFO - sunucu - Simülasyon: Ambalaj kabul edildi, DÝM DB'ye sonuç gönderiliyor...
+2025-09-22 22:18:59,448 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-22 22:18:59,493 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-22 22:18:59,493 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:18:59] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-22 22:19:27,554 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:19:27,610 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:20:27,611 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:20:27,648 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:21:27,649 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:21:27,699 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:22:27,703 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:22:27,763 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:23:27,766 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:23:27,825 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:24:27,826 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:24:27,880 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:25:27,882 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:25:27,917 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:26:27,923 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:26:27,959 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:27:27,960 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:27:28,005 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:28:28,009 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:28:28,054 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:37:00,391 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:37:00,391 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:37:00,391 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:37:00,391 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:37:00,446 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:37:00,448 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:37:11,519 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:11] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-22 22:37:11,995 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:11] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-22 22:37:12,017 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:12] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-22 22:37:12,023 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:12] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-22 22:37:12,026 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:12] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-22 22:37:12,268 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:12] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-22 22:37:12,276 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:12] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-22 22:37:48,047 - INFO - sunucu - get_all_products testi baþlatýldý.
+2025-09-22 22:37:48,047 - INFO - istemci - GIDEN ÝSTEK: /getAllProducts
+2025-09-22 22:37:48,582 - ERROR - istemci - /getAllProducts isteði baþarýsýz oldu. Status: 500, Body: {"error": "No products available"}
+2025-09-22 22:37:48,582 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:48] "[35m[1mGET /test/getproducts HTTP/1.1[0m" 500 -
+2025-09-22 22:37:48,709 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:37:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-22 22:38:00,394 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:38:00,419 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:39:00,425 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:39:00,467 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:40:00,470 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:40:00,526 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:41:00,529 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:41:00,553 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:42:00,559 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:42:00,601 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:43:00,606 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:43:00,672 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:44:00,674 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:44:00,735 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:45:00,738 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:45:00,796 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:46:00,797 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:46:00,884 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:47:00,887 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:47:00,947 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:48:00,949 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:48:01,007 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:48:17,303 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-22 22:48:17,303 - INFO - ana - RVM Sistemi 4321 portunda baþlatýlýyor...
+2025-09-22 22:48:17,303 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-22 22:48:17,303 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-22 22:48:17,375 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://172.20.10.5:4321
+2025-09-22 22:48:17,375 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-22 22:48:26,967 - INFO - sunucu - get_all_products testi baþlatýldý.
+2025-09-22 22:48:26,967 - INFO - istemci - GIDEN ÝSTEK: /getAllProducts
+2025-09-22 22:48:27,492 - ERROR - istemci - /getAllProducts isteði baþarýsýz oldu. Status: 500, Body: {"error": "No products available"}
+2025-09-22 22:48:27,492 - INFO - _internal - 127.0.0.1 - - [22/Sep/2025 22:48:27] "[35m[1mGET /test/getproducts HTTP/1.1[0m" 500 -
+2025-09-22 22:49:17,306 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:49:17,356 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-22 22:50:17,361 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-22 22:50:17,401 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
