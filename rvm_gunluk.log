@@ -309,3 +309,904 @@
 2025-09-23 16:48:53,649 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001A2090FD520>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
 2025-09-23 16:49:53,651 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
 2025-09-23 16:50:03,661 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001A2090FC770>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 10:07:23,920 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 10:07:23,927 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 10:07:23,927 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 10:07:23,928 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 10:07:25,333 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 10:07:25,335 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 10:08:10,048 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-24 10:08:10,375 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "[36mGET /flasgger_static/swagger-ui.css HTTP/1.1[0m" 304 -
+2025-09-24 10:08:10,432 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "[36mGET /flasgger_static/lib/jquery.min.js HTTP/1.1[0m" 304 -
+2025-09-24 10:08:10,435 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "[36mGET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1[0m" 304 -
+2025-09-24 10:08:10,466 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "[36mGET /flasgger_static/swagger-ui-bundle.js HTTP/1.1[0m" 304 -
+2025-09-24 10:08:10,544 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-24 10:08:10,549 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:08:10] "[36mGET /flasgger_static/favicon-32x32.png HTTP/1.1[0m" 304 -
+2025-09-24 10:08:23,928 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:08:23,991 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:09:23,994 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:09:24,040 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:10:24,047 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:10:24,100 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:11:24,101 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:11:24,184 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:12:24,190 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:12:24,235 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:13:24,237 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:13:24,288 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:43:37,729 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 10:43:37,733 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 10:43:37,733 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 10:43:37,733 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 10:43:38,721 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 10:43:38,725 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 10:44:37,734 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:44:37,801 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:45:37,805 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:45:37,861 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:46:37,863 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:46:37,918 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:52:09,674 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 10:52:09,674 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 10:52:09,674 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 10:52:09,674 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 10:52:10,801 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 10:52:10,802 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 10:53:09,681 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:53:09,760 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:54:09,761 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:54:09,808 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:54:53,647 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:53] "GET /apidocs/ HTTP/1.1" 200 -
+2025-09-24 10:54:54,013 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /flasgger_static/lib/jquery.min.js HTTP/1.1" 200 -
+2025-09-24 10:54:54,013 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /flasgger_static/swagger-ui.css HTTP/1.1" 200 -
+2025-09-24 10:54:54,029 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /flasgger_static/swagger-ui-standalone-preset.js HTTP/1.1" 200 -
+2025-09-24 10:54:54,029 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /flasgger_static/swagger-ui-bundle.js HTTP/1.1" 200 -
+2025-09-24 10:54:54,239 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /apispec_1.json HTTP/1.1" 200 -
+2025-09-24 10:54:54,249 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:54] "GET /flasgger_static/favicon-32x32.png HTTP/1.1" 200 -
+2025-09-24 10:54:59,563 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 10:54:59,585 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-241023-0213
+2025-09-24 10:54:59,585 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: 1dytfy3456wsf
+2025-09-24 10:54:59,641 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 10:54:59,641 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: 1dytfy3456wsf
+2025-09-24 10:54:59,641 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:54:59] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 10:55:09,817 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:55:09,884 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:55:12,253 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 10:55:12,253 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 10:55:12,255 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 10:55:12] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 10:56:09,885 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:56:09,925 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:57:09,933 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:57:10,004 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:58:10,006 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:58:10,058 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 10:59:10,059 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 10:59:10,114 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:00:10,119 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:00:10,201 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:06:39,088 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 11:06:39,088 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 11:06:39,088 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 11:06:39,088 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 11:06:40,058 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 11:06:40,059 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 11:07:39,092 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:07:39,148 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:08:39,156 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:08:39,211 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:09:39,217 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:09:39,274 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:10:24,248 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 11:10:24,253 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 11:10:24,256 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:10:24] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 11:10:39,276 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:10:39,377 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:11:39,379 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:11:39,423 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:12:39,428 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:12:39,494 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:13:39,500 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:13:39,555 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:14:39,558 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:14:39,606 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:15:39,609 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:15:39,664 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:16:39,665 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:16:39,731 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:17:39,734 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:17:39,791 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:18:39,792 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:18:39,859 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:19:39,861 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:19:39,920 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:20:39,924 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:20:39,985 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:21:39,986 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:21:40,051 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:22:40,052 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:22:40,114 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:23:40,116 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:23:40,178 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:24:40,181 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:24:40,268 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:25:40,273 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:25:40,337 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:26:40,338 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:26:40,387 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:27:40,388 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:27:40,449 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:28:40,453 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:28:40,520 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:29:40,524 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:29:40,565 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:30:40,575 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:30:40,635 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:31:40,644 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:31:40,699 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:32:40,700 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:32:40,751 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:33:40,757 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:33:40,814 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:34:40,819 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:34:40,873 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:35:40,878 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:35:40,929 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:36:40,930 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:36:40,998 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:37:40,998 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:37:41,117 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:38:41,119 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:38:41,182 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:39:37,398 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-241023-0213, GUID: a7cc4aa6-a21f-438e-af90-0fa5b8ffb0eb, SlipData uzunluðu: 25
+2025-09-24 11:39:37,418 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-241023-0213, Toplam ambalaj: 0
+2025-09-24 11:39:37,418 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-241023-0213
+2025-09-24 11:39:37,418 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:39:37] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 11:39:41,184 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:39:41,235 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:39:48,578 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 11:39:48,591 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Eski oturum temizlendi - SessionID: RVM000101-241023-0213
+2025-09-24 11:39:48,605 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-241023-0213
+2025-09-24 11:39:48,605 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: 1dytfy3456wsf
+2025-09-24 11:39:48,653 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 11:39:48,654 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: 1dytfy3456wsf
+2025-09-24 11:39:48,654 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:39:48] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 11:40:41,236 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:40:41,287 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:41:22,393 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-241023-0213, GUID: a7cc4aa6-a21f-438e-af90-0fa5b8ffb0eb, SlipData uzunluðu: 25
+2025-09-24 11:41:22,408 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-241023-0213, Toplam ambalaj: 0
+2025-09-24 11:41:22,408 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-241023-0213
+2025-09-24 11:41:22,408 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:41:22] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 11:41:41,288 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:41:41,356 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:42:05,744 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 11:42:05,745 - ERROR - sunucu - GELEN ÝSTEK: /acceptPackage | Hata: Oturum aktif deðil - SessionID: RVM000101-241023-0213, Durum: tamamlandi
+2025-09-24 11:42:05,746 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:42:05] "[31m[1mPOST /acceptPackage HTTP/1.1[0m" 409 -
+2025-09-24 11:42:41,359 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:42:41,415 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:43:05,906 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 11:43:05,907 - ERROR - sunucu - GELEN ÝSTEK: /acceptPackage | Hata: Oturum aktif deðil - SessionID: RVM000101-241023-0213, Durum: tamamlandi
+2025-09-24 11:43:05,907 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:43:05] "[31m[1mPOST /acceptPackage HTTP/1.1[0m" 409 -
+2025-09-24 11:43:41,420 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:43:41,473 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:43:53,508 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 11:43:53,518 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Eski oturum temizlendi - SessionID: RVM000101-241023-0213
+2025-09-24 11:43:53,528 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-241023-0213
+2025-09-24 11:43:53,528 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: 1dytfy3456wsf
+2025-09-24 11:43:53,581 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 11:43:53,581 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: 1dytfy3456wsf
+2025-09-24 11:43:53,581 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:43:53] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 11:44:02,031 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 11:44:02,031 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 9999999999901
+2025-09-24 11:44:02,031 - INFO - barkod_isleyici - Barkod iþleniyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901
+2025-09-24 11:44:02,034 - INFO - barkod_isleyici - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 9999999999901
+2025-09-24 11:44:02,034 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 9999999999901
+2025-09-24 11:44:02,078 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 11:44:02,088 - WARNING - barkod_isleyici - Ürün bilgileri alýnamadý - Barcode: 9999999999901
+2025-09-24 11:44:02,089 - INFO - barkod_isleyici - Barkod baþarýyla iþlendi - UUID: de1099f3-130c-45c9-b3e4-071230d37bd6, Barcode: 9999999999901
+2025-09-24 11:44:02,099 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-241023-0213, Toplam ambalaj: 1
+2025-09-24 11:44:02,099 - INFO - sunucu - Barkod iþleme tamamlandý, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 11:44:02,099 - INFO - barkod_isleyici - Barkod sonucu gönderiliyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901, Result: 0
+2025-09-24 11:44:02,099 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-24 11:44:02,154 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 11:44:02,155 - ERROR - barkod_isleyici - Barkod sonucu gönderilemedi - Barcode: 9999999999901
+2025-09-24 11:44:02,155 - WARNING - sunucu - DÝM DB'ye sonuç gönderilemedi, ancak iþlem devam ediyor
+2025-09-24 11:44:02,155 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:44:02] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 11:44:41,474 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:44:41,534 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:45:41,535 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:45:41,583 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:46:41,584 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:46:41,654 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:47:41,655 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:47:41,704 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:48:41,706 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:48:41,759 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:49:41,760 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:49:41,822 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:50:41,825 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:50:41,876 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:51:41,895 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:51:41,945 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:52:41,946 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:52:42,006 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:53:42,008 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:53:42,071 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:54:36,338 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 11:54:36,338 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 11:54:36,338 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:54:36] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 11:54:42,073 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 11:54:42,133 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 11:54:57,466 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 11:54:57,466 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 9999999999901
+2025-09-24 11:54:57,466 - INFO - barkod_isleyici - Barkod iþleniyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901
+2025-09-24 11:54:57,466 - INFO - barkod_isleyici - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 9999999999901
+2025-09-24 11:54:57,466 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 9999999999901
+2025-09-24 11:54:57,528 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 11:54:57,529 - WARNING - barkod_isleyici - Ürün bilgileri alýnamadý - Barcode: 9999999999901
+2025-09-24 11:54:57,531 - INFO - barkod_isleyici - Barkod baþarýyla iþlendi - UUID: 6bfee068-52ec-46c8-9ed4-d0c60609d7fa, Barcode: 9999999999901
+2025-09-24 11:54:57,544 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-241023-0213, Toplam ambalaj: 2
+2025-09-24 11:54:57,547 - INFO - sunucu - Barkod iþleme tamamlandý, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 11:54:57,547 - INFO - barkod_isleyici - Barkod sonucu gönderiliyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901, Result: 0
+2025-09-24 11:54:57,547 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-24 11:54:57,590 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 11:54:57,590 - ERROR - barkod_isleyici - Barkod sonucu gönderilemedi - Barcode: 9999999999901
+2025-09-24 11:54:57,590 - WARNING - sunucu - DÝM DB'ye sonuç gönderilemedi, ancak iþlem devam ediyor
+2025-09-24 11:54:57,590 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 11:54:57] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 11:58:52,667 - INFO - istemci - GIDEN ÝSTEK: /getAllProducts
+2025-09-24 11:59:04,309 - INFO - istemci - /getAllProducts isteði baþarýlý. 4150 adet ürün bilgisi alýndý.
+2025-09-24 12:00:46,820 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 12:00:46,833 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 12:00:46,833 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 12:00:46,833 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 12:00:47,856 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 12:00:47,897 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 12:01:46,834 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:01:46,892 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:02:46,901 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:02:46,967 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:03:46,971 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:03:47,031 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:04:47,035 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:04:47,107 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:05:47,110 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:05:47,166 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:06:47,173 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:06:47,214 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:07:47,224 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:07:47,272 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:08:47,274 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:08:47,358 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:09:07,023 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 12:09:07,027 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 12:09:07,027 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 12:09:07] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 12:09:47,359 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:09:47,416 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:09:55,116 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 12:09:55,118 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 12:09:55,118 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 12:09:55] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 12:10:08,927 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 12:10:08,929 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 9999999999901
+2025-09-24 12:10:08,929 - INFO - barkod_isleyici - Barkod iþleniyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901
+2025-09-24 12:10:08,929 - INFO - barkod_isleyici - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 9999999999901
+2025-09-24 12:10:08,929 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 9999999999901
+2025-09-24 12:10:08,972 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 12:10:08,972 - WARNING - barkod_isleyici - Ürün bilgileri alýnamadý - Barcode: 9999999999901
+2025-09-24 12:10:08,972 - INFO - barkod_isleyici - Barkod baþarýyla iþlendi - UUID: 37a98283-3435-4d03-8fad-f1d8801d5fe7, Barcode: 9999999999901
+2025-09-24 12:10:08,989 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-241023-0213, Toplam ambalaj: 3
+2025-09-24 12:10:08,989 - INFO - sunucu - Barkod iþleme tamamlandý, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 12:10:08,989 - INFO - barkod_isleyici - Barkod sonucu gönderiliyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901, Result: 0
+2025-09-24 12:10:08,989 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-24 12:10:09,030 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 12:10:09,030 - ERROR - barkod_isleyici - Barkod sonucu gönderilemedi - Barcode: 9999999999901
+2025-09-24 12:10:09,030 - WARNING - sunucu - DÝM DB'ye sonuç gönderilemedi, ancak iþlem devam ediyor
+2025-09-24 12:10:09,038 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 12:10:09] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 12:10:47,418 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:10:47,472 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:11:47,476 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:11:47,528 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:12:47,530 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:12:47,568 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:13:47,577 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:13:47,641 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:14:47,644 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:14:47,692 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:15:47,697 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:15:47,749 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:16:47,751 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:16:47,802 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:17:47,810 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:17:47,870 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:18:47,872 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:18:47,941 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:19:47,943 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:19:47,988 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:20:47,995 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:20:48,052 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:21:48,053 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:21:48,112 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:22:48,117 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:22:48,229 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:23:48,232 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:23:48,321 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:24:48,323 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:24:48,390 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:25:48,397 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:25:48,450 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:26:48,452 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:26:48,503 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:27:48,506 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:27:48,559 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:28:48,562 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:28:48,656 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:29:48,658 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:29:48,714 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:30:48,716 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:30:48,780 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:31:48,784 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:31:48,848 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:32:48,850 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:32:48,902 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:33:48,907 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:33:48,965 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:34:48,970 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:34:49,019 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:35:49,027 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:35:49,084 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:36:49,090 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:36:49,153 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:37:49,155 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:37:49,241 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:38:49,244 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:38:49,292 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:39:49,294 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:39:49,364 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:40:49,365 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:40:49,419 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:41:49,420 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:41:49,491 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:42:49,492 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:42:49,567 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:43:49,569 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:43:49,627 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:44:49,628 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:44:49,713 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:45:49,713 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:45:49,781 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:46:49,782 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:46:49,847 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:47:49,848 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:47:49,913 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:48:49,915 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:48:49,972 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:49:49,975 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:49:50,044 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:50:50,045 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:50:50,094 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:51:50,096 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:51:50,156 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:52:48,723 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 12:52:48,723 - INFO - ana - Donaným sistemi baþlatýlýyor...
+2025-09-24 12:52:48,742 - ERROR - sunucu - Donaným baþlatma hatasý: Hiçbir seri port bulunamadý!
+2025-09-24 12:52:48,742 - WARNING - ana - Donaným sistemi baþlatýlamadý - Simülasyon modunda çalýþýyor.
+2025-09-24 12:52:48,743 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 12:52:48,744 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 12:52:48,744 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 12:52:49,765 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 12:52:49,773 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 12:53:48,744 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:53:48,813 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:54:40,509 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 12:54:40,509 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 12:54:40,509 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 12:54:40] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 12:54:48,817 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:54:48,867 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 12:55:17,716 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 12:55:17,716 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 9999999999901
+2025-09-24 12:55:17,716 - INFO - barkod_isleyici - Barkod iþleniyor - SessionID: RVM000101-241023-0213, Barcode: 9999999999901
+2025-09-24 12:55:17,719 - INFO - barkod_isleyici - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 9999999999901
+2025-09-24 12:55:17,719 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 9999999999901
+2025-09-24 12:55:17,771 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 12:55:17,771 - WARNING - barkod_isleyici - Ürün bilgileri alýnamadý - Barcode: 9999999999901
+2025-09-24 12:55:17,772 - INFO - barkod_isleyici - Barkod baþarýyla iþlendi - UUID: 44fd5493-4a39-462d-b272-2c46ce344d0c, Barcode: 9999999999901
+2025-09-24 12:55:17,788 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-241023-0213, Toplam ambalaj: 4
+2025-09-24 12:55:17,789 - ERROR - sunucu - GELEN ÝSTEK: /acceptPackage | Veritabaný hatasý: name 'self' is not defined
+2025-09-24 12:55:17,789 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 12:55:17] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 12:55:48,871 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 12:55:48,934 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:09:32,290 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 13:09:32,290 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 13:09:32,290 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 13:09:32,295 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 13:09:33,280 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 13:09:33,288 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 13:10:32,294 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:10:32,401 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:10:47,216 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-241023-0213, UserID: 1dytfy3456wsf, GUID: 870422ad-4de0-4faf-82fc-eaf56808e599
+2025-09-24 13:10:47,216 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Oturum zaten aktif - SessionID: RVM000101-241023-0213
+2025-09-24 13:10:47,222 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:10:47] "[31m[1mPOST /sessionStart HTTP/1.1[0m" 409 -
+2025-09-24 13:11:27,285 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 9999999999901, SessionID: RVM000101-241023-0213, UUID: 9db8da13-4f94-4c02-b1f1-0755e8696c55
+2025-09-24 13:11:27,287 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 9999999999901
+2025-09-24 13:11:27,287 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 9999999999901
+2025-09-24 13:11:27,287 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 9999999999901
+2025-09-24 13:11:27,340 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:11:27,340 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 9999999999901
+2025-09-24 13:11:27,357 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-241023-0213, Toplam ambalaj: 5
+2025-09-24 13:11:27,357 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:11:27,357 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 9999999999901, Result: 0
+2025-09-24 13:11:27,397 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:11:27,397 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:11:27,397 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:11:27] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:11:32,409 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:11:32,459 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:12:32,465 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:12:32,517 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:13:32,518 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:13:32,569 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:13:59,202 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-1758708837, UserID: test-user-123, GUID: test-guid-123
+2025-09-24 13:13:59,219 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-1758708837
+2025-09-24 13:13:59,220 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: test-user-123
+2025-09-24 13:13:59,275 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 13:13:59,275 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: test-user-123
+2025-09-24 13:13:59,275 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:13:59] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 13:14:01,320 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1926687333375, SessionID: RVM000101-1758708837, UUID: test-uuid-1
+2025-09-24 13:14:01,320 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1926687333375
+2025-09-24 13:14:01,320 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1926687333375
+2025-09-24 13:14:01,320 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1926687333375
+2025-09-24 13:14:01,382 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:14:01,383 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1926687333375
+2025-09-24 13:14:01,392 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708837, Toplam ambalaj: 1
+2025-09-24 13:14:01,392 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:14:01,392 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1926687333375, Result: 0
+2025-09-24 13:14:01,438 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:14:01,438 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:14:01,438 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:01] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:14:04,484 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917124213329, SessionID: RVM000101-1758708837, UUID: test-uuid-2
+2025-09-24 13:14:04,484 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917124213329
+2025-09-24 13:14:04,484 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917124213329
+2025-09-24 13:14:04,484 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917124213329
+2025-09-24 13:14:04,550 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:14:04,550 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917124213329
+2025-09-24 13:14:04,566 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708837, Toplam ambalaj: 2
+2025-09-24 13:14:04,566 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:14:04,566 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917124213329, Result: 0
+2025-09-24 13:14:04,616 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:14:04,616 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:14:04,617 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:04] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:14:07,651 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1923056777471, SessionID: RVM000101-1758708837, UUID: test-uuid-3
+2025-09-24 13:14:07,651 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1923056777471
+2025-09-24 13:14:07,651 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1923056777471
+2025-09-24 13:14:07,651 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1923056777471
+2025-09-24 13:14:07,694 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:14:07,695 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1923056777471
+2025-09-24 13:14:07,708 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708837, Toplam ambalaj: 3
+2025-09-24 13:14:07,708 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:14:07,708 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1923056777471, Result: 0
+2025-09-24 13:14:07,749 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:14:07,749 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:14:07,749 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:07] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:14:10,802 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917063162375, SessionID: RVM000101-1758708837, UUID: test-uuid-4
+2025-09-24 13:14:10,802 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917063162375
+2025-09-24 13:14:10,802 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917063162375
+2025-09-24 13:14:10,802 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917063162375
+2025-09-24 13:14:10,849 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:14:10,849 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917063162375
+2025-09-24 13:14:10,862 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708837, Toplam ambalaj: 4
+2025-09-24 13:14:10,863 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:14:10,863 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917063162375, Result: 0
+2025-09-24 13:14:10,901 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:14:10,902 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:14:10,902 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:10] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:14:13,965 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1922312193529, SessionID: RVM000101-1758708837, UUID: test-uuid-5
+2025-09-24 13:14:13,969 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1922312193529
+2025-09-24 13:14:13,969 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1922312193529
+2025-09-24 13:14:13,970 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1922312193529
+2025-09-24 13:14:14,039 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:14:14,039 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1922312193529
+2025-09-24 13:14:14,054 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708837, Toplam ambalaj: 5
+2025-09-24 13:14:14,054 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:14:14,054 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1922312193529, Result: 0
+2025-09-24 13:14:14,097 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:14:14,098 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:14:14,099 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:14] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:14:17,131 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-1758708837, GUID: test-guid-end, SlipData uzunluðu: 21
+2025-09-24 13:14:17,149 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-1758708837, Toplam ambalaj: 5
+2025-09-24 13:14:17,149 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-1758708837
+2025-09-24 13:14:17,149 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:17] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 13:14:32,575 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:14:32,634 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:14:59,025 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-1758708896, UserID: test-user-123, GUID: test-guid-123
+2025-09-24 13:14:59,039 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-1758708896
+2025-09-24 13:14:59,040 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: test-user-123
+2025-09-24 13:14:59,071 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 13:14:59,071 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: test-user-123
+2025-09-24 13:14:59,071 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:14:59] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 13:15:01,118 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1926687333375, SessionID: RVM000101-1758708896, UUID: test-uuid-1
+2025-09-24 13:15:01,118 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1926687333375
+2025-09-24 13:15:01,118 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1926687333375
+2025-09-24 13:15:01,118 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1926687333375
+2025-09-24 13:15:01,165 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:01,165 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1926687333375
+2025-09-24 13:15:01,182 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708896, Toplam ambalaj: 1
+2025-09-24 13:15:01,183 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:01,183 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1926687333375, Result: 0
+2025-09-24 13:15:01,230 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:01,231 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:01,232 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:01] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:04,265 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917124213329, SessionID: RVM000101-1758708896, UUID: test-uuid-2
+2025-09-24 13:15:04,270 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917124213329
+2025-09-24 13:15:04,270 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917124213329
+2025-09-24 13:15:04,270 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917124213329
+2025-09-24 13:15:04,314 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:04,314 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917124213329
+2025-09-24 13:15:04,333 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708896, Toplam ambalaj: 2
+2025-09-24 13:15:04,333 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:04,334 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917124213329, Result: 0
+2025-09-24 13:15:04,388 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:04,391 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:04,419 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:04] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:07,479 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1923056777471, SessionID: RVM000101-1758708896, UUID: test-uuid-3
+2025-09-24 13:15:07,483 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1923056777471
+2025-09-24 13:15:07,483 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1923056777471
+2025-09-24 13:15:07,483 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1923056777471
+2025-09-24 13:15:07,534 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:07,536 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1923056777471
+2025-09-24 13:15:07,551 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708896, Toplam ambalaj: 3
+2025-09-24 13:15:07,552 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:07,552 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1923056777471, Result: 0
+2025-09-24 13:15:07,597 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:07,597 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:07,597 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:07] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:10,647 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917063162375, SessionID: RVM000101-1758708896, UUID: test-uuid-4
+2025-09-24 13:15:10,647 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917063162375
+2025-09-24 13:15:10,647 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917063162375
+2025-09-24 13:15:10,647 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917063162375
+2025-09-24 13:15:10,697 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:10,697 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917063162375
+2025-09-24 13:15:10,709 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708896, Toplam ambalaj: 4
+2025-09-24 13:15:10,710 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:10,710 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917063162375, Result: 0
+2025-09-24 13:15:10,762 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:10,762 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:10,762 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:10] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:13,797 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1922312193529, SessionID: RVM000101-1758708896, UUID: test-uuid-5
+2025-09-24 13:15:13,797 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1922312193529
+2025-09-24 13:15:13,797 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1922312193529
+2025-09-24 13:15:13,797 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1922312193529
+2025-09-24 13:15:13,848 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:13,848 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1922312193529
+2025-09-24 13:15:13,862 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708896, Toplam ambalaj: 5
+2025-09-24 13:15:13,863 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:13,864 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1922312193529, Result: 0
+2025-09-24 13:15:13,914 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:13,914 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:13,920 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:13] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:16,961 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-1758708896, GUID: test-guid-end, SlipData uzunluðu: 21
+2025-09-24 13:15:16,978 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-1758708896, Toplam ambalaj: 5
+2025-09-24 13:15:16,979 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-1758708896
+2025-09-24 13:15:16,981 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:16] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 13:15:32,637 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:15:32,726 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:15:45,198 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-1758708943, UserID: test-user-123, GUID: test-guid-123
+2025-09-24 13:15:45,215 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-1758708943
+2025-09-24 13:15:45,215 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: test-user-123
+2025-09-24 13:15:45,260 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 13:15:45,260 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: test-user-123
+2025-09-24 13:15:45,260 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:45] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 13:15:47,305 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1926687333375, SessionID: RVM000101-1758708943, UUID: test-uuid-1
+2025-09-24 13:15:47,305 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1926687333375
+2025-09-24 13:15:47,309 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1926687333375
+2025-09-24 13:15:47,309 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1926687333375
+2025-09-24 13:15:47,366 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:47,367 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1926687333375
+2025-09-24 13:15:47,380 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708943, Toplam ambalaj: 1
+2025-09-24 13:15:47,381 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:47,381 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1926687333375, Result: 0
+2025-09-24 13:15:47,435 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:47,436 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:47,437 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:47] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:50,476 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917124213329, SessionID: RVM000101-1758708943, UUID: test-uuid-2
+2025-09-24 13:15:50,476 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917124213329
+2025-09-24 13:15:50,476 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917124213329
+2025-09-24 13:15:50,476 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917124213329
+2025-09-24 13:15:50,541 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:50,543 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917124213329
+2025-09-24 13:15:50,547 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708943, Toplam ambalaj: 2
+2025-09-24 13:15:50,558 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:50,559 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917124213329, Result: 0
+2025-09-24 13:15:50,611 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:50,612 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:50,612 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:50] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:53,647 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1923056777471, SessionID: RVM000101-1758708943, UUID: test-uuid-3
+2025-09-24 13:15:53,647 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1923056777471
+2025-09-24 13:15:53,647 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1923056777471
+2025-09-24 13:15:53,647 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1923056777471
+2025-09-24 13:15:53,694 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:53,694 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1923056777471
+2025-09-24 13:15:53,711 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708943, Toplam ambalaj: 3
+2025-09-24 13:15:53,712 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:53,712 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1923056777471, Result: 0
+2025-09-24 13:15:53,746 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:53,747 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:53,747 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:53] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:56,774 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917063162375, SessionID: RVM000101-1758708943, UUID: test-uuid-4
+2025-09-24 13:15:56,774 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917063162375
+2025-09-24 13:15:56,774 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917063162375
+2025-09-24 13:15:56,774 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917063162375
+2025-09-24 13:15:56,823 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:56,825 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917063162375
+2025-09-24 13:15:56,833 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708943, Toplam ambalaj: 4
+2025-09-24 13:15:56,833 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:15:56,842 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917063162375, Result: 0
+2025-09-24 13:15:56,883 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:15:56,884 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:15:56,885 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:15:56] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:15:59,942 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1922312193529, SessionID: RVM000101-1758708943, UUID: test-uuid-5
+2025-09-24 13:15:59,942 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1922312193529
+2025-09-24 13:15:59,942 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1922312193529
+2025-09-24 13:15:59,942 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1922312193529
+2025-09-24 13:15:59,994 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:15:59,994 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1922312193529
+2025-09-24 13:16:00,014 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758708943, Toplam ambalaj: 5
+2025-09-24 13:16:00,014 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:16:00,015 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1922312193529, Result: 0
+2025-09-24 13:16:00,079 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:16:00,081 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:16:00,108 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:16:00] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:16:03,197 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-1758708943, GUID: test-guid-end, SlipData uzunluðu: 21
+2025-09-24 13:16:03,211 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-1758708943, Toplam ambalaj: 5
+2025-09-24 13:16:03,211 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-1758708943
+2025-09-24 13:16:03,212 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:16:03] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 13:16:32,728 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:16:32,775 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:16:58,974 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-1758709016, UserID: test-user-123, GUID: test-guid-123
+2025-09-24 13:16:58,989 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-1758709016
+2025-09-24 13:16:58,990 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: test-user-123
+2025-09-24 13:16:59,027 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 13:16:59,027 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: test-user-123
+2025-09-24 13:16:59,027 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:16:59] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 13:17:01,066 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1926687333375, SessionID: RVM000101-1758709016, UUID: test-uuid-1
+2025-09-24 13:17:01,071 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1926687333375
+2025-09-24 13:17:01,071 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1926687333375
+2025-09-24 13:17:01,071 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1926687333375
+2025-09-24 13:17:01,114 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:17:01,114 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1926687333375
+2025-09-24 13:17:01,124 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709016, Toplam ambalaj: 1
+2025-09-24 13:17:01,124 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:17:01,124 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1926687333375, Result: 0
+2025-09-24 13:17:01,169 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:17:01,169 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:17:01,169 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:17:01] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:17:04,204 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917124213329, SessionID: RVM000101-1758709016, UUID: test-uuid-2
+2025-09-24 13:17:04,204 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917124213329
+2025-09-24 13:17:04,204 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917124213329
+2025-09-24 13:17:04,204 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917124213329
+2025-09-24 13:17:04,271 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:17:04,273 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917124213329
+2025-09-24 13:17:04,287 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709016, Toplam ambalaj: 2
+2025-09-24 13:17:04,287 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:17:04,287 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1917124213329, Result: 0
+2025-09-24 13:17:04,339 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:17:04,339 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:17:04,339 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:17:04] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:17:07,372 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1923056777471, SessionID: RVM000101-1758709016, UUID: test-uuid-3
+2025-09-24 13:17:07,372 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1923056777471
+2025-09-24 13:17:07,372 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1923056777471
+2025-09-24 13:17:07,372 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1923056777471
+2025-09-24 13:17:07,413 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:17:07,413 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1923056777471
+2025-09-24 13:17:07,426 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709016, Toplam ambalaj: 3
+2025-09-24 13:17:07,427 - INFO - sunucu - Ambalaj doðrudan onaylanýyor, DÝM DB'ye sonuç gönderiliyor...
+2025-09-24 13:17:07,427 - INFO - istemci - GIDEN ÝSTEK: /acceptPackageResult | Barcode: 1923056777471, Result: 0
+2025-09-24 13:17:07,475 - ERROR - istemci - /acceptPackageResult isteði baþarýsýz oldu. Status: 400, Body: {"error":"Session is not started"}
+
+2025-09-24 13:17:07,475 - ERROR - sunucu - DÝM DB'ye sonuç gönderilemedi!
+2025-09-24 13:17:07,479 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:17:07] "[35m[1mPOST /acceptPackage HTTP/1.1[0m" 500 -
+2025-09-24 13:19:23,569 - INFO - ana - Veritabaný altyapýsý kontrol edildi ve hazýr.
+2025-09-24 13:19:23,571 - INFO - ana - Heartbeat döngüsü baþladý. Ýlk gönderim 60 saniye sonra yapýlacak.
+2025-09-24 13:19:23,571 - INFO - ana - Arka plan heartbeat servisi baþlatýldý.
+2025-09-24 13:19:23,571 - INFO - ana - Arka plan Flask sunucusu 4321 portunda baþlatýldý.
+2025-09-24 13:19:24,832 - INFO - _internal - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:4321
+ * Running on http://192.168.53.105:4321
+2025-09-24 13:19:24,850 - INFO - _internal - [33mPress CTRL+C to quit[0m
+2025-09-24 13:20:23,575 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:20:23,636 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:21:02,059 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | SessionID: RVM000101-1758709260, UserID: test-user-123, GUID: test-guid-123
+2025-09-24 13:21:02,079 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | Baþarýlý - Yeni oturum oluþturuldu - SessionID: RVM000101-1758709260
+2025-09-24 13:21:02,079 - INFO - istemci - GIDEN ÝSTEK: /checkUserId | UserID: test-user-123
+2025-09-24 13:21:02,122 - ERROR - istemci - /checkUserId isteði baþarýsýz oldu. Status: 405, Body: <!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+
+2025-09-24 13:21:02,123 - WARNING - sunucu - GELEN ÝSTEK: /sessionStart | Uyarý: Kullanýcý doðrulama isteði gönderilemedi - UserID: test-user-123
+2025-09-24 13:21:02,123 - INFO - sunucu - GELEN ÝSTEK: /sessionStart | DÝM DB'ye oturum baþlatma bildirimi gönderiliyor - SessionID: RVM000101-1758709260
+2025-09-24 13:21:02,124 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:02] "POST /sessionStart HTTP/1.1" 200 -
+2025-09-24 13:21:04,156 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1926687333375, SessionID: RVM000101-1758709260, UUID: test-uuid-1
+2025-09-24 13:21:04,156 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1926687333375
+2025-09-24 13:21:04,156 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1926687333375
+2025-09-24 13:21:04,156 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1926687333375
+2025-09-24 13:21:04,221 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:21:04,222 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1926687333375
+2025-09-24 13:21:04,238 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709260, Toplam ambalaj: 1
+2025-09-24 13:21:04,238 - INFO - sunucu - Ambalaj baþarýyla iþlendi ve onaylandý
+2025-09-24 13:21:04,238 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:04] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 13:21:07,272 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917124213329, SessionID: RVM000101-1758709260, UUID: test-uuid-2
+2025-09-24 13:21:07,272 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917124213329
+2025-09-24 13:21:07,272 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917124213329
+2025-09-24 13:21:07,272 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917124213329
+2025-09-24 13:21:07,322 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:21:07,322 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917124213329
+2025-09-24 13:21:07,346 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709260, Toplam ambalaj: 2
+2025-09-24 13:21:07,346 - INFO - sunucu - Ambalaj baþarýyla iþlendi ve onaylandý
+2025-09-24 13:21:07,346 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:07] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 13:21:10,388 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1923056777471, SessionID: RVM000101-1758709260, UUID: test-uuid-3
+2025-09-24 13:21:10,388 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1923056777471
+2025-09-24 13:21:10,388 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1923056777471
+2025-09-24 13:21:10,388 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1923056777471
+2025-09-24 13:21:10,454 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:21:10,455 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1923056777471
+2025-09-24 13:21:10,458 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709260, Toplam ambalaj: 3
+2025-09-24 13:21:10,458 - INFO - sunucu - Ambalaj baþarýyla iþlendi ve onaylandý
+2025-09-24 13:21:10,468 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:10] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 13:21:13,490 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1917063162375, SessionID: RVM000101-1758709260, UUID: test-uuid-4
+2025-09-24 13:21:13,490 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1917063162375
+2025-09-24 13:21:13,490 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1917063162375
+2025-09-24 13:21:13,490 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1917063162375
+2025-09-24 13:21:13,556 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:21:13,556 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1917063162375
+2025-09-24 13:21:13,571 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709260, Toplam ambalaj: 4
+2025-09-24 13:21:13,572 - INFO - sunucu - Ambalaj baþarýyla iþlendi ve onaylandý
+2025-09-24 13:21:13,572 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:13] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 13:21:16,606 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barcode: 1922312193529, SessionID: RVM000101-1758709260, UUID: test-uuid-5
+2025-09-24 13:21:16,606 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Barkod iþleniyor - Barcode: 1922312193529
+2025-09-24 13:21:16,606 - INFO - sunucu - DIM-DB'den ürün bilgileri alýnýyor - Barcode: 1922312193529
+2025-09-24 13:21:16,606 - INFO - istemci - GIDEN ÝSTEK: /getBarcode | Barcode: 1922312193529
+2025-09-24 13:21:16,668 - ERROR - istemci - /getBarcode isteði baþarýsýz oldu. Status: 500, Body: {"error":"Internal Server Error"}
+
+2025-09-24 13:21:16,669 - WARNING - sunucu - Ürün bilgileri alýnamadý, ancak iþlem devam ediyor - Barcode: 1922312193529
+2025-09-24 13:21:16,682 - INFO - sunucu - GELEN ÝSTEK: /acceptPackage | Baþarýlý - Ambalaj kabul edildi - SessionID: RVM000101-1758709260, Toplam ambalaj: 5
+2025-09-24 13:21:16,682 - INFO - sunucu - Ambalaj baþarýyla iþlendi ve onaylandý
+2025-09-24 13:21:16,683 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:16] "POST /acceptPackage HTTP/1.1" 200 -
+2025-09-24 13:21:19,721 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | SessionID: RVM000101-1758709260, GUID: test-guid-end, SlipData uzunluðu: 21
+2025-09-24 13:21:19,740 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Baþarýlý - Oturum sonlandýrýldý - SessionID: RVM000101-1758709260, Toplam ambalaj: 5
+2025-09-24 13:21:19,740 - INFO - sunucu - GELEN ÝSTEK: /sessionEnd | Fiþ verisi alýndý - SessionID: RVM000101-1758709260
+2025-09-24 13:21:19,741 - INFO - _internal - 127.0.0.1 - - [24/Sep/2025 13:21:19] "POST /sessionEnd HTTP/1.1" 200 -
+2025-09-24 13:21:23,637 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:21:23,707 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:22:23,708 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:22:23,761 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:23:23,764 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:23:23,817 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:24:23,818 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:24:23,873 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:25:23,874 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:25:23,928 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:26:23,930 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:26:23,987 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:27:23,992 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:27:24,052 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:28:24,053 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:28:24,105 - INFO - istemci - /heartbeat isteði baþarýyla gönderildi.
+2025-09-24 13:29:24,108 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:29:34,127 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD777194F0>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:30:34,128 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:30:44,133 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771B380>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:31:44,134 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:31:54,145 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771BBF0>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:32:54,146 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:33:04,157 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7B08B530>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:34:04,158 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:34:14,166 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771B080>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:35:14,167 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:35:24,196 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771ACF0>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:36:24,197 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:36:34,211 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771A270>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
+2025-09-24 13:37:34,212 - INFO - istemci - GIDEN ÝSTEK: /heartbeat
+2025-09-24 13:37:44,219 - ERROR - istemci - /heartbeat isteði gönderilirken að hatasý oluþtu: HTTPConnectionPool(host='192.168.53.1', port=5432): Max retries exceeded with url: /heartbeat (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001CD7771A390>, 'Connection to 192.168.53.1 timed out. (connect timeout=10)'))
