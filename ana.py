@@ -1,55 +1,94 @@
 # ana.py
+
+import sys
 import threading
 import time
-from flask import Flask, jsonify
-from flasgger import Swagger
-from rvm_sistemi.yardimcilar.gunluk_kayit import logger
-from rvm_sistemi.ayarlar import genel_ayarlar
-from rvm_sistemi.veri_tabani import veritabani_yonetici
-from rvm_sistemi.dimdb.sunucu import dimdb_api_sunucusu
-from rvm_sistemi.dimdb import istemci
+import schedule
 
-# 1. Flask uygulamasını oluştur
-app = Flask(__name__)
+# PySide6 ve WebEngine modüllerini import et
+from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import QUrl, Slot
 
-# 2. ÖNCE, tüm API adreslerini içeren Blueprint'i kaydet
-app.register_blueprint(dimdb_api_sunucusu)
+# Projenin diğer modüllerini import et
+from rvm_sistemi.dimdb import sunucu, istemci
 
-# 3. SONRA, tüm adresleri görebilmesi için Swagger'ı başlat
-swagger = Swagger(app)
+# --- ARAYÜZ TANIMLAMALARI ---
 
-# Bu endpoint ana dosyada olduğu için Swagger bunu her zaman görür
-@app.route('/')
-def index():
+# URL'deki yazım hatası düzeltildi
+DARPHANE_UI_URL = "http://192.168.53.1:5432"
+
+class ArayuzPenceresi(QMainWindow):
     """
-    Ana Sayfa
-    Bu endpoint, RVM sisteminin çalışıp çalışmadığını kontrol etmek için basit bir cevap döner.
-    ---
-    responses:
-      200:
-        description: Sistemin çalıştığını belirten bir mesaj.
+    Ana uygulama penceresini oluşturan ve WebView'i barındıran sınıf.
     """
-    logger.info("Ana endpoint'e istek geldi.")
-    return jsonify({"mesaj": "RVM Sistemi Aktif"})
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("KAPELLA-RVM Sistemi")
+        self.showFullScreen()
 
-def baslat():
-    """Sistemin başlangıç fonksiyonlarını çalıştırır."""
-    veritabani_yonetici.init_db()
-    logger.info("Veritabanı altyapısı kontrol edildi ve hazır.")
-    logger.info(f"RVM Sistemi {genel_ayarlar.RVM_API_PORT} portunda başlatılıyor...")
+        self.webview = QWebEngineView(self)
+        self.setCentralWidget(self.webview)
+        
+        # --- HATA KONTROLÜ EKLENDİ ---
+        # Sayfa yüklemesi bittiğinde (başarılı ya da başarısız)
+        # 'sayfa_yuklendi' fonksiyonunu çağır.
+        self.webview.loadFinished.connect(self.sayfa_yuklendi)
 
-def heartbeat_dongusu():
-    """Her 60 saniyede bir heartbeat gönderen döngü."""
-    logger.info("Heartbeat döngüsü başladı. İlk gönderim 60 saniye sonra yapılacak.")
+        print(f"Darphane arayüzü yükleniyor: {DARPHANE_UI_URL}")
+        self.webview.setUrl(QUrl(DARPHANE_UI_URL))
+
+    @Slot(bool)
+    def sayfa_yuklendi(self, basarili):
+        """
+        WebView yüklemesi tamamlandığında tetiklenir.
+        """
+        if basarili:
+            print("Darphane arayüzü başarıyla yüklendi.")
+        else:
+            print("!!! HATA: Darphane arayüzü yüklenemedi.")
+            print("Olası Sebepler:")
+            print("1. DİM DB Kontrol Ünitesi'nin açık ve ağa bağlı olduğundan emin olun.")
+            print("2. URL'nin doğru olduğundan emin olun: " + DARPHANE_UI_URL)
+            print("3. Güvenlik duvarı (Firewall) programın ağ erişimini engelliyor olabilir.")
+
+
+# --- ARKA PLAN GÖREVLERİ ---
+
+def run_web_server():
+    """
+    DİM DB'den gelen istekleri dinleyecek olan Flask sunucusunu başlatır.
+    """
+    print("Web sunucusu başlatılıyor...")
+    sunucu.app.run(host='0.0.0.0', port=4321, debug=False, use_reloader=False)
+
+def start_periodic_tasks():
+    """
+    Periyodik olarak çalışması gereken istemci görevlerini yönetir.
+    """
+    print("Periyodik görevler zamanlanıyor...")
+    schedule.every(60).seconds.do(istemci.send_heartbeat)
+
     while True:
-        time.sleep(60)
-        istemci.send_heartbeat()
-#print(app.url_map)
-if __name__ == "__main__":
-    baslat()
+        schedule.run_pending()
+        time.sleep(1)
 
-    heartbeat_thread = threading.Thread(target=heartbeat_dongusu, daemon=True)
-    heartbeat_thread.start()
-    logger.info("Arka plan heartbeat servisi başlatıldı.")
+# --- ANA UYGULAMA GİRİŞ NOKTASI ---
 
-    app.run(host='0.0.0.0', port=genel_ayarlar.RVM_API_PORT, debug=True, use_reloader=False)
+if __name__ == '__main__':
+    print("RVM Sistemi Ana Uygulaması Başlatılıyor...")
+
+    # Arka plan görevleri için thread'leri başlat
+    server_thread = threading.Thread(target=run_web_server, name="WebServerThread")
+    server_thread.daemon = True
+    server_thread.start()
+
+    tasks_thread = threading.Thread(target=start_periodic_tasks, name="PeriodicTasksThread")
+    tasks_thread.daemon = True
+    tasks_thread.start()
+
+    # Ana Thread'de Grafik Arayüzünü Başlat
+    app = QApplication(sys.argv)
+    pencere = ArayuzPenceresi()
+    pencere.show()
+    sys.exit(app.exec())

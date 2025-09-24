@@ -24,3 +24,10 @@ pymodbus==3.6.3
 
 # .env dosyasından ortam değişkenlerini (API anahtarları vb.) okumak için
 python-dotenv==1.0.0
+
+PySide6
+PySide6-WebEngine
+
+schedule
+
+requests

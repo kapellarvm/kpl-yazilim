@@ -1,211 +1,136 @@
 # rvm_sistemi/dimdb/sunucu.py
 
-from flask import Blueprint, request, jsonify
-from ..yardimcilar.gunluk_kayit import logger
-from . import istemci
+from flask import Flask, request, jsonify
 
-dimdb_api_sunucusu = Blueprint('dimdb_api_sunucusu', __name__)
+# Flask uygulamasını oluştur
+app = Flask(__name__)
 
-@dimdb_api_sunucusu.route('/sessionStart', methods=['POST'])
+# Aktif oturum bilgilerini saklamak için basit bir sözlük (dictionary)
+# Bu yapı, RVM'nin anlık durumunu tutacak.
+aktif_oturum = {
+    "aktif": False,
+    "sessionId": None,
+    "userId": None,
+    "kabul_edilen_pet": 0,
+    "kabul_edilen_cam": 0,
+    "kabul_edilen_alu": 0
+}
+
+@app.route('/sessionStart', methods=['POST'])
 def session_start():
     """
-    DİM DB'den yeni bir iade oturumu başlatma isteği alır.
-    ---
-    tags:
-      - Gelen İstekler (DİM DB -> RVM)
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          properties:
-            guid:
-              type: string
-              example: "870422ad-4de0-4faf-82fc-eaf56808e599"
-            sessionId:
-              type: string
-              example: "RVM000101-241023-0213"
-            userId:
-              type: string
-              example: "1dytfy3456wsf"
-    responses:
-      200:
-        description: Oturumun başarıyla başlatıldığına dair cevap.
-        schema:
-          type: object
-          properties:
-            errorCode:
-              type: integer
-              example: 0
-            errorMessage:
-              type: string
-              example: ""
+    DİM DB'den oturum başlatma isteği geldiğinde çalışır.
+    Gelen sessionId ve userId bilgilerini saklamalıyız.
     """
-    data = request.get_json()
-    logger.info(f"GELEN İSTEK: /sessionStart | SessionID: {data.get('sessionId')}")
-    return jsonify({"errorCode": 0, "errorMessage": ""})
+    global aktif_oturum
+    data = request.json
+    print(f"Gelen sessionStart isteği: {data}")
 
-@dimdb_api_sunucusu.route('/acceptPackage', methods=['POST'])
+    # Eğer zaten aktif bir oturum varsa, hata dön.
+    if aktif_oturum["aktif"]:
+        print("Hata: Zaten aktif bir oturum varken yeni oturum başlatılamaz.")
+        response = {
+            "errorCode": 2,  # Dokümandaki "Aktif oturum var" hata kodu
+            "errorMessage": "Aktif oturum var."
+        }
+        return jsonify(response)
+
+    # Oturum bilgilerini güncelle ve sayaçları sıfırla
+    aktif_oturum = {
+        "aktif": True,
+        "sessionId": data.get("sessionId"),
+        "userId": data.get("userId"),
+        "kabul_edilen_pet": 0,
+        "kabul_edilen_cam": 0,
+        "kabul_edilen_alu": 0
+    }
+    
+    print(f"Yeni oturum başlatıldı: {aktif_oturum['sessionId']}")
+
+    # DİM DB'ye başarılı cevabı dön
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
+
+@app.route('/acceptPackage', methods=['POST'])
 def accept_package():
     """
-    Halka okuyucudan geçen ambalajın barkodunu ve bilgilerini alır.
-    ---
-    tags:
-      - Gelen İstekler (DİM DB -> RVM)
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          required: ["guid", "uuid", "sessionId", "barcode"]
-          properties:
-            guid:
-              type: string
-              example: "9db8da13-4f91-4c00-b1f0-0755e8696c54"
-            uuid:
-              type: string
-              example: "9db8da13-4f94-4c02-b1f1-0755e8696c55"
-            sessionId:
-              type: string
-              example: "RVM000101-241023-0213"
-            barcode:
-              type: string
-              example: "9999999999901"
-    responses:
-      200:
-        description: Ambalaj bilgilerinin başarıyla alındığına dair cevap.
-        schema:
-          type: object
-          properties:
-            errorCode:
-              type: integer
-              example: 0
-            errorMessage:
-              type: string
-              example: ""
+    DİM DB, okunan bir barkod bilgisini bu metot ile RVM'ye gönderir.
     """
-    data = request.get_json()
-    barcode = data.get('barcode')
-    session_id = data.get('sessionId')
-    uuid = data.get('uuid')
-    logger.info(f"GELEN İSTEK: /acceptPackage | Barcode: {barcode}")
-    logger.info("Simülasyon: Ambalaj kabul edildi, DİM DB'ye sonuç gönderiliyor...")
-    istemci.accept_package_result(
-        session_id=session_id,
-        gelen_uuid=uuid,
-        barcode=barcode,
-        result_code=0
-    )
-    return jsonify({"errorCode": 0, "errorMessage": ""})
+    data = request.json
+    print(f"Gelen acceptPackage isteği: {data}")
 
-@dimdb_api_sunucusu.route('/sessionEnd', methods=['POST'])
-def session_end():
-    """
-    Aktif iade oturumunu sonlandırmak için kullanılır.
-    ---
-    tags:
-      - Gelen İstekler (DİM DB -> RVM)
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          required: ["guid", "sessionId", "slipData"]
-          properties:
-            guid:
-              type: string
-              example: "a7cc4aa6-a21f-438e-af90-0fa5b8ffb0eb"
-            sessionId:
-              type: string
-              description: "Sonlandırılacak oturumun kimliği."
-              example: "RVM000101-241023-0213"
-            slipData:
-              type: string
-              description: "Fiş verisi (base64 formatında)."
-              example: "iVBORw0KGgoAAAANSUhEUg..."
-    responses:
-      200:
-        description: Oturumun başarıyla sonlandırıldığına dair cevap.
-        schema:
-          type: object
-          properties:
-            errorCode:
-              type: integer
-              example: 0
-            errorMessage:
-              type: string
-              example: ""
-    """
-    data = request.get_json()
-    logger.info(f"GELEN İSTEK: /sessionEnd | SessionID: {data.get('sessionId')}")
-    return jsonify({"errorCode": 0, "errorMessage": ""})
+    # TODO: RVM'nin fiziksel sensörlerini (ağırlık, boyut vb.) tetikleme ve 
+    # ölçüm yapma mantığı burada olacak.
+    # Ölçüm sonucuna göre DİM DB'ye `acceptPackageResult` çağrısı yapılacak.
 
-@dimdb_api_sunucusu.route('/stopOperation', methods=['POST'])
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
+
+@app.route('/stopOperation', methods=['POST'])
 def stop_operation():
     """
-    Ambalaj ölçüm sürecini durdurmak için kullanılır.
-    ---
-    tags:
-      - Gelen İstekler (DİM DB -> RVM)
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          required: ["guid", "barcode"]
-          properties:
-            guid:
-              type: string
-              example: "9db8da13-4f91-4c00-b1f0-0755e8696c54"
-            barcode:
-              type: string
-              description: "İşlemi durdurulacak ambalajın barkodu."
-              example: "9999999999901"
-    responses:
-      200:
-        description: İşlemin başarıyla durdurulduğuna dair cevap.
-        schema:
-          type: object
-          properties:
-            errorCode:
-              type: integer
-              example: 0
-            errorMessage:
-              type: string
-              example: ""
+    Ölçüm sürecini durdurmak için kullanılır.
     """
-    data = request.get_json()
-    logger.info(f"GELEN İSTEK: /stopOperation | Barcode: {data.get('barcode')}")
-    return jsonify({"errorCode": 0, "errorMessage": ""})
+    data = request.json
+    print(f"Gelen stopOperation isteği: {data}")
+    # TODO: Mevcut ölçüm işlemini durdurma mantığı eklenecek.
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
 
-# --- Test Endpoint'leri ---
-@dimdb_api_sunucusu.route('/test/checkuser/<string:kullanici_id>')
-def test_check_user(kullanici_id):
-    logger.info(f"check_user_id testi '{kullanici_id}' için başlatıldı.")
-    basarili_mi = istemci.check_user_id(kullanici_id)
-    if basarili_mi:
-        return f"'{kullanici_id}' için checkUserId isteği gönderildi."
-    else:
-        return f"'{kullanici_id}' için checkUserId isteği GÖNDERİLEMEDİ.", 500
-
-@dimdb_api_sunucusu.route('/test/sendbarcode/<string:barkod>')
-def test_send_barcode(barkod):
-    logger.info(f"get_barcode testi '{barkod}' için başlatıldı.")
-    basarili_mi = istemci.get_barcode(barkod)
-    if basarili_mi:
-        return f"'{barkod}' için getBarcode isteği gönderildi. Terminal loglarını kontrol edin."
-    else:
-        return f"'{barkod}' için getBarcode isteği GÖNDERİLEMEDİ.", 500
-    
-@dimdb_api_sunucusu.route('/test/getproducts')
-def test_get_products():
+@app.route('/sessionEnd', methods=['POST'])
+def session_end():
     """
-    get_all_products fonksiyonunu test etmek için geçici endpoint.
+    Aktif depozito işlemini sonlandırmak için çağrılır.
     """
-    logger.info("get_all_products testi başlatıldı.")
-    urunler = istemci.get_all_products()
+    data = request.json
+    print(f"Gelen sessionEnd isteği: {data}")
+    # TODO: Oturumu sonlandırma ve `transactionResult` gönderme mantığı tetiklenecek.
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
 
-    if urunler is not None:
-        return f"Başarıyla {len(urunler)} adet ürün bilgisi alındı. Detaylar için terminal loglarını kontrol edin."
-    else:
-        return "Ürün bilgileri ALINAMADI. Hata için terminal loglarını kontrol edin.", 500
+@app.route('/updateProducts', methods=['POST'])
+def update_products():
+    """
+    RVM'nin ürün listesini çekmesini bildirmek için kullanılır.
+    """
+    data = request.json
+    print(f"Gelen updateProducts isteği: {data}")
+    # TODO: istemci.py üzerinden `getAllProducts` metodunu çağırma mantığı eklenecek.
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
+
+@app.route('/resetRvm', methods=['POST'])
+def reset_rvm():
+    """
+    Kontrol Ünitesi üzerinden RVM’i resetlemek için kullanılır.
+    """
+    data = request.json
+    print(f"Gelen resetRvm isteği: {data}")
+    # TODO: RVM'yi yeniden başlatma komutları eklenecek.
+    response = {
+        "errorCode": 0,
+        "errorMessage": ""
+    }
+    return jsonify(response)
+
+
+if __name__ == '__main__':
+    # Sunucuyu başlat. 
+    # host='0.0.0.0' ayarı, ağdaki diğer cihazların (DİM DB) erişebilmesi için gereklidir.
+    # Dokümanda belirtilen RVM IP adresi 192.168.53.2 ve port 4321'dir.
+    app.run(host='0.0.0.0', port=4321, debug=True)
