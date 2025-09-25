@@ -39,6 +39,31 @@ def _generate_signature_headers(payload_body_str):
     return headers
 
 # --- DİM DB'YE GÖNDERİLECEK METOTLAR ---
+def send_accept_package_result(result_data):
+    """
+    Ölçüm sonucunu DİM DB'ye gönderir.
+    Bu fonksiyon sunucu tarafından (sunucu.py) çağrılır.
+    """
+    print(f"Paket kabul sonucu gönderiliyor: {result_data['barcode']}")
+    
+    payload_str = json.dumps(result_data)
+    
+    try:
+        headers = _generate_signature_headers(payload_str)
+        response = requests.post(
+            f"{BASE_URL}/acceptPackageResult", 
+            data=payload_str, 
+            headers=headers, 
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print(f"Paket sonucu ({result_data['barcode']}) başarıyla gönderildi.")
+        else:
+            print(f"Paket sonucu gönderilemedi. Hata Kodu: {response.status_code}, Cevap: {response.text}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Paket sonucu gönderilirken bir ağ hatası oluştu: {e}")
 
 def send_heartbeat():
     """
@@ -52,7 +77,7 @@ def send_heartbeat():
     "guid": str(uuid.uuid4()),
     "rvm": "KRVM00010725",
     "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-    "vendorName": "Kapellarvm", # Kendi firma adınız
+    "vendorName": "kapellarvm", # Kendi firma adınız
     "firmwareVersion": "v1.0.1",
     "state": 0,
     "stateMessage": "Sistem Normal",

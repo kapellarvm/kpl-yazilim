@@ -1,0 +1,21 @@
+# Sanal ortam
+.venv/
+venv/
+
+# Derleme dosyaları
+__pycache__/
+*.pyc
+*.pyo
+
+# Log ve veritabanı
+*.log
+*.db
+
+# IDE dosyaları
+.vscode/
+.idea/
+
+# Paket çıktıları
+build/
+dist/
+*.egg-info/
