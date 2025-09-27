@@ -2,7 +2,7 @@ import threading
 import queue
 import time
 import serial
-from port_yonetici import KartHaberlesmeServis
+from .port_yonetici import KartHaberlesmeServis
 
 class SensorKart:
     def __init__(self, port, callback=None, cihaz_adi="Bilinmeyen Kart", vid=None, pid=None):
@@ -21,6 +21,8 @@ class SensorKart:
 
     def loadcell_olc(self): self.write_queue.put(("loadcell_olc", None))
     def teach(self): self.write_queue.put(("teach", None))
+    def led_ac(self): self.write_queue.put(("led_ac", None))
+    def led_kapat(self): self.write_queue.put(("led_kapat", None))
     def tare(self): self.write_queue.put(("tare", None))
     def reset(self): self.write_queue.put(("reset", None))
     def ping(self):
@@ -85,6 +87,8 @@ class SensorKart:
                 komutlar = {
                     "loadcell_olc": b"lao\n",
                     "teach": b"gst\n",
+                    "led_ac": b"as\n",
+                    "led_kapat": b"ad\n",
                     "tare": b"tare\n",
                     "reset": b"reset\n",
                     "ping": b"ping\n"
