@@ -1,68 +1,49 @@
-import sys
-import threading
-import time
+import uvicorn
+import asyncio
 import schedule
+import time
 
 # Projenin diğer modüllerini doğru paket yolundan import et
-from rvm_sistemi.dimdb import sunucu, istemci
+from rvm_sistemi.dimdb import istemci
 
-
-# --- ARKA PLAN GÖREVLERİ ---
-
-def run_web_server():
-    """
-    DİM DB'den gelen istekleri dinleyecek olan Flask sunucusunu başlatır.
-    """
-    print("Web sunucusu başlatılıyor...")
-    sunucu.app.run(host='0.0.0.0', port=4321, debug=False, use_reloader=False)
-
-def start_periodic_tasks():
-    """
-    Periyodik olarak çalışması gereken istemci görevlerini yönetir.
-    """
-    print("Periyodik görevler zamanlanıyor...")
-    schedule.every(60).seconds.do(istemci.send_heartbeat)
-
+async def run_heartbeat_scheduler():
+    """Heartbeat'i periyodik olarak gönderen asenkron görev."""
+    print("Heartbeat zamanlayıcı başlatıldı...")
+    # schedule kütüphanesi asenkron görevleri doğrudan desteklemediği için
+    # her tetiklendiğinde yeni bir asyncio task'ı oluşturuyoruz.
+    schedule.every(60).seconds.do(lambda: asyncio.create_task(istemci.send_heartbeat()))
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        await asyncio.sleep(1)
 
-def graceful_shutdown():
+async def main():
     """
-    Program kapatılırken aktif bir oturum olup olmadığını kontrol eder
-    ve varsa, oturum bilgilerini DİM-DB'ye gönderir.
+    Ana fonksiyon, Uvicorn sunucusunu ve heartbeat görevini başlatır.
     """
-    print("\nKapatma işlemi başlatıldı...")
-    if sunucu.is_session_active():
-        print("Aktif bir oturum bulundu, veriler gönderiliyor...")
-        sunucu.handle_graceful_shutdown()
-        # İsteğin gönderilmesi için kısa bir bekleme süresi
-        time.sleep(2)
-    else:
-        print("Aktif oturum bulunamadı. Temiz çıkış yapılıyor.")
-    
-    print("Program sonlandırıldı.")
-    sys.exit(0)
+    # FastAPI sunucusunu başlatmak için Uvicorn konfigürasyonu
+    config = uvicorn.Config(
+        "rvm_sistemi.dimdb.sunucu:app", 
+        host="0.0.0.0", 
+        port=4321, 
+        log_level="info"
+    )
+    server = uvicorn.Server(config)
 
-# --- ANA UYGULAMA GİRİŞ NOKTASI ---
+    # Heartbeat görevini başlat
+    heartbeat_task = asyncio.create_task(run_heartbeat_scheduler())
 
-if __name__ == '__main__':
     print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
+    print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
+    
+    # Sunucuyu çalıştır (bu satır programı burada bekletir)
+    await server.serve()
 
-    # Arka plan görevleri için thread'leri başlat
-    server_thread = threading.Thread(target=run_web_server, name="WebServerThread")
-    server_thread.daemon = True
-    server_thread.start()
+    # Sunucu kapandığında heartbeat görevini de durdur
+    heartbeat_task.cancel()
 
-    tasks_thread = threading.Thread(target=start_periodic_tasks, name="PeriodicTasksThread")
-    tasks_thread.daemon = True
-    tasks_thread.start()
-
-    print("Servisler çalışıyor. Çıkmak için CTRL+C'ye basın.")
+if __name__ == "__main__":
     try:
-        # Ana thread'in kapanmasını ve programın sonlanmasını engelle
-        while True:
-            time.sleep(1)
+        asyncio.run(main())
     except KeyboardInterrupt:
-        graceful_shutdown()
+        print("\nProgram sonlandırılıyor.")
 

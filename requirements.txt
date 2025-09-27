@@ -1,7 +1,8 @@
 # requirements.txt
 
-# API sunucusu için web framework
-Flask==3.0.0
+# API sunucusu 
+fastapi
+uvicorn[standard]
 
 # Flask için Swagger/OpenAPI entegrasyonu
 flasgger==0.9.7.1
@@ -25,8 +26,7 @@ pymodbus==3.6.3
 # .env dosyasından ortam değişkenlerini (API anahtarları vb.) okumak için
 python-dotenv==1.0.0
 
-
-
+httpx
 schedule
 
 requests

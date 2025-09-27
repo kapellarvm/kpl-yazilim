@@ -1,14 +1,17 @@
-import requests
+import httpx
 import hmac
 import hashlib
 import time
 import json
 import uuid
 
+# Projenin diğer modüllerini doğru paket yolundan import et
+# Bu dosya 'dimdb' paketi içinde olduğu için, bir üst dizindeki 'veri_tabani' paketine
+# göreceli (relative) yoldan erişiyoruz.
 from ..veri_tabani import veritabani_yoneticisi
 
 # --- GÜVENLİK VE AYARLAR ---
-SECRET_KEY = "KRVM00010725"
+SECRET_KEY = "testkpl"
 RVM_ID = "KRVM00010925"
 BASE_URL = "http://192.168.53.1:5432"
 
@@ -26,33 +29,33 @@ def _generate_signature_headers(payload_body_str):
     headers['Content-Type'] = 'application/json'
     return headers
 
-def _send_request(endpoint, payload, timeout=10):
-    """DİM-DB'ye güvenli bir POST isteği gönderen yardımcı fonksiyon."""
+async def _send_request(endpoint, payload, timeout=10.0):
+    """DİM-DB'ye güvenli bir POST isteği gönderen asenkron yardımcı fonksiyon."""
     url = f"{BASE_URL}/{endpoint}"
     payload_str = json.dumps(payload)
+    headers = _generate_signature_headers(payload_str)
+    
+    print(f"İstek gönderiliyor: {url}")
+    
     try:
-        headers = _generate_signature_headers(payload_str)
-        # --- GÜNCELLEME: Zaman aşımı yazısı kaldırıldı ---
-        print(f"İstek gönderiliyor: {url}")
-        # ---------------------------------------------
-        response = requests.post(url, data=payload_str, headers=headers, timeout=timeout)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, content=payload_str, headers=headers, timeout=timeout)
         
         if response.status_code == 200:
-            # --- GÜNCELLEME: Başarılı log mesajına yeşil tik ve kod eklendi ---
-            print(f"✅ İstek ({endpoint}) başarıyla gönderildi. Kod: {response.status_code}")
-            # -----------------------------------------------------------------
-            return response.json() if endpoint == "getAllProducts" else True
+            print(f"✅ İstek ({endpoint}) başarıyla gönderildi. Kod: 200")
+            # getAllProducts json cevabı döner, diğerleri sadece başarı durumu
+            return response.json() if "getAllProducts" in endpoint else True
         else:
-            print(f"❌ İstek ({endpoint}) gönderilemedi. Hata: {response.status_code}, Cevap: {response.text}")
-            return None if endpoint == "getAllProducts" else False
+            print(f"İstek ({endpoint}) gönderilemedi. Hata: {response.status_code}, Cevap: {response.text}")
+            return None if "getAllProducts" in endpoint else False
             
-    except requests.exceptions.RequestException as e:
-        print(f"❌ İstek ({endpoint}) gönderilirken ağ hatası oluştu: {e}")
-        return None if endpoint == "getAllProducts" else False
+    except httpx.RequestError as e:
+        print(f"İstek ({endpoint}) gönderilirken ağ hatası oluştu: {e}")
+        return None if "getAllProducts" in endpoint else False
 
 # --- DİM DB'YE GÖNDERİLECEK METOTLAR ---
 
-def send_heartbeat():
+async def send_heartbeat():
     """DİM DB'ye RVM'nin anlık durumunu bildirir."""
     print("Heartbeat gönderiliyor...")
     payload = {
@@ -69,27 +72,28 @@ def send_heartbeat():
             {"binId": 3, "binContentType": "3", "binOccupancyLevel": 0}
         ]
     }
-    _send_request("heartbeat", payload)
+    await _send_request("heartbeat", payload)
 
-def send_accept_package_result(result_data):
+async def send_accept_package_result(result_data):
     """Ölçüm sonucunu DİM DB'ye gönderir."""
     print(f"Paket kabul sonucu gönderiliyor: {result_data['barcode']}")
-    _send_request("acceptPackageResult", result_data)
+    await _send_request("acceptPackageResult", result_data)
 
-def send_transaction_result(transaction_data):
+async def send_transaction_result(transaction_data):
     """Oturum işlem özetini DİM DB'ye gönderir."""
     print(f"İşlem sonucu (transaction) gönderiliyor: {transaction_data['sessionId']}")
-    _send_request("transactionResult", transaction_data)
+    await _send_request("transactionResult", transaction_data)
 
-def get_all_products_and_save():
+async def get_all_products_and_save():
     """DİM-DB'den ürün listesini alır ve yerel veritabanına kaydeder."""
+    print("Ürün listesi isteniyor...")
     payload = {
         "guid": str(uuid.uuid4()),
         "rvm": RVM_ID,
         "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     }
-    # Bu istek uzun sürebileceği için zaman aşımını 60 saniye yapalım
-    response_data = _send_request("getAllProducts", payload, timeout=60)
+    # Bu istek uzun sürebileceği için zaman aşımı süresini artırıyoruz.
+    response_data = await _send_request("getAllProducts", payload, timeout=60.0)
     
     if response_data and 'products' in response_data:
         products = response_data['products']
