@@ -4,7 +4,13 @@ import schedule
 import time
 
 # Projenin diğer modüllerini doğru paket yolundan import et
+#from rvm_sistemi.dimdb.sunucu import baglanti_sensor
+#baglanti_sensor()
 from rvm_sistemi.dimdb import istemci
+
+
+#baglanti_sensor()
+
 
 async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
@@ -16,10 +22,13 @@ async def run_heartbeat_scheduler():
         schedule.run_pending()
         await asyncio.sleep(1)
 
+
 async def main():
     """
     Ana fonksiyon, Uvicorn sunucusunu ve heartbeat görevini başlatır.
     """
+
+
     # FastAPI sunucusunu başlatmak için Uvicorn konfigürasyonu
     config = uvicorn.Config(
         "rvm_sistemi.dimdb.sunucu:app", 
