@@ -5,7 +5,7 @@ import queue
 import time
 import serial  # Eksik kütüphane eklendi
 
-from port_yonetici import KartHaberlesmeServis  # Port yöneticisi için doğru import
+from .port_yonetici import KartHaberlesmeServis  # Port yöneticisi için doğru import
 
 class MotorKart:
     def __init__(self, port, callback=None):
