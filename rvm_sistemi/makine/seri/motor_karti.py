@@ -3,6 +3,9 @@
 import threading
 import queue
 import time
+import serial  # Eksik kütüphane eklendi
+
+from port_yonetici import KartHaberlesmeServis  # Port yöneticisi için doğru import
 
 class MotorKart:
     def __init__(self, port, callback=None):
@@ -22,6 +25,10 @@ class MotorKart:
         # Yazma kuyruğu ve thread'i
         self.write_queue = queue.Queue()
         self.write_thread = None
+
+        self.saglikli = True  # Sağlık durumu başlangıçta sağlıklı
+
+        self.port_yoneticisi = KartHaberlesmeServis()  # Port yöneticisi eklendi
 
     def parametre_gonder(self):
         self.write_queue.put(("parametre_gonder", None))
@@ -81,11 +88,15 @@ class MotorKart:
             self.write_thread.start()
 
     def dinlemeyi_durdur(self):
+        print("[LOG] Dinleme durduruluyor.")
         self.running = False
-        if self.listen_thread:
+        current_thread = threading.current_thread()
+        if self.listen_thread and self.listen_thread != current_thread:
             self.listen_thread.join()
-        if self.write_thread:
+            self.listen_thread = None
+        if self.write_thread and self.write_thread != current_thread:
             self.write_thread.join()
+            self.write_thread = None
 
     def _yaz(self):
         """Yazma komutlarını sırayla işle"""
@@ -126,6 +137,9 @@ class MotorKart:
                     
                 elif command == "klape_plastik":
                     self.port.write(b"smp\n")
+                
+                elif command == "ping":
+                    self.port.write(b"ping\n")
                     
                 print(f"[MotorKart] Komut gönderildi: {command}")
                 
@@ -136,13 +150,107 @@ class MotorKart:
 
     def _dinle(self):
         while self.running:
-            if self.port.in_waiting > 0:
-                try:
+            try:
+                if self.port and self.port.in_waiting > 0:
                     data = self.port.readline().decode(errors='ignore').strip()
                     if data:
                         if self.callback:
                             self.callback(data)
                         else:
                             print(f"[MotorKart] Gelen mesaj: {data}")
+            except serial.SerialException as e:
+                print(f"[MotorKart] Dinleme kesildi: {e}")
+                self._baglanti_kontrol()  # Port bağlantısı kesildiğinde yeniden bağlanmayı dene
+                break
+            except Exception as e:
+                print(f"[MotorKart] Okuma hatası: {e}")
+
+    def ping(self):
+        self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
+        self.write_queue.put(("ping", None))
+
+        # Sağlık durumunu kontrol etmek için bir süre bekle
+        for _ in range(10):  # Maksimum 1 saniye (10 x 0.1 saniye)
+            time.sleep(0.1)
+            if self.saglikli:
+                break
+
+        if self.saglikli:
+            print(f"[LOG] MotorKart sağlıklı.")
+        else:
+            print(f"[LOG] MotorKart sağlıksız, bağlantı sıfırlanıyor...")
+            self.dinlemeyi_durdur()  # Thread'leri durdur
+            if self.port and self.port.is_open:
+                try:
+                    self.port.close()
+                    time.sleep(1)  # Portun serbest bırakılması için bekleme süresi
                 except Exception as e:
-                    print(f"[MotorKart] Okuma hatası: {e}") 
+                    print(f"[LOG] Port kapatma hatası: {e}")
+            self._baglanti_kontrol()  # Yeniden bağlanmayı dene
+
+            # Yeniden bağlandıktan sonra sağlık durumunu tekrar kontrol et
+            self.saglikli = False  # Sağlık durumunu tekrar sıfırla
+            self.write_queue.put(("ping", None))
+
+            for _ in range(10):  # Maksimum 1 saniye (10 x 0.1 saniye)
+                time.sleep(0.1)
+                if self.saglikli:
+                    break
+
+            if self.saglikli:
+                print(f"[LOG] MotorKart sağlıklı.")
+            else:
+                print(f"[LOG] MotorKart hala sağlıksız.")
+
+    def getir_saglik_durumu(self):
+        return self.saglikli
+
+    def _mesaj_isle(self, mesaj):
+        if not mesaj.isprintable():  # Mesajın yazdırılabilir olup olmadığını kontrol edin
+            print("[LOG] Geçersiz mesaj alındı, atlanıyor.")
+            return
+
+        if mesaj.lower() == "pong":
+            self.saglikli = True  # Sağlık durumu doğru şekilde güncelleniyor
+            print("[LOG] Sağlık durumu güncellendi: Sağlıklı")
+        if self.callback:
+            self.callback(mesaj)
+
+    def _baglanti_kontrol(self):
+        print("[LOG] MotorKart yeniden bağlanıyor...")
+        self.dinlemeyi_durdur()  # Tüm thread'leri durdur
+
+        while True:  # Sonsuz döngü, bağlantı kurulana kadar devam eder
+            try:
+                basarili, mesaj, yeni_port = self.port_yoneticisi.baglan(cihaz_adi="motor")
+                if basarili:
+                    if isinstance(yeni_port, serial.Serial):
+                        if self.port and self.port.is_open:
+                            try:
+                                self.port.close()
+                                time.sleep(1)  # Portun serbest bırakılması için bekleme süresi
+                            except Exception as e:
+                                print(f"[LOG] Port kapatma hatası: {e}")
+                        self.port = yeni_port
+                        self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
+                        print("[LOG] MotorKart bağlantı kuruldu.")
+                        return
+                    elif isinstance(yeni_port, dict) and "motor" in yeni_port:
+                        if self.port and self.port.is_open:
+                            try:
+                                self.port.close()
+                                time.sleep(1)  # Portun serbest bırakılması için bekleme süresi
+                            except Exception as e:
+                                print(f"[LOG] Port kapatma hatası: {e}")
+                        self.port = yeni_port["motor"]
+                        self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
+                        print("[LOG] MotorKart bağlantı kuruldu.")
+                        return
+                print("[LOG] Port bulunamadı. Yeniden deneniyor...")
+                time.sleep(5)  # 5 saniye bekle ve tekrar dene
+            except serial.SerialException as e:
+                print(f"[LOG] Seri bağlantı hatası: {e}")
+                time.sleep(5)
+            except Exception as e:
+                print(f"[LOG] Bağlantı hatası: {e}")
+                time.sleep(5)
