@@ -16,8 +16,10 @@ def sensor_callback(mesaj):
     elif mesaj.strip().lower() == "gso":
         if motor:
             motor.konveyor_dur()
-        else:
-            print("⚠️ Motor instance is not initialized.")
+    elif mesaj.strip().lower().startswith("a:"):
+        agirlik = float(mesaj.split("a:")[1])
+        print(agirlik)
+
 
 def motor_callback(mesaj):
     print(f"📥 MOTOR mesajı: {mesaj}")

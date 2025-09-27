@@ -1,8 +1,6 @@
 import threading
 import platform
-from app.services.image_processing_service.ImageProcessingResult import ImageProcessingResult
-from app.shared.enums import BinType, PackageType
-from app.shared.logger import app_logger
+
 
 SLAVE_ID = 1
 TARGET_SERIAL = "B0046HHJA"
