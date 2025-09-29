@@ -2,9 +2,7 @@ import threading
 import queue
 import time
 import serial
-from .port_yonetici import KartHaberlesmeServis
-from .mesaj_kanali import mesaj_kuyrugu
-import asyncio
+from port_yonetici import KartHaberlesmeServis
 
 class SensorKart:
     def __init__(self, port, callback=None, cihaz_adi="Bilinmeyen Kart", vid=None, pid=None):
@@ -118,8 +116,6 @@ class SensorKart:
                     if data:
                         print(f"[LOG] Gelen veri: {data}")
                         self._mesaj_isle(data)
-                        loop = asyncio.get_running_loop()  # Py3.7+: aktif loop varsa
-                        loop.call_soon_threadsafe(mesaj_kuyrugu.put_nowait, data)
             except serial.SerialException as e:
                 print(f"[LOG] Dinleme kesildi: {e}")
                 self._baglanti_kontrol()  # Port bağlantısı kesildiğinde yeniden bağlanmayı dene
