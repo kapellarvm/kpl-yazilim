@@ -5,12 +5,13 @@ import queue
 import time
 import serial  # Eksik kütüphane eklendi
 
-from seri.port_yonetici import KartHaberlesmeServis  # Port yöneticisi için doğru import
+from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis  # Port yöneticisi için doğru import
 
 class MotorKart:
-    def __init__(self, port, callback=None):
+    def __init__(self, port, callback=None, cihaz_adi="motor"):
         self.port = port
         self.callback = callback  # Ana koddan atanacak işleyici
+        self.cihaz_adi = cihaz_adi  # Cihaz adı parametresi eklendi
 
         # Default parametreler
         self.konveyor_hizi = 35
@@ -141,12 +142,12 @@ class MotorKart:
                 elif command == "ping":
                     self.port.write(b"ping\n")
                     
-                print(f"[MotorKart] Komut gönderildi: {command}")
+                print(f"[{self.cihaz_adi}] Komut gönderildi: {command}")
                 
             except queue.Empty:
                 continue
             except Exception as e:
-                print(f"[MotorKart] Yazma hatası: {e}")
+                print(f"[{self.cihaz_adi}] Yazma hatası: {e}")
 
     def _dinle(self):
         while self.running:
@@ -157,13 +158,13 @@ class MotorKart:
                         if self.callback:
                             self.callback(data)
                         else:
-                            print(f"[MotorKart] Gelen mesaj: {data}")
+                            print(f"[{self.cihaz_adi}] Gelen mesaj: {data}")
             except serial.SerialException as e:
-                print(f"[MotorKart] Dinleme kesildi: {e}")
+                print(f"[{self.cihaz_adi}] Dinleme kesildi: {e}")
                 self._baglanti_kontrol()  # Port bağlantısı kesildiğinde yeniden bağlanmayı dene
                 break
             except Exception as e:
-                print(f"[MotorKart] Okuma hatası: {e}")
+                print(f"[{self.cihaz_adi}] Okuma hatası: {e}")
 
     def ping(self):
         self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
@@ -176,9 +177,9 @@ class MotorKart:
                 break
 
         if self.saglikli:
-            print(f"[LOG] MotorKart sağlıklı.")
+            print(f"[LOG] {self.cihaz_adi} sağlıklı.")
         else:
-            print(f"[LOG] MotorKart sağlıksız, bağlantı sıfırlanıyor...")
+            print(f"[LOG] {self.cihaz_adi} sağlıksız, bağlantı sıfırlanıyor...")
             self.dinlemeyi_durdur()  # Thread'leri durdur
             if self.port and self.port.is_open:
                 try:
@@ -198,9 +199,9 @@ class MotorKart:
                     break
 
             if self.saglikli:
-                print(f"[LOG] MotorKart sağlıklı.")
+                print(f"[LOG] {self.cihaz_adi} sağlıklı.")
             else:
-                print(f"[LOG] MotorKart hala sağlıksız.")
+                print(f"[LOG] {self.cihaz_adi} hala sağlıksız.")
 
     def getir_saglik_durumu(self):
         return self.saglikli
@@ -217,12 +218,12 @@ class MotorKart:
             self.callback(mesaj)
 
     def _baglanti_kontrol(self):
-        print("[LOG] MotorKart yeniden bağlanıyor...")
+        print(f"[LOG] {self.cihaz_adi} yeniden bağlanıyor...")
         self.dinlemeyi_durdur()  # Tüm thread'leri durdur
 
         while True:  # Sonsuz döngü, bağlantı kurulana kadar devam eder
             try:
-                basarili, mesaj, yeni_port = self.port_yoneticisi.baglan(cihaz_adi="motor")
+                basarili, mesaj, yeni_port = self.port_yoneticisi.baglan(cihaz_adi=self.cihaz_adi)
                 if basarili:
                     if isinstance(yeni_port, serial.Serial):
                         if self.port and self.port.is_open:
@@ -233,7 +234,7 @@ class MotorKart:
                                 print(f"[LOG] Port kapatma hatası: {e}")
                         self.port = yeni_port
                         self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
-                        print("[LOG] MotorKart bağlantı kuruldu.")
+                        print(f"[LOG] {self.cihaz_adi} bağlantı kuruldu.")
                         return
                     elif isinstance(yeni_port, dict) and "motor" in yeni_port:
                         if self.port and self.port.is_open:
@@ -244,7 +245,7 @@ class MotorKart:
                                 print(f"[LOG] Port kapatma hatası: {e}")
                         self.port = yeni_port["motor"]
                         self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
-                        print("[LOG] MotorKart bağlantı kuruldu.")
+                        print(f"[LOG] {self.cihaz_adi} bağlantı kuruldu.")
                         return
                 print("[LOG] Port bulunamadı. Yeniden deneniyor...")
                 time.sleep(5)  # 5 saniye bekle ve tekrar dene

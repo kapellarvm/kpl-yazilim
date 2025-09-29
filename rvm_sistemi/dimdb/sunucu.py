@@ -7,15 +7,9 @@ from contextlib import asynccontextmanager
 
 # Projenin diğer modüllerini doğru paket yolundan import et
 from ..makine.dogrulama import DogrulamaServisi
-from ..makine.seri.sensor_karti import SensorKart
-from ..makine.seri.motor_karti import MotorKart
-from ..makine.seri.port_yonetici import KartHaberlesmeServis
-from ..makine.mod_degistirici import durum_makinesi # Merkezi durum makinesini import et
+from ..makine.durum_degistirici import durum_makinesi # Merkezi durum makinesini import et
 from . import istemci
 
-# --- Donanım ve Kuyruk Sistemi ---
-sensor = None
-motor = None
 package_queue = asyncio.Queue()
 
 
@@ -32,22 +26,6 @@ async def package_worker():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global sensor, motor
-    print("Uygulama başlatılıyor: Donanım bağlantıları kuruluyor...")
-    
-    yonetici = KartHaberlesmeServis()
-    basarili, mesaj, portlar = yonetici.baglan()
-    print(f"🛈 {mesaj}")
-    print(f"🛈 Bulunan portlar: {portlar}")
-
-    if "sensor" in portlar:
-        sensor = SensorKart(portlar["sensor"])
-        sensor.dinlemeyi_baslat()
-        print("✅ Sensör kartı dinleniyor...")
-    else:
-        print("❌ Sensör kartı bulunamadı.")
-
-
         
     asyncio.create_task(package_worker())
     

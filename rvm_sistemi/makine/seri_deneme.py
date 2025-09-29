@@ -30,14 +30,11 @@ def main():
     sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
     sensor.dinlemeyi_baslat()
 
-
-
     motor = MotorKart(portlar["motor"])
     motor.dinlemeyi_baslat()
 
-
-    # Motor referansını senaryolara aktar
     oturum_yok.motor_referansini_ayarla(motor)
+    oturum_var.motor_referansini_ayarla(motor)
 
     while True:
         komut = input("\nKomut girin (t = teach, h = sağlık kontrolü, n = oturum aç, m = oturum kapat, q = çıkış): ").strip().lower()
