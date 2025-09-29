@@ -44,6 +44,8 @@ def main():
 
         if komut == "t":
             sensor.teach()
+        if komut == "z":
+            sensor.led_kapat()
         elif komut == "h":
             sensor.ping()
             time.sleep(1)
