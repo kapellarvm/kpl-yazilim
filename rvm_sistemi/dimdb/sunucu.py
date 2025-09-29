@@ -99,7 +99,7 @@ async def handle_graceful_shutdown():
     if not aktif_oturum["aktif"]: return
 
     print("Oturum sonlandırılıyor, işlem özeti hazırlanıyor...")
-    sensor.led_kapat()
+    #sensor.led_kapat()
     
     containers = {}
     for urun in aktif_oturum["kabul_edilen_urunler"]:
@@ -136,7 +136,7 @@ async def session_start(data: SessionStartRequest):
     aktif_oturum = {"aktif": True, "sessionId": data.sessionId, "userId": data.userId, "kabul_edilen_urunler": []}
     # DÜZELTME: Doğru nesne ve metot adını kullan
     durum_makinesi.durum_degistir("oturum_var")
-    sensor.led_ac()
+    #sensor.led_ac()
     
     print(f"✅ /sessionStart isteği kabul edildi. Yeni oturum: {aktif_oturum['sessionId']}")
     return {"errorCode": 0, "errorMessage": ""}
