@@ -1,4 +1,3 @@
-
 from seri.port_yonetici import KartHaberlesmeServis
 from seri.sensor_karti import SensorKart
 from seri.motor_karti import MotorKart
