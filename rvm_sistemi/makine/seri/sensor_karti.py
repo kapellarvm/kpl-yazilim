@@ -2,7 +2,7 @@ import threading
 import queue
 import time
 import serial
-from port_yonetici import KartHaberlesmeServis
+from seri.port_yonetici import KartHaberlesmeServis
 
 class SensorKart:
     def __init__(self, port, callback=None, cihaz_adi="Bilinmeyen Kart", vid=None, pid=None):
