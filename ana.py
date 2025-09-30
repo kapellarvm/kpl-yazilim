@@ -22,6 +22,27 @@ dogrulama_servisi = DogrulamaServisi()
 motor = None 
 sensor = None
 
+# Test ve hızlı durum kontrolü için fonksiyonlar
+def test_durumu():
+    """Sistemin durumunu rapor eder"""
+    return oturum_var.test_sistem_durumu()
+
+def sistemi_resetle():
+    """Sistemin durumunu tamamen sıfırlar"""
+    return oturum_var.sistem_durumunu_sifirla()
+
+def kuyruk_durumu():
+    """Kuyruktaki ürünleri gösterir"""
+    kuyruk = oturum_var.kabul_edilen_urunler
+    print(f"Kuyrukta {len(kuyruk)} ürün var:")
+    for i, urun in enumerate(kuyruk):
+        print(f"  {i+1}. {urun}")
+
+print("\n🔧 Hızlı Erişim Komutları:")
+print("test_durumu()   - Sistem durum raporu")
+print("sistemi_resetle() - Tüm durumları sıfırla")
+print("kuyruk_durumu() - Kuyruktaki ürünleri listele")
+
 async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
     print("Heartbeat zamanlayıcı başlatıldı...")
@@ -38,13 +59,11 @@ async def run_heartbeat_scheduler():
 
 def sensor_callback(mesaj):
     global motor,sensor
-    print(f"📥 SENSOR mesajı: {mesaj}")
     # Mesajı DurumMakinesi'ne ilet
     durum_makinesi.olayi_isle(mesaj)
 
 def motor_callback(mesaj):
     global motor,sensor
-    print(f"📥 MOTOR mesajı: {mesaj}")
     # Mesajı DurumMakinesi'ne ilet
     durum_makinesi.olayi_isle(mesaj)
 
