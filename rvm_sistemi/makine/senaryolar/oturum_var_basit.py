@@ -119,15 +119,31 @@ def urun_kabul_et(barkod, agirlik, materyal_id):
     kabul_edilen_urunler.append(urun)
     print(f"✅ Ürün kabul edildi | Kuyruk: {len(kabul_edilen_urunler)}")
 
-def urun_iade_et(sebep):
+def urun_iade_et(sebep, tip="timer"):
     """Ürünü iade eder"""
     global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
+    
     print(f"❌ İade: {sebep}")
     iade_aktif = True
-    motor_ref.konveyor_geri()
-
-    iade_gsi_bekliyor = True
-    print("⏳ GSI bekleniyor...")
+    
+    if motor_ref:
+        motor_ref.konveyor_geri()
+        
+        if tip == "timer":
+            # 2 saniye geri dön
+            import threading
+            def timer_stop():
+                time.sleep(2.0)
+                if motor_ref and iade_aktif:
+                    motor_ref.konveyor_dur()
+                    global iade_gso_bekliyor
+                    iade_gso_bekliyor = True
+                    print("⏹️ İade durduruldu - GSO bekliyor")
+            threading.Thread(target=timer_stop, daemon=True).start()
+            
+        if tip == "gsi_bekle":
+            iade_gsi_bekliyor = True
+            print("⏳ GSI bekleniyor...")
 
 def iade_tamamla():
     """İade işlemini bitirir"""
@@ -162,13 +178,13 @@ def gso_sonrasi_dogrulama():
     urun_bilgisi = veritabani_yoneticisi.barkodu_dogrula(gecici_barkod)
     
     if not urun_bilgisi:
-        urun_iade_et("Ürün bulunamadı")
+        urun_iade_et("Ürün bulunamadı", "timer")
         veri_temizle()
         return
     
     # Ağırlık kontrolü
     if not agirlik_kontrol(urun_bilgisi, gecici_agirlik):
-        urun_iade_et("Ağırlık uyumsuz")
+        urun_iade_et("Ağırlık uyumsuz", "gsi_bekle")
         veri_temizle()
         return
     
@@ -226,18 +242,27 @@ def olayi_isle(olay):
     
     # İade işlemi aktifse
     if iade_aktif:
-        if olay.strip().lower() == "gsi":
+        if olay.strip().lower() == "gsi" and iade_gsi_bekliyor:
             print("✅ İade GSI - 0.2s daha geri")
-            time.sleep(0.2)
-            motor_ref.konveyor_dur()
-            print("⏹️ İade durdu - GSO bekliyor")
+            iade_gsi_bekliyor = False
+            import threading
+            def ekstra_geri():
+                time.sleep(0.2)
+                if motor_ref and iade_aktif:
+                    motor_ref.konveyor_dur()
+                    global iade_gso_bekliyor
+                    iade_gso_bekliyor = True
+                    print("⏹️ İade durdu - GSO bekliyor")
+            threading.Thread(target=ekstra_geri, daemon=True).start()
             return
             
-        elif olay.strip().lower() == "gso":
+        elif olay.strip().lower() == "gso" and iade_gso_bekliyor:
             print("✅ İade GSO - Ürün alındı")
             iade_tamamla()
             return
-
+        else:
+            print(f"⏳ İade aktif - {olay} görmezden gelindi")
+            return
     
     # Normal işlemler
     olay = olay.strip().lower()
@@ -273,7 +298,7 @@ def olayi_isle(olay):
     elif olay == "gso":
         print("🛑 GSO - Giriş kontrolü")
         if not barkod_lojik:
-            urun_iade_et("Barkod yok")
+            urun_iade_et("Barkod yok", "timer")
             veri_temizle()
         else:
             gso_bekleniyor = True
