@@ -1,4 +1,5 @@
 import time
+from collections import deque
 
 from ...veri_tabani import veritabani_yoneticisi
 
@@ -17,8 +18,12 @@ gecici_agirlik = None
 # Durum kontrolü
 gso_bekleniyor = False  # GSO sonrası ağırlık bekleme durumu
 
-# Kabul edilen ürünler kuyruğu
-kabul_edilen_urunler = []
+# Yönlendirici sensör durumları
+yonlendirici_giris_aktif = False  # YSI - Yönlendiriciye giriş
+gecici_urun_uzunlugu = None      # m:213,15 formatındaki uzunluk verisi
+
+# Kabul edilen ürünler kuyruğu (FIFO - Queue)
+kabul_edilen_urunler = deque()
 
 def motor_referansini_ayarla(motor):
     global motor_ref
@@ -47,6 +52,25 @@ def barkod_verisi_al(barcode):
     gecici_barkod = barcode
     print(f"[Oturum Var] Alınan barkod verisi: {barcode}")
     veri_tabani_dogrulama(barcode)
+
+def uzunluk_verisi_al(uzunluk_str):
+    """
+    m:213,15 formatındaki uzunluk verisini alır ve işler.
+    """
+    global gecici_urun_uzunlugu
+    try:
+        # "213,15" kısmını al ve float'a çevir
+        uzunluk = float(uzunluk_str.replace(",", "."))
+        gecici_urun_uzunlugu = uzunluk
+        print(f"[Oturum Var] Alınan ürün uzunluğu: {uzunluk} mm")
+        
+        # Uzunluk verisi gelince yönlendirme işlemini başlat
+        if yonlendirici_giris_aktif:
+            yonlendirici_karar_ver()
+            
+    except ValueError as e:
+        print(f"[Oturum Var] ❌ Uzunluk verisi işlenirken hata: {e}")
+        gecici_urun_uzunlugu = None
 
 
 def veri_tabani_dogrulama(barcode):
@@ -168,6 +192,44 @@ def goruntu_dogrulama_placeholder(urun_bilgisi):
     print(f"╚═══════════════════════════════════════════════════════════════════════════════════")
     return True
 
+def uzunluk_dogrulama_placeholder(urun_bilgisi, olculen_uzunluk):
+    """
+    Ölçülen uzunluğu veritabanındaki değerlerle karşılaştırır.
+    Şu anda placeholder olarak toleranslı kontrol yapar ama True döner.
+    """
+    print(f"╔═══════════════════════════════════════════════════════════════════════════════════")
+    print(f"║ UZUNLUK DOĞRULAMA (PLACEHOLDER)")
+    print(f"╠═══════════════════════════════════════════════════════════════════════════════════")
+    
+    min_uzunluk = urun_bilgisi.get('packMinHeight')  # Şimdilik height kullanıyoruz
+    max_uzunluk = urun_bilgisi.get('packMaxHeight')
+    
+    print(f"║ Ölçülen Uzunluk: {olculen_uzunluk} mm")
+    print(f"║ Beklenen Aralık: {min_uzunluk if min_uzunluk else 'Yok'} - {max_uzunluk if max_uzunluk else 'Yok'} mm")
+    print(f"║ Tolerans: ±20 mm")
+    
+    # Uzunluk sınırları yoksa sadece uyarı ver
+    if min_uzunluk is None and max_uzunluk is None:
+        print(f"║ ⚠️  Uzunluk sınırları tanımlı değil")
+    else:
+        # Toleranslı sınırları hesapla (ama sonuç her zaman True)
+        tolerans = 20
+        min_limit = (min_uzunluk - tolerans) if min_uzunluk else 0
+        max_limit = (max_uzunluk + tolerans) if max_uzunluk else float('inf')
+        
+        print(f"║ Toleranslı Aralık: {min_limit} - {max_limit} mm")
+        
+        # Gerçek kontrol yapılıyor ama sonuç görmezden geliniyor
+        if min_limit <= olculen_uzunluk <= max_limit:
+            print(f"║ ✅ Uzunluk aralık içinde (ama placeholder)")
+        else:
+            print(f"║ ⚠️  Uzunluk aralık dışında (ama placeholder)")
+    
+    print(f"║ 🔮 Gelecekte görüntü işleme ile gerçek kontrol yapılacak")
+    print(f"║ ⚠️  Şimdilik tüm uzunluk doğrulamaları KABUL EDİLİYOR")
+    print(f"╚═══════════════════════════════════════════════════════════════════════════════════")
+    return True
+
 def urun_kabulü(barkod, agirlik, urun_bilgisi):
     """
     Ürünü kabul edilen ürünler kuyruğuna ekler.
@@ -190,7 +252,7 @@ def urun_kabulü(barkod, agirlik, urun_bilgisi):
     print(f"║ Barkod: {barkod}")
     print(f"║ Ağırlık: {agirlik} gr")
     print(f"║ Materyal: {urun_bilgisi.get('material')}")
-    print(f"║ Toplam Kabul Edilen: {len(kabul_edilen_urunler)}")
+    print(f"║ Kuyruktaki Ürün Sayısı: {len(kabul_edilen_urunler)}")
     print(f"╚═══════════════════════════════════════════════════════════════════════════════════")
 
 def giris_iade(sebep="Bilinmeyen sebep"):
@@ -267,10 +329,74 @@ def gso_sonrasi_dogrulama():
     gecici_barkod = None
     gecici_agirlik = None
 
+def yonlendirici_karar_ver():
+    """
+    Yönlendiriciye giren ürünün materyal türüne göre yönlendirme yapar.
+    FIFO mantığıyla kabul edilen ürünler kuyruğundan en eski ürünü alır ve kuyruktan çıkarır.
+    """
+    global gecici_urun_uzunlugu, yonlendirici_giris_aktif, kabul_edilen_urunler
+    
+    print(f"╔═══════════════════════════════════════════════════════════════════════════════════")
+    print(f"║ YÖNLENDİRİCİ KARAR SİSTEMİ")
+    print(f"╠═══════════════════════════════════════════════════════════════════════════════════")
+    
+    # Kuyruk boşsa işlem yapma
+    if not kabul_edilen_urunler:
+        print(f"║ ❌ Kabul edilen ürün bulunamadı - Yönlendirme yapılamıyor")
+        print(f"╚═══════════════════════════════════════════════════════════════════════════════════")
+        return
+    
+    # FIFO: En eski ürünü al ve kuyruktan çıkar
+    islenen_urun = kabul_edilen_urunler.popleft()
+    materyal_id = islenen_urun.get('materyal_id')
+    barkod = islenen_urun.get('barkod')
+    agirlik = islenen_urun.get('agirlik')
+    
+    materyal_isimleri = {1: "PET", 2: "Cam (Glass)", 3: "Alüminyum (Alu)"}
+    materyal_adi = materyal_isimleri.get(materyal_id, "Bilinmeyen")
+    
+    print(f"║ Barkod: {barkod}")
+    print(f"║ Ağırlık: {agirlik} gr")
+    print(f"║ Materyal: {materyal_adi} (ID: {materyal_id})")
+    print(f"║ Kalan Kuyruk Uzunluğu: {len(kabul_edilen_urunler)}")
+    
+    if gecici_urun_uzunlugu:
+        print(f"║ Ölçülen Uzunluk: {gecici_urun_uzunlugu} mm")
+        print(f"║ ℹ️  Uzunluk verisi kaydedildi (görüntü işleme ile karşılaştırılacak)")
+    else:
+        print(f"║ ⚠️  Uzunluk verisi yok")
+    
+    print(f"╠═══════════════════════════════════════════════════════════════════════════════════")
+    print(f"║ YÖNLENDİRME KARARI")
+    print(f"╠═══════════════════════════════════════════════════════════════════════════════════")
+    
+    # Materyal türüne göre yönlendirme
+    if materyal_id == 2:  # Cam
+        print(f"║ 🔄 CAM ÜRÜN - Cam yönlendiricisine gönderiliyor")
+        if motor_ref:
+            motor_ref.yonlendirici_cam()
+            print(f"║ ✅ Yönlendirici cam komutu gönderildi")
+        else:
+            print(f"║ ❌ Motor referansı bulunamadı")
+    else:  # Plastik (PET) veya Metal (Alüminyum)
+        materyal_tip = "PET" if materyal_id == 1 else "METAL" if materyal_id == 3 else "PLASTİK"
+        print(f"║ 🔄 {materyal_tip} ÜRÜN - Plastik yönlendiricisine gönderiliyor")
+        if motor_ref:
+            motor_ref.yonlendirici_plastik()
+            print(f"║ ✅ Yönlendirici plastik komutu gönderildi")
+        else:
+            print(f"║ ❌ Motor referansı bulunamadı")
+    
+    print(f"╚═══════════════════════════════════════════════════════════════════════════════════")
+    
+    # İşlem tamamlandı, değişkenleri temizle
+    yonlendirici_giris_aktif = False
+    gecici_urun_uzunlugu = None
+
 ############################################## Senaryolar Alt Kısım (İşlem Fonksiyonları) ##############################################
 
 def olayi_isle(olay):
-    global agirlik_lojik, barkod_lojik, gecici_agirlik, gecici_barkod
+    global agirlik_lojik, barkod_lojik, gecici_agirlik, gecici_barkod, yonlendirici_giris_aktif
     print(f"[Oturum Var] Gelen olay: {olay}")
 
     if olay.strip().lower() == "oturum_var":
@@ -284,14 +410,34 @@ def olayi_isle(olay):
         agirlik = float(agirlik_str.replace(",", "."))
         agirlik_verisi_al(agirlik)
 
+    if olay.strip().lower().startswith("m:"):
+        # m:213,15 formatındaki uzunluk verisi
+        uzunluk_str = olay.split(":")[1]
+        uzunluk_verisi_al(uzunluk_str)
+
     if olay.strip().lower() == "gsi":
         if motor_ref:
-            
             motor_ref.konveyor_ileri()
-
             print("[Oturum Var] Motor aktif edildi.")
         else:
             print("[Oturum Var] Motor referansı bulunamadı.")
+
+    if olay.strip().lower() == "ysi":
+        # Yönlendiriciye giriş başladı
+        yonlendirici_giris_aktif = True
+        print("[Oturum Var] ✅ Ürün yönlendiriciye girmeye başladı (YSI)")
+        print("[Oturum Var] ⏳ Yönlendirici sensörü tamamen geçilmesi bekleniyor...")
+
+    if olay.strip().lower() == "yso":
+        # Yönlendiriciye tamamen girdi
+        print("[Oturum Var] ✅ Ürün yönlendiriciye tamamen girdi (YSO)")
+        
+        # Eğer uzunluk verisi varsa hemen karar ver, yoksa bekle
+        if gecici_urun_uzunlugu is not None:
+            print("[Oturum Var] ✅ Uzunluk verisi mevcut - Yönlendirme kararı veriliyor")
+            yonlendirici_karar_ver()
+        else:
+            print("[Oturum Var] ⏳ Uzunluk verisi bekleniyor...")
 
     if olay.strip().lower() == "gso":
         global gso_bekleniyor
