@@ -52,7 +52,7 @@ aktif_oturum = {"aktif": False, "sessionId": None, "userId": None, "kabul_edilen
 async def process_package_and_send_result(data: AcceptPackageRequest):
     oturum_var.barkod_verisi_al(data.barcode)
 
-    dogrulama_sonucu = dogrulama_servisi.paketi_dogrula(data.barcode)
+    #dogrulama_sonucu = dogrulama_servisi.paketi_dogrula(data.barcode)
     if dogrulama_sonucu["kabul_edildi"]:
         materyal_id = dogrulama_sonucu["materyal_id"]
         result_message = "Ambalaj Kabul Edildi"
