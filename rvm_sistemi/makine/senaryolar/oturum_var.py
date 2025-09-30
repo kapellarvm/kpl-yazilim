@@ -59,9 +59,6 @@ def sistem_sifirla():
     
     print("🔄 [SİSTEM] Durum sıfırlandı - Yeni ürün bekliyor\n")
 
-def durum_raporu():
-    """Sistem durumunu gösterir"""
-    print(f"\n📊 [SİSTEM DURUMU] İade:{iade_aktif} | GSO:{gso_bekleniyor} | Barkod:{barkod_lojik} | Kuyruk:{len(kabul_edilen_urunler)}")
 
 def agirlik_verisi_al(agirlik):
     global agirlik_lojik, gecici_agirlik, gso_bekleniyor, iade_aktif
@@ -109,12 +106,6 @@ def barkod_verisi_al(barcode):
 
 def uzunluk_verisi_al(uzunluk_str):
     global gecici_urun_uzunlugu, iade_aktif
-    
-    # İade aktifse yeni uzunluk işleme
-    if iade_aktif:
-        print(f"🚫 [İADE AKTIF] Uzunluk görmezden gelindi: {uzunluk_str}mm")
-        return
-    
     try:
         gecici_urun_uzunlugu = float(uzunluk_str.replace(",", "."))
         print(f"📏 [UZUNLUK] Ölçülen: {gecici_urun_uzunlugu}mm")
@@ -239,6 +230,7 @@ def yonlendirici_karar_ver():
     global yonlendirici_giris_aktif, gecici_urun_uzunlugu
     
     if not kabul_edilen_urunler:
+        motor_ref.konveyor_dur()
         print("❌ [YÖNLENDİRİCİ] Kuyrukta ürün yok")
         return
     
@@ -263,11 +255,6 @@ def yonlendirici_karar_ver():
     # Temizle
     yonlendirici_giris_aktif = False
     gecici_urun_uzunlugu = None
-    
-    # Kuyruk boşsa konveyörü durdur
-    if len(kabul_edilen_urunler) == 0:
-        motor_ref.konveyor_dur()
-        print(f"⏹️ [MOTOR] Kuyruk boş - Konveyör durduruldu")
     
     print(f"✅ [YÖNLENDİRME] İşlem tamamlandı\n")
 
@@ -313,15 +300,8 @@ def olayi_isle(olay):
         uzunluk_verisi_al(uzunluk_str)
     
     elif olay == "gsi":
-        print(f"🟢 [GSI] Giriş sensörü tetiklendi")
-        if motor_ref:
-            # GSI geldiğinde her zaman konveyörü başlat (kuyruk boş olsa bile)
-            motor_ref.konveyor_ileri()
-            print(f"▶️ [MOTOR] Konveyör ileri hareket başladı")
-            
-            # Eğer kuyruk boşsa bilgi ver
-            if len(kabul_edilen_urunler) == 0:
-                print(f"📝 [BİLGİ] Kuyruk boş ama yeni ürün geldi - Konveyör aktif edildi")
+        motor_ref.konveyor_ileri()
+        print(f"▶️ [MOTOR] Giriş sensör algılandı. Konveyör ileri hareket başladı")
     
     elif olay == "ysi":
         print(f"� [YSI] Yönlendirici giriş sensörü tetiklendi")
@@ -337,12 +317,14 @@ def olayi_isle(olay):
         print(f"� [GSO] Çıkış sensörü tetiklendi - Kontrol başlıyor")
         if not barkod_lojik:
             print(f"❌ [KONTROL] Barkod verisi yok")
-            urun_iade_et("Barkod yok")
-            veri_temizle()
+            if not kabul_edilen_urunler:
+                urun_iade_et("Barkod yok")
+                veri_temizle()
+            else:
+                print(f"❌ [KONTROL] Ancak kuyrukta ürün var, iade edilmedi")
+                veri_temizle()
         else:
             gso_bekleniyor = True
             print(f"⏳ [KONTROL] Güncel ağırlık verisi bekleniyor...")
 
-# Eski fonksiyon isimleri için uyumluluk
-test_sistem_durumu = durum_raporu
 sistem_durumunu_sifirla = sistem_sifirla
