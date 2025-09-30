@@ -38,13 +38,11 @@ async def run_heartbeat_scheduler():
 
 def sensor_callback(mesaj):
     global motor,sensor
-    print(f"📥 SENSOR mesajı: {mesaj}")
     # Mesajı DurumMakinesi'ne ilet
     durum_makinesi.olayi_isle(mesaj)
 
 def motor_callback(mesaj):
     global motor,sensor
-    print(f"📥 MOTOR mesajı: {mesaj}")
     # Mesajı DurumMakinesi'ne ilet
     durum_makinesi.olayi_isle(mesaj)
 
