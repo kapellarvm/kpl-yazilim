@@ -8,13 +8,26 @@ import time
 #baglanti_sensor()
 from rvm_sistemi.dimdb import istemci
 
+from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.makine.seri.sensor_karti import SensorKart
+from rvm_sistemi.makine.seri.motor_karti import MotorKart
+from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
+from rvm_sistemi.makine.durum_degistirici import durum_makinesi
+from rvm_sistemi.makine.dogrulama import DogrulamaServisi
+
+dogrulama_servisi = DogrulamaServisi()
 
 #baglanti_sensor()
 
+motor = None 
+sensor = None
 
 async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
     print("Heartbeat zamanlayıcı başlatıldı...")
+
+    await istemci.send_heartbeat()
+
     # schedule kütüphanesi asenkron görevleri doğrudan desteklemediği için
     # her tetiklendiğinde yeni bir asyncio task'ı oluşturuyoruz.
     schedule.every(60).seconds.do(lambda: asyncio.create_task(istemci.send_heartbeat()))
@@ -23,12 +36,42 @@ async def run_heartbeat_scheduler():
         await asyncio.sleep(1)
 
 
+def sensor_callback(mesaj):
+    global motor,sensor
+    print(f"📥 SENSOR mesajı: {mesaj}")
+    # Mesajı DurumMakinesi'ne ilet
+    durum_makinesi.olayi_isle(mesaj)
+
+def motor_callback(mesaj):
+    global motor,sensor
+    print(f"📥 MOTOR mesajı: {mesaj}")
+    # Mesajı DurumMakinesi'ne ilet
+    durum_makinesi.olayi_isle(mesaj)
+
 async def main():
     """
     Ana fonksiyon, Uvicorn sunucusunu ve heartbeat görevini başlatır.
     """
+    global motor,sensor
+    yonetici = KartHaberlesmeServis()
+    basarili, mesaj, portlar = yonetici.baglan()
+    print("🛈", mesaj)
+    print("🛈 Bulunan portlar:", portlar)
 
+    if "sensor" not in portlar:
+        print("❌ Sensör kartı bulunamadı.")
+        return
 
+    sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
+    sensor.dinlemeyi_baslat()
+
+    motor = MotorKart(portlar["motor"], callback=motor_callback, cihaz_adi="motor")
+    motor.dinlemeyi_baslat()
+
+    oturum_yok.motor_referansini_ayarla(motor)
+    oturum_yok.sensor_referansini_ayarla(sensor)
+    oturum_var.motor_referansini_ayarla(motor)
+    oturum_var.sensor_referansini_ayarla(sensor)
     # FastAPI sunucusunu başlatmak için Uvicorn konfigürasyonu
     config = uvicorn.Config(
         "rvm_sistemi.dimdb.sunucu:app", 
@@ -49,6 +92,8 @@ async def main():
 
     # Sunucu kapandığında heartbeat görevini de durdur
     heartbeat_task.cancel()
+    sensor.dinlemeyi_durdur()
+    motor.dinlemeyi_durdur()
 
 if __name__ == "__main__":
     try:

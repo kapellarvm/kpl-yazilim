@@ -4,18 +4,13 @@ import uuid
 import time
 import asyncio
 from contextlib import asynccontextmanager
+from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 
 # Projenin diğer modüllerini doğru paket yolundan import et
 from ..makine.dogrulama import DogrulamaServisi
-from ..makine.seri.sensor_karti import SensorKart
-from ..makine.seri.motor_karti import MotorKart
-from ..makine.seri.port_yonetici import KartHaberlesmeServis
-from ..makine.mod_degistirici import durum_makinesi # Merkezi durum makinesini import et
+from ..makine.durum_degistirici import durum_makinesi # Merkezi durum makinesini import et
 from . import istemci
 
-# --- Donanım ve Kuyruk Sistemi ---
-sensor = None
-motor = None
 package_queue = asyncio.Queue()
 
 
@@ -32,22 +27,6 @@ async def package_worker():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global sensor, motor
-    print("Uygulama başlatılıyor: Donanım bağlantıları kuruluyor...")
-    
-    yonetici = KartHaberlesmeServis()
-    basarili, mesaj, portlar = yonetici.baglan()
-    print(f"🛈 {mesaj}")
-    print(f"🛈 Bulunan portlar: {portlar}")
-
-    if "sensor" in portlar:
-        sensor = SensorKart(portlar["sensor"])
-        sensor.dinlemeyi_baslat()
-        print("✅ Sensör kartı dinleniyor...")
-    else:
-        print("❌ Sensör kartı bulunamadı.")
-
-
         
     asyncio.create_task(package_worker())
     
@@ -71,6 +50,8 @@ aktif_oturum = {"aktif": False, "sessionId": None, "userId": None, "kabul_edilen
 
 # --- Arka Plan Fonksiyonları ---
 async def process_package_and_send_result(data: AcceptPackageRequest):
+    oturum_var.barkod_verisi_al(data.barcode)
+
     dogrulama_sonucu = dogrulama_servisi.paketi_dogrula(data.barcode)
     if dogrulama_sonucu["kabul_edildi"]:
         materyal_id = dogrulama_sonucu["materyal_id"]
@@ -99,7 +80,7 @@ async def handle_graceful_shutdown():
     if not aktif_oturum["aktif"]: return
 
     print("Oturum sonlandırılıyor, işlem özeti hazırlanıyor...")
-    sensor.led_kapat()
+    #sensor.led_kapat()
     
     containers = {}
     for urun in aktif_oturum["kabul_edilen_urunler"]:
@@ -136,7 +117,7 @@ async def session_start(data: SessionStartRequest):
     aktif_oturum = {"aktif": True, "sessionId": data.sessionId, "userId": data.userId, "kabul_edilen_urunler": []}
     # DÜZELTME: Doğru nesne ve metot adını kullan
     durum_makinesi.durum_degistir("oturum_var")
-    sensor.led_ac()
+    #sensor.led_ac()
     
     print(f"✅ /sessionStart isteği kabul edildi. Yeni oturum: {aktif_oturum['sessionId']}")
     return {"errorCode": 0, "errorMessage": ""}

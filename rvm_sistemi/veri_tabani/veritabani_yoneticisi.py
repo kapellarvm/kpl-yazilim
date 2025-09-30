@@ -76,7 +76,7 @@ def barkodu_dogrula(barcode):
         with sqlite3.connect(DB_PATH) as conn:
             conn.row_factory = sqlite3.Row  # Sonuçları sözlük gibi almayı sağlar
             cursor = conn.cursor()
-            cursor.execute("SELECT barcode, material FROM products WHERE barcode = ?", (barcode,))
+            cursor.execute("SELECT * FROM products WHERE barcode = ?", (barcode,))
             row = cursor.fetchone()
             return dict(row) if row else None
     except sqlite3.Error as e:

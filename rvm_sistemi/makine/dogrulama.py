@@ -21,6 +21,10 @@ class DogrulamaServisi:
         # self.goruntu_isleme = GoruntuIslemeServisi()
         print("Doğrulama servisi başlatıldı.")
 
+    def agirlik_dogrula(self, agirlik: float):
+        
+        print(f"Ağırlık doğrulaması: {agirlik} gr")
+
     def paketi_dogrula(self, barcode: str) -> dict:
         """
         Verilen bir barkod için tüm doğrulama sürecini çalıştırır.
