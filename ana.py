@@ -25,6 +25,9 @@ sensor = None
 async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
     print("Heartbeat zamanlayıcı başlatıldı...")
+
+    await istemci.send_heartbeat()
+
     # schedule kütüphanesi asenkron görevleri doğrudan desteklemediği için
     # her tetiklendiğinde yeni bir asyncio task'ı oluşturuyoruz.
     schedule.every(60).seconds.do(lambda: asyncio.create_task(istemci.send_heartbeat()))

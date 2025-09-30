@@ -4,6 +4,7 @@ import uuid
 import time
 import asyncio
 from contextlib import asynccontextmanager
+from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 
 # Projenin diğer modüllerini doğru paket yolundan import et
 from ..makine.dogrulama import DogrulamaServisi
@@ -49,6 +50,8 @@ aktif_oturum = {"aktif": False, "sessionId": None, "userId": None, "kabul_edilen
 
 # --- Arka Plan Fonksiyonları ---
 async def process_package_and_send_result(data: AcceptPackageRequest):
+    oturum_var.barkod_verisi_al(data.barcode)
+
     dogrulama_sonucu = dogrulama_servisi.paketi_dogrula(data.barcode)
     if dogrulama_sonucu["kabul_edildi"]:
         materyal_id = dogrulama_sonucu["materyal_id"]
