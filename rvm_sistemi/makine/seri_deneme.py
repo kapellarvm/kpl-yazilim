@@ -1,26 +1,20 @@
-from port_yonetici import KartHaberlesmeServis
-from sensor_karti import SensorKart
-from motor_karti import MotorKart
+from seri.port_yonetici import KartHaberlesmeServis
+from seri.sensor_karti import SensorKart
+from seri.motor_karti import MotorKart
 import time
+from mod_degistirici import durum_makinesi
+from senaryolar import oturum_yok, oturum_var
 
-motor = None  # Global variable to hold the motor instance
+motor = None  # Global motor nesnesi
 
 def sensor_callback(mesaj):
     global motor
     print(f"📥 SENSOR mesajı: {mesaj}")
-    if mesaj.strip().lower() == "gsi":
-        if motor:
-            motor.konveyor_ileri()
-        else:
-            print("⚠️ Motor instance is not initialized.")
-    elif mesaj.strip().lower() == "gso":
-        if motor:
-            motor.konveyor_dur()
-        else:
-            print("⚠️ Motor instance is not initialized.")
+    # Mesajı DurumMakinesi'ne ilet
+    durum_makinesi.olayi_isle(mesaj)
 
-def motor_callback(mesaj):
-    print(f"📥 MOTOR mesajı: {mesaj}")
+    # Eski doğrudan motor kontrolü kaldırıldı, işlemler senaryolara taşınacak
+
 
 def main():
     global motor
@@ -35,18 +29,15 @@ def main():
 
     sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
     sensor.dinlemeyi_baslat()
-    print("✅ Sensör kartı dinleniyor...")
 
-    if "motor" not in portlar:
-        print("❌ Motor kartı bulunamadı.")
-        return
-
-    motor = MotorKart(portlar["motor"], callback=motor_callback)
+    motor = MotorKart(portlar["motor"])
     motor.dinlemeyi_baslat()
-    print("✅ Motor kartı dinleniyor...")
+
+    oturum_yok.motor_referansini_ayarla(motor)
+    oturum_var.motor_referansini_ayarla(motor)
 
     while True:
-        komut = input("\nKomut girin (t = teach, h = sağlık kontrolü, q = çıkış): ").strip().lower()
+        komut = input("\nKomut girin (t = teach, h = sağlık kontrolü, n = oturum aç, m = oturum kapat, q = çıkış): ").strip().lower()
 
         if komut == "t":
             sensor.teach()
@@ -77,6 +68,12 @@ def main():
             motor.yonlendirici_plastik()
         elif komut == "c":
             motor.yonlendirici_cam()
+        elif komut == "n":
+            durum_makinesi.durum_degistir("oturum_var")
+            print("[MOD] Oturum açıldı, oturum_var moduna geçildi.")
+        elif komut == "m":
+            durum_makinesi.durum_degistir("oturum_yok")
+            print("[MOD] Oturum kapatıldı, oturum_yok moduna geçildi.")
         else:
             print("⚠️ Geçersiz komut.")
 
