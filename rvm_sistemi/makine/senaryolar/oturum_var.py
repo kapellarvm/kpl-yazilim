@@ -7,17 +7,17 @@ motor_ref = None
 sensor_ref = None
 
 # Ürün verileri
+agirlik = None
 gecici_barkod = None
-gecici_agirlik = None
 gecici_urun_uzunlugu = None
 
 # Durum kontrolü
 barkod_lojik = False
 agirlik_lojik = False
-gso_bekleniyor = False
 yonlendirici_giris_aktif = False
 
 # İade durumu
+giris_iade_lojik = False
 iade_aktif = False
 iade_gsi_bekliyor = False
 iade_gso_bekliyor = False
@@ -30,52 +30,12 @@ def motor_referansini_ayarla(motor):
     motor_ref = motor
     motor_ref.motorlari_aktif_et()
     motor_ref.konveyor_dur()
-    sistem_sifirla()
+    motor_ref.yonlendirici_sensor_teach()
     print("✅ Motor hazır - Sistem başlatıldı")
 
 def sensor_referansini_ayarla(sensor):
     global sensor_ref
     sensor_ref = sensor
-
-def sistem_sifirla():
-    """Tüm sistem durumlarını sıfırlar"""
-    global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
-    global barkod_lojik, agirlik_lojik, gso_bekleniyor, yonlendirici_giris_aktif
-    global gecici_barkod, gecici_agirlik, gecici_urun_uzunlugu
-    
-    iade_aktif = False
-    iade_gsi_bekliyor = False
-    iade_gso_bekliyor = False
-    barkod_lojik = False
-    agirlik_lojik = False
-    gso_bekleniyor = False
-    yonlendirici_giris_aktif = False
-    gecici_barkod = None
-    gecici_agirlik = None
-    gecici_urun_uzunlugu = None
-    
-    if sensor_ref:
-        sensor_ref.led_ac()
-    
-    print("🔄 [SİSTEM] Durum sıfırlandı - Yeni ürün bekliyor\n")
-
-
-def agirlik_verisi_al(agirlik):
-    global agirlik_lojik, gecici_agirlik, gso_bekleniyor, iade_aktif
-    
-    # İade aktifse yeni ağırlık işleme
-    if iade_aktif:
-        print(f"🚫 [İADE AKTIF] Ağırlık görmezden gelindi: {agirlik}gr")
-        return
-    
-    agirlik_lojik = True
-    gecici_agirlik = agirlik
-    print(f"⚖️  [AĞIRLIK] Ölçülen: {agirlik}gr")
-    
-    if gso_bekleniyor:
-        print(f"🔍 [DOĞRULAMA] GSO sonrası kontrol başlıyor...")
-        gso_sonrasi_dogrulama()
-        gso_bekleniyor = False
 
 def barkod_verisi_al(barcode):
     global barkod_lojik, gecici_barkod, iade_aktif
@@ -104,15 +64,6 @@ def barkod_verisi_al(barcode):
     else:
         print(f"❌ [VERİTABANI] Ürün bulunamadı: {barcode}")
 
-def uzunluk_verisi_al(uzunluk_str):
-    global gecici_urun_uzunlugu, iade_aktif
-    try:
-        gecici_urun_uzunlugu = float(uzunluk_str.replace(",", "."))
-        print(f"📏 [UZUNLUK] Ölçülen: {gecici_urun_uzunlugu}mm")
-        
-    except:
-        print(f"❌ [HATA] Uzunluk verisi hatalı: {uzunluk_str}")
-
 def agirlik_kontrol(urun_bilgisi, agirlik):
     """Ağırlık tolerans kontrolü (±25gr)"""
     min_agirlik = urun_bilgisi.get('packMinWeight')
@@ -137,98 +88,45 @@ def urun_kabul_et(barkod, agirlik, materyal_id):
     materyal_adi = materyal_isimleri.get(materyal_id, "BİLİNMEYEN")
     print(f"✅ [KABUL] {materyal_adi} ürün kuyruğa eklendi | Toplam: {len(kabul_edilen_urunler)}")
 
-def urun_iade_et(sebep):
-    """Ürünü iade eder"""
-    global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
-    global barkod_lojik, agirlik_lojik, gecici_barkod, gecici_agirlik
-    
-    print(f"\n❌ [İADE BAŞLADI] Sebep: {sebep}")
-    
-    # İade başlarken tüm geçici verileri temizle
-    print(f"🧹 [TEMİZLEME] İade sırasındaki veriler temizleniyor")
-    barkod_lojik = False
-    agirlik_lojik = False
-    gecici_barkod = None
-    gecici_agirlik = None
-    
-    print(f"🔄 [MOTOR] Konveyör geri dönmeye başladı")
-    iade_aktif = True
-    motor_ref.konveyor_geri()
 
-    iade_gsi_bekliyor = True
-    print(f"⏳ [İADE] GSI sensörü bekleniyor...")
-
-def iade_tamamla():
-    """İade işlemini bitirir"""
-    global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
-    global barkod_lojik, agirlik_lojik, gecici_barkod, gecici_agirlik, gso_bekleniyor
-    
-    print(f"\n✅ [İADE BİTTİ] Ürün kullanıcı tarafından alındı")
-    
-    # Durumları sıfırla
-    iade_aktif = False
-    iade_gsi_bekliyor = False 
-    iade_gso_bekliyor = False
-    barkod_lojik = False
-    agirlik_lojik = False
-    gecici_barkod = None
-    gecici_agirlik = None
-    gso_bekleniyor = False
-    
-    print(f"🔄 [SİSTEM] Durum sıfırlandı - Yeni ürün kabul edilebilir")
-    print(f"🎯 [HAZIR] Sistem bekleme modunda\n")
 
 def gso_sonrasi_dogrulama():
     """GSO sonrası ürün doğrulaması"""
-    global gecici_barkod, gecici_agirlik
-    
+    global gecici_barkod,gecici_agirlik 
+
     print(f"\n🔍 [DOĞRULAMA BAŞLADI] GSO sonrası kontrol")
     
     if not gecici_barkod:
         print(f"❌ [DOĞRULAMA] Barkod verisi yok")
-        veri_temizle()
+
         return
     
     urun_bilgisi = veritabani_yoneticisi.barkodu_dogrula(gecici_barkod)
     
     if not urun_bilgisi:
         print(f"❌ [DOĞRULAMA] Veritabanında ürün bulunamadı")
-        urun_iade_et("Ürün bulunamadı")
-        veri_temizle()
+        giris_iade_et("Ürün bulunamadı")
+
         return
     
     # Ağırlık kontrolü
     print(f"⚖️ [DOĞRULAMA] Ağırlık kontrolü yapılıyor...")
     if not agirlik_kontrol(urun_bilgisi, gecici_agirlik):
         print(f"❌ [DOĞRULAMA] Ağırlık tolerans dışında")
-        urun_iade_et("Ağırlık uyumsuz")
-        veri_temizle()
+        giris_iade_et("Ağırlık uyumsuz")
         return
     
     # Ürün kabul edildi
     materyal_id = urun_bilgisi.get('material')
     print(f"✅ [DOĞRULAMA] Tüm kontroller başarılı")
     urun_kabul_et(gecici_barkod, gecici_agirlik, materyal_id)
+    lojik_sifirla()
     
-    # Konveyörü ilerlet
-    if motor_ref:
-        motor_ref.konveyor_ileri()
-        print(f"▶️ [MOTOR] Ürün kabul edildi - Konveyör ilerliyor")
-    
-    veri_temizle()   
 
-def veri_temizle():
-    """Geçici verileri temizler"""
-    global barkod_lojik, agirlik_lojik, gecici_barkod, gecici_agirlik
-    barkod_lojik = False
-    agirlik_lojik = False
-    gecici_barkod = None
-    gecici_agirlik = None
-
-def yonlendirici_karar_ver():
-    """FIFO kuyruğundan ürün alıp yönlendirir"""
-    global yonlendirici_giris_aktif, gecici_urun_uzunlugu
     
+ 
+def yonlendirici_hareket():
+
     if not kabul_edilen_urunler:
         motor_ref.konveyor_dur()
         print("❌ [YÖNLENDİRİCİ] Kuyrukta ürün yok")
@@ -258,73 +156,88 @@ def yonlendirici_karar_ver():
     
     print(f"✅ [YÖNLENDİRME] İşlem tamamlandı\n")
 
-# Ana olay işleyici
-def olayi_isle(olay):
-    global gso_bekleniyor, yonlendirici_giris_aktif
-    global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
-    
-    print(f"\n📨 [OLAY] {olay}")
-    
-    # İade işlemi aktifse
-    if iade_aktif:
-        if olay.strip().lower() == "gsi":
-            print(f"✅ [İADE-GSI] Sensör tetiklendi - 0.2s daha geri dönüyor")
-            time.sleep(0.2)
-            motor_ref.konveyor_dur()
-            print(f"⏹️ [İADE] Motor durdu - GSO bekleniyor")
-            return
-            
-        elif olay.strip().lower() == "gso":
-            print(f"✅ [İADE-GSO] Çıkış sensörü tetiklendi - Ürün alındı")
-            iade_tamamla()
-            return
-        else:
-            print(f"🚫 [İADE AKTIF] {olay} olayı görmezden gelindi")
-            return
 
+def giris_iade_et(sebep):
+    global giris_iade_lojik
+
+    print(f"\n❌ [GİRİŞ İADESİ] Sebep: {sebep}")
+
+    giris_iade_lojik = True
+    motor_ref.konveyor_geri()
+
+def lojik_sifirla():
+    global giris_iade_lojik, barkod_lojik,gecici_barkod,gecici_agirlik
+
+    giris_iade_lojik = False
+    barkod_lojik = False
+    gecici_barkod = None
+    gecici_agirlik = None
+
+def agirlik_veri_kontrol(agirlik):
+    global gecici_agirlik, agirlik_lojik
+
+    gecici_agirlik = agirlik
+    agirlik_lojik = True
+    print(f"⚖️ [AĞIRLIK] Ağırlık verisi alındı: {agirlik} gr")
+
+    gso_sonrasi_dogrulama()
+
+
+# Ana mesaj işleyici
+def mesaj_isle(mesaj):
+    global yonlendirici_giris_aktif, giris_iade_lojik, barkod_lojik 
+    global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor , gecici_urun_uzunlugu,agirlik 
+
+    print(f"\n📨 [Gelen mesaj] {mesaj}")
+
+    mesaj = mesaj.strip().lower()
     
-    # Normal işlemler
-    olay = olay.strip().lower()
-    
-    if olay == "oturum_var":
+    if mesaj == "oturum_var":
         print(f"🟢 [OTURUM] Aktif oturum başlatıldı")
         if sensor_ref:
             sensor_ref.led_ac()
+            sensor_ref.teach()
     
-    elif olay.startswith("a:"):
-        agirlik = float(olay.split(":")[1].replace(",", "."))
-        agirlik_verisi_al(agirlik)
+    if mesaj.startswith("a:"):
+        agirlik = float(mesaj.split(":")[1].replace(",", "."))
+        agirlik_veri_kontrol(agirlik)
     
-    elif olay.startswith("m:"):
-        uzunluk_str = olay.split(":")[1]
-        uzunluk_verisi_al(uzunluk_str)
-    
-    elif olay == "gsi":
-        motor_ref.konveyor_ileri()
-        print(f"▶️ [MOTOR] Giriş sensör algılandı. Konveyör ileri hareket başladı")
-    
-    elif olay == "ysi":
-        print(f"� [YSI] Yönlendirici giriş sensörü tetiklendi")
-    
-    elif olay == "yso":
-        print(f"🟠 [YSO] Yönlendirici çıkış sensörü tetiklendi")
-        if gecici_urun_uzunlugu is not None:
-            yonlendirici_karar_ver()
+    if mesaj == "gsi":
+        if not giris_iade_lojik:
+            print(f"� [GSI] Şişe Geldi.")
+            motor_ref.konveyor_ileri()
         else:
-            print(f"⏳ [YÖNLENDİRİCİ] Uzunluk verisi bekleniyor...")
+            time.sleep(0.2) # Gömülüden buraya  adım gibi bir mesaj eklenecek örneğin 10cm daha geri verip duracak.
+            print(f"▶️ [GSI] LÜTFEN ŞİŞEYİ ALINIZ.")
+            motor_ref.konveyor_dur()
     
-    elif olay == "gso":
-        print(f"� [GSO] Çıkış sensörü tetiklendi - Kontrol başlıyor")
-        if not barkod_lojik:
-            print(f"❌ [KONTROL] Barkod verisi yok")
-            if not kabul_edilen_urunler:
-                urun_iade_et("Barkod yok")
-                veri_temizle()
-            else:
-                print(f"❌ [KONTROL] Ancak kuyrukta ürün var, iade edilmedi")
-                veri_temizle()
-        else:
-            gso_bekleniyor = True
-            print(f"⏳ [KONTROL] Güncel ağırlık verisi bekleniyor...")
+    if mesaj == "gso":
+        if not giris_iade_lojik:
+            print(f"🟠 [GSO] Şişe içeride kontrole hazır.")
 
-sistem_durumunu_sifirla = sistem_sifirla
+            if not barkod_lojik:
+
+                print(f"❌ [KONTROL] Barkod verisi yok")
+                giris_iade_et("Barkod yok")
+                
+            else:
+                # Burada görüntü işlemede tetiklenecek. 
+
+                print(f"⏳ [KONTROL] Kontrol Mekanizması")
+
+        else :
+            print(f"🟠 [GSO] İade Şişe alındı.")
+            lojik_sifirla()
+            
+
+
+    #if mesaj == "ysi":
+    #    print(f"� [YSI] Yönlendirici giriş sensörü tetiklendi")
+    
+    if mesaj == "yso":
+        yonlendirici_hareket()
+
+    #if mesaj.startswith("m:"):
+    #    uzunluk_str = mesaj.split(":")[1]
+    #    gecici_urun_uzunlugu = float(uzunluk_str.replace(",", "."))
+    #    print(f"📏 [UZUNLUK] Ürün uzunluğu alındı: {gecici_urun_uzunlugu} cm")

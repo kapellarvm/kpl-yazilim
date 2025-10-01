@@ -13,7 +13,7 @@ class DurumMakinesi:
         if self.durum == "oturum_yok":
             oturum_yok.olayi_isle(olay)
         elif self.durum == "oturum_var":
-            oturum_var.olayi_isle(olay)
+            oturum_var.mesaj_isle(olay)
         elif self.durum == "bakim":
             bakim.olayi_isle(olay)
 

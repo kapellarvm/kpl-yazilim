@@ -22,7 +22,7 @@ def olayi_isle(olay):
     elif olay.strip().lower() == "gsi":
         if motor_ref:
             
-            motor_ref.konveyor_ileri()
+            motor_ref.konveyor_geri()
             time.sleep(1)  # Motorun aktifleşmesi için kısa bir bekleme
             motor_ref.konveyor_dur()
             print("[Oturum Yok] Motor aktif edildi.")
