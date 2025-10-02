@@ -1,5 +1,3 @@
-# port_yonetici.py
-
 import serial
 import time
 from serial.tools import list_ports

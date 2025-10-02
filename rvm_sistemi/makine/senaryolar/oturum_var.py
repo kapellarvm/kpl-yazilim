@@ -2,6 +2,9 @@ import time
 from collections import deque
 from ...veri_tabani import veritabani_yoneticisi
 import threading
+from ..goruntu.image_processing_service import ImageProcessingService
+
+image_processing_service = ImageProcessingService()
 
 # Referanslar
 motor_ref = None
@@ -131,11 +134,10 @@ def lojik_sifirla():
     barkod_lojik = False
 
 def goruntu_isleme_tetikle():
-    print("📸 [GÖRÜNTÜ İŞLEME] Görüntü işleme tetiklendi (simülasyon)")
-    # Burada gerçek görüntü işleme kodu olacak
-    time.sleep(0.3)  # Simülasyon için bekle
-    goruntu_sonuc = ["plastik", 103.55, 58.5]
-    veri_senkronizasyonu(materyal_turu=goruntu_sonuc[0], uzunluk=goruntu_sonuc[1], genislik=goruntu_sonuc[2])
+
+    goruntu_sonuc = image_processing_service.capture_and_process()
+    print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
+    veri_senkronizasyonu(materyal_turu=goruntu_sonuc.type.value, uzunluk=float(goruntu_sonuc.height_mm), genislik=float(goruntu_sonuc.width_mm))
 
 
 def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=None, genislik=None):
@@ -234,8 +236,10 @@ def mesaj_isle(mesaj):
 
 t1 = threading.Thread(target=veri_senkronizasyonu, daemon=True)
 t2 = threading.Thread(target=mesaj_isle, daemon=True)
+t3 = threading.Thread(target=goruntu_isleme_tetikle, daemon=True)
 t1.start()
 t2.start()
+t3.start()
 
 # Erikli barkod: 1923026353360
 # Erikli büyük barkod: 1923026353391
