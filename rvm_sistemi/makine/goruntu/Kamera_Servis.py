@@ -4,9 +4,8 @@ import sys
 from ctypes import *
 import numpy as np
 import cv2
-from app.shared.logger import app_logger
 sys.path.append("../MvImport")
-from .MvCameraControl_class import *
+from MvCameraControl_class import *
 
 class KameraServis:
     def __init__(self):
@@ -14,15 +13,27 @@ class KameraServis:
         self.device_list = None
 
     def baslat(self):
-        MvCamera.MV_CC_Initialize()
+        print("🔄 SDK başlatılıyor...")
+        ret_init = MvCamera.MV_CC_Initialize()
+        print(f"📊 MV_CC_Initialize result: {ret_init}")
 
         self.device_list = MV_CC_DEVICE_INFO_LIST()
         tlayerType = (MV_GIGE_DEVICE | MV_USB_DEVICE | MV_GENTL_CAMERALINK_DEVICE
                       | MV_GENTL_CXP_DEVICE | MV_GENTL_XOF_DEVICE | MV_USB_DEVICE)
 
+        print(f"🔍 Cihaz aranıyor... tlayerType: {tlayerType}")
+
         ret = MvCamera.MV_CC_EnumDevices(tlayerType, self.device_list)
-        if ret != 0 or self.device_list.nDeviceNum == 0:
-            raise Exception(f"No devices found! ret[0x%x]" % ret)
+        print(f"📊 EnumDevices result: ret={ret}, device_count={self.device_list.nDeviceNum}")
+
+        if ret != 0:
+            raise Exception(f"EnumDevices failed! ret[0x{ret:x}]")
+        
+        if self.device_list.nDeviceNum == 0:
+            # USB yetki kontrolü
+            print("⚠️  Hiç cihaz bulunamadı. USB yetki problemi olabilir.")
+            print("💡 Çözüm: 'sudo python3 script.py' ile çalıştırın")
+            raise Exception(f"No devices found! ret[0x{ret:x}]")
 
         stDeviceList = cast(self.device_list.pDeviceInfo[0], POINTER(MV_CC_DEVICE_INFO)).contents
 
@@ -41,9 +52,9 @@ class KameraServis:
             if int(nPacketSize) > 0:
                 ret = self.cam.MV_CC_SetIntValue("GevSCPSPacketSize", nPacketSize)
                 if ret != 0:
-                    app_logger.warning(f"Warning: Set Packet Size fail! ret[0x%x]" % ret)
+                    print(f"Warning: Set Packet Size fail! ret[0x%x]" % ret)
             else:
-                app_logger.warning(f"Warning: Get Packet Size fail! ret[0x%x]" % nPacketSize)
+                print(f"Warning: Get Packet Size fail! ret[0x%x]" % nPacketSize)
 
         # Parametreler
         #self.cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
@@ -51,7 +62,7 @@ class KameraServis:
         #self.cam.MV_CC_SetFloatValue("Gain", 0.0)
         #self.cam.MV_CC_SetEnumValue("PixelFormat", PixelType_Gvsp_BayerRG8)
 
-        app_logger.info("Kamera başlatıldı ve parametreler ayarlandı.")
+        print("Kamera başlatıldı ve parametreler ayarlandı.")
 
     def fotograf_cek(self):
         if not self.cam:
@@ -114,5 +125,5 @@ class KameraServis:
             self.cam.MV_CC_CloseDevice()
             self.cam.MV_CC_DestroyHandle()
             MvCamera.MV_CC_Finalize()
-            app_logger.info("Kamera kapatıldı ve handle yok edildi.")
+            print("Kamera kapatıldı ve handle yok edildi.")
 
