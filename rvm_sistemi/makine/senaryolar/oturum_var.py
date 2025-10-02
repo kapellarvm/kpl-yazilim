@@ -25,6 +25,7 @@ mesaj = None
 # Kabul edilen ürünler kuyruğu
 kabul_edilen_urunler = deque()
 barkod_lojik_kuyruk = deque()
+goruntu_lojik_kuyruk = deque()
 def motor_referansini_ayarla(motor):
     global motor_ref
     motor_ref = motor
@@ -45,6 +46,11 @@ def barkod_verisi_al(barcode):
         print(f"🚫 [İADE AKTIF] Barkod görmezden gelindi: {barcode}")
         return
     
+    if barkod_lojik_kuyruk and gecici_barkod:
+        print(f"🚫 [BARKOD MEVCUT] Zaten işlenen barkod var: {gecici_barkod}")
+        print(f"🚫 [REDDEDİLDİ] Yeni barkod reddedildi: {barcode}")
+        return
+
     barkod_lojik_kuyruk.append(True)
     gecici_barkod = barcode
     print(f"\n📋 [YENİ ÜRÜN] Barkod okundu: {barcode}")
@@ -165,6 +171,7 @@ def lojik_sifirla():
 
     giris_iade_lojik = False
     barkod_lojik_kuyruk.popleft() if barkod_lojik_kuyruk else None
+    goruntu_lojik_kuyruk.popleft() if goruntu_lojik_kuyruk else None
     gecici_barkod = None
     gecici_agirlik = None
 
@@ -177,10 +184,15 @@ def agirlik_veri_kontrol(agirlik):
 
     gso_sonrasi_dogrulama()
 
+def goruntu_isleme_tetikle():
+    print("📸 [GÖRÜNTÜ İŞLEME] Görüntü işleme tetiklendi (simülasyon)")
+    # Burada gerçek görüntü işleme kodu olacak
+    time.sleep(0.3)  # Simülasyon için bekle
+    goruntu_lojik_kuyruk.append(True)
 
 # Ana mesaj işleyici
 def mesaj_isle(mesaj):
-    global yonlendirici_giris_aktif, giris_iade_lojik 
+    global yonlendirici_giris_aktif, giris_iade_lojik
     global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor , gecici_urun_uzunlugu,agirlik 
 
     print(f"\n📨 [Gelen mesaj] {mesaj}")
@@ -214,10 +226,12 @@ def mesaj_isle(mesaj):
             print(f"🟠 [GSO] Şişe içeride kontrole hazır.")
 
             if barkod_lojik_kuyruk:
+
+                goruntu_isleme_tetikle()
                 print(f"⏳ [KONTROL] Kontrol Mekanizması")
 
             else:
-                # Burada görüntü işlemede tetiklenecek. 
+
                 print(f"❌ [KONTROL] Barkod verisi yok")
                 giris_iade_et("Barkod yok")
 
