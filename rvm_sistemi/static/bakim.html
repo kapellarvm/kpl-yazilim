@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RVM Bakım Ekranı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .reset-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .status-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        /* SEKME YAPISI */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            background: #1e293b;
+            color: #94a3b8;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px 12px 0 0;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-bottom-color: #60a5fa;
+            box-shadow: 0 -5px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(96, 165, 250, 0.1);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 12px;
+        }
+
+        /* KONVEYÖR ANİMASYONU */
+        .conveyor-visual {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #334155;
+        }
+
+        .conveyor-belt {
+            height: 50px;
+            background: #475569;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .conveyor-track {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #60a5fa 0px,
+                #60a5fa 20px,
+                transparent 20px,
+                transparent 40px
+            );
+        }
+
+        .conveyor-track.running-forward {
+            animation: conveyorForward 2s linear infinite;
+        }
+
+        .conveyor-track.running-backward {
+            animation: conveyorBackward 2s linear infinite;
+        }
+
+        @keyframes conveyorForward {
+            0% { left: 0; }
+            100% { left: -40px; }
+        }
+
+        @keyframes conveyorBackward {
+            0% { left: -40px; }
+            100% { left: 0; }
+        }
+
+        .conveyor-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .conveyor-arrow.active {
+            opacity: 1;
+            animation: arrowBounce 1s ease-in-out infinite;
+        }
+
+        .conveyor-arrow.left {
+            left: 10px;
+        }
+
+        .conveyor-arrow.right {
+            right: 10px;
+        }
+
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+
+        .conveyor-status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .conveyor-status.stopped {
+            color: #94a3b8;
+        }
+
+        .conveyor-status.forward {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .conveyor-status.backward {
+            color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        /* MOTOR & LED GÖSTERGESİ */
+        .motor-indicator, .led-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .motor-icon, .led-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            transition: all 0.3s;
+        }
+
+        .motor-icon.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            animation: motorRotate 2s linear infinite;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .led-icon.active {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            animation: ledPulse 1s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.8);
+        }
+
+        @keyframes motorRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ledPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 14px 26px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 130px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        button.danger:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        button.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        button.success:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        button.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        button.warning:hover {
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .parameter-group {
+            margin-bottom: 18px;
+        }
+
+        .parameter-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .parameter-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 10px;
+            background: #334155;
+            outline: none;
+            border-radius: 5px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.8);
+        }
+
+        .value-display {
+            min-width: 70px;
+            text-align: center;
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .message {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: slideIn 0.4s ease-out;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .info-text {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        .position-indicator {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .position-box {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #334155;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .position-box.active {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1>⚙ RVM Bakım Ekranı</h1>
+                <div style="display: flex; gap: 10px;">
+                    <button class="reset-button" id="bakimModBtn" onclick="bakimModuToggle()">⚙ Bakım Modu: Pasif</button>
+                    <button class="reset-button" onclick="sistemReset()">↻ Sistem Reset</button>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot" id="motorStatus"></span>
+                    <span>Motor Kartı: <span id="motorStatusText">Bağlantı Yok</span></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot" id="sensorStatus"></span>
+                    <span>Sensör Kartı: <span id="sensorStatusText">Bağlantı Yok</span></span>
+                </div>
+                <div class="status-item">
+                    <span>Sistem Durumu: <strong id="sistemDurumu">-</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKMELER -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('motor')">🎛️ Motor Kartı</button>
+            <button class="tab" onclick="switchTab('sensor')">📡 Sensör Kartı</button>
+        </div>
+
+        <!-- MOTOR KARTI SEKMESİ -->
+        <div id="motorTab" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h2>⚙️ Motor Kontrolü</h2>
+                    <div class="motor-indicator">
+                        <div class="motor-icon" id="motorIcon">⚙️</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1em;" id="motorStatusLabel">Motor Kapalı</div>
+                            <div style="font-size: 0.9em; color: #94a3b8;">Motorları aktif edin</div>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="success" onclick="motorlariAktifEt()">▲ Aktif Et</button>
+                        <button class="danger" onclick="motorKontrol('motorlari-iptal', false)">■ İptal Et</button>
+                    </div>
+                    <p class="info-text">⚠ Motorları aktif ettikten sonra konveyörü kontrol edebilirsiniz</p>
+                </div>
+
+                <div class="card">
+                    <h2>↔ Konveyör Kontrolü</h2>
+                    <div class="conveyor-visual">
+                        <div class="conveyor-belt">
+                            <div class="conveyor-track" id="conveyorTrack"></div>
+                            <div class="conveyor-arrow left" id="arrowLeft">◀</div>
+                            <div class="conveyor-arrow right" id="arrowRight">▶</div>
+                        </div>
+                        <div class="conveyor-status stopped" id="conveyorStatus">DURDU</div>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="conveyorKontrol('konveyor-ileri', 'forward')">▶ İleri</button>
+                        <button class="warning" onclick="conveyorKontrol('konveyor-geri', 'backward')">◀ Geri</button>
+                        <button class="danger" onclick="conveyorKontrol('konveyor-dur', 'stopped')">■ Dur</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>↕ Yönlendirici Kontrolü</h2>
+                    <div class="button-group">
+                        <button onclick="yonlendiriciKontrol('yonlendirici-plastik', 'plastik')">P Plastik</button>
+                        <button onclick="yonlendiriciKontrol('yonlendirici-cam', 'cam')">C Cam</button>
+                    </div>
+                    <div class="position-indicator">
+                        <div class="position-box" id="posPlastik">Plastik</div>
+                        <div class="position-box" id="posCam">Cam</div>
+                    </div>
+                    <p class="info-text">Yönlendirici pozisyonunu seçin</p>
+                </div>
+
+                <div class="card">
+                    <h2>▣ Klape Kontrolü</h2>
+                    <div class="button-group">
+                        <button onclick="klapeKontrol('klape-metal', 'metal')">M Metal</button>
+                        <button onclick="klapeKontrol('klape-plastik', 'plastik')">P Plastik</button>
+                    </div>
+                    <div class="position-indicator">
+                        <div class="position-box" id="klapeMetal">Metal</div>
+                        <div class="position-box" id="klapePlastik">Plastik</div>
+                    </div>
+                    <p class="info-text">Klape pozisyonunu seçin</p>
+                </div>
+
+                <div class="card">
+                    <h2>⚡ Hız Parametreleri</h2>
+                    <div class="parameter-group">
+                        <label>Konveyör Hızı</label>
+                        <div class="parameter-control">
+                            <input type="range" id="konveyorHizi" min="10" max="100" value="35" 
+                                   oninput="updateValue('konveyorHizi')">
+                            <span class="value-display" id="konveyorHiziValue">35</span>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter-group">
+                        <label>Yönlendirici Hızı</label>
+                        <div class="parameter-control">
+                            <input type="range" id="yonlendiriciHizi" min="50" max="200" value="100" 
+                                   oninput="updateValue('yonlendiriciHizi')">
+                            <span class="value-display" id="yonlendiriciHiziValue">100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter-group">
+                        <label>Klape Hızı</label>
+                        <div class="parameter-control">
+                            <input type="range" id="klapeHizi" min="100" max="255" value="200" 
+                                   oninput="updateValue('klapeHizi')">
+                            <span class="value-display" id="klapeHiziValue">200</span>
+                        </div>
+                    </div>
+                    
+                    <button class="success" onclick="parametreleriGonder()" style="width: 100%; margin-top: 15px;">
+                        ✓ Parametreleri Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SENSÖR KARTI SEKMESİ -->
+        <div id="sensorTab" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>● LED Kontrolü</h2>
+                    <div class="led-indicator">
+                        <div class="led-icon" id="ledIcon">●</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1em;" id="ledStatusLabel">LED Kapalı</div>
+                            <div style="font-size: 0.9em; color: #94a3b8;">Sensör LED kontrolü</div>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="success" onclick="sensorKontrol('led-ac', true)">● LED Aç</button>
+                        <button class="danger" onclick="sensorKontrol('led-kapat', false)">○ LED Kapat</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>⚖️ Loadcell Kontrolü</h2>
+                    <div style="background: rgba(30, 41, 59, 0.5); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <div style="text-align: center; font-size: 2em; font-weight: bold; color: #60a5fa;" id="agirlikDeger">0</div>
+                        <div style="text-align: center; color: #94a3b8; margin-top: 5px;">gram</div>
+                        <div style="text-align: center; color: #64748b; margin-top: 10px; font-size: 0.9em;" id="sensorMesaj">Henüz ölçüm yapılmadı</div>
+                    </div>
+                    <div class="button-group">
+                        <button class="success" onclick="sensorKomut('loadcell-olc')">▼ Ölçüm Yap</button>
+                        <button class="warning" onclick="sensorKomut('tare')">⚖ Tare (Sıfırla)</button>
+                    </div>
+                    <p class="info-text">Loadcell ağırlık ölçümü ve kalibrasyonu</p>
+                </div>
+
+                <div class="card">
+                    <h2>◉ Şeffaf Algılama Sensörü</h2>
+                    <div class="button-group">
+                        <button class="success" onclick="sensorKomut('teach')">✓ Teach (Öğret)</button>
+                    </div>
+                    <p class="info-text">Şeffaf algılama sensörü kalibrasyonu için teach yapın</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <script>
+        const API_BASE = '';
+
+        // Global durumlar
+        let conveyorState = 'stopped';
+        let motorActive = false;
+        let ledActive = false;
+        let yonlendiriciPos = null;
+        let klapePos = null;
+        let currentTab = 'motor';
+        let bakimModuAktif = false;
+
+        // Sekme değiştir
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Tüm sekmeleri gizle
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            // Seçili sekmeyi göster
+            if (tab === 'motor') {
+                document.getElementById('motorTab').classList.add('active');
+                document.querySelectorAll('.tab')[0].classList.add('active');
+            } else {
+                document.getElementById('sensorTab').classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+
+        // Bakım modu toggle
+        async function bakimModuToggle() {
+            bakimModuAktif = !bakimModuAktif;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/bakim-modu-ayarla`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        aktif: bakimModuAktif
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const btn = document.getElementById('bakimModBtn');
+                    if (bakimModuAktif) {
+                        btn.textContent = '⚙ Bakım Modu: Aktif';
+                        btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                        showMessage('✓ ' + data.message);
+                    } else {
+                        btn.textContent = '⚙ Bakım Modu: Pasif';
+                        btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                        showMessage('✓ ' + data.message);
+                    }
+                    
+                    // Butonları güncelle
+                    butonlariGuncelle();
+                    
+                    // Durum güncellemesini tetikle
+                    setTimeout(sistemDurumunuGuncelle, 500);
+                } else {
+                    showMessage('✗ ' + data.message, true);
+                    bakimModuAktif = !bakimModuAktif; // Geri al
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+                bakimModuAktif = !bakimModuAktif; // Geri al
+            }
+        }
+
+        // Sistem reset
+        async function sistemReset() {
+            if (!confirm('Sistemi resetlemek istediğinizden emin misiniz? Tüm bağlantılar kesilecek ve yeniden kurulacak.')) {
+                return;
+            }
+            
+            try {
+                showMessage('↻ Sistem resetleniyor...', false);
+                const response = await fetch(`${API_BASE}/api/sistem-reset`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage('✓ ' + data.message);
+                    // Durum güncellemesini tetikle
+                    setTimeout(sistemDurumunuGuncelle, 2000);
+                } else {
+                    showMessage('✗ ' + data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Mesaj gösterme
+        function showMessage(text, isError = false) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = isError ? 'message error' : 'message';
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // Motorları aktif et
+        async function motorlariAktifEt() {
+            try {
+                await parametreleriGonderSessiz();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const response = await fetch(`${API_BASE}/api/motor/motorlari-aktif`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    motorActive = true;
+                    updateMotorVisual();
+                    
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    await fetch(`${API_BASE}/api/motor/konveyor-dur`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    conveyorState = 'stopped';
+                    updateConveyorVisual();
+                    
+                    showMessage('✓ Motorlar aktif edildi ve konveyör durduruldu');
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Motor kontrol
+        async function motorKontrol(komut, aktif) {
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    motorActive = aktif;
+                    updateMotorVisual();
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Konveyör kontrol
+        async function conveyorKontrol(komut, durum) {
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    conveyorState = durum;
+                    updateConveyorVisual();
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Yönlendirici kontrol
+        async function yonlendiriciKontrol(komut, pozisyon) {
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    yonlendiriciPos = pozisyon;
+                    updateYonlendiriciVisual();
+                    
+                    // Yönlendirici çalıştıktan sonra konveyör durdu
+                    conveyorState = 'stopped';
+                    updateConveyorVisual();
+                    
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Klape kontrol
+        async function klapeKontrol(komut, pozisyon) {
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    klapePos = pozisyon;
+                    updateKlapeVisual();
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Sensör kontrol (LED)
+        async function sensorKontrol(komut, aktif) {
+            try {
+                const response = await fetch(`${API_BASE}/api/sensor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    ledActive = aktif;
+                    updateLedVisual();
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Sensör komut
+        async function sensorKomut(komut) {
+            try {
+                const response = await fetch(`${API_BASE}/api/sensor/${komut}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Bağlantı hatası: ' + error.message, true);
+            }
+        }
+
+        // Görselleri güncelle
+        function updateMotorVisual() {
+            const motorIcon = document.getElementById('motorIcon');
+            const motorLabel = document.getElementById('motorStatusLabel');
+            
+            if (motorActive) {
+                motorIcon.classList.add('active');
+                motorLabel.textContent = 'Motor Aktif';
+                motorLabel.style.color = '#10b981';
+            } else {
+                motorIcon.classList.remove('active');
+                motorLabel.textContent = 'Motor Kapalı';
+                motorLabel.style.color = '#94a3b8';
+            }
+        }
+
+        function updateLedVisual() {
+            const ledIcon = document.getElementById('ledIcon');
+            const ledLabel = document.getElementById('ledStatusLabel');
+            
+            if (ledActive) {
+                ledIcon.classList.add('active');
+                ledLabel.textContent = 'LED Açık';
+                ledLabel.style.color = '#fbbf24';
+            } else {
+                ledIcon.classList.remove('active');
+                ledLabel.textContent = 'LED Kapalı';
+                ledLabel.style.color = '#94a3b8';
+            }
+        }
+
+        function updateConveyorVisual() {
+            const track = document.getElementById('conveyorTrack');
+            const status = document.getElementById('conveyorStatus');
+            const arrowLeft = document.getElementById('arrowLeft');
+            const arrowRight = document.getElementById('arrowRight');
+            
+            track.className = 'conveyor-track';
+            status.className = 'conveyor-status';
+            arrowLeft.classList.remove('active');
+            arrowRight.classList.remove('active');
+            
+            if (conveyorState === 'forward') {
+                track.classList.add('running-forward');
+                status.classList.add('forward');
+                status.textContent = '▶ İLERİ HAREKET';
+                arrowRight.classList.add('active');
+            } else if (conveyorState === 'backward') {
+                track.classList.add('running-backward');
+                status.classList.add('backward');
+                status.textContent = '◀ GERİ HAREKET';
+                arrowLeft.classList.add('active');
+            } else {
+                status.classList.add('stopped');
+                status.textContent = '■ DURDU';
+            }
+        }
+
+        function updateYonlendiriciVisual() {
+            document.getElementById('posPlastik').classList.remove('active');
+            document.getElementById('posCam').classList.remove('active');
+            
+            if (yonlendiriciPos === 'plastik') {
+                document.getElementById('posPlastik').classList.add('active');
+            } else if (yonlendiriciPos === 'cam') {
+                document.getElementById('posCam').classList.add('active');
+            }
+        }
+
+        function updateKlapeVisual() {
+            document.getElementById('klapeMetal').classList.remove('active');
+            document.getElementById('klapePlastik').classList.remove('active');
+            
+            if (klapePos === 'metal') {
+                document.getElementById('klapeMetal').classList.add('active');
+            } else if (klapePos === 'plastik') {
+                document.getElementById('klapePlastik').classList.add('active');
+            }
+        }
+
+        function updateValue(parametreId) {
+            const slider = document.getElementById(parametreId);
+            const valueDisplay = document.getElementById(parametreId + 'Value');
+            valueDisplay.textContent = slider.value;
+        }
+
+        async function parametreleriGonderSessiz() {
+            const konveyorHizi = document.getElementById('konveyorHizi').value;
+            const yonlendiriciHizi = document.getElementById('yonlendiriciHizi').value;
+            const klapeHizi = document.getElementById('klapeHizi').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/parametreler`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        konveyor_hizi: parseInt(konveyorHizi),
+                        yonlendirici_hizi: parseInt(yonlendiriciHizi),
+                        klape_hizi: parseInt(klapeHizi)
+                    })
+                });
+                
+                const data = await response.json();
+                return data.status === 'success';
+            } catch (error) {
+                console.error('Parametre güncellemesi başarısız:', error);
+                return false;
+            }
+        }
+
+        async function parametreleriGonder() {
+            const konveyorHizi = document.getElementById('konveyorHizi').value;
+            const yonlendiriciHizi = document.getElementById('yonlendiriciHizi').value;
+            const klapeHizi = document.getElementById('klapeHizi').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/motor/parametreler`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        konveyor_hizi: parseInt(konveyorHizi),
+                        yonlendirici_hizi: parseInt(yonlendiriciHizi),
+                        klape_hizi: parseInt(klapeHizi)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage('✓ Parametreler başarıyla güncellendi!');
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage('Parametre güncellemesi başarısız: ' + error.message, true);
+            }
+        }
+
+        async function sistemDurumunuGuncelle() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sistem-durumu`);
+                const data = await response.json();
+                
+                const motorStatus = document.getElementById('motorStatus');
+                const motorStatusText = document.getElementById('motorStatusText');
+                if (data.motor_baglanti) {
+                    motorStatus.classList.add('connected');
+                    motorStatusText.textContent = 'Bağlı';
+                } else {
+                    motorStatus.classList.remove('connected');
+                    motorStatusText.textContent = 'Bağlantı Yok';
+                }
+                
+                const sensorStatus = document.getElementById('sensorStatus');
+                const sensorStatusText = document.getElementById('sensorStatusText');
+                if (data.sensor_baglanti) {
+                    sensorStatus.classList.add('connected');
+                    sensorStatusText.textContent = 'Bağlı';
+                } else {
+                    sensorStatus.classList.remove('connected');
+                    sensorStatusText.textContent = 'Bağlantı Yok';
+                }
+                
+                const sistemDurum = data.mevcut_durum || '-';
+                document.getElementById('sistemDurumu').textContent = sistemDurum;
+                
+                // Bakım modu durumunu güncelle
+                if (sistemDurum === 'bakim' && !bakimModuAktif) {
+                    bakimModuAktif = true;
+                    const btn = document.getElementById('bakimModBtn');
+                    btn.textContent = '⚙ Bakım Modu: Aktif';
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    butonlariGuncelle(); // Butonları aktif et
+                } else if (sistemDurum !== 'bakim' && bakimModuAktif) {
+                    bakimModuAktif = false;
+                    const btn = document.getElementById('bakimModBtn');
+                    btn.textContent = '⚙ Bakım Modu: Pasif';
+                    btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                    butonlariGuncelle(); // Butonları deaktif et
+                }
+                
+                if (data.motor_hizlari) {
+                    document.getElementById('konveyorHizi').value = data.motor_hizlari.konveyor;
+                    document.getElementById('konveyorHiziValue').textContent = data.motor_hizlari.konveyor;
+                    
+                    document.getElementById('yonlendiriciHizi').value = data.motor_hizlari.yonlendirici;
+                    document.getElementById('yonlendiriciHiziValue').textContent = data.motor_hizlari.yonlendirici;
+                    
+                    document.getElementById('klapeHizi').value = data.motor_hizlari.klape;
+                    document.getElementById('klapeHiziValue').textContent = data.motor_hizlari.klape;
+                }
+            } catch (error) {
+                console.error('Durum güncellemesi başarısız:', error);
+            }
+        }
+
+        async function sensorDegerleriniGuncelle() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sensor/son-deger`);
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data) {
+                    document.getElementById('agirlikDeger').textContent = data.data.agirlik || 0;
+                    document.getElementById('sensorMesaj').textContent = data.data.mesaj || 'Henüz ölçüm yapılmadı';
+                }
+            } catch (error) {
+                console.error('Sensör değer güncellemesi başarısız:', error);
+            }
+        }
+
+        // Butonları ve kontrolleri bakım moduna göre aktif/pasif yap
+        function butonlariGuncelle() {
+            const butonlar = document.querySelectorAll('button:not(#bakimModBtn):not(.reset-button):not(.tab)');
+            const sliders = document.querySelectorAll('input[type="range"]');
+            
+            butonlar.forEach(btn => {
+                if (bakimModuAktif) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                }
+            });
+            
+            sliders.forEach(slider => {
+                if (bakimModuAktif) {
+                    slider.disabled = false;
+                    slider.style.opacity = '1';
+                } else {
+                    slider.disabled = true;
+                    slider.style.opacity = '0.5';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            sistemDurumunuGuncelle();
+            sensorDegerleriniGuncelle();
+            butonlariGuncelle(); // İlk başta butonları güncelle
+            setInterval(sistemDurumunuGuncelle, 5000);
+            setInterval(sensorDegerleriniGuncelle, 1000);
+        });
+    </script>
+</body>
+</html>

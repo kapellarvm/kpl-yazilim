@@ -15,12 +15,9 @@ mesaj = None
 
 # Kabul edilen ürünler kuyruğu
 kabul_edilen_urunler = deque()
+veri_senkronizasyonu_kuyrugu = deque()
 
-agirlik_kuyruk = deque()
-barkod_kuyruk = deque()
-goruntu_kuyruk = deque()
-
-
+barkod_lojik = False
 
 def motor_referansini_ayarla(motor):
     global motor_ref
@@ -36,57 +33,21 @@ def sensor_referansini_ayarla(sensor):
     sensor_ref.teach()
 
 def barkod_verisi_al(barcode):
-    global giris_iade_lojik
+    global giris_iade_lojik, barkod_lojik
     
     # İade aktifse yeni barkod işleme
     if giris_iade_lojik:
         print(f"🚫 [İADE AKTIF] Barkod görmezden gelindi: {barcode}")
         return
 
-    if barkod_kuyruk:
-        print(f"🚫 [BARKOD MEVCUT] Zaten işlenen barkod var: {barkod_kuyruk[0]}")
-        print(f"🚫 [REDDEDİLDİ] Yeni barkod reddedildi: {barcode}")
-        return
     
-    barkod_kuyruk.append(barcode)
+    barkod_lojik = True
+    veri_senkronizasyonu(barkod=barcode)
+
     print(f"\n📋 [YENİ ÜRÜN] Barkod okundu: {barcode}")   
 
-def kuyruk_dogrulama():
-    print("Barkod Kuyruk:" + str(len(barkod_kuyruk)) + " Ağırlık Kuyruk:" + str(len(agirlik_kuyruk)) + " Görüntü Kuyruk:" + str(len(goruntu_kuyruk)))
-    if not barkod_kuyruk:
-        print(f"❌ [KUYRUK DOĞRULAMA] Barkod verisi yok")
-        lojik_sifirla()
-        giris_iade_et("Barkod yok")
-        return
-    
-    if not agirlik_kuyruk:
-        print(f"❌ [KUYRUK DOĞRULAMA] Ağırlık verisi yok")
-        lojik_sifirla()
-        giris_iade_et("Ağırlık yok")
-        return
-    
-    if not goruntu_kuyruk:
-        print(f"❌ [KUYRUK DOĞRULAMA] Görüntü işleme verisi yok")
-        lojik_sifirla()
-        giris_iade_et("Görüntü yok")
-        return
 
-    if len(barkod_kuyruk) == len(agirlik_kuyruk) == len(goruntu_kuyruk):
-        print(f"✅ [KUYRUK DOĞRULAMA] Kuyruk uzunlukları eşit")
-   
-        barkod = barkod_kuyruk.popleft()
-        agirlik = agirlik_kuyruk.popleft()
-        materyal_tipi, uzunluk, genislik = goruntu_kuyruk.popleft()
-
-        print(f"\n🔄 [KUYRUK DOĞRULAMA] Veriler alındı: barkod={barkod}, ağırlık={agirlik}, materyal={materyal_tipi}, uzunluk={uzunluk}, genişlik={genislik}")
-
-        dogrulama(barkod, agirlik, materyal_tipi, uzunluk, genislik)
-
-    else:
-        giris_iade_et("Kuyruk uzunlukları eşit değil")
-        print(f"❌ [KUYRUK DOĞRULAMA] Kuyruk uzunlukları eşit değil: barkod={len(barkod_kuyruk)}, ağırlık={len(agirlik_kuyruk)}, görüntü={len(goruntu_kuyruk)}")
-
-def dogrulama(barkod, agirlik, materyal_tipi, uzunluk, genislik):
+def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     global kabul_edilen_urunler
 
     print(f"\n📊 [DOĞRULAMA] Mevcut durum: barkod={barkod}, ağırlık={agirlik}")
@@ -124,7 +85,7 @@ def dogrulama(barkod, agirlik, materyal_tipi, uzunluk, genislik):
     kabul_edilen_urunler.append({
         'barkod': barkod,
         'agirlik': agirlik,
-        'materyal_id': materyal_id
+        'materyal_turu': materyal_turu
     })
 
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
@@ -132,11 +93,7 @@ def dogrulama(barkod, agirlik, materyal_tipi, uzunluk, genislik):
 
 def yonlendirici_hareket():
 
-    if not kabul_edilen_urunler:
-        motor_ref.konveyor_dur()
-        print("❌ [YÖNLENDİRİCİ] Kuyrukta ürün yok")
-        giris_iade_et("Kuyrukta ürün yok")
-        return
+
     
     # En eski ürünü al
     urun = kabul_edilen_urunler.popleft()
@@ -169,24 +126,64 @@ def giris_iade_et(sebep):
     motor_ref.konveyor_geri()
 
 def lojik_sifirla():
-    global agirlik
-
-    barkod_kuyruk.clear()
-    goruntu_kuyruk.clear()
-    agirlik_kuyruk.clear()
+    global giris_iade_lojik, barkod_lojik
+    giris_iade_lojik = False
+    barkod_lojik = False
 
 def goruntu_isleme_tetikle():
     print("📸 [GÖRÜNTÜ İŞLEME] Görüntü işleme tetiklendi (simülasyon)")
     # Burada gerçek görüntü işleme kodu olacak
     time.sleep(0.3)  # Simülasyon için bekle
     goruntu_sonuc = ["plastik", 103.55, 58.5]
-    goruntu_kuyruk.append(goruntu_sonuc)
+    veri_senkronizasyonu(materyal_turu=goruntu_sonuc[0], uzunluk=goruntu_sonuc[1], genislik=goruntu_sonuc[2])
 
-# Ana mesaj işleyici
+
+def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=None, genislik=None):
+    global barkod_lojik
+    # Eğer kuyruk boşsa, yeni ürün başlat
+    if not veri_senkronizasyonu_kuyrugu:
+        veri_senkronizasyonu_kuyrugu.append({
+            'barkod': None,
+            'agirlik': None,
+            'materyal_turu': None,
+            'uzunluk': None,
+            'genislik': None
+        })
+
+    # Her zaman FIFO mantığında en öndeki ürünü güncelle
+    urun = veri_senkronizasyonu_kuyrugu[0]
+
+    if barkod is not None:
+        urun['barkod'] = barkod
+    if agirlik is not None:
+        urun['agirlik'] = agirlik
+    if materyal_turu is not None:
+        urun['materyal_turu'] = materyal_turu
+    if uzunluk is not None:
+        urun['uzunluk'] = uzunluk
+    if genislik is not None:
+        urun['genislik'] = genislik
+
+    # Eğer tüm alanlar dolduysa ürünü işleme al
+    print(f"🔍 [VERİ SENKRONİZASYONU] Güncel ürün durumu: {urun}")
+
+    if urun['barkod'] is None and any(urun[k] is not None for k in ['agirlik', 'materyal_turu', 'uzunluk', 'genislik']):
+        print(f"❌ [VERİ SENKRONİZASYONU] Karşılaştırma hatası - barkod olmadan veri geldi: {urun}")
+    
+        veri_senkronizasyonu_kuyrugu.popleft()  # hatalı ürünü sil
+        print(f"🔄 [VERİ SENKRONİZASYONU] Güncel kuyruk durumu: {veri_senkronizasyonu_kuyrugu}")
+        return  # çıkış yap
+
+    if all(urun[k] is not None for k in urun):
+        print(f"✅ [VERİ SENKRONİZASYONU] Tüm veriler alındı: {urun}")
+        dogrulama(urun['barkod'], urun['agirlik'], urun['materyal_turu'], urun['uzunluk'], urun['genislik'])
+        veri_senkronizasyonu_kuyrugu.popleft()  # işlenen ürünü kuyruktan çıkar
+    print(f"🔄 [VERİ SENKRONİZASYONU] Güncel kuyruk durumu: {veri_senkronizasyonu_kuyrugu}")
+
+
+
 def mesaj_isle(mesaj):
-    global giris_iade_lojik, agirlik
-
-    print(f"\n📨 [Gelen mesaj] {mesaj}")
+    global giris_iade_lojik, agirlik, barkod_lojik
 
     mesaj = mesaj.strip().lower()
     
@@ -199,7 +196,7 @@ def mesaj_isle(mesaj):
     if mesaj.startswith("a:"):
         if not giris_iade_lojik:
             agirlik = float(mesaj.split(":")[1].replace(",", "."))
-            agirlik_kuyruk.append(agirlik)
+            veri_senkronizasyonu(agirlik=agirlik)
             agirlik = None
         else:
             print(f"🚫 [İADE AKTIF] Ağırlık görmezden gelindi: {mesaj}")
@@ -217,30 +214,25 @@ def mesaj_isle(mesaj):
         if not giris_iade_lojik:
             print(f"🟠 [GSO] Şişe içeride kontrole hazır.")
 
-            if barkod_kuyruk and agirlik_kuyruk:
-
+            if barkod_lojik:
                 goruntu_isleme_tetikle()
-                kuyruk_dogrulama()
 
             else:
-
                 print(f"❌ [KONTROL] Barkod verisi yok")
-                giris_iade_et("Barkod yok")
-
-                
+                giris_iade_et("Barkod yok")          
 
         else :
             print(f"🟠 [GSO] İade Şişe alındı.")
             time.sleep(2)
-            giris_iade_lojik = False
             lojik_sifirla()
     
     if mesaj == "yso":
+        print(f"🔵 [YSO] Yönlendirici sensör tetiklendi.")
         yonlendirici_hareket()
 
 
 
-t1 = threading.Thread(target=kuyruk_dogrulama, daemon=True)
+t1 = threading.Thread(target=veri_senkronizasyonu, daemon=True)
 t2 = threading.Thread(target=mesaj_isle, daemon=True)
 t1.start()
 t2.start()

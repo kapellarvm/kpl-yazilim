@@ -260,7 +260,7 @@ def yonlendirici_karar_ver():
 
 # Ana mesaj işleyici
 def mesaji_isle(mesaj):
-    global gso_bekleniyor, yonlendirici_giris_aktif
+    global gso_bekleniyor, yonlendirici_giris_aktif, barkod_lojik
     global iade_aktif, iade_gsi_bekliyor, iade_gso_bekliyor
 
     print(f"\n📨 [Gelen mesaj] {mesaj}")
@@ -314,18 +314,22 @@ def mesaji_isle(mesaj):
             print(f"⏳ [YÖNLENDİRİCİ] Uzunluk verisi bekleniyor...")
     
     if mesaj == "gso":
-        print(f"� [GSO] Çıkış sensörü tetiklendi - Kontrol başlıyor")
-        if not barkod_lojik:
-            print(f"❌ [KONTROL] Barkod verisi yok")
-            if not kabul_edilen_urunler:
-                urun_iade_et("Barkod yok")
-                veri_temizle()
+        if not giris_iade_lojik:
+            print(f"🟠 [GSO] Şişe içeride kontrole hazır.")
+
+            if not barkod_lojik:
+
+                print(f"❌ [KONTROL] Barkod verisi yok")
+                giris_iade_et("Barkod yok")
+                
             else:
-                print(f"❌ [KONTROL] Ancak kuyrukta ürün var, iade edilmedi")
-                veri_temizle()
-        else:
-            gso_bekleniyor = True
-            print(f"⏳ [KONTROL] Güncel ağırlık verisi bekleniyor...")
+                # Burada görüntü işlemede tetiklenecek. 
+
+                print(f"⏳ [KONTROL] Kontrol Mekanizması")
+
+        else :
+            print(f"🟠 [GSO] İade Şişe alındı.")
+            lojik_sifirla()
 
 sistem_durumunu_sifirla = sistem_sifirla 
 
