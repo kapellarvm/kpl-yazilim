@@ -6,7 +6,7 @@ from ultralytics import YOLO
 
 # Mac'te kamera servisini kullanma
 if platform.system() != "Darwin":  # Darwin = macOS
-    from .Kamera_Servis import KameraServis  # Düz isim: Kamera_Servis.py
+    from Kamera_Servis import KameraServis  # Düz isim: Kamera_Servis.py
 
 class YOLOProcessor:
     def __init__(self):
