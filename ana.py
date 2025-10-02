@@ -10,6 +10,7 @@ from rvm_sistemi.makine.seri.motor_karti import MotorKart
 from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 from rvm_sistemi.makine.durum_degistirici import durum_makinesi
 from rvm_sistemi.makine.dogrulama import DogrulamaServisi
+from rvm_sistemi.makine import kart_referanslari
 
 dogrulama_servisi = DogrulamaServisi()
 
@@ -31,7 +32,15 @@ async def run_heartbeat_scheduler():
 
 def sensor_callback(mesaj):
     global motor, sensor
+    # Sensör mesajlarını hem durum makinesine hem de sunucuya gönder
     durum_makinesi.olayi_isle(mesaj)
+    
+    # Sunucudaki callback'i de çağır (eğer varsa)
+    try:
+        from rvm_sistemi.dimdb.sunucu import sensor_callback as sunucu_callback
+        sunucu_callback(mesaj)
+    except:
+        pass
 
 
 def motor_callback(mesaj):
@@ -75,13 +84,17 @@ async def main():
     oturum_yok.sensor_referansini_ayarla(sensor)
     oturum_var.motor_referansini_ayarla(motor)
     oturum_var.sensor_referansini_ayarla(sensor)
+    
+    # Merkezi referans sistemine de kaydet
+    kart_referanslari.motor_referansini_ayarla(motor)
+    kart_referanslari.sensor_referansini_ayarla(sensor)
 
     # FastAPI sunucusunu başlat
     config = uvicorn.Config(
         "rvm_sistemi.dimdb.sunucu:app",
         host="0.0.0.0",
         port=4321,
-        log_level="info"
+        log_level="warning"
     )
     server = uvicorn.Server(config)
 

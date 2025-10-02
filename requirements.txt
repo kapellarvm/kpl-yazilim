@@ -3,6 +3,7 @@
 # API sunucusu 
 fastapi
 uvicorn[standard]
+python-multipart
 
 # Flask için Swagger/OpenAPI entegrasyonu
 flasgger==0.9.7.1
