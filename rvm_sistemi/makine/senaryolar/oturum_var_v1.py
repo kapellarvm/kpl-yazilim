@@ -328,3 +328,131 @@ def mesaji_isle(mesaj):
             print(f"⏳ [KONTROL] Güncel ağırlık verisi bekleniyor...")
 
 sistem_durumunu_sifirla = sistem_sifirla 
+
+
+
+
+
+def agirlik_kontrol(urun_bilgisi, agirlik):
+    """Ağırlık tolerans kontrolü (±25gr)"""
+    min_agirlik = urun_bilgisi.get('packMinWeight')
+    max_agirlik = urun_bilgisi.get('packMaxWeight')
+      
+    tolerans = 25
+    return (min_agirlik - tolerans) <= agirlik <= (max_agirlik + tolerans)
+
+
+
+
+
+    
+def urun_kabul_et(barkod, agirlik, materyal_id):
+    """Ürünü kuyruğa ekler"""
+    urun = {
+        'barkod': barkod,
+        'agirlik': agirlik,
+        'materyal_id': materyal_id,
+        'zaman': time.time()
+    }
+    kabul_edilen_urunler.append(urun)
+    materyal_isimleri = {1: "PET", 2: "CAM", 3: "ALÜMİNYUM"}
+    materyal_adi = materyal_isimleri.get(materyal_id, "BİLİNMEYEN")
+    print(f"✅ [KABUL] {materyal_adi} ürün kuyruğa eklendi | Toplam: {len(kabul_edilen_urunler)}")
+
+
+
+
+def dogrulama(barkod, agirlik, materyal_tipi, uzunluk, genislik):
+    """GSO sonrası ürün doğrulaması"""
+    global gecici_agirlik 
+
+    print(f"\n🔍 [DOĞRULAMA BAŞLADI] GSO sonrası kontrol")
+    
+    if not barkod_kuyruk:
+        print(f"❌ [DOĞRULAMA] Barkod verisi yok")
+
+        return
+    
+    urun_bilgisi = veritabani_yoneticisi.barkodu_dogrula(barkod_kuyruk[0])
+    
+    if not urun_bilgisi:
+        print(f"❌ [DOĞRULAMA] Veritabanında ürün bulunamadı")
+        giris_iade_et("Ürün bulunamadı")
+
+        return
+    
+    # Ağırlık kontrolü
+    print(f"⚖️ [DOĞRULAMA] Ağırlık kontrolü yapılıyor...")
+    if not agirlik_kontrol(urun_bilgisi, gecici_agirlik):
+        print(f"❌ [DOĞRULAMA] Ağırlık tolerans dışında")
+        giris_iade_et("Ağırlık uyumsuz")
+        return
+    
+    # Ürün kabul edildi
+    materyal_id = urun_bilgisi.get('material')
+    print(f"✅ [DOĞRULAMA] Tüm kontroller başarılı")
+    urun_kabul_et(gecici_barkod, gecici_agirlik, materyal_id)
+    lojik_sifirla()
+
+
+
+    #if mesaj.startswith("m:"):
+    #    uzunluk_str = mesaj.split(":")[1]
+    #    gecici_urun_uzunlugu = float(uzunluk_str.replace(",", "."))
+    #    print(f"📏 [UZUNLUK] Ürün uzunluğu alındı: {gecici_urun_uzunlugu} cm")
+
+
+
+
+
+
+def mesaj_isle(mesaj):
+    global giris_iade_lojik, agirlik
+
+    print(f"\n📨 [Gelen mesaj] {mesaj}")
+
+    mesaj = mesaj.strip().lower()
+    
+    if mesaj == "oturum_var":
+        print(f"🟢 [OTURUM] Aktif oturum başlatıldı")
+        if sensor_ref:
+            sensor_ref.led_ac()
+    
+    if mesaj.startswith("a:"):
+        if barkod_kuyruk:
+            agirlik = float(mesaj.split(":")[1].replace(",", "."))
+            agirlik_kuyruk.append(agirlik)
+        else:
+            print(f"❌ [AĞIRLIK] Barkod gelmeden ağırlık verisi alındı: {mesaj}")
+    
+    if mesaj == "gsi":
+        if not giris_iade_lojik:
+            print(f"� [GSI] Şişe Geldi.")
+            motor_ref.konveyor_ileri()
+        else:
+            time.sleep(0.2) # Gömülüden buraya  adım gibi bir mesaj eklenecek örneğin 10cm daha geri verip duracak.
+            print(f"▶️ [GSI] LÜTFEN ŞİŞEYİ ALINIZ.")
+            motor_ref.konveyor_dur()
+    
+    if mesaj == "gso":
+        if not giris_iade_lojik:
+            print(f"🟠 [GSO] Şişe içeride kontrole hazır.")
+
+            if barkod_kuyruk:
+
+                goruntu_isleme_tetikle()
+                kuyruk_dogrulama()
+
+            else:
+
+                print(f"❌ [KONTROL] Barkod verisi yok")
+                giris_iade_et("Barkod yok")
+
+                
+
+        else :
+            print(f"🟠 [GSO] İade Şişe alındı.")
+            lojik_sifirla()
+    
+    if mesaj == "yso":
+        yonlendirici_hareket()
