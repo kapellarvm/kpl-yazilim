@@ -17,7 +17,7 @@ class SensorKart:
         self.listen_thread = None
         self.write_queue = queue.Queue()
         self.write_thread = None
-        self.saglikli = False
+        self.saglikli = True  # Başlangıçta sağlıklı olarak başlat
 
         # DOĞRUDAN BAĞLANTIYI BAŞLAT
         self.portu_ac()
