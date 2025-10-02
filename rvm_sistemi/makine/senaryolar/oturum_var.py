@@ -62,6 +62,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     materyal_id = urun.get('material')
     min_agirlik = urun.get('packMinWeight')
     max_agirlik = urun.get('packMaxWeight')
+    min_genislik = urun.get('packMinWidth')
+    max_genislik = urun.get('packMaxWidth')
+    min_uzunluk = urun.get('packMinHeight')
+    max_uzunluk = urun.get('packMaxHeight')
+    
 
     print(f"📊 [DOĞRULAMA] Ölçülen ağırlık: {agirlik} gr")
     
@@ -81,6 +86,36 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         giris_iade_et("Ağırlık sınırları dışında")
         return
 
+    if uzunluk is not None and (uzunluk < min_uzunluk or uzunluk > max_uzunluk):
+        print(f"❌ [DOĞRULAMA] Uzunluk sınırları dışında: {uzunluk} cm (Beklenen: {min_uzunluk}-{max_uzunluk} cm)")
+        giris_iade_et("Uzunluk sınırları dışında")
+        return
+    
+    if genislik is not None and (genislik < min_genislik or genislik > max_genislik):
+        print(f"❌ [DOĞRULAMA] Genişlik sınırları dışında: {genislik} cm (Beklenen: {min_genislik}-{max_genislik} cm)")
+        giris_iade_et("Genişlik sınırları dışında")
+        return
+    
+    if materyal_turu:
+        materyal_turu = materyal_turu.lower()
+        if materyal_id == 1 and materyal_turu != "plastik":
+            print(f"❌ [DOĞRULAMA] Materyal türü uyuşmuyor: Beklenen Plastik, Gelen {materyal_turu}")
+            giris_iade_et("Materyal türü uyuşmuyor")
+            return
+        elif materyal_id == 2 and materyal_turu != "cam":
+            print(f"❌ [DOĞRULAMA] Materyal türü uyuşmuyor: Beklenen Cam, Gelen {materyal_turu}")
+            giris_iade_et("Materyal türü uyuşmuyor")
+            return
+        elif materyal_id == 3 and materyal_turu not in ["metal", "alu", "alüminyum", "aluminyum", "alüminyum"]:
+            print(f"❌ [DOĞRULAMA] Materyal türü uyuşmuyor: Beklenen Metal, Gelen {materyal_turu}")
+            giris_iade_et("Materyal türü uyuşmuyor")
+            return
+        else:
+            print(f"📊 [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
+    else:
+        print(f"❌ [DOĞRULAMA] Materyal türü bilgisi yok")
+        giris_iade_et("Materyal türü bilgisi yok")
+        return
     # Tüm kontroller geçti, ürünü kabul et
     kabul_edilen_urunler.append({
         'barkod': barkod,

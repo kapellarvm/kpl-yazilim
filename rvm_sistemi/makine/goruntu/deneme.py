@@ -14,3 +14,4 @@ if __name__ == "__main__":
             break
         else:
             print("Geçersiz tuş. 'a' veya 'q' gir.")
+    
