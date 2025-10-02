@@ -4,8 +4,9 @@ import sys
 from ctypes import *
 import numpy as np
 import cv2
+from app.shared.logger import app_logger
 sys.path.append("../MvImport")
-from MvCameraControl_class import *
+from .MvCameraControl_class import *
 
 class KameraServis:
     def __init__(self):
@@ -45,10 +46,10 @@ class KameraServis:
                 app_logger.warning(f"Warning: Get Packet Size fail! ret[0x%x]" % nPacketSize)
 
         # Parametreler
-        self.cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
-        self.cam.MV_CC_SetFloatValue("ExposureTime", 1500.0)
-        self.cam.MV_CC_SetFloatValue("Gain", 0.0)
-        self.cam.MV_CC_SetEnumValue("PixelFormat", PixelType_Gvsp_BayerRG8)
+        #self.cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
+        #self.cam.MV_CC_SetFloatValue("ExposureTime", 1500.0)
+        #self.cam.MV_CC_SetFloatValue("Gain", 0.0)
+        #self.cam.MV_CC_SetEnumValue("PixelFormat", PixelType_Gvsp_BayerRG8)
 
         app_logger.info("Kamera başlatıldı ve parametreler ayarlandı.")
 

@@ -7,14 +7,14 @@ import os
 import pathlib
 
 from ctypes import *
-from CameraParams_const import *
-from CameraParams_header import *
-from MvErrorDefine_const import *
-from PixelType_const import *
-from PixelType_header import *
+from .CameraParams_const import *
+from .CameraParams_header import *
+from .MvErrorDefine_const import *
+from .PixelType_const import *
+from .PixelType_header import *
 
 # SDK'yı direk proje içinden yükle - environment variable gerekmez
-project_root = pathlib.Path(__file__).parent
+project_root = pathlib.Path(__file__).parent.parent.parent.parent
 sdk_path = project_root / "sdk" / "libMvCameraControl.so"
 MvCamCtrldll = ctypes.cdll.LoadLibrary(str(sdk_path))
 

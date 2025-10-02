@@ -3,12 +3,15 @@ import cv2
 import os
 import platform
 from ultralytics import YOLO
-from Kamera_Servis import KameraServis 
+
+# Mac'te kamera servisini kullanma
+if platform.system() != "Darwin":  # Darwin = macOS
+    from .Kamera_Servis import KameraServis  # Düz isim: Kamera_Servis.py
 
 class YOLOProcessor:
     def __init__(self):
         self.device = "cpu"
-        model_path = os.path.join(os.path.dirname(__file__), "best_small.pt")
+        model_path = os.path.join(os.path.dirname(__file__), "b_s_y.pt")
         self.model = YOLO(model_path)
         
         # Mac'te kamera servisini başlatma
@@ -60,7 +63,7 @@ class YOLOProcessor:
 
                 detected_objects.append({
                     "type": label,
-                    "4": round(conf, 3),
+                    "confidence": round(conf, 3),
                     "width_mm": round(width_real, 2),
                     "height_mm": round(height_real, 2)
                 })
