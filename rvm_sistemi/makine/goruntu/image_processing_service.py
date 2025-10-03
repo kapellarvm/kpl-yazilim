@@ -1,8 +1,6 @@
 import threading
 import platform
-from app.services.image_processing_service.ImageProcessingResult import ImageProcessingResult
-from app.shared.enums import BinType, PackageType
-from app.shared.logger import app_logger
+from .ImageProcessingResult import ImageProcessingResult, BinType, PackageType
 
 SLAVE_ID = 1
 TARGET_SERIAL = "B0046HHJA"
@@ -13,7 +11,7 @@ class ImageProcessingService:
     def __init__(self):
         # Mac'te YOLO modelini yükleme
         if platform.system() != "Darwin":
-            from app.services.image_processing_service.image import YOLOProcessor
+            from .image import YOLOProcessor
             self.processor = YOLOProcessor()
         else:
             self.processor = None
@@ -52,7 +50,7 @@ class ImageProcessingService:
             return bin_type  # "1", "2", veya "3" döndürür
         else:
             # Eğer mapping'de yoksa, varsayılan olarak "0" (UNKNOWN) döndür
-            app_logger.warning(f"Uyarı: Bilinmeyen YOLO type: {yolo_type}")
+            print(f"Uyarı: Bilinmeyen YOLO type: {yolo_type}")
             return PackageType.UNKNOWN
 
     def capture_and_process(self):
@@ -62,12 +60,12 @@ class ImageProcessingService:
             
         result = self.processor.capture_and_process()
         if "error" in result:
-            app_logger.error(f"HATA: {result['error']}")
+            print(f"HATA: {result['error']}")
         else:
-            app_logger.info(f"YOLO işlem süresi: {result['process_time_ms']} ms")
-            
+            print(f"YOLO işlem süresi: {result['process_time_ms']} ms")
+
             if "message" in result and result["message"] == "nesne yok":
-                app_logger.info("Nesne yok")
+                print("Nesne yok")
                 return ImageProcessingResult(
                     width_mm=0,
                     height_mm=0,
@@ -76,12 +74,12 @@ class ImageProcessingService:
                     message="nesne yok"
                 )
             elif result['detected_objects']:
-                app_logger.info("Tespit edilen nesneler:")
+                print("Tespit edilen nesneler:")
                 for j, obj in enumerate(result['detected_objects'], 1):
                     # YOLO type'ını BinType'a çevir
                     mapped_type = self._map_yolo_type_to_bin_type(obj['type'])
-                    
-                    app_logger.info(f"  {j}. Tür: {obj['type']} -> {mapped_type} | "
+
+                    print(f"  {j}. Tür: {obj['type']} -> {mapped_type} | "
                             f"Güven: {obj['confidence']} | "
                             f"Yükseklik(mm): {obj['width_mm']} | "
                             f"Genişlik(mm): {obj['height_mm']}")
@@ -93,22 +91,22 @@ class ImageProcessingService:
                         message="nesne var"
                     )
             else:
-                app_logger.info("Hiç nesne tespit edilmedi.")
+                print("Hiç nesne tespit edilmedi.")
 
     def _get_mock_result(self):
         """Mac için mock sonuç döndürür"""
         import random
         
-        app_logger.info("Mac ortamında mock image processing kullanılıyor")
+        print("Mac ortamında mock image processing kullanılıyor")
         
         # Rastgele nesne tespit etme simülasyonu
         if random.random() < 0.3:  # %30 ihtimalle nesne tespit et
             object_types = ["bottle", "glass", "can", "plastic"]
             detected_type = random.choice(object_types)
             mapped_type = self._map_yolo_type_to_bin_type(detected_type)
-            
-            app_logger.info(f"Mock tespit: {detected_type} -> {mapped_type}")
-            
+
+            print(f"Mock tespit: {detected_type} -> {mapped_type}")
+
             return ImageProcessingResult(
                 width_mm=round(random.uniform(80, 200), 2),
                 height_mm=round(random.uniform(50, 150), 2),
@@ -117,7 +115,7 @@ class ImageProcessingService:
                 message="nesne var"
             )
         else:
-            app_logger.info("Mock: Nesne yok")
+            print("Mock: Nesne yok")
             return ImageProcessingResult(
                 width_mm=0,
                 height_mm=0,
