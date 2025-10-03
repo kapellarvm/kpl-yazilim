@@ -1,0 +1,215 @@
+/* RVM Bakım Paneli v2 - CSS */
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.status-dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-online { background-color: #22c55e; } /* green-500 */
+.status-offline { background-color: #ef4444; } /* red-500 */
+.status-warning { background-color: #f59e0b; } /* amber-500 */
+
+/* Performans için will-change sınıfları */
+.will-change-transform { will-change: transform; }
+.will-change-opacity { will-change: opacity; }
+.will-change-all { will-change: transform, opacity; }
+
+/* OPT Sensör Animasyonları */
+@keyframes ray-animation {
+    to { stroke-dashoffset: -20; }
+}
+.teaching-rays .ray {
+    stroke-dasharray: 5 5;
+    animation: ray-animation 0.4s linear infinite;
+}
+
+/* Loadcell Animasyonu */
+@keyframes measure-animation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+.measuring {
+    animation: measure-animation 0.5s ease-in-out infinite;
+}
+
+/* LED Animasyonu */
+@keyframes led-pulse-animation {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+#conveyor-led-visual.led-on svg {
+    animation: led-pulse-animation 1.5s ease-in-out infinite;
+}
+
+.speed-slider::-webkit-slider-thumb,
+#led-brightness-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none; 
+    width: 20px; 
+    height: 20px; 
+    background: #3b82f6; 
+    cursor: pointer; 
+    border-radius: 50%;
+}
+
+.details-grid {
+    transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out, opacity 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+/* Motor Animasyonları */
+@keyframes gear-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spinning {
+    animation: gear-spin 2s linear infinite;
+}
+@keyframes gear-spin-rev {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+.spinning-rev {
+    animation: gear-spin-rev 2s linear infinite;
+}
+
+/* Konveyör Animasyonu */
+#conveyor-animation-bg {
+    background-image: repeating-linear-gradient(
+        -45deg,
+        #374151,
+        #374151 15px,
+        #4b5563 15px,
+        #4b5563 30px
+    );
+    background-size: 84px 100%;
+}
+
+@keyframes scroll-forward {
+    from { background-position: 0 0; }
+    to { background-position: -42.42px 0; }
+}
+
+@keyframes scroll-backward {
+    from { background-position: 0 0; }
+    to { background-position: 42.42px 0; }
+}
+
+.conveyor-running-forward #conveyor-animation-bg {
+    animation: scroll-forward var(--conveyor-duration, 1s) linear infinite;
+}
+.conveyor-running-backward #conveyor-animation-bg {
+    animation: scroll-backward var(--conveyor-duration, 1s) linear infinite;
+}
+
+/* Şişe Animasyonu */
+@keyframes bottle-move-forward {
+    from { transform: translateX(-50px); }
+    to { transform: translateX(calc(100% + 50px)); } 
+}
+@keyframes bottle-move-backward {
+    from { transform: translateX(calc(100% + 50px)); }
+    to { transform: translateX(-50px); }
+}
+.conveyor-running-forward #conveyor-bottle {
+    animation: bottle-move-forward var(--conveyor-bottle-duration, 3s) linear infinite;
+}
+.conveyor-running-backward #conveyor-bottle {
+    animation: bottle-move-backward var(--conveyor-bottle-duration, 3s) linear infinite;
+}
+#conveyor-bottle {
+    position: absolute;
+    top: 50%;
+    left: 0; 
+    transform: translateY(-50%);
+}
+
+/* LED Blink Animasyonu */
+@keyframes led-blink {
+    50% { opacity: 0.2; }
+}
+.led-blink-red {
+    background-color: #ef4444; /* red-500 */
+    animation: led-blink 0.8s step-end infinite;
+}
+.led-blink-green {
+    background-color: #22c55e; /* green-500 */
+    animation: led-blink 0.5s step-end infinite;
+}
+.led-blink-orange {
+    background-color: #f97316; /* orange-500 */
+    animation: led-blink 0.8s step-end infinite;
+}
+.led-on-orange {
+     background-color: #f97316; /* orange-500 */
+}
+
+/* Diğer Motor Animasyonları */
+@keyframes diverter-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes diverter-spin-rev { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+
+.snowflake { 
+    position: relative; 
+    width: 10px; 
+    height: 10px; 
+    transition: transform 0.3s ease;
+}
+.snowflake-arm { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    width: 56px; 
+    height: 4px; 
+    background-color: #2dd4bf; 
+    border-radius: 2px; 
+    transform-origin: center; 
+    margin-top: -2px; 
+    margin-left: -28px; 
+}
+.snowflake-arm:nth-child(1) { transform: rotate(0deg); }
+.snowflake-arm:nth-child(2) { transform: rotate(60deg); }
+.snowflake-arm:nth-child(3) { transform: rotate(120deg); }
+
+/* Yönlendirici Animasyonları */
+#diverter-visual.spinning .snowflake {
+    animation: diverter-spin 2s linear infinite;
+}
+#diverter-visual.spinning-rev .snowflake {
+    animation: diverter-spin-rev 2s linear infinite;
+}
+
+#flap-visual {
+    transition: transform 0.5s ease;
+    transform-origin: bottom center;
+}
+
+/* Power Toggle Switch */
+.power-switch input { display: none; }
+.power-switch-label { display: block; overflow: hidden; cursor: pointer; border: 0 solid #bbb; border-radius: 20px; }
+.power-switch-inner { display: block; width: 200%; margin-left: -100%; transition: margin 0.3s ease-in 0s; }
+.power-switch-inner:before, .power-switch-inner:after { display: block; float: left; width: 50%; height: 24px; padding: 0; line-height: 24px; font-size: 12px; color: white; font-weight: bold; box-sizing: border-box; }
+.power-switch-inner:before { content: "AÇIK"; padding-left: 10px; background-color: #22c55e; color: #FFFFFF; }
+.power-switch-inner:after { content: "KAPALI"; padding-right: 10px; background-color: #ef4444; color: #FFFFFF; text-align: right; }
+.power-switch-switch { display: block; width: 18px; margin: 3px; background: #FFFFFF; position: absolute; top: 0; bottom: 0; right: 26px; border: 0 solid #bbb; border-radius: 20px; transition: all 0.3s ease-in 0s; }
+.power-switch input:checked + .power-switch-label .power-switch-inner { margin-left: 0; }
+.power-switch input:checked + .power-switch-label .power-switch-switch { right: 0px; }
+
+/* Tab Styles */
+.tab-btn.active-tab {
+    border-color: #3b82f6; /* blue-500 */
+    color: #60a5fa; /* blue-400 */
+}
+.tab-btn.inactive-tab {
+    border-color: transparent;
+    color: #9ca3af; /* gray-400 */
+}
+.tab-btn.inactive-tab:hover {
+    border-color: #4b5563; /* gray-600 */
+    color: #d1d5db; /* gray-300 */
+}

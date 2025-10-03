@@ -84,6 +84,18 @@ async def send_transaction_result(transaction_data):
     print(f"İşlem sonucu (transaction) gönderiliyor: {transaction_data['sessionId']}")
     await _send_request("transactionResult", transaction_data)
 
+async def send_alarm(alarm_code, alarm_message):
+    """DİM DB'ye RVM'de oluşan alarm durumlarını bildirir."""
+    print(f"Alarm gönderiliyor: {alarm_code} - {alarm_message}")
+    payload = {
+        "guid": str(uuid.uuid4()),
+        "rvm": RVM_ID,
+        "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+        "alarmCode": alarm_code,
+        "alarmMessage": alarm_message
+    }
+    await _send_request("alarm", payload)
+
 async def get_all_products_and_save():
     """DİM-DB'den ürün listesini alır ve yerel veritabanına kaydeder."""
     print("Ürün listesi isteniyor...")

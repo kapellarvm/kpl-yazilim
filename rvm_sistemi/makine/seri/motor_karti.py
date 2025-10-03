@@ -43,6 +43,27 @@ class MotorKart:
         if klape is not None:
             self.klape_hizi = klape
 
+    def konveyor_hiz_ayarla(self, hiz):
+        self.konveyor_hizi = hiz
+        self.parametre_gonder()
+
+    def yonlendirici_hiz_ayarla(self, hiz):
+        self.yonlendirici_hizi = hiz
+        self.parametre_gonder()
+
+    def klape_hiz_ayarla(self, hiz):
+        self.klape_hizi = hiz
+        self.parametre_gonder()
+
+    def reset(self):
+        """Motor kartını resetler"""
+        try:
+            if self.seri_port and self.seri_port.is_open:
+                self.seri_port.write(b"reset\n")
+                time.sleep(0.1)
+        except Exception as e:
+            print(f"[MOTOR] Reset hatası: {e}")
+
     def motorlari_aktif_et(self):
         self.write_queue.put(("motorlari_aktif_et", None))
 
@@ -111,69 +132,128 @@ class MotorKart:
     def _yaz(self):
         while self.running:
             try:
-                if not self.seri_port or not self.seri_port.is_open:
+                # Port kontrolü daha güvenli hale getir
+                if not self.seri_port:
+                    time.sleep(0.5)
+                    continue
+                
+                # Port açık mı kontrol et - exception handle et
+                try:
+                    port_acik = self.seri_port.is_open
+                except (AttributeError, OSError):
+                    port_acik = False
+                
+                if not port_acik:
                     time.sleep(0.5)
                     continue
 
-                command, data = self.write_queue.get(timeout=1)
+                # Queue'dan veri al - timeout ile
+                try:
+                    command, data = self.write_queue.get(timeout=1)
+                except queue.Empty:
+                    continue
 
                 if command == "exit":
                     break
 
-                if command == "parametre_gonder":
-                    self.seri_port.write(f"kh{self.konveyor_hizi}\n".encode())
-                    time.sleep(0.05)
-                    self.seri_port.write(f"yh{self.yonlendirici_hizi}\n".encode())
-                    time.sleep(0.05)
-                    self.seri_port.write(f"sh{self.klape_hizi}\n".encode())
-                elif command == "motorlari_aktif_et":
-                    self.seri_port.write(b"aktif\n")
-                elif command == "motorlari_iptal_et":
-                    self.seri_port.write(b"iptal\n")
-                elif command == "konveyor_ileri":
-                    self.seri_port.write(b"kmi\n")
-                elif command == "konveyor_geri":
-                    self.seri_port.write(b"kmg\n")
-                elif command == "konveyor_dur":
-                    self.seri_port.write(b"kmd\n")
-                elif command == "yonlendirici_plastik":
-                    self.seri_port.write(b"ymp\n")
-                elif command == "yonlendirici_cam":
-                    self.seri_port.write(b"ymc\n")
-                elif command == "klape_metal":
-                    self.seri_port.write(b"smm\n")
-                elif command == "klape_plastik":
-                    self.seri_port.write(b"smp\n")
-                elif command == "yonlendirici_sensor_teach":
-                    self.seri_port.write(b"yst\n")
-                elif command == "ping":
-                    self.seri_port.write(b"ping\n")
+                # Komutları gönder - her biri için exception handle et
+                try:
+                    if command == "parametre_gonder":
+                        self.seri_port.write(f"kh{self.konveyor_hizi}\n".encode())
+                        time.sleep(0.05)
+                        self.seri_port.write(f"yh{self.yonlendirici_hizi}\n".encode())
+                        time.sleep(0.05)
+                        self.seri_port.write(f"sh{self.klape_hizi}\n".encode())
+                    elif command == "motorlari_aktif_et":
+                        self.seri_port.write(b"aktif\n")
+                    elif command == "motorlari_iptal_et":
+                        self.seri_port.write(b"iptal\n")
+                    elif command == "konveyor_ileri":
+                        self.seri_port.write(b"kmi\n")
+                    elif command == "konveyor_geri":
+                        self.seri_port.write(b"kmg\n")
+                    elif command == "konveyor_dur":
+                        self.seri_port.write(b"kmd\n")
+                    elif command == "yonlendirici_plastik":
+                        self.seri_port.write(b"ymp\n")
+                    elif command == "yonlendirici_cam":
+                        self.seri_port.write(b"ymc\n")
+                    elif command == "klape_metal":
+                        self.seri_port.write(b"smm\n")
+                    elif command == "klape_plastik":
+                        self.seri_port.write(b"smp\n")
+                    elif command == "yonlendirici_sensor_teach":
+                        self.seri_port.write(b"yst\n")
+                    elif command == "ping":
+                        self.seri_port.write(b"ping\n")
 
-                print(f"[{self.cihaz_adi}] Komut gönderildi: {command}")
+                    print(f"[{self.cihaz_adi}] Komut gönderildi: {command}")
+                    
+                except (OSError, AttributeError) as e:
+                    print(f"[{self.cihaz_adi}] Komut yazma hatası: {e}")
+                    # Port problemi var, bağlantı kontrolünü tetikle
+                    self._baglanti_kontrol()
+                    break
 
-            except queue.Empty:
-                continue
             except serial.SerialException as e:
                 print(f"[{self.cihaz_adi}] Yazma sırasında port hatası: {e}")
                 self._baglanti_kontrol()
                 break # Döngüyü kır, yeni thread başlayacak
+            except (IndexError, ValueError) as e:
+                # Deque pop hatası veya buffer problemi
+                print(f"[{self.cihaz_adi}] Queue/Buffer hatası: {e}")
+                time.sleep(0.1)
+                continue
             except Exception as e:
                 print(f"[{self.cihaz_adi}] Yazma hatası: {e}")
+                time.sleep(0.5)
 
     def _dinle(self):
         while self.running:
             try:
-                if self.seri_port and self.seri_port.is_open and self.seri_port.in_waiting > 0:
-                    data = self.seri_port.readline().decode(errors='ignore').strip()
-                    if data:
-                        self._mesaj_isle(data)
+                # Port kontrolü daha güvenli hale getir
+                if not self.seri_port:
+                    time.sleep(0.1)
+                    continue
+                    
+                # Port açık mı kontrol et - exception handle et
+                try:
+                    port_acik = self.seri_port.is_open
+                except (AttributeError, OSError):
+                    port_acik = False
+                
+                if not port_acik:
+                    time.sleep(0.1)
+                    continue
+                
+                # Veri var mı kontrol et - exception handle et
+                try:
+                    veri_var = self.seri_port.in_waiting > 0
+                except (AttributeError, OSError, serial.SerialException):
+                    veri_var = False
+                
+                if veri_var:
+                    try:
+                        # Readline'ı timeout ile güvenli hale getir
+                        data = self.seri_port.readline().decode(errors='ignore').strip()
+                        if data:
+                            self._mesaj_isle(data)
+                    except (UnicodeDecodeError, AttributeError) as e:
+                        print(f"[{self.cihaz_adi}] Decode hatası: {e}")
+                        continue
                 else:
                     # Port kapalıysa veya veri yoksa CPU'yu yormamak için kısa bir süre bekle
                     time.sleep(0.05)
+                    
             except serial.SerialException as e:
                 print(f"[{self.cihaz_adi}] Dinleme kesildi (port hatası): {e}")
                 self._baglanti_kontrol()
                 break # Döngüyü kır, çünkü _baglanti_kontrol yeni bir thread başlatacak
+            except (IndexError, ValueError) as e:
+                # Deque pop hatası veya buffer problemi
+                print(f"[{self.cihaz_adi}] Buffer/Deque hatası: {e}")
+                time.sleep(0.1)
+                continue
             except Exception as e:
                 print(f"[{self.cihaz_adi}] Okuma sırasında beklenmedik hata: {e}")
                 time.sleep(1)
@@ -218,44 +298,51 @@ class MotorKart:
             return
         self._reconnecting = True
 
-        print(f"[{self.cihaz_adi}] Yeniden bağlanma süreci başlatıldı...")
-        self.dinlemeyi_durdur()
+        try:
+            print(f"[{self.cihaz_adi}] Yeniden bağlanma süreci başlatıldı...")
+            self.dinlemeyi_durdur()
 
-        # Eski seri port nesnesini güvenli bir şekilde kapat
-        if self.seri_port and self.seri_port.is_open:
-            try:
-                self.seri_port.close()
-            except Exception as e:
-                print(f"[LOG] Eski portu kapatırken hata: {e}")
-        
-        self.seri_port = None
-
-        # Bağlantı kurulana kadar döngüde kal
-        while self.running: # ana.py'den program durdurulursa döngüden çıkabilmek için
-            print(f"[LOG] {self.cihaz_adi} için port aranıyor...")
-            basarili, mesaj, portlar = self.port_yoneticisi.baglan()
-
-            if basarili and self.cihaz_adi in portlar:
-                yeni_port_adi = portlar[self.cihaz_adi]
+            # Eski seri port nesnesini güvenli bir şekilde kapat
+            if self.seri_port:
                 try:
-                    # 1. Port adını (string) güncelle
-                    self.port = yeni_port_adi
-                    # 2. YENİ BİR serial.Serial NESNESİ OLUŞTUR
-                    self.seri_port = serial.Serial(self.port, baudrate=115200, timeout=1)
-
-                    print(f"[LOG] {self.cihaz_adi}, {self.port} portuna başarıyla yeniden bağlandı.")
-                    self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
-                    self._reconnecting = False
-                    return  # Başarılı olunca fonksiyondan çık
-
-                except serial.SerialException as e:
-                    print(f"[LOG] Yeni port ({yeni_port_adi}) açılamadı: {e}")
+                    if self.seri_port.is_open:
+                        self.seri_port.close()
                 except Exception as e:
-                    print(f"[LOG] Yeniden bağlanma sırasında beklenmedik hata: {e}")
-            else:
-                print(f"[LOG] Port bulunamadı. Mesaj: {mesaj}")
+                    print(f"[LOG] Eski portu kapatırken hata: {e}")
+            
+            self.seri_port = None
 
-            print("[LOG] 5 saniye sonra tekrar denenecek.")
-            time.sleep(5)
+            # Bağlantı kurulana kadar döngüde kal
+            while self.running: # ana.py'den program durdurulursa döngüden çıkabilmek için
+                try:
+                    print(f"[LOG] {self.cihaz_adi} için port aranıyor...")
+                    basarili, mesaj, portlar = self.port_yoneticisi.baglan()
+
+                    if basarili and self.cihaz_adi in portlar:
+                        yeni_port_adi = portlar[self.cihaz_adi]
+                        try:
+                            # 1. Port adını (string) güncelle
+                            self.port = yeni_port_adi
+                            # 2. YENİ BİR serial.Serial NESNESİ OLUŞTUR
+                            self.seri_port = serial.Serial(self.port, baudrate=115200, timeout=1)
+
+                            print(f"[LOG] {self.cihaz_adi}, {self.port} portuna başarıyla yeniden bağlandı.")
+                            self.dinlemeyi_baslat()  # Thread'leri yeniden başlat
+                            return  # Başarılı olunca fonksiyondan çık
+
+                        except serial.SerialException as e:
+                            print(f"[LOG] Yeni port ({yeni_port_adi}) açılamadı: {e}")
+                        except Exception as e:
+                            print(f"[LOG] Yeniden bağlanma sırasında beklenmedik hata: {e}")
+                    else:
+                        print(f"[LOG] Port bulunamadı. Mesaj: {mesaj}")
+
+                    print("[LOG] 5 saniye sonra tekrar denenecek.")
+                    time.sleep(5)
+                    
+                except Exception as e:
+                    print(f"[LOG] Bağlantı kontrol döngüsünde hata: {e}")
+                    time.sleep(5)
         
-        self._reconnecting = False
+        finally:
+            self._reconnecting = False

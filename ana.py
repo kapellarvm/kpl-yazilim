@@ -11,6 +11,7 @@ from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 from rvm_sistemi.makine.durum_degistirici import durum_makinesi
 from rvm_sistemi.makine.dogrulama import DogrulamaServisi
 from rvm_sistemi.makine import kart_referanslari
+from rvm_sistemi.zamanli_gorevler import urun_guncelleyici
 
 dogrulama_servisi = DogrulamaServisi()
 
@@ -25,6 +26,22 @@ async def run_heartbeat_scheduler():
     await istemci.send_heartbeat()
 
     schedule.every(60).seconds.do(lambda: asyncio.create_task(istemci.send_heartbeat()))
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
+
+# Ürün güncelleme zamanlayıcısı - zamanli_gorevler modülüne taşındı
+async def run_product_update_scheduler():
+    """Ürün listesini periyodik olarak güncelleyen asenkron görev."""
+    print("Ürün güncelleme zamanlayıcı başlatıldı...")
+     
+     # İlk güncellemeyi hemen yap
+    print("🔄 İlk ürün güncellemesi yapılıyor...")
+    await istemci.get_all_products_and_save()
+     
+     # Her 6 saatte bir güncelle (6 * 60 * 60 = 21600 saniye)
+    schedule.every(6).hours.do(lambda: asyncio.create_task(istemci.get_all_products_and_save()))
+     
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
@@ -94,20 +111,29 @@ async def main():
         "rvm_sistemi.dimdb.sunucu:app",
         host="0.0.0.0",
         port=4321,
-        log_level="warning"
+        log_level="info"
     )
     server = uvicorn.Server(config)
 
     # Heartbeat görevini başlat
     heartbeat_task = asyncio.create_task(run_heartbeat_scheduler())
+    
+    # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
+    # product_update_task = asyncio.create_task(run_product_update_scheduler())
 
     print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
+    # print("🔄 Ürün güncelleme: Her 6 saatte bir otomatik")
+    
+    # Ürün güncelleme zamanlayıcısını başlatmak için:
+    # product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
+    # print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
 
     await server.serve()
 
     # Sunucu kapandığında her şeyi durdur
     heartbeat_task.cancel()
+    # product_update_task.cancel()  # zamanli_gorevler modülüne taşındı
     sensor.dinlemeyi_durdur()
     motor.dinlemeyi_durdur()
 

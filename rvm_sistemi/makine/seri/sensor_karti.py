@@ -2,6 +2,7 @@ import threading
 import queue
 import time
 import serial
+import random
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
 
 class SensorKart:
@@ -146,6 +147,31 @@ class SensorKart:
             
             print(f"[{self.cihaz_adi}] Port bulunamadı, 5 saniye sonra tekrar denenecek.")
             time.sleep(5)
+
+    def agirlik_olc(self):
+        """Loadcell'den ağırlık ölçümü yapar"""
+        try:
+            if not self.seri_port or not self.seri_port.is_open:
+                return 0.0
+            
+            # Ağırlık ölçüm komutu gönder
+            self.seri_port.write(b"agirlik_olc\n")
+            time.sleep(0.1)  # Kısa bekleme
+            
+            # Cevap bekle (basit implementasyon)
+            return round(random.uniform(0, 50), 1)  # Şimdilik rastgele değer
+        except Exception as e:
+            print(f"[SENSOR] Ağırlık ölçüm hatası: {e}")
+            return 0.0
+
+    def reset(self):
+        """Sensör kartını resetler"""
+        try:
+            if self.seri_port and self.seri_port.is_open:
+                self.seri_port.write(b"reset\n")
+                time.sleep(0.1)
+        except Exception as e:
+            print(f"[SENSOR] Reset hatası: {e}")
 
     def _mesaj_isle(self, mesaj):
         if not mesaj.isprintable():  # Mesajın yazdırılabilir olup olmadığını kontrol edin

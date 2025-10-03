@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta name="translate" content="no">
+    <!-- BEYAZ EKRANI ÖNLEMEK İÇİN HIZLI RENDER -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#ff6b6b">
+    <meta name="msapplication-navbutton-color" content="#ff6b6b">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#ff6b6b">
+    <!-- PRELOAD VE OPTIMIZE -->
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <title>Uyarı - RVM Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            /* Beyaz ekranı önlemek için anında görünür yap */
+            opacity: 1;
+            visibility: visible;
+            /* GPU rendering zorla */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            /* Anında render */
+            will-change: transform;
+        }
+
+        /* Hızlı render için animasyonları kaldır */
+        html {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            /* Gölgelenmeyi önlemek için */
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-perspective: 1000;
+            perspective: 1000;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Window switching gölgelenmesini önle */
+        *, *::before, *::after {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: auto;
+        }
+
+        .uyari-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px 80px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            border: 4px solid #ff4757;
+            /* Anında görünür */
+            opacity: 1;
+            transform: translateZ(0);
+            will-change: auto;
+        }
+
+        /* Hızlı yükleme için animasyonlar kaldırıldı */
+
+        .uyari-icon {
+            font-size: 120px;
+            color: #ff4757;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .uyari-mesaj {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .uyari-sure {
+            font-size: 24px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 36px;
+            font-weight: bold;
+            color: #e74c3c;
+            background: #fff;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 3px solid #e74c3c;
+            animation: countdownPulse 1s infinite;
+        }
+
+        @keyframes countdownPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4757, #ff6b6b);
+            border-radius: 4px;
+            animation: progressAnimation var(--sure)s linear forwards;
+        }
+
+        @keyframes progressAnimation {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        .uyari-details {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+
+        /* Responsive tasarım */
+        @media (max-width: 768px) {
+            .uyari-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .uyari-mesaj {
+                font-size: 32px;
+            }
+            
+            .uyari-icon {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="uyari-container">
+        <div class="uyari-icon">⚠️</div>
+        <div class="uyari-mesaj">{{MESAJ}}</div>
+        <div class="uyari-sure">Bu uyarı <span id="sure">{{SURE}}</span> saniye sonra otomatik kapanacak</div>
+        
+        <div class="countdown" id="countdown">{{SURE}}</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="--sure: {{SURE}}"></div>
+        </div>
+        
+        <div class="uyari-details">
+            <p>Lütfen işleminizi tamamlayın</p>
+        </div>
+    </div>
+
+    <script>
+        // ANINDA GÖRÜNÜR YAP - Gölgelenmeyi önle
+        document.documentElement.style.opacity = '1';
+        document.documentElement.style.visibility = 'visible';
+        
+        // HEMEN BAŞLAT - DOM yüklenmesini bekleme
+        (function() {
+            // Süre parametresini al
+            const sure = parseInt('{{SURE}}');
+            let kalanSure = sure;
+            
+            // Elements hazır olana kadar bekle ama minimum sürede
+            function initTimer() {
+                const countdownElement = document.getElementById('countdown');
+                const sureElement = document.getElementById('sure');
+                
+                if (!countdownElement || !sureElement) {
+                    // 10ms sonra tekrar dene
+                    setTimeout(initTimer, 10);
+                    return;
+                }
+                
+                // Body'yi de anında görünür yap
+                document.body.style.opacity = '1';
+                document.body.style.visibility = 'visible';
+                
+                // Hemen başlat
+                const timer = setInterval(() => {
+                    kalanSure--;
+                    countdownElement.textContent = kalanSure;
+                    sureElement.textContent = kalanSure;
+                    
+                    if (kalanSure <= 0) {
+                        clearInterval(timer);
+                        // Hemen kapat
+                        window.close();
+                    }
+                }, 1000);
+                
+                // ESC tuşu ile kapatma
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        clearInterval(timer);
+                        window.close();
+                    }
+                });
+                
+                // Focus
+                document.body.focus();
+            }
+            
+            // Interactive olur olmaz başlat
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTimer);
+            } else {
+                initTimer();
+            }
+        })();
+    </script>
+</body>
+</html>
