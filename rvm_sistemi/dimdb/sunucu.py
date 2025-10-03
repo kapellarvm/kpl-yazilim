@@ -194,6 +194,9 @@ async def konveyor_ileri():
     """Konveyörü ileri hareket ettirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.konveyor_ileri()
         return {"status": "success", "message": "Konveyör ileri hareket ediyor"}
     return {"status": "error", "message": "Motor bağlantısı yok"}
@@ -203,6 +206,9 @@ async def konveyor_geri():
     """Konveyörü geri hareket ettirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.konveyor_geri()
         return {"status": "success", "message": "Konveyör geri hareket ediyor"}
     return {"status": "error", "message": "Motor bağlantısı yok"}
@@ -239,6 +245,9 @@ async def yonlendirici_plastik():
     """Yönlendiriciyi plastik pozisyonuna getirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.yonlendirici_plastik()
         # Yönlendirici işleminden sonra konveyörü durdur
         import asyncio
@@ -252,6 +261,9 @@ async def yonlendirici_cam():
     """Yönlendiriciyi cam pozisyonuna getirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.yonlendirici_cam()
         # Yönlendirici işleminden sonra konveyörü durdur
         import asyncio
@@ -265,6 +277,9 @@ async def klape_metal():
     """Klapeyi metal pozisyonuna getirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.klape_metal()
         return {"status": "success", "message": "Klape metal pozisyonunda"}
     return {"status": "error", "message": "Motor bağlantısı yok"}
@@ -274,6 +289,9 @@ async def klape_plastik():
     """Klapeyi plastik pozisyonuna getirir"""
     motor = kart_referanslari.motor_al()
     if motor:
+        motor.parametre_gonder()  # Önce parametreleri gönder
+        import time
+        time.sleep(0.1)
         motor.klape_plastik()
         return {"status": "success", "message": "Klape plastik pozisyonunda"}
     return {"status": "error", "message": "Motor bağlantısı yok"}
@@ -363,6 +381,23 @@ async def bakim_modu_ayarla(request: BakimModuRequest):
     except Exception as e:
         return {"status": "error", "message": f"Bakım modu hatası: {str(e)}"}
 
+class BakimUrlRequest(BaseModel):
+    url: str
+
+@app.post("/api/bakim-url-ayarla")
+async def bakim_url_ayarla(request: BakimUrlRequest):
+    """Bakım ekranı URL'ini ayarlar"""
+    try:
+        durum_makinesi.bakim_url = request.url
+        return {"status": "success", "message": f"Bakım URL'i güncellendi: {request.url}"}
+    except Exception as e:
+        return {"status": "error", "message": f"URL ayarlama hatası: {str(e)}"}
+
+@app.get("/api/bakim-url")
+async def bakim_url_getir():
+    """Mevcut bakım URL'ini döndürür"""
+    return {"status": "success", "url": durum_makinesi.bakim_url}
+
 class UyariRequest(BaseModel):
     mesaj: str = "Lütfen şişeyi alınız"
     sure: int = 2
@@ -443,7 +478,13 @@ async def sistem_reset():
             kart_referanslari.motor_referansini_ayarla(yeni_motor)
             kart_referanslari.sensor_referansini_ayarla(yeni_sensor)
             
-            return {"status": "success", "message": "Sistem başarıyla resetlendi ve portlar yeniden bağlandı"}
+            # Kısa bekleme sonrası motorları aktif et
+            time.sleep(0.5)
+            yeni_motor.motorlari_aktif_et()
+            time.sleep(0.2)
+            yeni_motor.parametre_gonder()  # Hız parametrelerini gönder
+            
+            return {"status": "success", "message": "Sistem başarıyla resetlendi, portlar yeniden bağlandı ve motorlar aktif edildi"}
         else:
             return {"status": "error", "message": f"Port bulunamadı: {mesaj}"}
             
@@ -509,6 +550,119 @@ async def sensor_tare():
         sensor.tare()
         return {"status": "success", "message": "Loadcell tare yapıldı"}
     return {"status": "error", "message": "Sensör bağlantısı yok"}
+
+@app.post("/api/sensor/agirlik-olc")
+async def sensor_agirlik_olc():
+    """Loadcell ağırlık ölçümü yapar - gsi, gso komutlarını gönderir"""
+    try:
+        sensor = kart_referanslari.sensor_al()
+        if not sensor:
+            return {"status": "error", "message": "Sensör bağlantısı yok"}
+        
+        # Sensör portuna erişim
+        if not sensor.seri_port or not sensor.seri_port.is_open:
+            return {"status": "error", "message": "Sensör portu açık değil"}
+        
+        import time
+        
+        # Seri port buffer'ını temizle
+        sensor.seri_port.reset_input_buffer()
+        time.sleep(0.1)
+        
+        # gsi komutu gönder (ağırlık ölçüm başlat)
+        sensor.seri_port.write(b"gsi\n")
+        sensor.seri_port.flush()
+        time.sleep(0.1)
+        
+        # gso komutu gönder (ağırlık ölçüm oku)
+        sensor.seri_port.write(b"gso\n")
+        sensor.seri_port.flush()
+        time.sleep(0.3)
+        
+        # Gelen tüm mesajları oku
+        mesajlar = []
+        max_tries = 30
+        for i in range(max_tries):
+            if sensor.seri_port.in_waiting > 0:
+                try:
+                    line = sensor.seri_port.readline().decode('utf-8', errors='ignore').strip()
+                    if line:
+                        mesajlar.append(line)
+                        print(f"[SENSOR API] Ağırlık mesajı [{i}]: {line}")
+                        # "a:" mesajını bulduk mu?
+                        if line.startswith("a:"):
+                            # Biraz daha bekle başka mesaj var mı diye
+                            time.sleep(0.1)
+                            # Kalan mesajları da oku
+                            while sensor.seri_port.in_waiting > 0:
+                                extra_line = sensor.seri_port.readline().decode('utf-8', errors='ignore').strip()
+                                if extra_line:
+                                    mesajlar.append(extra_line)
+                                    print(f"[SENSOR API] Ek mesaj: {extra_line}")
+                            break
+                except Exception as read_error:
+                    print(f"[SENSOR API] Okuma hatası: {read_error}")
+            time.sleep(0.05)
+        
+        print(f"[SENSOR API] Toplam {len(mesajlar)} mesaj alındı: {mesajlar}")
+        
+        # Mesajları döndür, JavaScript tarafında parse edilecek
+        return {
+            "status": "success", 
+            "mesajlar": mesajlar,
+            "message": f"{len(mesajlar)} mesaj alındı"
+        }
+    except Exception as e:
+        import traceback
+        print(f"[SENSOR API] Hata detayı: {traceback.format_exc()}")
+        return {"status": "error", "message": f"Ağırlık ölçüm hatası: {str(e)}"}
+
+@app.post("/api/sensor-card/reset")
+async def sensor_card_reset():
+    """Sensör kartını resetler"""
+    sensor = kart_referanslari.sensor_al()
+    if sensor:
+        sensor.reset()
+        return {"status": "success", "message": "Sensör kartı resetlendi"}
+    return {"status": "error", "message": "Sensör bağlantısı yok"}
+
+@app.post("/api/motor-card/reset")
+async def motor_card_reset():
+    """Motor kartını resetler"""
+    motor = kart_referanslari.motor_al()
+    if motor:
+        motor.reset()
+        return {"status": "success", "message": "Motor kartı resetlendi"}
+    return {"status": "error", "message": "Motor bağlantısı yok"}
+
+class MotorHizRequest(BaseModel):
+    motor: str
+    hiz: int
+
+@app.post("/api/motor/hiz-ayarla")
+async def motor_hiz_ayarla(request: MotorHizRequest):
+    """Motor hızını ayarlar"""
+    try:
+        motor = kart_referanslari.motor_al()
+        if not motor:
+            return {"status": "error", "message": "Motor bağlantısı yok"}
+        
+        # Hız değerini ters çevir (gömülü sistem ters çalışıyor: düşük değer = hızlı)
+        ters_hiz = 100 - request.hiz
+        
+        # Motor hızını ayarla
+        if request.motor == "konveyor":
+            motor.konveyor_hiz_ayarla(ters_hiz)
+        elif request.motor == "yonlendirici":
+            motor.yonlendirici_hiz_ayarla(ters_hiz)
+        elif request.motor == "klape":
+            motor.klape_hiz_ayarla(ters_hiz)
+        else:
+            return {"status": "error", "message": "Geçersiz motor adı"}
+        
+        return {"status": "success", "message": f"{request.motor} motor hızı {request.hiz}% olarak ayarlandı"}
+    except Exception as e:
+        return {"status": "error", "message": f"Hız ayarlama hatası: {str(e)}"}
 
 # Global sensör değerleri
 sensor_son_deger = {"agirlik": 0, "mesaj": "Henüz ölçüm yapılmadı"}

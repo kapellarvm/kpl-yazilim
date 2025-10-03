@@ -43,6 +43,27 @@ class MotorKart:
         if klape is not None:
             self.klape_hizi = klape
 
+    def konveyor_hiz_ayarla(self, hiz):
+        self.konveyor_hizi = hiz
+        self.parametre_gonder()
+
+    def yonlendirici_hiz_ayarla(self, hiz):
+        self.yonlendirici_hizi = hiz
+        self.parametre_gonder()
+
+    def klape_hiz_ayarla(self, hiz):
+        self.klape_hizi = hiz
+        self.parametre_gonder()
+
+    def reset(self):
+        """Motor kartını resetler"""
+        try:
+            if self.seri_port and self.seri_port.is_open:
+                self.seri_port.write(b"reset\n")
+                time.sleep(0.1)
+        except Exception as e:
+            print(f"[MOTOR] Reset hatası: {e}")
+
     def motorlari_aktif_et(self):
         self.write_queue.put(("motorlari_aktif_et", None))
 

@@ -5,16 +5,14 @@ def olayi_isle(olay):
     print(f"[Bakım Modu] Gelen olay: {olay}")
     # Bakım modunda yapılacak işlemler buraya eklenebilir
 
-def bakim_moduna_gir():
+def bakim_moduna_gir(bakim_url="http://192.168.53.2:4321/bakim"):
     """Bakım moduna girildiğinde çalışır - Yeni Chromium penceresi açar"""
     global bakim_chromium_process
-    print("[Bakım Modu] Bakım moduna giriliyor...")
+    print(f"[Bakım Modu] Bakım moduna giriliyor... URL: {bakim_url}")
     
     try:
         import subprocess
         import os
-        
-        bakim_url = "http://192.168.53.2:4321/bakim"
         
         # Yeni Chromium penceresi aç (kioskuser olarak, kiosk modda)
         env = os.environ.copy()
