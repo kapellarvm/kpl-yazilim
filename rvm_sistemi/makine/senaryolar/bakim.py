@@ -21,9 +21,10 @@ def bakim_moduna_gir():
         env['DISPLAY'] = ':0'
         
         # Chromium'u kiosk modunda aç - arka planda çalışsın
+        print(f"[DEBUG] Chromium açma komutu çalıştırılıyor...")
         bakim_chromium_process = subprocess.Popen([
             "sudo", "-u", "kioskuser",
-            "env", "DISPLAY=:0",
+            "env", "DISPLAY=:0", "XAUTHORITY=/home/kioskuser/.Xauthority",
             "/snap/chromium/current/usr/lib/chromium-browser/chrome",
             "--kiosk",
             "--noerrdialogs",
@@ -35,8 +36,31 @@ def bakim_moduna_gir():
             "--disk-cache-size=0",
             "--disable-application-cache",
             "--incognito",
+            # Çeviri aracını devre dışı bırak
+            "--disable-translate",
+            "--disable-features=TranslateUI",
+            "--disable-ipc-flooding-protection",
+            "--disable-background-networking",
+            "--disable-sync",
+            "--disable-default-apps",
+            "--disable-extensions",
+            "--disable-plugins",
+            "--disable-logging",
+            "--disable-gpu-logging",
+            "--silent",
+            "--no-first-run",
+            "--no-default-browser-check",
             bakim_url
-        ], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        ], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        # Hemen hata kontrolü yap
+        import time
+        time.sleep(0.5)
+        if bakim_chromium_process.poll() is not None:
+            stdout, stderr = bakim_chromium_process.communicate()
+            print(f"[ERROR] Chromium başlatılamadı! Exit code: {bakim_chromium_process.returncode}")
+            print(f"[ERROR] STDOUT: {stdout.decode() if stdout else 'empty'}")
+            print(f"[ERROR] STDERR: {stderr.decode() if stderr else 'empty'}")
         
         print(f"[Bakım Modu] Bakım Chromium açıldı (PID: {bakim_chromium_process.pid}): {bakim_url}")
     except Exception as e:

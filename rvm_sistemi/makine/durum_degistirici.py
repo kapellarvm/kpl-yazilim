@@ -18,6 +18,7 @@ class DurumMakinesi:
         elif self.onceki_durum == "bakim" and yeni_durum != "bakim":
             bakim.bakim_modundan_cik()
         
+        
         self.olayi_isle(self.durum)
 
     def olayi_isle(self, olay):

@@ -163,7 +163,7 @@ def lojik_sifirla():
     barkod_lojik = False
 
 def goruntu_isleme_tetikle():
-
+    time.sleep(0.3)  # Görüntü işleme süresi
     goruntu_sonuc = image_processing_service.capture_and_process()
     print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
     veri_senkronizasyonu(materyal_turu=goruntu_sonuc.type.value, uzunluk=float(goruntu_sonuc.height_mm), genislik=float(goruntu_sonuc.width_mm))
@@ -239,6 +239,7 @@ def mesaj_isle(mesaj):
         else:
             time.sleep(0.2) # Gömülüden buraya  adım gibi bir mesaj eklenecek örneğin 10cm daha geri verip duracak.
             print(f"▶️ [GSI] LÜTFEN ŞİŞEYİ ALINIZ.")
+            uyari_goster("Lütfen şişeyi alınız", 2)
             motor_ref.konveyor_dur()
     
     if mesaj == "gso":
@@ -275,3 +276,12 @@ t3.start()
 # Kuzeyden barkod: 19270737
 # Nestle barkod: 1923026353469
 # Damla barkod: 8333445997848
+
+def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
+    """Oturum sırasında uyarı gösterir - durum makinesini etkilemez"""
+    try:
+        from ..uyari_yoneticisi import uyari_yoneticisi
+        return uyari_yoneticisi.uyari_goster(mesaj, sure)
+    except Exception as e:
+        print(f"[Oturum] Uyarı gösterilemedi: {e}")
+        return False
