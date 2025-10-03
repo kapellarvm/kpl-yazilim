@@ -1,43 +1,25 @@
-from fastapi import FastAPI, BackgroundTasks, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
-import logging
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import uuid
 import time
-import asyncio
 from contextlib import asynccontextmanager
-from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 
 # Projenin diğer modüllerini doğru paket yolundan import et
-from ..makine.dogrulama import DogrulamaServisi
 from ..makine.durum_degistirici import durum_makinesi # Merkezi durum makinesini import et
 from ..makine import kart_referanslari  # Merkezi kart referansları
+from ..makine.senaryolar import oturum_var  # Oturum yönetimi için
 from . import istemci
-
-package_queue = asyncio.Queue()
-
-
-
-async def package_worker():
-    print("Paket işleme çalışanı aktif, yeni paketler bekleniyor...")
-    while True:
-        try:
-            package_data = await package_queue.get()
-            await process_package_and_send_result(package_data)
-            package_queue.task_done()
-        except Exception as e:
-            print(f"Paket işleme çalışanında hata oluştu: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-        
-    asyncio.create_task(package_worker())
+    # Uygulama başlatma
+    print("RVM Sunucusu başlatılıyor...")
     
     yield
     
     print("\nUygulama kapatılıyor...")
-    await handle_graceful_shutdown()
     
 app = FastAPI(title="RVM Sunucusu", lifespan=lifespan)
 
@@ -75,81 +57,26 @@ class StopOperationRequest(BaseModel): guid: str; barcode: str
 class UpdateProductsRequest(BaseModel): guid: str; rvm: str; timestamp: str
 class ResetRvmRequest(BaseModel): guid: str; rvm: str; timestamp: str
 
-dogrulama_servisi = DogrulamaServisi()
-aktif_oturum = {"aktif": False, "sessionId": None, "userId": None, "kabul_edilen_urunler": []}
-
-# --- Arka Plan Fonksiyonları ---
-async def process_package_and_send_result(data: AcceptPackageRequest):
-    oturum_var.barkod_verisi_al(data.barcode)
-
-    #dogrulama_sonucu = dogrulama_servisi.paketi_dogrula(data.barcode)
-    if dogrulama_sonucu["kabul_edildi"]:
-        materyal_id = dogrulama_sonucu["materyal_id"]
-        result_message = "Ambalaj Kabul Edildi"
-        aktif_oturum["kabul_edilen_urunler"].append({"barcode": data.barcode, "material": materyal_id})
-    else:
-        materyal_id = -1
-        result_message = "Ambalaj Reddedildi"
-    
-    pet_sayisi = sum(1 for u in aktif_oturum["kabul_edilen_urunler"] if u.get('material') == 1)
-    cam_sayisi = sum(1 for u in aktif_oturum["kabul_edilen_urunler"] if u.get('material') == 2)
-    alu_sayisi = sum(1 for u in aktif_oturum["kabul_edilen_urunler"] if u.get('material') == 3)
-        
-    result_payload = {
-        "guid": str(uuid.uuid4()), "uuid": data.uuid, "sessionId": data.sessionId,
-        "barcode": data.barcode, "measuredPackWeight": 0.0, "measuredPackHeight": 0.0,
-        "measuredPackWidth": 0.0, "binId": materyal_id, "result": dogrulama_sonucu["sebep_kodu"],
-        "resultMessage": result_message, "acceptedPetCount": pet_sayisi, 
-        "acceptedGlassCount": cam_sayisi, "acceptedAluCount": alu_sayisi
-    }
-    await istemci.send_accept_package_result(result_payload)
-    print(f"Paket işleme tamamlandı: {data.barcode}")
-
-async def handle_graceful_shutdown():
-    global aktif_oturum
-    if not aktif_oturum["aktif"]: return
-
-    print("Oturum sonlandırılıyor, işlem özeti hazırlanıyor...")
-    #sensor.led_kapat()
-    
-    containers = {}
-    for urun in aktif_oturum["kabul_edilen_urunler"]:
-        barcode = urun["barcode"]
-        if barcode not in containers:
-            containers[barcode] = {"barcode": barcode, "material": urun["material"], "count": 0, "weight": 0}
-        containers[barcode]["count"] += 1
-
-    transaction_payload = {
-        "guid": str(uuid.uuid4()), "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        "rvm": istemci.RVM_ID, "id": aktif_oturum["sessionId"] + "-tx",
-        "firstBottleTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        "endTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        "sessionId": aktif_oturum["sessionId"], "userId": aktif_oturum["userId"],
-        "created": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        "containerCount": len(aktif_oturum["kabul_edilen_urunler"]),
-        "containers": list(containers.values())
-    }
-    await istemci.send_transaction_result(transaction_payload)
-    
-    aktif_oturum = {"aktif": False, "sessionId": None, "userId": None, "kabul_edilen_urunler": []}
-    durum_makinesi.durum_degistir("oturum_yok")
-    print("Yerel oturum temizlendi.")
+# NOT: Paket işleme ve oturum yönetimi artık oturum_var.py'de yapılıyor
+# NOT: DogrulamaServisi artık kullanılmıyor, doğrulama oturum_var.py'de yapılıyor
 
 # --- API Uç Noktaları (Endpoints) ---
 
 @app.post("/sessionStart")
 async def session_start(data: SessionStartRequest):
-    global aktif_oturum
     print(f"Gelen /sessionStart isteği: {data.model_dump_json()}")
-    if aktif_oturum["aktif"]:
+    
+    # oturum_var.py'deki oturum durumunu kontrol et
+    if oturum_var.aktif_oturum["aktif"]:
         return {"errorCode": 2, "errorMessage": "Aktif oturum var."}
     
-    aktif_oturum = {"aktif": True, "sessionId": data.sessionId, "userId": data.userId, "kabul_edilen_urunler": []}
-    # DÜZELTME: Doğru nesne ve metot adını kullan
-    durum_makinesi.durum_degistir("oturum_var")
-    #sensor.led_ac()
+    # oturum_var.py'deki oturum başlatma fonksiyonunu çağır
+    oturum_var.oturum_baslat(data.sessionId, data.userId)
     
-    print(f"✅ /sessionStart isteği kabul edildi. Yeni oturum: {aktif_oturum['sessionId']}")
+    # Durum makinesini güncelle
+    durum_makinesi.durum_degistir("oturum_var")
+    
+    print(f"✅ /sessionStart isteği kabul edildi. Yeni oturum: {data.sessionId}")
     return {"errorCode": 0, "errorMessage": ""}
 
 @app.post("/acceptPackage")
@@ -158,17 +85,29 @@ async def accept_package(data: AcceptPackageRequest):
         print(f"UYARI: Makine '{durum_makinesi.durum}' durumundayken paket kabul edilemez.")
         return {"errorCode": 3, "errorMessage": "Makine paket kabul etmeye hazır değil."}
 
-    print(f"Gelen /acceptPackage isteği, kuyruğa ekleniyor: {data.barcode}")
-    await package_queue.put(data)
-    return {"errorCode": 0, "errorMessage": "Package queued for processing"}
+    print(f"Gelen /acceptPackage isteği: {data.barcode}")
+    
+    # Barkodu oturum_var.py'ye gönder - tüm doğrulama ve DİM-DB bildirimi orada yapılacak
+    oturum_var.barkod_verisi_al(data.barcode)
+    
+    return {"errorCode": 0, "errorMessage": "Package processing started"}
 
 @app.post("/sessionEnd")
-async def session_end(data: SessionEndRequest, background_tasks: BackgroundTasks):
+async def session_end(data: SessionEndRequest):
     print(f"Gelen /sessionEnd isteği: {data.model_dump_json()}")
-    if not aktif_oturum["aktif"] or aktif_oturum["sessionId"] != data.sessionId:
+    
+    # oturum_var.py'deki oturum durumunu kontrol et
+    if not oturum_var.aktif_oturum["aktif"] or oturum_var.aktif_oturum["sessionId"] != data.sessionId:
         return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
     
-    background_tasks.add_task(handle_graceful_shutdown)
+    # oturum_var.py'deki oturum sonlandırma fonksiyonunu çağır (async)
+    # Bu fonksiyon DİM-DB'ye transaction result gönderecek
+    await oturum_var.oturum_sonlandir()
+    
+    # Durum makinesini güncelle
+    durum_makinesi.durum_degistir("oturum_yok")
+    
+    print(f"✅ /sessionEnd isteği kabul edildi. Oturum kapatıldı: {data.sessionId}")
     return {"errorCode": 0, "errorMessage": ""}
 
 @app.post("/maintenanceMode")
@@ -190,6 +129,32 @@ async def update_products(data: UpdateProductsRequest, background_tasks: Backgro
 @app.post("/resetRvm")
 async def reset_rvm(data: ResetRvmRequest):
     return {"errorCode": 0, "errorMessage": ""}
+
+# --- GÜNCELLEME GEÇMİŞİ API ENDPOINT'LERİ ---
+
+@app.get("/api/guncelleme-gecmisi")
+async def guncelleme_gecmisi(limit: int = 10):
+    """Son N adet ürün güncelleme geçmişini döndürür"""
+    from ..veri_tabani import veritabani_yoneticisi
+    gecmis = veritabani_yoneticisi.guncelleme_gecmisini_getir(limit)
+    return {"status": "success", "data": gecmis, "count": len(gecmis)}
+
+@app.get("/api/son-guncelleme")
+async def son_guncelleme():
+    """En son yapılan ürün güncellemesi bilgisini döndürür"""
+    from ..veri_tabani import veritabani_yoneticisi
+    bilgi = veritabani_yoneticisi.son_guncelleme_bilgisi()
+    if bilgi:
+        return {"status": "success", "data": bilgi}
+    else:
+        return {"status": "error", "message": "Henüz güncelleme yapılmadı"}
+
+@app.get("/api/guncelleme-istatistikleri")
+async def guncelleme_istatistikleri():
+    """Ürün güncellemeleri hakkında istatistik bilgisi döndürür"""
+    from ..veri_tabani import veritabani_yoneticisi
+    istatistikler = veritabani_yoneticisi.guncelleme_istatistikleri()
+    return {"status": "success", "data": istatistikler}
 
 # --- BAKIM EKRANI API ENDPOINT'LERİ ---
 
@@ -484,6 +449,19 @@ async def sistem_reset():
             
     except Exception as e:
         return {"status": "error", "message": f"Reset hatası: {str(e)}"}
+
+class AlarmRequest(BaseModel):
+    alarmCode: int
+    alarmMessage: str
+
+@app.post("/api/alarm-gonder")
+async def alarm_gonder(request: AlarmRequest):
+    """DİM DB'ye alarm bildirimi gönderir"""
+    try:
+        await istemci.send_alarm(request.alarmCode, request.alarmMessage)
+        return {"status": "success", "message": f"Alarm gönderildi: {request.alarmMessage}"}
+    except Exception as e:
+        return {"status": "error", "message": f"Alarm gönderme hatası: {str(e)}"}
 
 # --- SENSÖR KARTI API ENDPOINT'LERİ ---
 
