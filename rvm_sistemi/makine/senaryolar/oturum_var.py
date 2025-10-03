@@ -3,6 +3,7 @@ from collections import deque
 from ...veri_tabani import veritabani_yoneticisi
 import threading
 from ..goruntu.image_processing_service import ImageProcessingService
+from ..uyari_yoneticisi import uyari_yoneticisi
 
 image_processing_service = ImageProcessingService()
 
@@ -239,7 +240,7 @@ def mesaj_isle(mesaj):
         else:
             time.sleep(0.2) # Gömülüden buraya  adım gibi bir mesaj eklenecek örneğin 10cm daha geri verip duracak.
             print(f"▶️ [GSI] LÜTFEN ŞİŞEYİ ALINIZ.")
-            uyari_goster("Lütfen şişeyi alınız", 2)
+            uyari_yoneticisi.uyari_goster("Lütfen Şişeyi Alınız", 2)
             motor_ref.konveyor_dur()
     
     if mesaj == "gso":
@@ -277,11 +278,5 @@ t3.start()
 # Nestle barkod: 1923026353469
 # Damla barkod: 8333445997848
 
-def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
-    """Oturum sırasında uyarı gösterir - durum makinesini etkilemez"""
-    try:
-        from ..uyari_yoneticisi import uyari_yoneticisi
-        return uyari_yoneticisi.uyari_goster(mesaj, sure)
-    except Exception as e:
-        print(f"[Oturum] Uyarı gösterilemedi: {e}")
-        return False
+# Uyarı göstermek için direkt uyari_yoneticisi kullanın:
+# uyari_yoneticisi.uyari_goster("Mesaj", 2)
