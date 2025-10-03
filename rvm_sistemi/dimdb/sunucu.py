@@ -488,7 +488,7 @@ def sensor_callback(mesaj):
     # Ağırlık değerini parse et - farklı formatları destekle
     import re
     
-    # Format 1: "a:262.62" veya "a:-1.79" gibi
+    # Format 1: "a:262.62" veya "a:-1.79" gibigit
     if mesaj.startswith("a:"):
         try:
             agirlik_str = mesaj.replace("a:", "").strip()
