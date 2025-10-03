@@ -2,6 +2,9 @@ import time
 from collections import deque
 from ...veri_tabani import veritabani_yoneticisi
 import threading
+from ..goruntu.image_processing_service import ImageProcessingService
+
+image_processing_service = ImageProcessingService()
 
 # Referanslar
 motor_ref = None
@@ -59,9 +62,15 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         giris_iade_et("Ürün veritabanında yok")
         return
 
-    materyal_id = urun.get('material')
     min_agirlik = urun.get('packMinWeight')
     max_agirlik = urun.get('packMaxWeight')
+    min_genislik = urun.get('packMinWidth')
+    max_genislik = urun.get('packMaxWidth')
+    min_uzunluk = urun.get('packMinHeight')
+    max_uzunluk = urun.get('packMaxHeight')
+    materyal_id = urun.get('material')    
+
+    print(f"📊 [DOĞRULAMA] Min Agirlik: {min_agirlik}, Max Agirlik: {max_agirlik}, Min Genişlik: {min_genislik}, Max Genişlik: {max_genislik}, Min Uzunluk: {min_uzunluk}, Max Uzunluk: {max_uzunluk}, Materyal_id: {materyal_id}")
 
     print(f"📊 [DOĞRULAMA] Ölçülen ağırlık: {agirlik} gr")
     
@@ -81,11 +90,34 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         giris_iade_et("Ağırlık sınırları dışında")
         return
 
+    if min_genislik <= genislik <= max_genislik:
+        print(f"✅ [DOĞRULAMA] Genişlik kontrolü geçti: {genislik} mm")
+    else:
+        print(f"❌ [DOĞRULAMA] Genişlik sınırları dışında: {genislik} mm")
+        giris_iade_et("Genişlik sınırları dışında")
+        return
+
+    if min_uzunluk <= uzunluk <= max_uzunluk:
+        print(f"✅ [DOĞRULAMA] Uzunluk kontrolü geçti: {uzunluk} mm")
+    else:
+        print(f"❌ [DOĞRULAMA] Uzunluk sınırları dışında: {uzunluk} mm")
+        giris_iade_et("Uzunluk sınırları dışında")
+        return
+
+    if materyal_id != materyal_turu:
+        print(f"❌ [DOĞRULAMA] Materyal türü uyuşmuyor: beklenen {materyal_id}, gelen {materyal_turu}")
+        giris_iade_et("Materyal türü uyuşmuyor")
+        return
+    
+    print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
+
     # Tüm kontroller geçti, ürünü kabul et
     kabul_edilen_urunler.append({
         'barkod': barkod,
         'agirlik': agirlik,
-        'materyal_turu': materyal_turu
+        'materyal_turu': materyal_turu,
+        'uzunluk': uzunluk,
+        'genislik': genislik,
     })
 
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
@@ -131,11 +163,10 @@ def lojik_sifirla():
     barkod_lojik = False
 
 def goruntu_isleme_tetikle():
-    print("📸 [GÖRÜNTÜ İŞLEME] Görüntü işleme tetiklendi (simülasyon)")
-    # Burada gerçek görüntü işleme kodu olacak
-    time.sleep(0.3)  # Simülasyon için bekle
-    goruntu_sonuc = ["plastik", 103.55, 58.5]
-    veri_senkronizasyonu(materyal_turu=goruntu_sonuc[0], uzunluk=goruntu_sonuc[1], genislik=goruntu_sonuc[2])
+
+    goruntu_sonuc = image_processing_service.capture_and_process()
+    print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
+    veri_senkronizasyonu(materyal_turu=goruntu_sonuc.type.value, uzunluk=float(goruntu_sonuc.height_mm), genislik=float(goruntu_sonuc.width_mm))
 
 
 def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=None, genislik=None):
@@ -234,8 +265,10 @@ def mesaj_isle(mesaj):
 
 t1 = threading.Thread(target=veri_senkronizasyonu, daemon=True)
 t2 = threading.Thread(target=mesaj_isle, daemon=True)
+t3 = threading.Thread(target=goruntu_isleme_tetikle, daemon=True)
 t1.start()
 t2.start()
+t3.start()
 
 # Erikli barkod: 1923026353360
 # Erikli büyük barkod: 1923026353391

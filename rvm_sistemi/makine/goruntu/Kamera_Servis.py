@@ -5,7 +5,7 @@ from ctypes import *
 import numpy as np
 import cv2
 sys.path.append("../MvImport")
-from MvCameraControl_class import *
+from .MvCameraControl_class import *
 
 class KameraServis:
     def __init__(self):

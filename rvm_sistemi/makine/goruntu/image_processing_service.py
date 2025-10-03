@@ -1,6 +1,6 @@
 import threading
 import platform
-from ImageProcessingResult import ImageProcessingResult, BinType, PackageType
+from .ImageProcessingResult import ImageProcessingResult, BinType, PackageType
 
 SLAVE_ID = 1
 TARGET_SERIAL = "B0046HHJA"
@@ -11,7 +11,7 @@ class ImageProcessingService:
     def __init__(self):
         # Mac'te YOLO modelini yükleme
         if platform.system() != "Darwin":
-            from image import YOLOProcessor
+            from .image import YOLOProcessor
             self.processor = YOLOProcessor()
         else:
             self.processor = None
