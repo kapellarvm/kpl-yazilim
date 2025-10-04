@@ -67,9 +67,9 @@ async def session_start(data: SessionStartRequest):
     print(f"Gelen /sessionStart isteği: {data.model_dump_json()}")
     
     # oturum_var.py'deki oturum durumunu kontrol et
-    if oturum_var.aktif_oturum["aktif"]:
-        return {"errorCode": 2, "errorMessage": "Aktif oturum var."}
-    
+    if oturum_var.sistem.aktif_oturum["aktif"]:
+       return {"errorCode": 2, "errorMessage": "Aktif oturum var."}
+
     # oturum_var.py'deki oturum başlatma fonksiyonunu çağır
     oturum_var.oturum_baslat(data.sessionId, data.userId)
     
@@ -97,7 +97,7 @@ async def session_end(data: SessionEndRequest):
     print(f"Gelen /sessionEnd isteği: {data.model_dump_json()}")
     
     # oturum_var.py'deki oturum durumunu kontrol et
-    if not oturum_var.aktif_oturum["aktif"] or oturum_var.aktif_oturum["sessionId"] != data.sessionId:
+    if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
         return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
     
     # oturum_var.py'deki oturum sonlandırma fonksiyonunu çağır (async)

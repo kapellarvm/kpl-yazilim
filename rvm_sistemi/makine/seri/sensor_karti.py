@@ -29,6 +29,7 @@ class SensorKart:
     def led_kapat(self): self.write_queue.put(("led_kapat", None))
     def tare(self): self.write_queue.put(("tare", None))
     def reset(self): self.write_queue.put(("reset", None))
+    def doluluk_oranı(self): self.write_queue.put(("doluluk_oranı", None))
     def ping(self):
         self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
         self.write_queue.put(("ping", None))
@@ -97,7 +98,7 @@ class SensorKart:
 
                 komutlar = {
                     "loadcell_olc": b"lao\n", "teach": b"gst\n", "led_ac": b"as\n",
-                    "led_kapat": b"ad\n", "tare": b"tare\n", "reset": b"reset\n", "ping": b"ping\n"
+                    "led_kapat": b"ad\n", "tare": b"tare\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
                 }
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])
