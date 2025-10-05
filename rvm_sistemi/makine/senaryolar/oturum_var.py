@@ -29,6 +29,7 @@ class SistemDurumu:
     iade_lojik_onceki_durum: bool = False
     barkod_lojik: bool = False
     gsi_lojik: bool = False
+    gsi_gecis_lojik: bool = False
     gso_lojik: bool = False
     ysi_lojik: bool = False
     yso_lojik: bool = False
@@ -336,6 +337,8 @@ def lojik_yoneticisi():
 
         if sistem.gsi_lojik:
             sistem.gsi_lojik = False
+            sistem.gsi_gecis_lojik = True
+            
             if sistem.iade_lojik:
                 print("🚫 [İADE AKTIF] Şişeyi Alınız.")
                 time.sleep(0.25)
@@ -372,8 +375,15 @@ def lojik_yoneticisi():
                 print("🔄 [LOJİK] Yönlendirici konumda, konveyör ileri")
                 sistem.motor_ref.konveyor_ileri()
             else:
-                print("✅ [LOJİK] Yönlendirici konumda, konveyör dur")
-                sistem.motor_ref.konveyor_dur()
+                if sistem.gsi_gecis_lojik:
+                    print("✅ [LOJİK] Yönlendirici konumda, konveyör ileri")
+                    sistem.motor_ref.konveyor_ileri()
+                    sistem.gsi_gecis_lojik = False
+
+                else:
+                    print("✅ [LOJİK] Yönlendirici konumda, konveyör dur")
+                    sistem.motor_ref.konveyor_dur()
+                    
 
 
         if sistem.agirlik is not None:
