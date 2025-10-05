@@ -97,7 +97,7 @@ class SensorKart:
                 if command == "exit": break
 
                 komutlar = {
-                    "loadcell_olc": b"lao\n", "teach": b"gst\n", "led_ac": b"as\n",
+                    "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n",
                     "led_kapat": b"ad\n", "tare": b"tare\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
                 }
                 if command in komutlar:

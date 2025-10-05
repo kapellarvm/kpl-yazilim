@@ -283,7 +283,7 @@ class MotorKart:
             print("[LOG] Geçersiz mesaj alındı, atlanıyor.")
             return
 
-        print(f"[{self.cihaz_adi}] Gelen mesaj: {mesaj}")
+        #print(f"[{self.cihaz_adi}] Gelen mesaj: {mesaj}")
         if "pong" in mesaj.lower():
             self.saglikli = True
             print("[LOG] Sağlık durumu güncellendi: Sağlıklı")

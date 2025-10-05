@@ -97,12 +97,12 @@ async def session_end(data: SessionEndRequest):
     print(f"Gelen /sessionEnd isteği: {data.model_dump_json()}")
     
     # oturum_var.py'deki oturum durumunu kontrol et
-    if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
-        return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
+    #if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
+    #    return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
     
     # oturum_var.py'deki oturum sonlandırma fonksiyonunu çağır (async)
     # Bu fonksiyon DİM-DB'ye transaction result gönderecek
-    await oturum_var.oturum_sonlandir()
+    #await oturum_var.oturum_sonlandir()
     
     # Durum makinesini güncelle
     durum_makinesi.durum_degistir("oturum_yok")
@@ -670,29 +670,29 @@ sensor_son_deger = {"agirlik": 0, "mesaj": "Henüz ölçüm yapılmadı"}
 def sensor_callback(mesaj):
     """Sensör kartından gelen mesajları işler"""
     global sensor_son_deger
-    print(f"[SENSOR CALLBACK] Gelen mesaj: {mesaj}")
+    #print(f"[SENSOR CALLBACK] Gelen mesaj: {mesaj}")
     
     # Mesajı kaydet
     sensor_son_deger["mesaj"] = mesaj
     
     # Ağırlık değerini parse et - farklı formatları destekle
-    import re
+    #import re
     
     # Format 1: "a:262.62" veya "a:-1.79" gibigit
-    if mesaj.startswith("a:"):
-        try:
-            agirlik_str = mesaj.replace("a:", "").strip()
-            sensor_son_deger["agirlik"] = float(agirlik_str)
-            print(f"[SENSOR] Ağırlık parse edildi: {sensor_son_deger['agirlik']} gram")
-        except ValueError:
-            print(f"[SENSOR] Ağırlık parse hatası: {mesaj}")
+    #if mesaj.startswith("a:"):
+    #    try:
+    #        agirlik_str = mesaj.replace("a:", "").strip()
+    #        sensor_son_deger["agirlik"] = float(agirlik_str)
+            #print(f"[SENSOR] Ağırlık parse edildi: {sensor_son_deger['agirlik']} gram")
+    #    except ValueError:
+            #print(f"[SENSOR] Ağırlık parse hatası: {mesaj}")
     
     # Format 2: "loadcell" veya "gr" içeren mesajlar
-    elif "loadcell" in mesaj.lower() or "gr" in mesaj.lower():
-        sayilar = re.findall(r'-?\d+\.?\d*', mesaj)
-        if sayilar:
-            sensor_son_deger["agirlik"] = float(sayilar[0])
-            print(f"[SENSOR] Ağırlık parse edildi: {sensor_son_deger['agirlik']} gram")
+    #elif "loadcell" in mesaj.lower() or "gr" in mesaj.lower():
+    #    sayilar = re.findall(r'-?\d+\.?\d*', mesaj)
+    #    if sayilar:
+     #       sensor_son_deger["agirlik"] = float(sayilar[0])
+            #print(f"[SENSOR] Ağırlık parse edildi: {sensor_son_deger['agirlik']} gram")
 
 @app.get("/api/sensor/son-deger")
 async def sensor_son_deger_getir():

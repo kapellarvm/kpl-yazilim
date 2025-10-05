@@ -22,11 +22,10 @@ class SistemDurumu:
     # Listeler
     veri_senkronizasyon_listesi: list = field(default_factory=list)
     kabul_edilen_urunler: deque = field(default_factory=deque)
+    iade_kuyruğu: deque = field(default_factory=deque)
     
     # Lojikler
-    iade_etildi: bool = False
     iade_lojik: bool = False
-    iade_lojik_onceki_durum: bool = False
     barkod_lojik: bool = False
     gsi_lojik: bool = False
     gso_lojik: bool = False
@@ -51,6 +50,9 @@ class SistemDurumu:
     # Kalibrasyonlar
     yonlendirici_kalibrasyon: bool = False
     seperator_kalibrasyon: bool = False
+
+    # Yönlendirici işlem durumu
+    yonlendirici_islem_bekliyor: bool = False
 
     aktif_oturum: dict = field(default_factory=lambda: {
         "aktif": False,
@@ -113,11 +115,11 @@ async def oturum_sonlandir():
             "guid": str(uuid_lib.uuid4()),
             "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "rvm": istemci.RVM_ID,
-            "id": aktif_oturum["sessionId"] + "-tx",
+            "id": sistem.aktif_oturum["sessionId"] + "-tx",
             "firstBottleTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "endTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "sessionId": aktif_oturum["sessionId"],
-            "userId": aktif_oturum["userId"],
+            "sessionId": sistem.aktif_oturum["sessionId"],
+            "userId": sistem.aktif_oturum["userId"],
             "created": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "containerCount": len(sistem.kabul_edilen_urunler),
             "containers": list(containers.values())
@@ -131,7 +133,7 @@ async def oturum_sonlandir():
         print(f"❌ [OTURUM] Transaction result gönderme hatası: {e}")
     
     # Oturumu temizle
-    aktif_oturum = {
+    sistem.aktif_oturum = {
         "aktif": False,
         "sessionId": None,
         "userId": None,
@@ -144,7 +146,16 @@ async def oturum_sonlandir():
 def motor_referansini_ayarla(motor):
     sistem.motor_ref = motor
     sistem.motor_ref.yonlendirici_sensor_teach()
-    print("✅ Motor hazır - Sistem başlatıldı")
+    
+    # Sistem başlatılırken kuyrukları temizle
+    sistem.kabul_edilen_urunler.clear()
+    sistem.iade_kuyruğu.clear()
+    sistem.veri_senkronizasyon_listesi.clear()
+    sistem.yonlendirici_islem_bekliyor = False
+    sistem.iade_lojik = False
+    sistem.barkod_lojik = False
+    
+    print("✅ Motor hazır - Sistem başlatıldı ve kuyruklar temizlendi")
 
 def sensor_referansini_ayarla(sensor):
     sistem.sensor_ref = sensor
@@ -207,7 +218,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
         print(f"❌ [VERİ SENKRONİZASYONU] Karşılaştırma hatası - barkod olmadan veri geldi: {urun}")
         
         # Barkodsuz ürün için iade işlemini başlat
-        sistem.iade_lojik = True
+        giris_iade_et("Barkod okunamadı")
 
         sistem.veri_senkronizasyon_listesi.pop(0)  # hatalı ürünü sil
         print(f"🔄 [VERİ SENKRONİZASYONU] Güncel kuyruk durumu: {sistem.veri_senkronizasyon_listesi}")
@@ -229,7 +240,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     if not urun:
         print(f"❌ [DOĞRULAMA] Ürün veritabanında bulunamadı: {barkod}")
         dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
-        sistem.iade_lojik = True
+        giris_iade_et("Ürün veritabanında yok")
         return
 
     min_agirlik = urun.get('packMinWeight')
@@ -258,7 +269,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     if not agirlik_kabul:
         #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
-        sistem.iade_lojik = True
+        giris_iade_et("Ağırlık sınırları dışında")
         return
 
     if min_genislik-100 <= genislik <= max_genislik+100:
@@ -266,7 +277,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     else:
         print(f"❌ [DOĞRULAMA] Genişlik sınırları dışında: {genislik} mm")
         #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
-        sistem.iade_lojik = True
+        giris_iade_et("Genişlik sınırları dışında")
         return
 
     if min_uzunluk-100 <= uzunluk <= max_uzunluk+100 :
@@ -274,13 +285,13 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     else:
         print(f"❌ [DOĞRULAMA] Uzunluk sınırları dışında: {uzunluk} mm")
         #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
-        sistem.iade_lojik = True
+        giris_iade_et("Uzunluk sınırları dışında")
         return
 
     if materyal_id != materyal_turu:
         print(f"❌ [DOĞRULAMA] Materyal türü uyuşmuyor: beklenen {materyal_id}, gelen {materyal_turu}")
         #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
-        sistem.iade_lojik = True
+        giris_iade_et("Materyal türü uyuşmuyor")
         return
     
     print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
@@ -301,34 +312,55 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, True, 0, "Ambalaj Kabul Edildi")
 
 def yonlendirici_hareket():
+    # Depozito iade makinesi mantığı:
+    # 1. Kabul edilen ürün varsa -> Önce onu yönlendir, sonra iade işlemi yap
+    # 2. Sadece iade varsa -> Hemen iade işlemi yap
+    
+    # Öncelik kabul edilen ürünlerde
+    if sistem.kabul_edilen_urunler:
+        # En eski kabul edilen ürünü al
+        urun = sistem.kabul_edilen_urunler.popleft()
+        materyal_id = urun.get('materyal_turu')
+        
+        materyal_isimleri = {1: "PET", 2: "CAM", 3: "ALÜMİNYUM"}
+        materyal_adi = materyal_isimleri.get(materyal_id, "BİLİNMEYEN")
+        
+        print(f"\n🔄 [YÖNLENDİRME] {materyal_adi} ürün işleniyor: {urun['barkod']}")
+        print(f"📦 [KUYRUK] Kalan kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
 
-    # Kuyruk boş mu kontrol et
-    if not sistem.kabul_edilen_urunler:
-        print(f"⚠️ [YÖNLENDİRME] Kabul edilen ürün kuyruğu boş, yönlendirme yapılamadı")
+        if sistem.motor_ref:
+            if materyal_id == 2:  # Cam
+                sistem.motor_ref.konveyor_dur()
+                sistem.motor_ref.yonlendirici_cam()
+                print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
+            else:  # Plastik/Metal
+                sistem.motor_ref.konveyor_dur()
+                sistem.motor_ref.yonlendirici_plastik()
+                print(f"🟩 [PLASTİK] Plastik yönlendiricisine gönderildi")
+        
+        # Yönlendirici işlem bekleme durumunu işaretle
+        sistem.yonlendirici_islem_bekliyor = True
+        print(f"✅ [YÖNLENDİRME] Kabul edilen ürün yönlendiriciye gönderildi, tamamlanması bekleniyor\n")
         return
     
-    # En eski ürünü al
-    urun = sistem.kabul_edilen_urunler[0]
-    materyal_id = urun.get('materyal_turu')  # ✅ Düzeltildi: materyal_turu kullanılmalı
+    # Kabul edilen ürün yoksa iade kuyruğunu kontrol et
+    # İade işlemi için yönlendirici işlem beklemesine gerek yok (sadece iade varsa hemen yap)
+    if sistem.iade_kuyruğu:
+        iade_sebebi = sistem.iade_kuyruğu.popleft()
+        print(f"\n🔄 [İADE YÖNLENDİRME] İade işlemi başlatılıyor: {iade_sebebi}")
+        print(f"📦 [İADE KUYRUK] Kalan iade sayısı: {len(sistem.iade_kuyruğu)}")
+        
+        if sistem.motor_ref:
+            sistem.motor_ref.konveyor_geri()
+            print(f"🔙 [İADE] Ürün geri gönderiliyor: {iade_sebebi}")
+        
+        sistem.iade_lojik = True
+        print(f"✅ [İADE YÖNLENDİRME] İade işlemi başlatıldı\n")
+        return
     
-    materyal_isimleri = {1: "PET", 2: "CAM", 3: "ALÜMİNYUM"}
-    materyal_adi = materyal_isimleri.get(materyal_id, "BİLİNMEYEN")
-    
-    print(f"\n🔄 [YÖNLENDİRME] {materyal_adi} ürün işleniyor: {urun['barkod']}")
-    
-
-    if sistem.motor_ref:
-        if materyal_id == 2:  # Cam
-            sistem.motor_ref.konveyor_dur()
-            sistem.motor_ref.yonlendirici_cam()
-            print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
-        else:  # Plastik/Metal
-            sistem.motor_ref.konveyor_dur()
-            sistem.motor_ref.yonlendirici_plastik()
-            print(f"🟩 [PLASTİK] Plastik yönlendiricisine gönderildi")
-    sistem.kabul_edilen_urunler.popleft()
-    print(f"📦 [KUYRUK] Kalan ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
-    print(f"✅ [YÖNLENDİRME] İşlem tamamlandı\n")
+    # Her iki kuyruk da boşsa
+    if not sistem.kabul_edilen_urunler and not sistem.iade_kuyruğu:
+        print(f"⚠️ [YÖNLENDİRME] Hem kabul edilen ürün hem de iade kuyruğu boş, yönlendirme yapılamadı")
 
 
 def lojik_yoneticisi():
@@ -348,19 +380,16 @@ def lojik_yoneticisi():
             sistem.gso_lojik = False
             if sistem.iade_lojik:
                 print("Ürünü aldı. Sistem Tekrar Aktif Teşekkürler.")
+                sistem.iade_kuyruğu.clear()  # İade kuyruğunu temizle
                 sistem.iade_lojik = False
                 sistem.barkod_lojik = False
             else:
                 if sistem.barkod_lojik:
-                    if sistem.iade_lojik==False:
-                        print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
-                        goruntu_isleme_tetikle()
-                    else:
-                        print("🚫 [İADE AKTIF] Görüntü İşleme Başlatılamıyor.")
+                    print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
+                    goruntu_isleme_tetikle()
                 else:
-                    print("🚫 [GSO] Barkod okunmadı, ürünü iade et.")
-                    sistem.iade_lojik = True
-
+                    giris_iade_et("Barkod okunamadı")
+        
         if sistem.yso_lojik:
             sistem.yso_lojik = False
             print("🔄 [LOJİK] YSO lojik işlemleri başlatıldı")
@@ -368,42 +397,42 @@ def lojik_yoneticisi():
 
         if sistem.yonlendirici_konumda:
             sistem.yonlendirici_konumda = False
+            
+            # Eğer yönlendirici işlem bekleniyorsa, işlem tamamlandı
+            if sistem.yonlendirici_islem_bekliyor:
+                sistem.yonlendirici_islem_bekliyor = False
+                print("✅ [LOJİK] Yönlendirici işlem tamamlandı")
+                
+                # Şimdi iade kuyruğunu kontrol et
+                if sistem.iade_kuyruğu:
+                    print("🔄 [LOJİK] Yönlendirici işlem bitti, iade işlemi başlatılıyor")
+                    # Bir sonraki YSO sinyalinde iade işlemi yapılacak
+            
+            # FIFO mantığı: önce kabul edilen ürünler, sonra iade kuyruğu, sonra senkronizasyon
             if len(sistem.veri_senkronizasyon_listesi)>0 or len(sistem.kabul_edilen_urunler)>0:
                 print("🔄 [LOJİK] Yönlendirici konumda, konveyör ileri")
                 sistem.motor_ref.konveyor_ileri()
-            else:
+            if sistem.iade_lojik and len(sistem.iade_kuyruğu)>0:
                 print("✅ [LOJİK] Yönlendirici konumda, konveyör dur")
-                sistem.motor_ref.konveyor_dur()
+                sistem.motor_ref.konveyor_geri()
 
 
         if sistem.agirlik is not None:
             if sistem.barkod_lojik:
-                if sistem.iade_lojik==False:
-                    print(f"⚖️ [AĞIRLIK] Ölçülen ağırlık: {sistem.agirlik} gr")
-                    veri_senkronizasyonu(agirlik=sistem.agirlik)
-                    sistem.agirlik = None  # Sıfırla
-                else:
-                    print(f"🚫 [İADE AKTIF] Ağırlık ölçümü iade lojik aktifken işlenmiyor: {sistem.agirlik} gr")
-                    sistem.agirlik = None  # Sıfırla
+                print(f"⚖️ [AĞIRLIK] Ölçülen ağırlık: {sistem.agirlik} gr")
+                veri_senkronizasyonu(agirlik=sistem.agirlik)
+                sistem.agirlik = None  # Sıfırla
             else:
                 print(f"⚠️ [AĞIRLIK] Ölçülen ağırlık var ama barkod lojik aktif değil: {sistem.agirlik} gr")
                 sistem.agirlik = None  # Sıfırla
-
-        # İade lojik flag mantığı - false'dan true'ya geçtiğinde bir kez çalışır
-        if sistem.iade_lojik:
-            if len(sistem.kabul_edilen_urunler) == 0 and len(sistem.veri_senkronizasyon_listesi) == 0:
-                if not sistem.iade_etildi:
-                    print("🚫 [İADE] İade lojik aktif, ürün iade ediliyor...")
-                    giris_iade_et("Kabul edilen ürün yok")
-                    sistem.iade_etildi = True
-        else:
-            # iade_lojik kapandığında tekrar aktifleşmeye izin ver
-            sistem.iade_etildi = False
-     
-
+        
 def giris_iade_et(sebep):
     print(f"\n❌ [GİRİŞ İADESİ] Sebep: {sebep}")
-    sistem.motor_ref.konveyor_geri()
+    
+    # İade işlemini kuyruğa ekle (FIFO mantığı için)
+    sistem.iade_kuyruğu.append(sebep)
+    print(f"📋 [İADE KUYRUK] İade kuyruğuna eklendi: {sebep}")
+    print(f"📦 [İADE KUYRUK] Toplam bekleyen iade sayısı: {len(sistem.iade_kuyruğu)}")
 
 def mesaj_isle(mesaj):
 
@@ -411,18 +440,6 @@ def mesaj_isle(mesaj):
     
     if mesaj == "oturum_var":
         print(f"🟢 [OTURUM] Aktif oturum başlatıldı")
-        t1 = threading.Thread(target=lojik_yoneticisi, daemon=True)
-        t2 = threading.Thread(target=goruntu_isleme_tetikle, daemon=True)
-
-        t1.start()
-        t2.start()
-
-        sistem.iade_lojik = False
-        sistem.iade_lojik_onceki_durum = False
-        sistem.barkod_lojik = False
-        sistem.veri_senkronizasyon_listesi.clear()
-        sistem.kabul_edilen_urunler.clear()
-
         sistem.motor_ref.motorlari_aktif_et()
         sistem.sensor_ref.tare()
         sistem.motor_ref.konveyor_dur()
@@ -465,7 +482,10 @@ def mesaj_isle(mesaj):
         sistem.seperator_kalibrasyon = True
 
 
-
+t1 = threading.Thread(target=lojik_yoneticisi, daemon=True)
+# t2 = threading.Thread(target=goruntu_isleme_tetikle, daemon=True)  # Otomatik başlatma kaldırıldı
+t1.start()
+# t2.start()  # Görüntü işleme sadece GSO sinyalinde tetiklenecek
 
 
 # Erikli barkod: 1923026353360
