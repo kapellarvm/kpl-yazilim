@@ -97,12 +97,12 @@ async def session_end(data: SessionEndRequest):
     print(f"Gelen /sessionEnd isteği: {data.model_dump_json()}")
     
     # oturum_var.py'deki oturum durumunu kontrol et
-    #if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
-    #    return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
+    if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
+        return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
     
     # oturum_var.py'deki oturum sonlandırma fonksiyonunu çağır (async)
     # Bu fonksiyon DİM-DB'ye transaction result gönderecek
-    #await oturum_var.oturum_sonlandir()
+    await oturum_var.oturum_sonlandir()
     
     # Durum makinesini güncelle
     durum_makinesi.durum_degistir("oturum_yok")

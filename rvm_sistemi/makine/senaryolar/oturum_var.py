@@ -114,11 +114,11 @@ async def oturum_sonlandir():
             "guid": str(uuid_lib.uuid4()),
             "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "rvm": istemci.RVM_ID,
-            "id": aktif_oturum["sessionId"] + "-tx",
+            "id": sistem.aktif_oturum["sessionId"] + "-tx",
             "firstBottleTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "endTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "sessionId": aktif_oturum["sessionId"],
-            "userId": aktif_oturum["userId"],
+            "sessionId": sistem.aktif_oturum["sessionId"],
+            "userId": sistem.aktif_oturum["userId"],
             "created": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "containerCount": len(sistem.kabul_edilen_urunler),
             "containers": list(containers.values())
@@ -132,7 +132,7 @@ async def oturum_sonlandir():
         print(f"❌ [OTURUM] Transaction result gönderme hatası: {e}")
     
     # Oturumu temizle
-    aktif_oturum = {
+    sistem.aktif_oturum = {
         "aktif": False,
         "sessionId": None,
         "userId": None,
@@ -359,9 +359,15 @@ def lojik_yoneticisi():
         if sistem.gso_lojik:
             sistem.gso_lojik = False
             if sistem.iade_lojik:
-                print("Ürünü aldı. Sistem Tekrar Aktif Teşekkürler.")
-                sistem.iade_lojik = False
-                sistem.barkod_lojik = False
+                
+                goruntu = image_processing_service.capture_and_process()
+                if goruntu.message=="nesne yok":
+                    print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
+                    sistem.iade_lojik = False
+                    sistem.barkod_lojik = False
+                else:
+                    print("🚫 [İADE AKTIF] Görüntü işleme kabul etmedi iade devam.")
+                    sistem.motor_ref.konveyor_geri()
             else:
                 if sistem.barkod_lojik:
                     if sistem.iade_lojik==False:
