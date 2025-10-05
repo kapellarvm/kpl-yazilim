@@ -375,13 +375,14 @@ def lojik_yoneticisi():
                 print("🔄 [LOJİK] Yönlendirici konumda, konveyör ileri")
                 sistem.motor_ref.konveyor_ileri()
             else:
-                if sistem.gsi_gecis_lojik:
-                    print("✅ [LOJİK] Yönlendirici konumda, konveyör ileri")
+                if sistem.gsi_gecis_lojik and not sistem.iade_lojik:
+                    print("✅ [LOJİK] Yönlendirici konumda, konveyör ileri gsi_gecis_lojik aktif")
                     sistem.motor_ref.konveyor_ileri()
                     sistem.gsi_gecis_lojik = False
 
                 else:
                     print("✅ [LOJİK] Yönlendirici konumda, konveyör dur")
+                    time.sleep(0.25) # Gömülüden adım gibi bişe girecem.
                     sistem.motor_ref.konveyor_dur()
                     
 
