@@ -167,6 +167,7 @@ def barkod_verisi_al(barcode):
     sistem.aktif_oturum["paket_uuid_map"][barcode] = paket_uuid
 
     sistem.barkod_lojik = True
+    
     #veri_senkronizasyonu(barkod=barcode)
 
     veri_senkronizasyonu(barkod=barcode)
@@ -216,7 +217,15 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
 
     if all(urun[k] is not None for k in urun):
         print(f"✅ [VERİ SENKRONİZASYONU] Tüm veriler alındı: {urun}")
-        dogrulama(urun['barkod'], urun['agirlik'], urun['materyal_turu'], urun['uzunluk'], urun['genislik'])
+
+        if urun['materyal_turu'] == 1:
+            sistem.motor_ref.klape_plastik()
+
+        elif urun['materyal_turu']  == 3:
+            sistem.motor_ref.klape_metal()
+
+        dogrulama(urun['barkod'], urun['agirlik'], urun['materyal_turu'], urun['uzunluk'], urun['genislik'])  
+
         sistem.barkod_lojik = False
         sistem.veri_senkronizasyon_listesi.pop(0)  # işlenen ürünü kuyruktan çıkar
     print(f"🔄 [VERİ SENKRONİZASYONU] Güncel kuyruk durumu: {sistem.veri_senkronizasyon_listesi}")
@@ -484,3 +493,7 @@ def mesaj_isle(mesaj):
 # Kuzeyden barkod: 19270737
 # Nestle barkod: 1923026353469
 # Damla barkod: 8333445997848
+
+# kPONVEYÖR İLERİ VE GERİ DÖNERKEN TAM TUR DÖNÜNCE BURAYA KOMUT ATSIN. BİRDE GÖMÜLÜ YAZIIMDA 
+# EĞER O ARADA YMP,YMC GİBİ MOUTLAR GİDERSE O DURUMU SIFIRLASINKİ HER TAM TURDA KOMUT ATMASIN EKSTREM
+# DURUMLARDA SADECE KOMUT ATSIN
