@@ -78,6 +78,12 @@ class MotorKart:
 
     def konveyor_dur(self):
         self.write_queue.put(("konveyor_dur", None))
+    
+    def konveyor_problem_var(self):
+        self.write_queue.put(("konveyor_problem_var", None))
+
+    def konveyor_problem_yok(self):
+        self.write_queue.put(("konveyor_problem_yok", None))
 
     def mesafe_baslat(self):
         self.write_queue.put(("mesafe_baslat", None))
@@ -174,6 +180,10 @@ class MotorKart:
                         self.seri_port.write(b"kmg\n")
                     elif command == "konveyor_dur":
                         self.seri_port.write(b"kmd\n")
+                    elif command == "konveyor_problem_var":
+                        self.seri_port.write(b"pv\n")
+                    elif command == "konveyor_problem_yok":
+                        self.seri_port.write(b"py\n")
                     elif command == "yonlendirici_plastik":
                         self.seri_port.write(b"ymp\n")
                     elif command == "yonlendirici_cam":
@@ -283,7 +293,7 @@ class MotorKart:
             print("[LOG] Geçersiz mesaj alındı, atlanıyor.")
             return
 
-        print(f"[{self.cihaz_adi}] Gelen mesaj: {mesaj}")
+        #print(f"[{self.cihaz_adi}] Gelen mesaj: {mesaj}")
         if "pong" in mesaj.lower():
             self.saglikli = True
             print("[LOG] Sağlık durumu güncellendi: Sağlıklı")

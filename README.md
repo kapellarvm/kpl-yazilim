@@ -1,6 +1,91 @@
-# RVM Bakım Sistemi - Kurulum Kılavuzu
+# GA500 Motor Kontrol Sistemi
 
-Bu dokümantasyon, RVM sistemini sıfırdan yeni bir bilgisayara kurmak için gereken **tüm adımları** içerir.
+## 📌 Proje Özeti
+
+GA500 motor sürücülerini Modbus RTU protokolü ile kontrol eden Ubuntu tabanlı Python sistemi. CE alarmları çözülmüş, sürekli 50 Hz çalışma sağlanmıştır.
+
+## 🚀 Hızlı Başlangıç
+
+```bash
+# Test çalıştır
+cd /home/sshuser/projects/kpl-yazilim
+python3.9 test.py
+```
+
+## 📁 Dosya Yapısı
+
+```
+kpl-yazilim/
+├── 📄 README.md                    # Bu dosya
+├── 📄 GA500_DOKUMANTASYON.md       # Detaylı dokümantasyon
+├── 📄 HIZLI_BASLANGIC.md           # Hızlı başlangıç kılavuzu
+├── 📄 API_DOKUMANTASYONU.md        # API referansı
+├── 📄 requirements.txt             # Python bağımlılıkları
+├── 📄 test.py                      # Basit test scripti
+└── rvm_sistemi/
+    └── makine/
+        └── modbus/
+            ├── __init__.py
+            └── modbus_istemci.py   # Ana Modbus istemci sınıfı
+```
+
+## 💻 Kullanım
+
+### Basit Kullanım
+```python
+from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
+
+client = GA500ModbusClient()
+client.connect()
+client.run_forward(1)  # Motor 1 - 50 Hz çalıştır
+client.stop(1)         # Motor 1 durdur
+client.disconnect()
+```
+
+## ✅ Sistem Durumu
+
+- **Bağlantı**: ✅ Çalışıyor
+- **CE Alarmı**: ✅ Çözüldü  
+- **50 Hz Çalışma**: ✅ Sürekli
+- **Çift Motor**: ✅ Destekleniyor
+- **Thread Safety**: ✅ Güvenli
+
+## 📚 Dokümantasyon
+
+| Dosya | Açıklama |
+|-------|----------|
+| [GA500_DOKUMANTASYON.md](GA500_DOKUMANTASYON.md) | Kapsamlı sistem dokümantasyonu |
+| [HIZLI_BASLANGIC.md](HIZLI_BASLANGIC.md) | 5 dakikalık başlangıç kılavuzu |
+| [API_DOKUMANTASYONU.md](API_DOKUMANTASYONU.md) | Detaylı API referansı |
+
+## 🔧 Teknik Özellikler
+
+- **Platform**: Ubuntu Linux
+- **Python**: 3.9+
+- **Protokol**: Modbus RTU
+- **Port**: /dev/ttyS0 (varsayılan)
+- **Baudrate**: 9600
+- **Motorlar**: 2x GA500 (Adres 1, 2)
+
+## 📞 Destek
+
+```bash
+# Sistem kontrolü
+python3.9 --version
+
+# Test çalıştır
+python3.9 test.py
+
+# Manuel test
+python3.9 -c "from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient; print('✅ Sistem hazır')"
+```
+
+---
+
+**Proje**: kpl-yazilim  
+**Durum**: ✅ Production Ready  
+**Versiyon**: 1.0.0  
+**Tarih**: 5 Ekim 2025
 
 ---
 
