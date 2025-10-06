@@ -3,7 +3,7 @@ import asyncio
 import schedule
 import time
 
-from rvm_sistemi.dimdb import istemci
+from rvm_sistemi.dimdb import dimdb_istemcisi
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
 from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 from rvm_sistemi.makine.seri.motor_karti import MotorKart
@@ -23,9 +23,9 @@ async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
     print("Heartbeat zamanlayıcı başlatıldı...")
 
-    await istemci.send_heartbeat()
+    await dimdb_istemcisi.send_heartbeat()
 
-    schedule.every(60).seconds.do(lambda: asyncio.create_task(istemci.send_heartbeat()))
+    schedule.every(60).seconds.do(lambda: asyncio.create_task(dimdb_istemcisi.send_heartbeat()))
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
@@ -41,8 +41,9 @@ def sensor_callback(mesaj):
     
     # Sunucudaki callback'i de çağır (eğer varsa)
     try:
-        from rvm_sistemi.dimdb.sunucu import sensor_callback as sunucu_callback
-        sunucu_callback(mesaj)
+        from rvm_sistemi.api.servisler.dimdb_servis import DimdbServis
+        # Sensör callback'i artık API katmanında yönetiliyor
+        # Gerekirse burada DimdbServis metodları çağrılabilir
     except:
         pass
 
@@ -96,7 +97,7 @@ async def main():
 
     # FastAPI sunucusunu başlat
     config = uvicorn.Config(
-        "rvm_sistemi.dimdb.sunucu:app",
+        "rvm_sistemi.api.main:app",
         host="0.0.0.0",
         port=4321,
         log_level="info"

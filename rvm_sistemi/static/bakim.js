@@ -6,8 +6,15 @@ let isTesting = false;
 let stopLoop = true;
 let cardConnectionTimeouts = {};
 
+// Durum yöneticisi
+const durumYoneticisi = {
+    durum: 'oturum_yok',
+    sensorKartBagli: false,
+    motorKartBagli: false
+};
+
 // API Base URL
-const API_BASE = '';
+const API_BASE = '/api/v1';
 
 // Icon'lar
 const successIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
@@ -26,31 +33,38 @@ function ozellikAktifDegil() {
 
 // Bakım modu kontrolü
 async function bakimModuToggle() {
-    bakimModuAktif = !bakimModuAktif;
+    const yeniDurum = !bakimModuAktif;
     
     try {
-        const response = await fetch(`${API_BASE}/api/bakim-modu-ayarla`, {
+        const response = await fetch(`${API_BASE}/bakim/modu-ayarla`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                aktif: bakimModuAktif
+                aktif: yeniDurum
             })
         });
         
         const data = await response.json();
         
         if (data.status === 'success') {
+            // Sadece başarılı olduğunda durumu güncelle
+            bakimModuAktif = yeniDurum;
+            
             const btn = document.getElementById('bakimModBtn');
             if (bakimModuAktif) {
                 btn.textContent = '⚙ Bakım Modu: Aktif';
                 btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                 showMessage('✓ ' + data.message);
+                // Bakım modu aktifken periyodik güncellemeleri başlat
+                startPeriodicUpdates();
             } else {
                 btn.textContent = '⚙ Bakım Modu: Pasif';
                 btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
                 showMessage('✓ ' + data.message);
+                // Bakım modu pasifken periyodik güncellemeleri durdur
+                stopPeriodicUpdates();
             }
             
             // Butonları güncelle
@@ -60,18 +74,16 @@ async function bakimModuToggle() {
             setTimeout(sistemDurumunuGuncelle, 500);
         } else {
             showMessage('✗ ' + data.message, true);
-            bakimModuAktif = !bakimModuAktif; // Geri al
         }
     } catch (error) {
         showMessage('Bağlantı hatası: ' + error.message, true);
-        bakimModuAktif = !bakimModuAktif; // Geri al
     }
 }
 
 // Sistem durumu güncelleme
 async function sistemDurumunuGuncelle() {
     try {
-        const response = await fetch(`${API_BASE}/api/sistem-durumu`);
+        const response = await fetch(`${API_BASE}/sistem/durum`);
         const data = await response.json();
         
         const motorStatus = document.getElementById('motor-card-status');
@@ -94,7 +106,7 @@ async function sistemDurumunuGuncelle() {
         }
         
         // Bakım modu durumunu güncelle
-        if (data.mevcut_durum === 'bakim' && !bakimModuAktif) {
+        if (data.durum === 'bakim' && !bakimModuAktif) {
             bakimModuAktif = true;
             const btn = document.getElementById('bakimModBtn');
             if (btn) {
@@ -102,7 +114,9 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                 butonlariGuncelle();
             }
-        } else if (data.mevcut_durum !== 'bakim' && bakimModuAktif) {
+            // Bakım modu aktifken periyodik güncellemeleri başlat
+            startPeriodicUpdates();
+        } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
             const btn = document.getElementById('bakimModBtn');
             if (btn) {
@@ -110,7 +124,14 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
                 butonlariGuncelle();
             }
+            // Bakım modu pasifken periyodik güncellemeleri durdur
+            stopPeriodicUpdates();
         }
+        
+        // Durum yöneticisini güncelle
+        durumYoneticisi.durum = data.durum;
+        durumYoneticisi.sensorKartBagli = data.sensor_baglanti;
+        durumYoneticisi.motorKartBagli = data.motor_baglanti;
         
     } catch (error) {
         console.error('Durum güncellemesi başarısız:', error);
@@ -148,7 +169,7 @@ function butonlariGuncelle() {
 // Sensör değerlerini güncelle
 async function sensorDegerleriniGuncelle() {
     try {
-        const response = await fetch(`${API_BASE}/api/sensor/son-deger`);
+        const response = await fetch(`${API_BASE}/sensor/son-deger`);
         const data = await response.json();
         
         if (data.status === 'success' && data.data) {
@@ -170,7 +191,7 @@ async function sensorDegerleriniGuncelle() {
 // API çağrı fonksiyonları
 async function motorKontrol(komut) {
     try {
-        const response = await fetch(`${API_BASE}/api/motor/${komut}`, {
+        const response = await fetch(`${API_BASE}/motor/${komut}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -191,7 +212,7 @@ async function motorKontrol(komut) {
 
 async function sensorKontrol(komut) {
     try {
-        const response = await fetch(`${API_BASE}/api/sensor/${komut}`, {
+        const response = await fetch(`${API_BASE}/sensor/${komut}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -218,7 +239,7 @@ async function sistemReset() {
     
     try {
         showMessage('↻ Sistem resetleniyor...', false);
-        const response = await fetch(`${API_BASE}/api/sistem-reset`, {
+        const response = await fetch(`${API_BASE}/sistem/reset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -327,7 +348,7 @@ function setupSensorControls() {
                 teachBtn.innerText = "Öğreniyor...";
                 
                 try {
-                    const response = await fetch(`${API_BASE}/api/sensor/teach`, {
+                    const response = await fetch(`${API_BASE}/sensor/teach`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     });
@@ -383,7 +404,7 @@ function setupSensorControls() {
             if (loadcellVisual) loadcellVisual.classList.add('measuring');
             
             try {
-                const response = await fetch(`${API_BASE}/api/sensor/agirlik-olc`, {
+                const response = await fetch(`${API_BASE}/sensor/agirlik-olc`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -451,7 +472,7 @@ function setupSensorControls() {
                 if (loadcellMessage) loadcellMessage.innerText = 'Tare alınıyor...';
                 if (loadcellVisual) loadcellVisual.classList.add('measuring');
                 
-                const response = await fetch(`${API_BASE}/api/sensor/tare`, {
+                const response = await fetch(`${API_BASE}/sensor/tare`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -711,7 +732,7 @@ function setupPlaceholderFunctions() {
                 saveBtn.innerText = 'Kaydediliyor...';
                 
                 try {
-                    const response = await fetch(`${API_BASE}/api/motor/hiz-ayarla`, {
+                    const response = await fetch(`${API_BASE}/motor/hiz-ayarla`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ motor: motor, hiz: speed })
@@ -792,7 +813,7 @@ function flapAnimasyonu(tip) {
 function bakimUrlDegistir() {
     const yeniUrl = prompt('Yeni bakım URL\'ini girin:', 'http://192.168.53.2:4321/bakim');
     if (yeniUrl) {
-        fetch('/api/bakim-url-ayarla', {
+        fetch(`${API_BASE}/bakim/url-ayarla`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -819,7 +840,7 @@ function updateGeneralStatus() {
     // Sistem durumu - API'den al
     const systemState = document.getElementById('system-state');
     if (systemState) {
-        fetch(`${API_BASE}/api/sistem-durumu`)
+        fetch(`${API_BASE}/sistem/durum`)
             .then(response => response.json())
             .then(data => {
                 if (data.durum) {
@@ -891,6 +912,38 @@ function updateConnectionStatus() {
     }
 }
 
+// Periyodik güncelleme interval'ları
+let sistemDurumInterval = null;
+let sensorDegerInterval = null;
+let genelDurumInterval = null;
+
+// Periyodik güncellemeleri başlat
+function startPeriodicUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopPeriodicUpdates();
+    
+    // Periyodik güncellemeleri başlat
+    sistemDurumInterval = setInterval(sistemDurumunuGuncelle, 5000);
+    sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
+    genelDurumInterval = setInterval(updateGeneralStatus, 10000);
+}
+
+// Periyodik güncellemeleri durdur
+function stopPeriodicUpdates() {
+    if (sistemDurumInterval) {
+        clearInterval(sistemDurumInterval);
+        sistemDurumInterval = null;
+    }
+    if (sensorDegerInterval) {
+        clearInterval(sensorDegerInterval);
+        sensorDegerInterval = null;
+    }
+    if (genelDurumInterval) {
+        clearInterval(genelDurumInterval);
+        genelDurumInterval = null;
+    }
+}
+
 // Ana başlatma fonksiyonu
 function initializeBakim() {
     setupTabControl();
@@ -905,10 +958,10 @@ function initializeBakim() {
     butonlariGuncelle();
     updateGeneralStatus();
     
-    // Periyodik güncellemeler
-    setInterval(sistemDurumunuGuncelle, 5000);
-    setInterval(sensorDegerleriniGuncelle, 1000);
-    setInterval(updateGeneralStatus, 10000); // Her 10 saniyede bir genel durumu güncelle
+    // Periyodik güncellemeleri başlat (sadece bakım modu aktifken)
+    if (bakimModuAktif) {
+        startPeriodicUpdates();
+    }
 }
 
 // DOM yüklendiğinde başlat
