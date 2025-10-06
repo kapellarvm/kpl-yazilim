@@ -31,20 +31,7 @@ async def run_heartbeat_scheduler():
         await asyncio.sleep(1)
 
 # Ürün güncelleme zamanlayıcısı - zamanli_gorevler modülüne taşındı
-async def run_product_update_scheduler():
-    """Ürün listesini periyodik olarak güncelleyen asenkron görev."""
-    print("Ürün güncelleme zamanlayıcı başlatıldı...")
-     
-     # İlk güncellemeyi hemen yap
-    print("🔄 İlk ürün güncellemesi yapılıyor...")
-    await istemci.get_all_products_and_save()
-     
-     # Her 6 saatte bir güncelle (6 * 60 * 60 = 21600 saniye)
-    schedule.every(6).hours.do(lambda: asyncio.create_task(istemci.get_all_products_and_save()))
-     
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
+# run_product_update_scheduler() fonksiyonu kaldırıldı - artık urun_guncelleyici kullanılıyor
 
 
 def sensor_callback(mesaj):
@@ -120,21 +107,19 @@ async def main():
     heartbeat_task = asyncio.create_task(run_heartbeat_scheduler())
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
-    # product_update_task = asyncio.create_task(run_product_update_scheduler())
+    #product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
 
     print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
-    # print("🔄 Ürün güncelleme: Her 6 saatte bir otomatik")
-    
-    # Ürün güncelleme zamanlayıcısını başlatmak için:
-    # product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
-    # print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
+    print("🔄 Ürün güncelleme: Her 6 saatte bir otomatik")
+    print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
 
     await server.serve()
 
     # Sunucu kapandığında her şeyi durdur
     heartbeat_task.cancel()
-    # product_update_task.cancel()  # zamanli_gorevler modülüne taşındı
+    #product_update_task.cancel()
+    urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()
     motor.dinlemeyi_durdur()
 

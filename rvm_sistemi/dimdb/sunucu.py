@@ -21,13 +21,8 @@ async def lifespan(app: FastAPI):
     
     # DİM-DB bildirim fonksiyonu artık direkt import ile kullanılıyor
     
-    # Heartbeat sistemini başlat
-    await start_heartbeat()
-    
     yield
     
-    # Uygulama kapatılırken heartbeat'i durdur
-    await stop_heartbeat()
     print("\nUygulama kapatılıyor...")
     
 app = FastAPI(title="RVM Sunucusu", lifespan=lifespan)
@@ -87,14 +82,14 @@ async def send_package_result(barcode, agirlik, materyal_turu, uzunluk, genislik
         alu_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 3)
         
         # DEBUG: Paket sonucu bilgilerini göster
-        print(f"\n🔍 [PACKAGE DEBUG] Barkod: {barcode}")
-        print(f"🔍 [PACKAGE DEBUG] Ağırlık: {agirlik}g")
-        print(f"🔍 [PACKAGE DEBUG] Materyal: {materyal_turu}")
-        print(f"🔍 [PACKAGE DEBUG] Uzunluk: {uzunluk}mm")
-        print(f"🔍 [PACKAGE DEBUG] Genişlik: {genislik}mm")
-        print(f"🔍 [PACKAGE DEBUG] Sonuç: {'Kabul' if kabul_edildi else 'Red'} (Kod: {sebep_kodu})")
-        print(f"🔍 [PACKAGE DEBUG] Mesaj: {sebep_mesaji}")
-        print(f"🔍 [PACKAGE DEBUG] Mevcut sayılar - PET: {pet_sayisi}, CAM: {cam_sayisi}, ALU: {alu_sayisi}")
+        #print(f"\n🔍 [PACKAGE DEBUG] Barkod: {barcode}")
+        #print(f"🔍 [PACKAGE DEBUG] Ağırlık: {agirlik}g")
+        #print(f"🔍 [PACKAGE DEBUG] Materyal: {materyal_turu}")
+        #print(f"🔍 [PACKAGE DEBUG] Uzunluk: {uzunluk}mm")
+        #print(f"🔍 [PACKAGE DEBUG] Genişlik: {genislik}mm")
+        #print(f"🔍 [PACKAGE DEBUG] Sonuç: {'Kabul' if kabul_edildi else 'Red'} (Kod: {sebep_kodu})")
+        #print(f"🔍 [PACKAGE DEBUG] Mesaj: {sebep_mesaji}")
+        #print(f"🔍 [PACKAGE DEBUG] Mevcut sayılar - PET: {pet_sayisi}, CAM: {cam_sayisi}, ALU: {alu_sayisi}")
         
         result_payload = {
             "guid": str(uuid.uuid4()),
@@ -233,6 +228,13 @@ async def send_transaction_result():
         
         await istemci.send_transaction_result(transaction_payload)
         print(f"✅ [DİM-DB] Transaction result başarıyla gönderildi: {oturum_var.sistem.aktif_oturum['sessionId']}")
+        
+        # Kullanıcı puan özeti
+        pet_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 1)
+        cam_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 2)
+        alu_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 3)
+        
+        print(f"📊 [OTURUM PUAN ÖZETİ] *********** Kullanıcı: {oturum_var.sistem.aktif_oturum['userId']} | PET: {pet_sayisi} puan | CAM: {cam_sayisi} puan | ALÜMİNYUM: {alu_sayisi} puan *************")
         
     except Exception as e:
         print(f"❌ [DİM-DB] Transaction result gönderme hatası: {e}")

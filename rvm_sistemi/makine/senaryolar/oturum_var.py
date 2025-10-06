@@ -2,7 +2,7 @@ import time
 from collections import deque
 from ...veri_tabani import veritabani_yoneticisi
 import threading
-from ..goruntu.image_processing_service import ImageProcessingService
+from ..goruntu.goruntu_isleme_servisi import GoruntuIslemeServisi
 from ..uyari_yoneticisi import uyari_yoneticisi
 import uuid as uuid_lib
 from dataclasses import dataclass, field
@@ -72,7 +72,7 @@ class SistemDurumu:
 # 🌍 Tekil (global) sistem nesnesi
 sistem = SistemDurumu()
 
-image_processing_service = ImageProcessingService()
+goruntu_isleme_servisi = GoruntuIslemeServisi()
 
 # DİM-DB bildirim fonksiyonu - direkt import ile
 def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
@@ -117,9 +117,18 @@ def barkod_verisi_al(barcode):
     print(f"\n📋 [YENİ ÜRÜN] Barkod okundu: {barcode}, UUID: {paket_uuid}")
 
 def goruntu_isleme_tetikle():
-    goruntu_sonuc = image_processing_service.capture_and_process()
+    """
+    Görüntü işlemeyi tetikler ve sonuçları veri senkronizasyonuna gönderir
+    """
+    goruntu_sonuc = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
     print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
-    veri_senkronizasyonu(materyal_turu=goruntu_sonuc.type.value, uzunluk=float(goruntu_sonuc.height_mm), genislik=float(goruntu_sonuc.width_mm))
+    
+    # Veri senkronizasyonuna gönder
+    veri_senkronizasyonu(
+        materyal_turu=goruntu_sonuc.tur.value, 
+        uzunluk=float(goruntu_sonuc.genislik_mm), 
+        genislik=float(goruntu_sonuc.yukseklik_mm)
+    )
 
 def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=None, genislik=None):
     # Eğer kuyruk boşsa, yeni ürün başlat
@@ -321,7 +330,7 @@ def yonlendirici_hareket():
 
 def lojik_yoneticisi():
     while True:
-
+        time.sleep(0.005)  # CPU kullanımını azaltmak için kısa bir uyku
         if sistem.gsi_lojik:
             sistem.gsi_lojik = False
             sistem.gsi_gecis_lojik = True
@@ -338,8 +347,8 @@ def lojik_yoneticisi():
             sistem.gso_lojik = False
             if sistem.iade_lojik:
                 
-                goruntu = image_processing_service.capture_and_process()
-                if goruntu.message=="nesne yok":
+                goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
+                if goruntu.mesaj=="nesne_yok":
                     print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
                     sistem.iade_lojik = False
                     sistem.barkod_lojik = False
@@ -390,7 +399,6 @@ def lojik_yoneticisi():
 
                 else:
                     print("✅ [LOJİK] Yönlendirici konumda, konveyör dur")
-                    time.sleep(0.25) # Gömülüden adım gibi bişe girecem.
                     sistem.motor_ref.konveyor_dur()
                     # gsi_gecis_lojik sadece burada sıfırlanmalı
                     sistem.gsi_gecis_lojik = False
@@ -442,8 +450,8 @@ def lojik_yoneticisi():
                     sistem.motor_ref.konveyor_problem_var()
                 
                 else:
-                    goruntu = image_processing_service.capture_and_process()
-                    if goruntu.message=="nesne yok":
+                    goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
+                    if goruntu.mesaj=="nesne_yok":
                         print("🚫 [Konveyor Motor Problem] Şişe alındı, nesne yok.")
                         sistem.iade_lojik = False
                         sistem.barkod_lojik = False
@@ -485,6 +493,7 @@ def mesaj_isle(mesaj):
         sistem.barkod_lojik = False
         sistem.veri_senkronizasyon_listesi.clear()
         sistem.kabul_edilen_urunler.clear()
+        sistem.onaylanan_urunler.clear()
 
         sistem.motor_ref.motorlari_aktif_et()
         sistem.sensor_ref.tare()
@@ -528,9 +537,6 @@ def mesaj_isle(mesaj):
         sistem.yonlendirici_kalibrasyon = True
     if mesaj == "skt":  
         sistem.seperator_kalibrasyon = True
-
-
-image_processing_service.capture_and_process() # Ana.py'a taşımamız lazım.
 
 
 # Erikli barkod: 1923026353360
