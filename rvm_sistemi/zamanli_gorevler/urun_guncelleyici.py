@@ -5,7 +5,7 @@ DİM-DB'den ürün listesini periyodik olarak günceller
 
 import asyncio
 import time
-from ..dimdb import istemci
+from ..dimdb import dimdb_istemcisi
 
 
 class UrunGuncelleyici:
@@ -57,7 +57,7 @@ class UrunGuncelleyici:
             # UTC saatini kullan
             utc_time = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
             print(f"🔄 [URUN_GUNCELLEYICI] Ürün güncellemesi başlatılıyor... ({utc_time})")
-            await istemci.get_all_products_and_save()
+            await dimdb_istemcisi.get_all_products_and_save()
             utc_time_end = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
             print(f"✅ [URUN_GUNCELLEYICI] Ürün güncellemesi tamamlandı ({utc_time_end})")
         except Exception as e:

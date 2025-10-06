@@ -78,7 +78,7 @@ goruntu_isleme_servisi = GoruntuIslemeServisi()
 def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
     """DİM-DB'ye bildirim gönderir"""
     try:
-        from ...dimdb.sunucu import dimdb_bildirim_gonder as sunucu_dimdb_bildirim
+        from ...dimdb.dimdb_yoneticisi import dimdb_bildirim_gonder as sunucu_dimdb_bildirim
         sunucu_dimdb_bildirim(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji)
     except Exception as e:
         print(f"❌ [DİM-DB BİLDİRİM] Hata: {e}")
