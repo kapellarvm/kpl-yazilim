@@ -28,6 +28,7 @@ class SistemDurumu:
 
     # Lojikler
     iade_etildi: bool = False
+    lojik_thread_basladi: bool = False
     konveyor_durum_kontrol: bool = False
     iade_lojik: bool = False
     iade_lojik_onceki_durum: bool = False
@@ -471,12 +472,13 @@ def mesaj_isle(mesaj):
     mesaj = mesaj.strip().lower()
     
     if mesaj == "oturum_var":
-        print(f"🟢 [OTURUM] Aktif oturum başlatıldı")
-        t1 = threading.Thread(target=lojik_yoneticisi, daemon=True)
-        t2 = threading.Thread(target=goruntu_isleme_tetikle, daemon=True)
-
-        t1.start()
-        t2.start()
+        if not sistem.lojik_thread_basladi:
+            print("🟢 [OTURUM] Aktif oturum başlatıldı")
+            t1 = threading.Thread(target=lojik_yoneticisi, daemon=True)
+            t1.start()
+            sistem.lojik_thread_basladi = True
+        else:
+            print("⚠️ [OTURUM] Lojik yöneticisi zaten çalışıyor, yeni thread başlatılmadı.")
 
         sistem.iade_lojik = False
         sistem.iade_lojik_onceki_durum = False
@@ -528,7 +530,7 @@ def mesaj_isle(mesaj):
         sistem.seperator_kalibrasyon = True
 
 
-
+image_processing_service.capture_and_process() # Ana.py'a taşımamız lazım.
 
 
 # Erikli barkod: 1923026353360

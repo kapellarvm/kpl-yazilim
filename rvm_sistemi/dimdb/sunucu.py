@@ -205,7 +205,7 @@ async def send_transaction_result():
         
         # DEBUG: Konteyner bilgilerini göster
         #print(f"🔍 [TRANSACTION DEBUG] Konteyner sayısı: {len(containers)}")
-        for barcode, container in containers.items():
+        #for barcode, container in containers.items():
             #print(f"🔍 [TRANSACTION DEBUG] - {barcode}: {container['count']} adet, {container['weight']}g, materyal: {container['material']}")
         
         transaction_payload = {
@@ -223,13 +223,13 @@ async def send_transaction_result():
         }
         
         # DEBUG: Gönderilecek payload'ı göster
-       ''' print(f"🔍 [TRANSACTION DEBUG] Gönderilecek payload:")
-        print(f"🔍 [TRANSACTION DEBUG] - RVM ID: {transaction_payload['rvm']}")
-        print(f"🔍 [TRANSACTION DEBUG] - Session ID: {transaction_payload['sessionId']}")
-        print(f"🔍 [TRANSACTION DEBUG] - User ID: {transaction_payload['userId']}")
-        print(f"🔍 [TRANSACTION DEBUG] - Container Count: {transaction_payload['containerCount']}")
-        print(f"🔍 [TRANSACTION DEBUG] - Timestamp: {transaction_payload['timestamp']}")
-        '''
+       # print(f"🔍 [TRANSACTION DEBUG] Gönderilecek payload:")
+       # print(f"🔍 [TRANSACTION DEBUG] - RVM ID: {transaction_payload['rvm']}")
+        #print(f"🔍 [TRANSACTION DEBUG] - Session ID: {transaction_payload['sessionId']}")
+        #print(f"🔍 [TRANSACTION DEBUG] - User ID: {transaction_payload['userId']}")
+        #print(f"🔍 [TRANSACTION DEBUG] - Container Count: {transaction_payload['containerCount']}")
+        #print(f"🔍 [TRANSACTION DEBUG] - Timestamp: {transaction_payload['timestamp']}")
+        
         
         await istemci.send_transaction_result(transaction_payload)
         print(f"✅ [DİM-DB] Transaction result başarıyla gönderildi: {oturum_var.sistem.aktif_oturum['sessionId']}")
