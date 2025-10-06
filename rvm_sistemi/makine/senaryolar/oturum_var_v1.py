@@ -122,7 +122,22 @@ async def oturum_sonlandir():
     kabul_edilen_urunler.clear()
     print(f"🧹 [OTURUM] Yerel oturum temizlendi")
 
+def barkod_verisi_al(barcode):
+    global giris_iade_lojik, barkod_lojik, aktif_oturum
+    
+    # İade aktifse yeni barkod işleme
+    if giris_iade_lojik:
+        print(f"🚫 [İADE AKTIF] Barkod görmezden gelindi: {barcode}")
+        return
 
+    # Her barkod için benzersiz UUID oluştur
+    paket_uuid = str(uuid_lib.uuid4())
+    aktif_oturum["paket_uuid_map"][barcode] = paket_uuid
+    
+    barkod_lojik = True
+    veri_senkronizasyonu(barkod=barcode)
+
+    print(f"\n📋 [YENİ ÜRÜN] Barkod okundu: {barcode}, UUID: {paket_uuid}")   
 
 def dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
     """DİM-DB'ye paket kabul/red sonucunu bildirir"""

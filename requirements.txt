@@ -20,9 +20,8 @@ paho-mqtt==1.6.1
 # Motor, sensör gibi kartlarla seri port üzerinden haberleşmek için
 pyserial==3.5
 
-# Endüstriyel donanımlarla Modbus TCP/RTU haberleşmesi için
-pymodbus==3.6.3
-
+# Endüstriyel donanımlarla Modbus TCP/RTU haberleşmesi için (GA500 motor sürücüleri)
+pymodbus==2.5.3
 
 # .env dosyasından ortam değişkenlerini (API anahtarları vb.) okumak için
 python-dotenv==1.0.0

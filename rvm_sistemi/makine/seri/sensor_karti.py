@@ -29,6 +29,12 @@ class SensorKart:
     def led_kapat(self): self.write_queue.put(("led_kapat", None))
     def tare(self): self.write_queue.put(("tare", None))
     def reset(self): self.write_queue.put(("reset", None))
+    def ezici_ileri(self): self.write_queue.put(("ezici_ileri", None))
+    def ezici_geri(self): self.write_queue.put(("ezici_geri", None))
+    def ezici_dur(self): self.write_queue.put(("ezici_dur", None))
+    def kirici_ileri(self): self.write_queue.put(("kirici_ileri", None))
+    def kirici_geri(self): self.write_queue.put(("kirici_geri", None))
+    def kirici_dur(self): self.write_queue.put(("kirici_dur", None))
     def doluluk_oranı(self): self.write_queue.put(("doluluk_oranı", None))
     def ping(self):
         self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
@@ -97,8 +103,10 @@ class SensorKart:
                 if command == "exit": break
 
                 komutlar = {
-                    "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n",
-                    "led_kapat": b"ad\n", "tare": b"tare\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
+                    "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n", "ezici_ileri": b"ei\n",
+                    "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
+                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"tare\n",
+                    "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
                 }
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])

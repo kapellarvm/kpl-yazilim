@@ -16,8 +16,12 @@ def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
         import os
         import threading
         import time
+        from urllib.parse import quote
         
-        uyari_url = f"http://192.168.53.2:4321/uyari?mesaj={mesaj}&sure={sure}"
+        # URL encoding ile Türkçe karakterleri düzgün encode et
+        mesaj_encoded = quote(mesaj)
+        uyari_url = f"http://192.168.53.2:4321/uyari?mesaj={mesaj_encoded}&sure={sure}"
+        print(f"[DEBUG] Uyarı URL'i: {uyari_url}")
         
         # Yeni Chromium penceresi aç (kioskuser olarak, kiosk modda)
         env = os.environ.copy()
@@ -33,6 +37,8 @@ def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
             "--window-size=1920,1080",  # Sabit window size hızlandırır
             "--start-fullscreen",
             "--app=" + uyari_url,  # App mode - window switching'i önler
+            "--disable-search-engine-choice-screen",  # Google arama engelleyici
+            "--disable-features=SearchSuggestions",  # Arama önerilerini kapat
             # GÖLGELENMEYİ ÖNLEMEK İÇİN WINDOW MANAGEMENT
             "--disable-backgrounding-occluded-windows",
             "--disable-background-timer-throttling", 
@@ -125,10 +131,13 @@ def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
         except:
             pass  # wmctrl veya xdotool yoksa görmezden gel
         
-        # Timer başlat - belirtilen süre sonra otomatik kapat
-        uyari_timer = threading.Timer(sure, uyari_kapat)
-        uyari_timer.start()
-        print(f"[Uyarı Modu] {sure} saniye sonra otomatik kapanacak")
+        # Timer başlat - sadece sure > 0 ise otomatik kapat
+        if sure > 0:
+            uyari_timer = threading.Timer(sure, uyari_kapat)
+            uyari_timer.start()
+            print(f"[Uyarı Modu] {sure} saniye sonra otomatik kapanacak")
+        else:
+            print(f"[Uyarı Modu] Manuel kapanma modu - olay bazlı kapanacak")
         
     except Exception as e:
         print(f"[Uyarı Modu] Uyarı Chromium açma hatası: {e}")
