@@ -4,7 +4,6 @@ DİM-DB'den ürün listesini periyodik olarak günceller
 """
 
 import asyncio
-import schedule
 import time
 from ..dimdb import istemci
 
@@ -21,6 +20,7 @@ class UrunGuncelleyici:
         self.guncelleme_sikligi_saat = guncelleme_sikligi_saat
         self.ilk_guncelleme_yap = ilk_guncelleme_yap
         self.calistiriliyor = False
+        self._gorev = None
         
     async def baslat(self):
         """Ürün güncelleme zamanlayıcısını başlatır"""
@@ -38,28 +38,32 @@ class UrunGuncelleyici:
         else:
             print("⏭️ [URUN_GUNCELLEYICI] İlk güncelleme atlandı")
         
-        # Periyodik güncellemeyi ayarla
-        schedule.every(self.guncelleme_sikligi_saat).hours.do(
-            lambda: asyncio.create_task(self._urun_guncelle())
-        )
+        # Zamanlayıcı döngüsünü başlat
+        self._gorev = asyncio.create_task(self._zamanlayici_dongusu())
         
-        # Zamanlayıcıyı çalıştır
-        await self._zamanlayici_dongusu()
-    
     async def _zamanlayici_dongusu(self):
         """Zamanlayıcı döngüsünü çalıştırır"""
         while self.calistiriliyor:
-            schedule.run_pending()
-            await asyncio.sleep(1)
+            # 6 saat = 6 * 60 * 60 = 21600 saniye bekle
+            await asyncio.sleep(self.guncelleme_sikligi_saat * 3600)
+            
+            if self.calistiriliyor:
+                print(f"🔄 [URUN_GUNCELLEYICI] Periyodik güncelleme zamanı geldi...")
+                await self._urun_guncelle()
     
     async def _urun_guncelle(self):
         """Ürün listesini günceller"""
         try:
-            print(f"🔄 [URUN_GUNCELLEYICI] Ürün güncellemesi başlatılıyor... ({time.strftime('%H:%M:%S')})")
+            # UTC saatini kullan
+            utc_time = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
+            print(f"🔄 [URUN_GUNCELLEYICI] Ürün güncellemesi başlatılıyor... ({utc_time})")
             await istemci.get_all_products_and_save()
-            print(f"✅ [URUN_GUNCELLEYICI] Ürün güncellemesi tamamlandı ({time.strftime('%H:%M:%S')})")
+            utc_time_end = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
+            print(f"✅ [URUN_GUNCELLEYICI] Ürün güncellemesi tamamlandı ({utc_time_end})")
         except Exception as e:
             print(f"❌ [URUN_GUNCELLEYICI] Ürün güncelleme hatası: {e}")
+            import traceback
+            print(f"❌ [URUN_GUNCELLEYICI] Hata detayı: {traceback.format_exc()}")
     
     def durdur(self):
         """Ürün güncelleme zamanlayıcısını durdurur"""
@@ -68,6 +72,8 @@ class UrunGuncelleyici:
             return
             
         self.calistiriliyor = False
+        if self._gorev:
+            self._gorev.cancel()
         print("⏹️ [URUN_GUNCELLEYICI] Durduruldu")
     
     def manuel_guncelle(self):
@@ -81,12 +87,14 @@ class UrunGuncelleyici:
             "calistiriliyor": self.calistiriliyor,
             "guncelleme_sikligi_saat": self.guncelleme_sikligi_saat,
             "ilk_guncelleme_yap": self.ilk_guncelleme_yap,
-            "sonraki_guncelleme": schedule.next_run() if self.calistiriliyor else None
+            "sonraki_guncelleme": f"{self.guncelleme_sikligi_saat} saat sonra" if self.calistiriliyor else None,
+            "mevcut_utc_saat": time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime()),
+            "mevcut_yerel_saat": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         }
 
 
 # Global instance
 urun_guncelleyici = UrunGuncelleyici(
     guncelleme_sikligi_saat=6,
-    ilk_guncelleme_yap=False  # İlk güncellemeyi yapma
+    ilk_guncelleme_yap=True  # İlk güncellemeyi yap
 )

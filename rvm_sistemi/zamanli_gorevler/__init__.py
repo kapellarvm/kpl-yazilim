@@ -3,6 +3,6 @@ Zamanlı Görevler Modülü
 RVM sisteminde periyodik olarak çalışan görevler
 """
 
-from .urun_guncelleyici import UrunGuncelleyici
+from .urun_guncelleyici import UrunGuncelleyici, urun_guncelleyici
 
-__all__ = ['UrunGuncelleyici']
+__all__ = ['UrunGuncelleyici', 'urun_guncelleyici']
