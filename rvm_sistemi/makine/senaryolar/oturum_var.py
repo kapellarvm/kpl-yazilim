@@ -4,7 +4,6 @@ from ...veri_tabani import veritabani_yoneticisi
 import threading
 from ..goruntu.image_processing_service import ImageProcessingService
 from ..uyari_yoneticisi import uyari_yoneticisi
-import asyncio
 import uuid as uuid_lib
 from dataclasses import dataclass, field
 from . import uyari
@@ -23,7 +22,7 @@ class SistemDurumu:
     # Listeler
     veri_senkronizasyon_listesi: list = field(default_factory=list)
     kabul_edilen_urunler: deque = field(default_factory=deque)
-
+    onaylanan_urunler: list = field(default_factory=list)
     # İade Sebep String
     iade_sebep: str = None
 
@@ -66,88 +65,24 @@ class SistemDurumu:
         "paket_uuid_map": {}
     })
     
+    # Son işlenen ürün bilgisi (ymk için)
+    son_islenen_urun: dict = None
+    
 # 🌍 Tekil (global) sistem nesnesi
 sistem = SistemDurumu()
 
-
 image_processing_service = ImageProcessingService()
 
-
-
-
-def oturum_baslat(session_id, user_id):
-
-    """DİM-DB'den gelen oturum başlatma"""
-    sistem.aktif_oturum = {
-        "aktif": True,
-        "sessionId": session_id,
-        "userId": user_id,
-        "paket_uuid_map": {}
-    }
-    
-    # Eski ürünleri temizle
-    
-    print(f"✅ [OTURUM] DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
-
-async def oturum_sonlandir():
-    """Oturumu sonlandır ve DİM-DB'ye transaction result gönder"""
-    uyari.uyari_kapat()
-    sistem.sensor_ref.tare()
-    if not sistem.aktif_oturum["aktif"]:
-        print("⚠️ [OTURUM] Aktif oturum yok, sonlandırma yapılmadı")
-        return
-
-    print(f"🔚 [OTURUM] Oturum sonlandırılıyor: {sistem.aktif_oturum['sessionId']}")
-    
-    # DİM-DB'ye transaction result gönder
+# DİM-DB bildirim fonksiyonu - direkt import ile
+def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
+    """DİM-DB'ye bildirim gönderir"""
     try:
-        from ...dimdb import istemci
-        
-        # Kabul edilen ürünleri konteyner formatına dönüştür
-        containers = {}
-        for urun in sistem.kabul_edilen_urunler:
-            barcode = urun["barkod"]
-            if barcode not in containers:
-                containers[barcode] = {
-                    "barcode": barcode,
-                    "material": urun["materyal_turu"],
-                    "count": 0,
-                    "weight": 0
-                }
-            containers[barcode]["count"] += 1
-            containers[barcode]["weight"] += urun["agirlik"]
-        
-        transaction_payload = {
-            "guid": str(uuid_lib.uuid4()),
-            "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "rvm": istemci.RVM_ID,
-            "id": sistem.aktif_oturum["sessionId"] + "-tx",
-            "firstBottleTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "endTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "sessionId": sistem.aktif_oturum["sessionId"],
-            "userId": sistem.aktif_oturum["userId"],
-            "created": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            "containerCount": len(sistem.kabul_edilen_urunler),
-            "containers": list(containers.values())
-        }
-        
-        # Async fonksiyonu await ile çağır
-        await istemci.send_transaction_result(transaction_payload)
-        print(f"✅ [OTURUM] Transaction result DİM-DB'ye gönderildi")
-        
+        from ...dimdb.sunucu import dimdb_bildirim_gonder as sunucu_dimdb_bildirim
+        sunucu_dimdb_bildirim(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji)
     except Exception as e:
-        print(f"❌ [OTURUM] Transaction result gönderme hatası: {e}")
-    
-    # Oturumu temizle
-    sistem.aktif_oturum = {
-        "aktif": False,
-        "sessionId": None,
-        "userId": None,
-        "paket_uuid_map": {}
-    }
-    
-    sistem.kabul_edilen_urunler.clear()
-    print(f"🧹 [OTURUM] Yerel oturum temizlendi")
+        print(f"❌ [DİM-DB BİLDİRİM] Hata: {e}")
+
+
     
 def motor_referansini_ayarla(motor):
     sistem.motor_ref = motor
@@ -219,7 +154,11 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
         # Barkodsuz ürün için iade işlemini başlat
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder (barkod yok ama diğer veriler var)
+        if any(urun[k] is not None for k in ['agirlik', 'materyal_turu', 'uzunluk', 'genislik']):
+            dimdb_bildirim_gonder("BARKOD_YOK", urun.get('agirlik', 0), urun.get('materyal_turu', 0), 
+                          urun.get('uzunluk', 0), urun.get('genislik', 0), False, 6, "Barkod olmadan veri geldi")
 
         sistem.veri_senkronizasyon_listesi.pop(0)  # hatalı ürünü sil
         print(f"🔄 [VERİ SENKRONİZASYONU] Güncel kuyruk durumu: {sistem.veri_senkronizasyon_listesi}")
@@ -249,10 +188,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     if not urun:
         sebep = f"Ürün veritabanında yok (Barkod: {barkod})"
         print(f"❌ [DOĞRULAMA] {sebep}")
-        dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
         return
 
     min_agirlik = urun.get('packMinWeight')
@@ -282,10 +222,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     if not agirlik_kabul:
         sebep = f"Ağırlık sınırları dışında ({agirlik}g)"
         print(f"❌ [DOĞRULAMA] {sebep}")
-        #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
         return
 
     if min_genislik-10 <= genislik <= max_genislik+10:
@@ -293,10 +234,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     else:
         sebep = f"Genişlik sınırları dışında ({genislik}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
-        #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
         return
 
     if min_uzunluk-10 <= uzunluk <= max_uzunluk+10 :
@@ -304,19 +246,21 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     else:
         sebep = f"Uzunluk sınırları dışında ({uzunluk}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
-        #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
         return
 
     if materyal_id != materyal_turu:
         sebep = f"Materyal türü uyuşmuyor (Beklenen: {materyal_id}, Gelen: {materyal_turu})"
         print(f"❌ [DOĞRULAMA] {sebep}")
-        #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        #giris_iade_et(sebep)
+        
+        # DİM-DB'ye red bildirimi gönder
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
         return
     
     print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
@@ -330,11 +274,16 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         'genislik': genislik,
     })
 
+    sistem.onaylanan_urunler.append({
+        'barkod': barkod,
+        'agirlik': agirlik,
+        'materyal_turu': materyal_turu,
+        'uzunluk': uzunluk,
+        'genislik': genislik,
+    })
+
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     print(f"📦 [KUYRUK] Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
-
-    # DİM-DB'ye kabul bildirimi gönder
-    #dimdb_bildirimi_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, True, 0, "Ambalaj Kabul Edildi")
 
 def yonlendirici_hareket():
 
@@ -343,8 +292,9 @@ def yonlendirici_hareket():
         print(f"⚠️ [YÖNLENDİRME] Kabul edilen ürün kuyruğu boş, yönlendirme yapılamadı")
         return
     
-    # En eski ürünü al
+    # En eski ürünü al ve geçici olarak sakla (ymk için)
     urun = sistem.kabul_edilen_urunler[0]
+    sistem.son_islenen_urun = urun.copy()  # Geçici olarak sakla
     materyal_id = urun.get('materyal_turu')  # ✅ Düzeltildi: materyal_turu kullanılmalı
     
     materyal_isimleri = {1: "PET", 2: "CAM", 3: "ALÜMİNYUM"}
@@ -362,10 +312,11 @@ def yonlendirici_hareket():
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
             print(f"🟩 [PLASTİK] Plastik yönlendiricisine gönderildi")
+    
+    
     sistem.kabul_edilen_urunler.popleft()
     print(f"📦 [KUYRUK] Kalan ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
     print(f"✅ [YÖNLENDİRME] İşlem tamamlandı\n")
-
 
 def lojik_yoneticisi():
     while True:
@@ -421,6 +372,12 @@ def lojik_yoneticisi():
 
         if sistem.yonlendirici_konumda:
             sistem.yonlendirici_konumda = False
+            
+            # DİM-DB'ye onaylanan bildirimi gönder (ymk geldiğinde)
+            if sistem.son_islenen_urun:
+                dimdb_bildirim_gonder(sistem.son_islenen_urun['barkod'],sistem.son_islenen_urun['agirlik'],sistem.son_islenen_urun['materyal_turu'],sistem.son_islenen_urun['uzunluk'],sistem.son_islenen_urun['genislik'],True,0,"Ambalaj Kabul Edildi")
+                sistem.son_islenen_urun = None  # Temizle
+            
             if len(sistem.veri_senkronizasyon_listesi)>0 or len(sistem.kabul_edilen_urunler)>0:
                 print("🔄 [LOJİK] Yönlendirici konumda, konveyör ileri")
                 sistem.motor_ref.konveyor_ileri()
@@ -499,8 +456,7 @@ def lojik_yoneticisi():
                         print("🚫 [Konveyor Motor Problem] Görüntü işleme kabul edildi, iade işlemi devam ediyor.")
             else:
                 print("⚠️ [KONVEYÖR HATA] Konveyör adım problemi algılandı, ancak sistem boş değil veya iade lojik aktif, konveyör durdurulmadı")
-                sistem.motor_ref.konveyor_problem_yok()
-                
+                sistem.motor_ref.konveyor_problem_yok()            
 
 def giris_iade_et(sebep):
     print(f"\n❌ [GİRİŞ İADESİ] Sebep: {sebep}")

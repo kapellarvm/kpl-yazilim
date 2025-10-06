@@ -4,6 +4,8 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import uuid
 import time
+import asyncio
+import threading
 from contextlib import asynccontextmanager
 
 # Projenin diğer modüllerini doğru paket yolundan import et
@@ -17,8 +19,15 @@ async def lifespan(app: FastAPI):
     # Uygulama başlatma
     print("RVM Sunucusu başlatılıyor...")
     
+    # DİM-DB bildirim fonksiyonu artık direkt import ile kullanılıyor
+    
+    # Heartbeat sistemini başlat
+    await start_heartbeat()
+    
     yield
     
+    # Uygulama kapatılırken heartbeat'i durdur
+    await stop_heartbeat()
     print("\nUygulama kapatılıyor...")
     
 app = FastAPI(title="RVM Sunucusu", lifespan=lifespan)
@@ -60,6 +69,206 @@ class ResetRvmRequest(BaseModel): guid: str; rvm: str; timestamp: str
 # NOT: Paket işleme ve oturum yönetimi artık oturum_var.py'de yapılıyor
 # NOT: DogrulamaServisi artık kullanılmıyor, doğrulama oturum_var.py'de yapılıyor
 
+# --- DİM-DB BİLDİRİM FONKSİYONLARI ---
+
+async def send_package_result(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
+    """Her ürün doğrulaması sonrası DİM-DB'ye paket sonucunu gönderir"""
+    if not oturum_var.sistem.aktif_oturum["aktif"]:
+        print("⚠️ [DİM-DB] Aktif oturum yok, paket sonucu gönderilmedi")
+        return
+    
+    try:
+        # UUID'yi al
+        paket_uuid = oturum_var.sistem.aktif_oturum["paket_uuid_map"].get(barcode, str(uuid.uuid4()))
+        
+        # Kabul edilen ürün sayılarını hesapla
+        pet_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 1)
+        cam_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 2)
+        alu_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 3)
+        
+        # DEBUG: Paket sonucu bilgilerini göster
+        print(f"\n🔍 [PACKAGE DEBUG] Barkod: {barcode}")
+        print(f"🔍 [PACKAGE DEBUG] Ağırlık: {agirlik}g")
+        print(f"🔍 [PACKAGE DEBUG] Materyal: {materyal_turu}")
+        print(f"🔍 [PACKAGE DEBUG] Uzunluk: {uzunluk}mm")
+        print(f"🔍 [PACKAGE DEBUG] Genişlik: {genislik}mm")
+        print(f"🔍 [PACKAGE DEBUG] Sonuç: {'Kabul' if kabul_edildi else 'Red'} (Kod: {sebep_kodu})")
+        print(f"🔍 [PACKAGE DEBUG] Mesaj: {sebep_mesaji}")
+        print(f"🔍 [PACKAGE DEBUG] Mevcut sayılar - PET: {pet_sayisi}, CAM: {cam_sayisi}, ALU: {alu_sayisi}")
+        
+        result_payload = {
+            "guid": str(uuid.uuid4()),
+            "uuid": paket_uuid,
+            "sessionId": oturum_var.sistem.aktif_oturum["sessionId"],
+            "barcode": barcode,
+            "measuredPackWeight": float(agirlik),
+            "measuredPackHeight": float(uzunluk),
+            "measuredPackWidth": float(genislik),
+            "binId": materyal_turu if kabul_edildi else -1,
+            "result": sebep_kodu,
+            "resultMessage": sebep_mesaji,
+            "acceptedPetCount": pet_sayisi,
+            "acceptedGlassCount": cam_sayisi,
+            "acceptedAluCount": alu_sayisi
+        }
+        
+        await istemci.send_accept_package_result(result_payload)
+        print(f"✅ [DİM-DB] Paket sonucu başarıyla gönderildi: {barcode} - {'Kabul' if kabul_edildi else 'Red'}")
+        
+    except Exception as e:
+        print(f"❌ [DİM-DB] Paket sonucu gönderme hatası: {e}")
+        import traceback
+        print(f"❌ [DİM-DB] Hata detayı: {traceback.format_exc()}")
+
+def send_package_result_sync(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
+    """Thread-safe DİM-DB paket sonucu gönderimi"""
+    try:
+        # Yeni event loop oluştur ve çalıştır
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(send_package_result(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji))
+        finally:
+            loop.close()
+    except Exception as e:
+        print(f"❌ [DİM-DB SYNC] Hata: {e}")
+
+# --- OTURUM YÖNETİMİ FONKSİYONLARI ---
+
+def oturum_baslat(session_id, user_id):
+    """DİM-DB'den gelen oturum başlatma"""
+    oturum_var.sistem.aktif_oturum = {
+        "aktif": True,
+        "sessionId": session_id,
+        "userId": user_id,
+        "paket_uuid_map": {}
+    }
+    
+    print(f"✅ [OTURUM] DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
+
+def oturum_sonlandir():
+    """Oturumu sonlandır - DİM-DB bildirimi sunucu tarafından yapılacak"""
+    from ..makine.uyari_yoneticisi import uyari_yoneticisi
+    
+    uyari_yoneticisi.uyari_kapat()
+    oturum_var.sistem.sensor_ref.tare()
+    
+    if not oturum_var.sistem.aktif_oturum["aktif"]:
+        print("⚠️ [OTURUM] Aktif oturum yok, sonlandırma yapılmadı")
+        return
+
+    print(f"🔚 [OTURUM] Oturum sonlandırılıyor: {oturum_var.sistem.aktif_oturum['sessionId']}")
+    
+    # Oturumu temizle
+    oturum_var.sistem.aktif_oturum = {
+        "aktif": False,
+        "sessionId": None,
+        "userId": None,
+        "paket_uuid_map": {}
+    }
+    
+    oturum_var.sistem.onaylanan_urunler.clear()
+    print(f"🧹 [OTURUM] Yerel oturum temizlendi")
+
+def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
+    """DİM-DB'ye bildirim gönderir"""
+    try:
+        send_package_result_sync(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji)
+    except Exception as e:
+        print(f"❌ [DİM-DB BİLDİRİM] Hata: {e}")
+
+async def send_transaction_result():
+    """Oturum sonlandığında DİM-DB'ye transaction result gönderir"""
+    if not oturum_var.sistem.aktif_oturum["aktif"]:
+        print("⚠️ [DİM-DB] Aktif oturum yok, transaction result gönderilmedi")
+        return
+    
+    try:
+        # DEBUG: Detaylı bilgileri göster
+        #print(f"\n🔍 [TRANSACTION DEBUG] Oturum: {oturum_var.sistem.aktif_oturum['sessionId']}")
+        #print(f"🔍 [TRANSACTION DEBUG] Kullanıcı: {oturum_var.sistem.aktif_oturum['userId']}")
+        #print(f"🔍 [TRANSACTION DEBUG] Toplam kabul edilen ürün sayısı: {len(oturum_var.sistem.onaylanan_urunler)}")
+        
+        # Kabul edilen ürünleri konteyner formatına dönüştür
+        containers = {}
+        for urun in oturum_var.sistem.onaylanan_urunler:
+            barcode = urun["barkod"]
+            if barcode not in containers:
+                containers[barcode] = {
+                    "barcode": barcode,
+                    "material": urun["materyal_turu"],
+                    "count": 0,
+                    "weight": 0
+                }
+            containers[barcode]["count"] += 1
+            containers[barcode]["weight"] += urun["agirlik"]
+        
+        # DEBUG: Konteyner bilgilerini göster
+        #print(f"🔍 [TRANSACTION DEBUG] Konteyner sayısı: {len(containers)}")
+        for barcode, container in containers.items():
+            #print(f"🔍 [TRANSACTION DEBUG] - {barcode}: {container['count']} adet, {container['weight']}g, materyal: {container['material']}")
+        
+        transaction_payload = {
+            "guid": str(uuid.uuid4()),
+            "timestamp": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            "rvm": istemci.RVM_ID,
+            "id": oturum_var.sistem.aktif_oturum["sessionId"] + "-tx",
+            "firstBottleTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            "endTime": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            "sessionId": oturum_var.sistem.aktif_oturum["sessionId"],
+            "userId": oturum_var.sistem.aktif_oturum["userId"],
+            "created": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            "containerCount": len(oturum_var.sistem.onaylanan_urunler),
+            "containers": list(containers.values())
+        }
+        
+        # DEBUG: Gönderilecek payload'ı göster
+       ''' print(f"🔍 [TRANSACTION DEBUG] Gönderilecek payload:")
+        print(f"🔍 [TRANSACTION DEBUG] - RVM ID: {transaction_payload['rvm']}")
+        print(f"🔍 [TRANSACTION DEBUG] - Session ID: {transaction_payload['sessionId']}")
+        print(f"🔍 [TRANSACTION DEBUG] - User ID: {transaction_payload['userId']}")
+        print(f"🔍 [TRANSACTION DEBUG] - Container Count: {transaction_payload['containerCount']}")
+        print(f"🔍 [TRANSACTION DEBUG] - Timestamp: {transaction_payload['timestamp']}")
+        '''
+        
+        await istemci.send_transaction_result(transaction_payload)
+        print(f"✅ [DİM-DB] Transaction result başarıyla gönderildi: {oturum_var.sistem.aktif_oturum['sessionId']}")
+        
+    except Exception as e:
+        print(f"❌ [DİM-DB] Transaction result gönderme hatası: {e}")
+        import traceback
+        print(f"❌ [DİM-DB] Hata detayı: {traceback.format_exc()}")
+
+# Heartbeat sistemi
+heartbeat_task = None
+
+async def start_heartbeat():
+    """Heartbeat sistemini başlatır"""
+    global heartbeat_task
+    if heartbeat_task is None:
+        heartbeat_task = asyncio.create_task(heartbeat_loop())
+        print("✅ [DİM-DB] Heartbeat sistemi başlatıldı")
+
+async def stop_heartbeat():
+    """Heartbeat sistemini durdurur"""
+    global heartbeat_task
+    if heartbeat_task:
+        heartbeat_task.cancel()
+        heartbeat_task = None
+        print("🛑 [DİM-DB] Heartbeat sistemi durduruldu")
+
+async def heartbeat_loop():
+    """60 saniyede bir heartbeat gönderir"""
+    while True:
+        try:
+            await istemci.send_heartbeat()
+            await asyncio.sleep(60)  # 30 saniye bekle
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"❌ [DİM-DB] Heartbeat hatası: {e}")
+            await asyncio.sleep(60)  # Hata durumunda da 30 saniye bekle
+
 # --- API Uç Noktaları (Endpoints) ---
 
 @app.post("/sessionStart")
@@ -70,8 +279,8 @@ async def session_start(data: SessionStartRequest):
     if oturum_var.sistem.aktif_oturum["aktif"]:
        return {"errorCode": 2, "errorMessage": "Aktif oturum var."}
 
-    # oturum_var.py'deki oturum başlatma fonksiyonunu çağır
-    oturum_var.oturum_baslat(data.sessionId, data.userId)
+    # sunucu.py'deki oturum başlatma fonksiyonunu çağır
+    oturum_baslat(data.sessionId, data.userId)
     
     # Durum makinesini güncelle
     durum_makinesi.durum_degistir("oturum_var")
@@ -100,9 +309,11 @@ async def session_end(data: SessionEndRequest):
     if not oturum_var.sistem.aktif_oturum["aktif"] or oturum_var.sistem.aktif_oturum["sessionId"] != data.sessionId:
         return {"errorCode": 2, "errorMessage": "Aktif veya geçerli bir oturum bulunamadı."}
     
-    # oturum_var.py'deki oturum sonlandırma fonksiyonunu çağır (async)
-    # Bu fonksiyon DİM-DB'ye transaction result gönderecek
-    await oturum_var.oturum_sonlandir()
+    # DİM-DB'ye transaction result gönder
+    await send_transaction_result()
+    
+    # sunucu.py'deki oturum sonlandırma fonksiyonunu çağır
+    oturum_sonlandir()
     
     # Durum makinesini güncelle
     durum_makinesi.durum_degistir("oturum_yok")

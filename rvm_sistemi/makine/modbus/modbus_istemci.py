@@ -4,7 +4,15 @@
 import time
 import threading
 import logging
-from pymodbus.client.sync import ModbusSerialClient
+
+# Pymodbus import - farklı versiyonlar için uyumluluk
+try:
+    from pymodbus.client.sync import ModbusSerialClient
+except ImportError:
+    try:
+        from pymodbus.client.serial import ModbusSerialClient
+    except ImportError:
+        from pymodbus.client import ModbusSerialClient
 
 class GA500ModbusClient:
     """GA500 Modbus RTU Client - GUI kodundaki frekans mantığı ile"""
