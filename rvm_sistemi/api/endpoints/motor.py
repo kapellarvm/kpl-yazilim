@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException
 from ..modeller.schemas import MotorHizRequest, SuccessResponse, ErrorResponse
 from ...makine.seri.motor_karti import MotorKart
 from ...makine.durum_degistirici import durum_makinesi
+from ...utils.logger import log_motor, log_error, log_success, log_warning
 import asyncio
 
 router = APIRouter(prefix="/motor", tags=["Motor"])
@@ -22,6 +23,7 @@ def get_motor_kart():
         return kart_referanslari.motor_al()
     except Exception as e:
         print(f"Motor kartı alınamadı: {e}")
+        log_error(f"Motor kartı alınamadı: {e}")
         return None
 
 @router.post("/konveyor-ileri")

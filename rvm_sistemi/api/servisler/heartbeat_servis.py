@@ -5,6 +5,7 @@ DİM-DB'ye periyodik durum bildirimi
 
 import asyncio
 from ...dimdb import dimdb_istemcisi
+from ...utils.logger import log_dimdb, log_error, log_system
 
 
 class HeartbeatServis:
@@ -18,6 +19,7 @@ class HeartbeatServis:
         if self.heartbeat_task is None:
             self.heartbeat_task = asyncio.create_task(self.heartbeat_loop())
             print("✅ [DİM-DB] Heartbeat sistemi başlatıldı")
+            log_system("Heartbeat sistemi başlatıldı")
 
     async def stop_heartbeat(self) -> None:
         """Heartbeat sistemini durdurur"""
@@ -25,6 +27,7 @@ class HeartbeatServis:
             self.heartbeat_task.cancel()
             self.heartbeat_task = None
             print("🛑 [DİM-DB] Heartbeat sistemi durduruldu")
+            log_system("Heartbeat sistemi durduruldu")
 
     async def heartbeat_loop(self) -> None:
         """60 saniyede bir heartbeat gönderir"""
@@ -36,6 +39,7 @@ class HeartbeatServis:
                 break
             except Exception as e:
                 print(f"❌ [DİM-DB] Heartbeat hatası: {e}")
+                log_error(f"Heartbeat hatası: {e}")
                 await asyncio.sleep(60)  # Hata durumunda da 60 saniye bekle
 
 

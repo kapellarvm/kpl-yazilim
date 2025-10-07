@@ -10,6 +10,7 @@ from typing import Dict, Any
 
 from ...dimdb import dimdb_istemcisi
 from ...makine.senaryolar import oturum_var
+from ...utils.logger import log_dimdb, log_error, log_success, log_warning
 
 
 class DimdbServis:
@@ -22,6 +23,7 @@ class DimdbServis:
         """Her ürün doğrulaması sonrası DİM-DB'ye paket sonucunu gönderir"""
         if not oturum_var.sistem.aktif_oturum["aktif"]:
             print("⚠️ [DİM-DB] Aktif oturum yok, paket sonucu gönderilmedi")
+            log_warning("Aktif oturum yok, paket sonucu gönderilmedi")
             return
         
         try:
@@ -51,11 +53,14 @@ class DimdbServis:
             
             await dimdb_istemcisi.send_accept_package_result(result_payload)
             print(f"✅ [DİM-DB] Paket sonucu başarıyla gönderildi: {barcode} - {'Kabul' if kabul_edildi else 'Red'}")
+            log_success(f"Paket sonucu başarıyla gönderildi: {barcode} - {'Kabul' if kabul_edildi else 'Red'}")
             
         except Exception as e:
             print(f"❌ [DİM-DB] Paket sonucu gönderme hatası: {e}")
             import traceback
             print(f"❌ [DİM-DB] Hata detayı: {traceback.format_exc()}")
+            log_error(f"Paket sonucu gönderme hatası: {e}")
+            log_error(f"Hata detayı: {traceback.format_exc()}")
 
     @staticmethod
     def send_package_result_sync(barcode: str, agirlik: float, materyal_turu: int, 
@@ -77,12 +82,14 @@ class DimdbServis:
                 loop.close()
         except Exception as e:
             print(f"❌ [DİM-DB SYNC] Hata: {e}")
+            log_error(f"DİM-DB SYNC Hata: {e}")
 
     @staticmethod
     async def send_transaction_result() -> None:
         """Oturum sonlandığında DİM-DB'ye transaction result gönderir"""
         if not oturum_var.sistem.aktif_oturum["aktif"]:
             print("⚠️ [DİM-DB] Aktif oturum yok, transaction result gönderilmedi")
+            log_warning("Aktif oturum yok, transaction result gönderilmedi")
             return
         
         try:
@@ -116,6 +123,7 @@ class DimdbServis:
             
             await dimdb_istemcisi.send_transaction_result(transaction_payload)
             print(f"✅ [DİM-DB] Transaction result başarıyla gönderildi: {oturum_var.sistem.aktif_oturum['sessionId']}")
+            log_success(f"Transaction result başarıyla gönderildi: {oturum_var.sistem.aktif_oturum['sessionId']}")
             
             # Kullanıcı puan özeti
             pet_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 1)
@@ -123,11 +131,14 @@ class DimdbServis:
             alu_sayisi = sum(1 for u in oturum_var.sistem.onaylanan_urunler if u.get('materyal_turu') == 3)
             
             print(f"📊 [OTURUM PUAN ÖZETİ] *********** Kullanıcı: {oturum_var.sistem.aktif_oturum['userId']} | PET: {pet_sayisi} puan | CAM: {cam_sayisi} puan | ALÜMİNYUM: {alu_sayisi} puan *************")
+            log_dimdb(f"OTURUM PUAN ÖZETİ - Kullanıcı: {oturum_var.sistem.aktif_oturum['userId']} | PET: {pet_sayisi} puan | CAM: {cam_sayisi} puan | ALÜMİNYUM: {alu_sayisi} puan")
             
         except Exception as e:
             print(f"❌ [DİM-DB] Transaction result gönderme hatası: {e}")
             import traceback
             print(f"❌ [DİM-DB] Hata detayı: {traceback.format_exc()}")
+            log_error(f"Transaction result gönderme hatası: {e}")
+            log_error(f"Hata detayı: {traceback.format_exc()}")
 
     @staticmethod
     def dimdb_bildirim_gonder(barcode: str, agirlik: float, materyal_turu: int, 
@@ -141,3 +152,4 @@ class DimdbServis:
             )
         except Exception as e:
             print(f"❌ [DİM-DB BİLDİRİM] Hata: {e}")
+            log_error(f"DİM-DB BİLDİRİM Hata: {e}")

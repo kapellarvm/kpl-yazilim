@@ -9,6 +9,7 @@ import uuid
 # Bu dosya 'dimdb' paketi içinde olduğu için, bir üst dizindeki 'veri_tabani' paketine
 # göreceli (relative) yoldan erişiyoruz.
 from ..veri_tabani import veritabani_yoneticisi
+from ..utils.logger import log_dimdb, log_error, log_success, log_warning, log_system
 
 # --- GÜVENLİK VE AYARLAR ---
 SECRET_KEY = "testkpl"
@@ -36,6 +37,7 @@ async def _send_request(endpoint, payload, timeout=10.0):
     headers = _generate_signature_headers(payload_str)
     
     print(f"İstek gönderiliyor: {url}")
+    log_dimdb(f"İstek gönderiliyor: {url}")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -43,14 +45,17 @@ async def _send_request(endpoint, payload, timeout=10.0):
         
         if response.status_code == 200:
             print(f"✅ İstek ({endpoint}) başarıyla gönderildi. Kod: 200")
+            log_success(f"İstek ({endpoint}) başarıyla gönderildi. Kod: 200")
             # getAllProducts json cevabı döner, diğerleri sadece başarı durumu
             return response.json() if "getAllProducts" in endpoint else True
         else:
             print(f"İstek ({endpoint}) gönderilemedi. Hata: {response.status_code}, Cevap: {response.text}")
+            log_error(f"İstek ({endpoint}) gönderilemedi. Hata: {response.status_code}, Cevap: {response.text}")
             return None if "getAllProducts" in endpoint else False
             
     except httpx.RequestError as e:
         print(f"İstek ({endpoint}) gönderilirken ağ hatası oluştu: {e}")
+        log_error(f"İstek ({endpoint}) gönderilirken ağ hatası oluştu: {e}")
         return None if "getAllProducts" in endpoint else False
 
 # --- DİM DB'YE GÖNDERİLECEK METOTLAR ---
@@ -58,6 +63,7 @@ async def _send_request(endpoint, payload, timeout=10.0):
 async def send_heartbeat():
     """DİM DB'ye RVM'nin anlık durumunu bildirir."""
     print("Heartbeat gönderiliyor...")
+    log_dimdb("Heartbeat gönderiliyor...")
     payload = {
         "guid": str(uuid.uuid4()),
         "rvm": RVM_ID,
