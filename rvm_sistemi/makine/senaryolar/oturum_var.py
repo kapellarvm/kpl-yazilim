@@ -22,6 +22,7 @@ class SistemDurumu:
     veri_senkronizasyon_listesi: list = field(default_factory=list)
     kabul_edilen_urunler: deque = field(default_factory=deque)
     onaylanan_urunler: list = field(default_factory=list)
+    agirlik_kuyruk: deque = field(default_factory=deque)  # Ağırlık kuyruğu
     # İade Sebep String
     iade_sebep: str = None
 
@@ -326,6 +327,7 @@ def lojik_yoneticisi():
                 goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
                 if goruntu.mesaj=="nesne_yok":
                     print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
+                    sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
                     sistem.iade_lojik = False
                     sistem.barkod_lojik = False
                     
@@ -341,6 +343,8 @@ def lojik_yoneticisi():
                 if sistem.barkod_lojik:
                     if sistem.iade_lojik==False:
                         print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
+                        
+                        sistem.sensor_ref.loadcell_olc()
                         goruntu_isleme_tetikle()
                         # Normal akışta gsi_gecis_lojik'i sıfırla
                         sistem.gsi_gecis_lojik = False
@@ -359,7 +363,7 @@ def lojik_yoneticisi():
 
         if sistem.yonlendirici_konumda:
             sistem.yonlendirici_konumda = False
-            
+            sistem.agirlik_kuyruk.popleft() if sistem.agirlik_kuyruk else None
             # DİM-DB'ye onaylanan bildirimi gönder (ymk geldiğinde)
             if sistem.son_islenen_urun:
                 dimdb_bildirim_gonder(sistem.son_islenen_urun['barkod'],sistem.son_islenen_urun['agirlik'],sistem.son_islenen_urun['materyal_turu'],sistem.son_islenen_urun['uzunluk'],sistem.son_islenen_urun['genislik'],True,0,"Ambalaj Kabul Edildi")
@@ -384,12 +388,10 @@ def lojik_yoneticisi():
             if sistem.barkod_lojik and not sistem.iade_lojik:
                
                 toplam_konveyor_agirligi = 0
-                if sistem.kabul_edilen_urunler:
-                    for idx, urun in enumerate(sistem.kabul_edilen_urunler):
-                        agirlik = urun.get('agirlik', 0)
+                if sistem.agirlik_kuyruk:
+                    for idx, agirlik in enumerate(sistem.agirlik_kuyruk):
                         toplam_konveyor_agirligi += agirlik
-                        print(f"  {idx+1}. Barkod: {urun.get('barkod')}, Ağırlık: {agirlik} gr")
-                
+                        print(f"  {idx+1}. Ürün Ağırlığı: {agirlik:.2f} gr")
 
                 toplam_olcums_agirlik = sistem.agirlik
                 gercek_agirlik = toplam_olcums_agirlik - toplam_konveyor_agirligi
@@ -398,7 +400,7 @@ def lojik_yoneticisi():
                 if toplam_konveyor_agirligi > 0:
                     print(f"⚖️ [AĞIRLIK] Konveyördeki Bilinen Ağırlık: {toplam_konveyor_agirligi:.2f} gr")
                 print(f"⚖️ [AĞIRLIK] Hesaplanan Gerçek Ağırlık: {gercek_agirlik:.2f} gr")
-                
+                sistem.agirlik_kuyruk.append(gercek_agirlik)
                 veri_senkronizasyonu(agirlik=gercek_agirlik)
                 sistem.agirlik = None  # Sıfırla
             else:
@@ -440,6 +442,8 @@ def lojik_yoneticisi():
                         print("🚫 [Konveyor Motor Problem] Şişe alındı, nesne yok.")
                         sistem.iade_lojik = False
                         sistem.barkod_lojik = False
+                        sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul
+                        sistem.veri_senkronizasyon_listesi.clear()  # iade sırasında bekleyen
                         
                         # Uyarı ekranını kapat - şişe geri alındı
                         uyari.uyari_kapat()
@@ -519,3 +523,4 @@ def mesaj_isle(mesaj):
     if mesaj == "skt":  
         sistem.seperator_kalibrasyon = True
 
+### Dünyanın en iyi tubutusu iphone 16 256gb
