@@ -13,6 +13,7 @@ class SistemDurumu:
     # Referanslar
     motor_ref: object = None
     sensor_ref: object = None
+    motor_kontrol_ref: object = None  # GA500 motor kontrol referansı
 
     # Veriler
     agirlik: float = None
@@ -91,6 +92,11 @@ def motor_referansini_ayarla(motor):
 def sensor_referansini_ayarla(sensor):
     sistem.sensor_ref = sensor
     sistem.sensor_ref.teach()
+
+def motor_kontrol_referansini_ayarla(motor_kontrol):
+    """GA500 Motor Kontrol referansını ayarla"""
+    sistem.motor_kontrol_ref = motor_kontrol
+    print("✅ Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif")
 
 def barkod_verisi_al(barcode):
     if sistem.iade_lojik:
@@ -207,7 +213,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     max_genislik = urun.get('packMaxWidth')
     min_uzunluk = urun.get('packMinHeight')
     max_uzunluk = urun.get('packMaxHeight')
-    materyal_id = urun.get('material')    
+    materyal_id = urun.get('material')   
 
     print(f"📊 [DOĞRULAMA] Min Agirlik: {min_agirlik}, Max Agirlik: {max_agirlik}, Min Genişlik: {min_genislik}, Max Genişlik: {max_genislik}, Min Uzunluk: {min_uzunluk}, Max Uzunluk: {max_uzunluk}, Materyal_id: {materyal_id}")
     print(f"📊 [DOĞRULAMA] Ölçülen ağırlık: {agirlik} gr")
@@ -271,6 +277,74 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     print(f"📦 [KUYRUK] Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
+    
+def manuel_ezici_kontrol(komut):
+    """
+    Manuel ezici kontrolü (test ve bakım için)
+    Args:
+        komut: 'ileri', 'geri', 'dur', 'ileri_10sn', 'geri_10sn'
+    """
+    if not sistem.motor_kontrol_ref:
+        print("⚠️ [MANUEL EZİCİ] Motor kontrol referansı yok")
+        return False
+    
+    try:
+        if komut == "ileri":
+            print("🔧 [MANUEL] Ezici ileri")
+            return sistem.motor_kontrol_ref.ezici_ileri()
+        elif komut == "geri":
+            print("🔧 [MANUEL] Ezici geri")
+            return sistem.motor_kontrol_ref.ezici_geri()
+        elif komut == "dur":
+            print("🔧 [MANUEL] Ezici dur")
+            return sistem.motor_kontrol_ref.ezici_dur()
+        elif komut == "ileri_10sn":
+            print("🔧 [MANUEL] Ezici ileri 10 saniye")
+            return sistem.motor_kontrol_ref.ezici_ileri_10sn()
+        elif komut == "geri_10sn":
+            print("🔧 [MANUEL] Ezici geri 10 saniye")
+            return sistem.motor_kontrol_ref.ezici_geri_10sn()
+        else:
+            print(f"❌ [MANUEL EZİCİ] Geçersiz komut: {komut}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ [MANUEL EZİCİ] Hata: {e}")
+        return False
+
+def manuel_kirici_kontrol(komut):
+    """
+    Manuel kırıcı kontrolü (test ve bakım için)
+    Args:
+        komut: 'ileri', 'geri', 'dur', 'ileri_10sn', 'geri_10sn'
+    """
+    if not sistem.motor_kontrol_ref:
+        print("⚠️ [MANUEL KIRICI] Motor kontrol referansı yok")
+        return False
+    
+    try:
+        if komut == "ileri":
+            print("🔧 [MANUEL] Kırıcı ileri")
+            return sistem.motor_kontrol_ref.kirici_ileri()
+        elif komut == "geri":
+            print("🔧 [MANUEL] Kırıcı geri")
+            return sistem.motor_kontrol_ref.kirici_geri()
+        elif komut == "dur":
+            print("🔧 [MANUEL] Kırıcı dur")
+            return sistem.motor_kontrol_ref.kirici_dur()
+        elif komut == "ileri_10sn":
+            print("🔧 [MANUEL] Kırıcı ileri 10 saniye")
+            return sistem.motor_kontrol_ref.kirici_ileri_10sn()
+        elif komut == "geri_10sn":
+            print("🔧 [MANUEL] Kırıcı geri 10 saniye")
+            return sistem.motor_kontrol_ref.kirici_geri_10sn()
+        else:
+            print(f"❌ [MANUEL KIRICI] Geçersiz komut: {komut}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ [MANUEL KIRICI] Hata: {e}")
+        return False
 
 def yonlendirici_hareket():
     if not sistem.kabul_edilen_urunler:
@@ -292,10 +366,12 @@ def yonlendirici_hareket():
 
     if sistem.motor_ref:
         if materyal_id == 2: # Cam
+            manuel_kirici_kontrol("ileri_10sn")
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_cam()
             print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
         else: # Plastik/Metal
+            manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
             print(f"🟩 [PLASTİK/METAL] Plastik/Metal yönlendiricisine gönderildi")
@@ -307,7 +383,7 @@ def yonlendirici_hareket():
 def lojik_yoneticisi():
     while True:
         time.sleep(0.005) # CPU kullanımını azaltmak için kısa bir uyku
-        
+
         if sistem.gsi_lojik:
             sistem.gsi_lojik = False
             sistem.gsi_gecis_lojik = True
@@ -322,6 +398,7 @@ def lojik_yoneticisi():
         
         if sistem.gso_lojik:
             sistem.gso_lojik = False
+
             if sistem.iade_lojik:
                 
                 goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
@@ -386,7 +463,7 @@ def lojik_yoneticisi():
                     
         if sistem.agirlik is not None:
             if sistem.barkod_lojik and not sistem.iade_lojik:
-               
+                
                 toplam_konveyor_agirligi = 0
                 if sistem.agirlik_kuyruk:
                     for idx, agirlik in enumerate(sistem.agirlik_kuyruk):
@@ -522,5 +599,4 @@ def mesaj_isle(mesaj):
         sistem.yonlendirici_kalibrasyon = True
     if mesaj == "skt":  
         sistem.seperator_kalibrasyon = True
-
-### Dünyanın en iyi tubutusu iphone 16 256gb
+    

@@ -2,9 +2,10 @@ import uvicorn
 import asyncio
 import schedule
 import time
+import threading
 
 from rvm_sistemi.dimdb import dimdb_istemcisi
-from rvm_sistemi.utils.logger import rvm_logger, log_system, log_dimdb, log_motor, log_sensor, log_oturum, setup_exception_handler
+from rvm_sistemi.utils.logger import rvm_logger, log_system, log_dimdb, log_motor, log_sensor, log_oturum, log_error, setup_exception_handler
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
 from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 from rvm_sistemi.makine.seri.motor_karti import MotorKart
@@ -13,6 +14,8 @@ from rvm_sistemi.makine.durum_degistirici import durum_makinesi
 from rvm_sistemi.makine.dogrulama import DogrulamaServisi
 from rvm_sistemi.makine import kart_referanslari
 from rvm_sistemi.zamanli_gorevler import urun_guncelleyici
+from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
+from rvm_sistemi.makine.modbus.modbus_kontrol import init_motor_kontrol
 
 dogrulama_servisi = DogrulamaServisi()
 
@@ -65,6 +68,7 @@ async def main():
     global motor, sensor   # ✅ Sadece 1 tane global burada olmalı
 
     yonetici = KartHaberlesmeServis()
+    motor_kontrol = None  # Motor kontrol referansı
 
     # Elle port girildiyse buraya yaz
     ELLE_SENSOR_PORT = "" # !!Arama istiyorsak tırnak içlerini boş bırak / ELLE_SENSOR_PORT = ""
@@ -98,6 +102,37 @@ async def main():
     motor.dinlemeyi_baslat()
     log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
 
+    # GA500 Modbus Client ve Motor Kontrol Sistemini Başlat
+    client = GA500ModbusClient()
+    if client.connect():
+        print("✅ GA500 Modbus bağlantısı başarılı")
+        print("📊 Sürekli izleme başlatıldı (0.5s periyod)")
+        print("─" * 50)
+        
+        # Motor kontrol sistemini başlat - Hibrit sistem (Modbus okuma + Dijital sürme)
+        motor_kontrol = init_motor_kontrol(client, sensor)
+        print("🔧 Motor kontrol sistemi başlatıldı (Hibrit: Modbus okuma + Dijital sürme)")
+        
+        # Sıkışma korumasını başlat
+        motor_kontrol.start_sikisma_monitoring()
+        print("🛡️ Sıkışma koruması başlatıldı (Ezici: 5A, Kırıcı: 7A, 2s süre, 3 deneme)")
+        
+        # Sürekli okuma thread'ini başlat
+        client.start_continuous_reading()
+        
+        # Reset sonrası frekansları ayarla
+        print("\n🔧 Reset sonrası frekans ayarları:")
+        print("  └─ Sürücü 1: 50 Hz ayarlanıyor...")
+        client.set_frequency(1, 50.0)
+        print("  └─ Sürücü 2: 50 Hz ayarlanıyor...")
+        client.set_frequency(2, 50.0)
+        print("  ✅ Her iki sürücü de 50 Hz'e ayarlandı")
+        time.sleep(2)  # Ayarların oturması için bekle
+        
+    else:
+        print("❌ GA500 Modbus bağlantı hatası - sadece dijital kontrol modu")
+        motor_kontrol = None
+
     # Referansları ayarla
     oturum_yok.motor_referansini_ayarla(motor)
     oturum_yok.sensor_referansini_ayarla(sensor)
@@ -107,6 +142,11 @@ async def main():
     # Merkezi referans sistemine de kaydet
     kart_referanslari.motor_referansini_ayarla(motor)
     kart_referanslari.sensor_referansini_ayarla(sensor)
+    
+    # Motor kontrol referansını da oturum_var'a ayarla (otomatik ezici için)
+    if motor_kontrol:
+        oturum_var.motor_kontrol_referansini_ayarla(motor_kontrol)
+        log_system("Motor kontrol referansı oturum_var modülüne ayarlandı")
 
     # FastAPI sunucusunu başlat
     config = uvicorn.Config(
@@ -141,6 +181,14 @@ async def main():
     urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()
     motor.dinlemeyi_durdur()
+    
+    # Motor kontrol sistemini temizle
+    if motor_kontrol:
+        motor_kontrol.cleanup()
+        if client and client.is_connected:
+            client.stop(1)
+            client.stop(2)
+            client.disconnect()
 
 
 if __name__ == "__main__":
