@@ -1,4 +1,5 @@
 from .senaryolar import oturum_var, oturum_yok, bakim
+from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
 
 class DurumMakinesi:
     def __init__(self):
@@ -8,6 +9,7 @@ class DurumMakinesi:
 
     def durum_degistir(self, yeni_durum):
         print(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
+        log_system(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
         self.onceki_durum = self.durum
         self.durum = yeni_durum
         

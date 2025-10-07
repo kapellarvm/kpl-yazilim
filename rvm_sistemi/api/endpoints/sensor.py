@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException
 from ..modeller.schemas import SuccessResponse, ErrorResponse
 from ...makine.seri.sensor_karti import SensorKart
 from ...makine.durum_degistirici import durum_makinesi
+from ...utils.logger import log_sensor, log_error, log_success, log_warning
 import asyncio
 
 router = APIRouter(prefix="/sensor", tags=["Sensör"])
@@ -22,6 +23,7 @@ def get_sensor_kart():
         return kart_referanslari.sensor_al()
     except Exception as e:
         print(f"Sensör kartı alınamadı: {e}")
+        log_error(f"Sensör kartı alınamadı: {e}")
         return None
 
 @router.post("/teach")

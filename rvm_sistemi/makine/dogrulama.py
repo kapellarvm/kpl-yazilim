@@ -2,6 +2,7 @@
 
 # Gerekli modülleri projenin diğer kısımlarından import ediyoruz
 from ..veri_tabani import veritabani_yoneticisi
+from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
 
 # Materyal ID'lerini anlamlı isimlere çevirmek için bir sözlük
 # Bu, kodun okunabilirliğini artırır.
@@ -20,10 +21,12 @@ class DogrulamaServisi:
         # Görüntü işleme veya sensör sınıfları burada başlatılabilir
         # self.goruntu_isleme = GoruntuIslemeServisi()
         print("Doğrulama servisi başlatıldı.")
+        log_system("Doğrulama servisi başlatıldı.")
 
     def agirlik_dogrula(self, agirlik: float):
         
         print(f"Ağırlık doğrulaması: {agirlik} gr")
+        log_system(f"Ağırlık doğrulaması: {agirlik} gr")
 
     def paketi_dogrula(self, barcode: str) -> dict:
         """

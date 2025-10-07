@@ -4,6 +4,7 @@ import time
 import serial
 import random
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.utils.logger import log_sensor, log_error, log_success, log_warning, log_system, log_exception, log_thread_error
 
 class SensorKart:
     def __init__(self, port_adi, callback=None, cihaz_adi="sensor"):
@@ -42,13 +43,17 @@ class SensorKart:
         time.sleep(.1)  # Ping sonrası sağlık durumunu kontrol etmek için bekle
         if not self.saglikli:
             print(f"[LOG] {self.cihaz_adi} sağlıksız, bağlantı sıfırlanıyor...")
-            self.dinlemeyi_durdur()  # Thread'leri durdur
-            if self.port and self.port.is_open:
+            log_warning(f"{self.cihaz_adi} sağlıksız, bağlantı sıfırlanıyor...")
+            # Sadece running flag'ini kapat, thread'i join etme
+            self.running = False
+            if self.seri_nesnesi and self.seri_nesnesi.is_open:
                 try:
-                    self.port.close()
+                    self.seri_nesnesi.close()
                     time.sleep(1)  # Portun serbest bırakılması için bekleme süresi
+                    log_system(f"{self.cihaz_adi} port kapatıldı")
                 except Exception as e:
                     print(f"[LOG] Port kapatma hatası: {e}")
+                    log_error(f"{self.cihaz_adi} port kapatma hatası: {e}")
             self._baglanti_kontrol()  # Yeniden bağlanmayı dene
 
             # Yeniden bağlandıktan sonra sağlık durumunu tekrar kontrol et
@@ -129,32 +134,52 @@ class SensorKart:
                     time.sleep(0.05)
             except (serial.SerialException, OSError) as e:
                 print(f"[{self.cihaz_adi}] OKUMA HATASI: {e}")
+                log_error(f"{self.cihaz_adi} okuma hatası: {e}")
+                log_exception(f"{self.cihaz_adi} seri port okuma hatası", exc_info=(type(e), e, e.__traceback__))
                 self._baglanti_kontrol()
                 break # Döngüyü kır, yeni thread başlayacak
+            except Exception as e:
+                print(f"[{self.cihaz_adi}] BEKLENMEYEN HATA: {e}")
+                log_thread_error(f"{self.cihaz_adi} beklenmeyen hata: {e}")
+                log_exception(f"{self.cihaz_adi} thread hatası", exc_info=(type(e), e, e.__traceback__))
+                self._baglanti_kontrol()
+                break
 
     def _baglanti_kontrol(self):
         print(f"[{self.cihaz_adi}] Yeniden bağlanma süreci başlatıldı...")
-        self.dinlemeyi_durdur()
+        log_system(f"{self.cihaz_adi} yeniden bağlanma süreci başlatıldı...")
+        
+        # Sadece running flag'ini kapat, thread'i join etme
+        self.running = False
         
         # Eski portu güvenle kapat
         if self.seri_nesnesi and self.seri_nesnesi.is_open:
-            try: self.seri_nesnesi.close()
-            except: pass
+            try: 
+                self.seri_nesnesi.close()
+                log_system(f"{self.cihaz_adi} eski port kapatıldı")
+            except Exception as e:
+                log_error(f"{self.cihaz_adi} port kapatma hatası: {e}")
         self.seri_nesnesi = None
 
         while True:
             print(f"[{self.cihaz_adi}] Yeni port aranıyor...")
+            log_system(f"{self.cihaz_adi} yeni port aranıyor...")
             basarili, mesaj, portlar = self.port_yoneticisi.baglan(cihaz_adi=self.cihaz_adi)
 
             if basarili and self.cihaz_adi in portlar:
                 yeni_port_adi = portlar[self.cihaz_adi]
                 self.port_adi = yeni_port_adi # Yeni port adını kaydet
+                log_success(f"{self.cihaz_adi} yeni port bulundu: {yeni_port_adi}")
                 
                 if self.portu_ac(): # Yeni porta bağlanmayı dene
+                    log_success(f"{self.cihaz_adi} yeni porta başarıyla bağlandı")
                     self.dinlemeyi_baslat()
                     return # Başarılı oldu, fonksiyondan çık
+                else:
+                    log_error(f"{self.cihaz_adi} yeni porta bağlanamadı")
             
             print(f"[{self.cihaz_adi}] Port bulunamadı, 5 saniye sonra tekrar denenecek.")
+            log_warning(f"{self.cihaz_adi} port bulunamadı, 5 saniye sonra tekrar denenecek")
             time.sleep(5)
 
     def agirlik_olc(self):

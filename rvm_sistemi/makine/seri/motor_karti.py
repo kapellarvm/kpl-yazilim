@@ -4,6 +4,7 @@ import time
 import serial
 
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.utils.logger import log_motor, log_error, log_success, log_warning, log_system
 
 class MotorKart:
     def __init__(self, port, callback=None, cihaz_adi="motor"):
@@ -20,6 +21,7 @@ class MotorKart:
             self.seri_port = serial.Serial(port, baudrate=115200, timeout=1)
         except serial.SerialException as e:
             print(f"[{self.cihaz_adi}] Başlangıçta port açılamadı: {e}")
+            log_error(f"Başlangıçta port açılamadı: {e}")
             self.seri_port = None # Başlangıçta port yoksa None olarak ayarla
 
         self.klape_flag = False

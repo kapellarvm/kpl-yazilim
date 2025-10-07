@@ -4,6 +4,7 @@ import schedule
 import time
 
 from rvm_sistemi.dimdb import dimdb_istemcisi
+from rvm_sistemi.utils.logger import rvm_logger, log_system, log_dimdb, log_motor, log_sensor, log_oturum, setup_exception_handler
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
 from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 from rvm_sistemi.makine.seri.motor_karti import MotorKart
@@ -22,10 +23,15 @@ sensor = None
 async def run_heartbeat_scheduler():
     """Heartbeat'i periyodik olarak gönderen asenkron görev."""
     print("Heartbeat zamanlayıcı başlatıldı...")
+    log_system("Heartbeat zamanlayıcı başlatıldı...")
 
     await dimdb_istemcisi.send_heartbeat()
 
-    schedule.every(60).seconds.do(lambda: asyncio.create_task(dimdb_istemcisi.send_heartbeat()))
+    def heartbeat_gonder():
+        """Heartbeat gönderen wrapper fonksiyon"""
+        asyncio.create_task(dimdb_istemcisi.send_heartbeat())
+    
+    schedule.every(60).seconds.do(heartbeat_gonder)
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
@@ -51,6 +57,7 @@ def sensor_callback(mesaj):
 def motor_callback(mesaj):
     global motor, sensor
     print(f"\n📡 [MOTOR HAM MESAJ] {mesaj}")
+    log_motor(f"HAM MESAJ: {mesaj}")
     durum_makinesi.olayi_isle(mesaj)
 
 
@@ -65,6 +72,7 @@ async def main():
 
     if ELLE_SENSOR_PORT and ELLE_MOTOR_PORT:
         print("✅ Elle port tanımlandı, port arama atlandı.")
+        log_system("Elle port tanımlandı, port arama atlandı.")
         portlar = {
             "sensor": ELLE_SENSOR_PORT,
             "motor": ELLE_MOTOR_PORT
@@ -73,17 +81,22 @@ async def main():
         basarili, mesaj, portlar = yonetici.baglan()
         print("🛈", mesaj)
         print("🛈 Bulunan portlar:", portlar)
+        log_system(f"Port arama sonucu: {mesaj}")
+        log_system(f"Bulunan portlar: {portlar}")
 
         if "sensor" not in portlar:
             print("❌ Sensör kartı bulunamadı.")
+            log_error("Sensör kartı bulunamadı.")
             return
 
     # Sensör ve motoru başlat
     sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
     sensor.dinlemeyi_baslat()
+    log_sensor(f"Sensör kartı başlatıldı: {portlar['sensor']}")
 
     motor = MotorKart(portlar["motor"], callback=motor_callback, cihaz_adi="motor")
     motor.dinlemeyi_baslat()
+    log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
 
     # Referansları ayarla
     oturum_yok.motor_referansini_ayarla(motor)
@@ -108,25 +121,34 @@ async def main():
     heartbeat_task = asyncio.create_task(run_heartbeat_scheduler())
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
-    #product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
+    product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
 
     print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
     print("🔄 Ürün güncelleme: Her 6 saatte bir otomatik")
     print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
+    
+    log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
+    log_system("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
+    log_system("Ürün güncelleme: Her 6 saatte bir otomatik")
+    log_system("Ürün güncelleme zamanlayıcısı başlatıldı")
 
     await server.serve()
 
     # Sunucu kapandığında her şeyi durdur
     heartbeat_task.cancel()
-    #product_update_task.cancel()
+    product_update_task.cancel()
     urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()
     motor.dinlemeyi_durdur()
 
 
 if __name__ == "__main__":
+    # Exception handler'ı kur
+    setup_exception_handler()
+    
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\nProgram sonlandırılıyor.")
+        log_system("Program sonlandırılıyor (KeyboardInterrupt)")

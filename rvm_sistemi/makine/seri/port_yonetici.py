@@ -1,6 +1,7 @@
 import serial
 import time
 from serial.tools import list_ports
+from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
 
 class KartHaberlesmeServis:
     def __init__(self, baudrate=115200):
@@ -8,10 +9,12 @@ class KartHaberlesmeServis:
 
     def baglan(self, cihaz_adi=None):
         print("[LOG] port_yonetici.py -> Kart arama başlatıldı.")
+        log_system("Kart arama başlatıldı.")
         ports = list(list_ports.comports())
         bulunan_kartlar = {}
 
         if not ports:
+            log_error("Hiçbir seri port bulunamadı!")
             return False, "Hiçbir seri port bulunamadı!", {}
 
         for p in ports:
@@ -22,6 +25,7 @@ class KartHaberlesmeServis:
             ser = None
             try:
                 print(f"[LOG] {p.device} portu deneniyor...")
+                log_system(f"{p.device} portu deneniyor...")
                 ser = serial.Serial(p.device, self.baudrate, timeout=2)
                 # Donanımsal reset için bekle
                 time.sleep(2)
@@ -30,6 +34,7 @@ class KartHaberlesmeServis:
                 cevap = ""
                 # Yazılımsal RESET komutu gönder
                 print("    -> 'reset' komutu gönderiliyor...")
+                log_system("Reset komutu gönderiliyor...")
                 ser.write(b'reset\n')
                 time.sleep(1.5) # Reset sonrası için bekle
 
@@ -37,6 +42,7 @@ class KartHaberlesmeServis:
 
                 # Kimlik sorgusunu 2 kere gönder (kaçırılmaması için)
                 print("    -> 's' kimlik sorgusu gönderiliyor...")
+                log_system("Kimlik sorgusu gönderiliyor...")
                 ser.write(b's\n')
                 time.sleep(0.2)
                 ser.write(b's\n')
@@ -47,6 +53,7 @@ class KartHaberlesmeServis:
 
                 if cevap in ['sensor', 'motor', 'guvenlik']:
                     print(f"✅ {cevap.upper()} kartı {p.device} portunda bulundu.")
+                    log_success(f"{cevap.upper()} kartı {p.device} portunda bulundu.")
                     
                     # BAĞLANTI ONAY komutunu ('b') gönder
                     print(f"    -> '{cevap}' kartına 'b' onay komutu gönderiliyor.")
