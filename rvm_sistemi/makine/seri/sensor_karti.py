@@ -27,6 +27,8 @@ class SensorKart:
     def loadcell_olc(self): self.write_queue.put(("loadcell_olc", None))
     def teach(self): self.write_queue.put(("teach", None))
     def led_ac(self): self.write_queue.put(("led_ac", None))
+    def led_full_ac(self): self.write_queue.put(("ledfull_ac", None))
+    def led_full_kapat(self): self.write_queue.put(("ledfull_kapat", None))
     def led_kapat(self): self.write_queue.put(("led_kapat", None))
     def tare(self): self.write_queue.put(("tare", None))
     def reset(self): self.write_queue.put(("reset", None))
@@ -110,8 +112,8 @@ class SensorKart:
                 komutlar = {
                     "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n", "ezici_ileri": b"ei\n",
                     "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
-                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"tare\n",
-                    "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
+                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"tare\n", "ledfull_ac": b"la\n",
+                    "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
                 }
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])
