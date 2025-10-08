@@ -19,7 +19,7 @@ class GA500ModbusClient:
     
     def __init__(self, port=None, baudrate=9600, 
                  stopbits=1, parity='N', bytesize=8, timeout=1,
-                 logger=None):
+                 logger=None, callback=None, cihaz_adi="modbus"):
         
         # Port otomatik tespit edilecek (ttyS0 önce, sonra ttyS1)
         self.port_list = ["/dev/ttyS0", "/dev/ttyS1"] if port is None else [port]
@@ -29,6 +29,10 @@ class GA500ModbusClient:
         self.parity = parity
         self.bytesize = bytesize
         self.timeout = timeout
+        
+        # Callback parametreleri - sensör kartı mantığı
+        self.callback = callback
+        self.cihaz_adi = cihaz_adi
         
         self.client = None
         self.is_connected = False
@@ -377,11 +381,25 @@ class GA500ModbusClient:
                     with self.lock:
                         self.status_data[slave_id] = status
                     
-                    # Konsola yazdır
-                    self.print_status(slave_id, status)
-                
+                    # Konsola yazdır ve callback'e gönder
+                    modbus_veri = self.print_status(slave_id, status)
+
+                    if modbus_veri:
+                        # Callback'i tetikle - sensör kartı mantığı
+                        if self.callback:
+                            try:
+                                # String format: "s1:freq_ref:25.0,freq_out:24.8,current:2.1,status:ÇALIŞIYOR"
+                                veri_str = f"s{slave_id}:" + ",".join([f"{k}:{v}" for k, v in modbus_veri.items()])
+                                self.callback(veri_str)
+                            except Exception as e:
+                                self.logger.error(f"❌ Callback hatası: {e}")
+
+                    else:
+                        print(f"Sürücü {slave_id}: Veri okunamadı")
+
                 if success:
                     consecutive_errors = 0  # Başarılı okuma, error sayacını sıfırla
+                
                 else:
                     consecutive_errors += 1
                     self.logger.warning(f"⚠️ Okuma hatası #{consecutive_errors}")
@@ -393,8 +411,9 @@ class GA500ModbusClient:
                         self._handle_connection_error()
                 
                 # 0.5 saniye bekle
-                time.sleep(0.1)
-                
+                time.sleep(0.5)
+
+
             except Exception as e:
                 consecutive_errors += 1
                 self.logger.error(f"❌ Okuma thread hatası #{consecutive_errors}: {e}")
@@ -408,9 +427,9 @@ class GA500ModbusClient:
                 time.sleep(1)
     
     def print_status(self, slave_id, status):
-        """Status verilerini formatla ve yazdır"""
+        """Status verilerini formatla ve döndür"""
         if not status:
-            return
+            return None
             
         freq_ref = status.get('freq_reference', {}).get('value', 0)
         freq_out = status.get('output_freq', {}).get('value', 0)
@@ -431,15 +450,22 @@ class GA500ModbusClient:
         ready_text = "EVET" if is_ready else "HAYIR"
         fault_text = "VAR" if has_fault else "YOK"
         
-        print(f"[Sürücü {slave_id}] Frekans Referansı: {freq_ref:.1f} Hz")
-        print(f"[Sürücü {slave_id}] Çıkış Frekansı: {freq_out:.1f} Hz")
-        print(f"[Sürücü {slave_id}] Çıkış Gerilimi: {voltage:.1f} V")
-        print(f"[Sürücü {slave_id}] Çıkış Akımı: {current:.1f} A")
-        print(f"[Sürücü {slave_id}] Çıkış Gücü: {power}")
-        print(f"[Sürücü {slave_id}] DC Bus Voltajı: {dc_voltage} V")
-        print(f"[Sürücü {slave_id}] Sıcaklık: {temperature} °C")
-        print(f"[Sürücü {slave_id}] ▶ Durum: {status_text}, Yön: {direction}, Hazır: {ready_text}, Arıza: {fault_text}")
-        print("─" * 50)
+        # Callback için formatlanmış string döndür
+        modbus_data = {
+            'freq_ref': freq_ref,
+            'freq_out': freq_out,
+            'voltage': voltage,
+            'current': current,
+            'power': power,
+            'dc_voltage': dc_voltage,
+            'temperature': temperature,
+            'status': status_text,
+            'direction': direction,
+            'ready': ready_text,
+            'fault': fault_text
+        }
+        
+        return modbus_data
     
     def start_continuous_reading(self):
         """Sürekli okuma thread'ini başlat"""

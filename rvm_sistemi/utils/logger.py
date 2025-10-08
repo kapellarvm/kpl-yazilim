@@ -124,7 +124,6 @@ class RvmLogger:
     def motor(self, message: str):
         """Motor mesajları için özel log"""
         self.logger.info(f"MOTOR: {message}")
-        print(f"🔧 [MOTOR] {message}")
     
     def sensor(self, message: str):
         """Sensör mesajları için özel log"""

@@ -29,23 +29,21 @@ sensor = None
 
 def sensor_callback(mesaj):
     global motor, sensor
-    # Sensör mesajlarını hem durum makinesine hem de sunucuya gönder
+
     durum_makinesi.olayi_isle(mesaj)
     
-    # Sunucudaki callback'i de çağır (eğer varsa)
-    try:
-        from rvm_sistemi.api.servisler.dimdb_servis import DimdbServis
-        # Sensör callback'i artık API katmanında yönetiliyor
-        # Gerekirse burada DimdbServis metodları çağrılabilir
-    except:
-        pass
-
-
 def motor_callback(mesaj):
     global motor, sensor
-    print(f"\n📡 [MOTOR HAM MESAJ] {mesaj}")
     log_motor(f"HAM MESAJ: {mesaj}")
     durum_makinesi.olayi_isle(mesaj)
+
+
+def modbus_callback(mesaj):
+    """GA500 Modbus verilerini işle"""
+    global motor, sensor
+    #log_motor(f"MODBUS MESAJ: {mesaj}")
+    # Modbus verilerini durum makinesine gönder
+    durum_makinesi.modbus_mesaj(mesaj)
 
 
 async def main():
@@ -87,7 +85,7 @@ async def main():
     log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
 
     # GA500 Modbus Client ve Motor Kontrol Sistemini Başlat
-    client = GA500ModbusClient()
+    client = GA500ModbusClient(callback=modbus_callback, cihaz_adi="ga500")
     if client.connect():
         print("✅ GA500 Modbus bağlantısı başarılı")
         print("📊 Sürekli izleme başlatıldı (0.5s periyod)")

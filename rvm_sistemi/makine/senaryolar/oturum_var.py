@@ -3,7 +3,6 @@ from collections import deque
 from ...veri_tabani import veritabani_yoneticisi
 import threading
 from ..goruntu.goruntu_isleme_servisi import GoruntuIslemeServisi
-from ..uyari_yoneticisi import uyari_yoneticisi
 import uuid as uuid_lib
 from dataclasses import dataclass, field
 from . import uyari
@@ -37,6 +36,7 @@ class SistemDurumu:
     barkod_lojik: bool = False
     gsi_lojik: bool = False
     gsi_gecis_lojik: bool = False
+    giris_sensor_durum: bool = False
     gso_lojik: bool = False
     ysi_lojik: bool = False
     yso_lojik: bool = False
@@ -318,22 +318,16 @@ def manuel_ezici_kontrol(komut):
     
     try:
         if komut == "ileri":
-            print("🔧 [MANUEL] Ezici ileri")
             return sistem.motor_kontrol_ref.ezici_ileri()
         elif komut == "geri":
-            print("🔧 [MANUEL] Ezici geri")
             return sistem.motor_kontrol_ref.ezici_geri()
         elif komut == "dur":
-            print("🔧 [MANUEL] Ezici dur")
             return sistem.motor_kontrol_ref.ezici_dur()
         elif komut == "ileri_10sn":
-            print("🔧 [MANUEL] Ezici ileri 10 saniye")
             return sistem.motor_kontrol_ref.ezici_ileri_10sn()
         elif komut == "geri_10sn":
-            print("🔧 [MANUEL] Ezici geri 10 saniye")
             return sistem.motor_kontrol_ref.ezici_geri_10sn()
         else:
-            print(f"❌ [MANUEL EZİCİ] Geçersiz komut: {komut}")
             return False
             
     except Exception as e:
@@ -352,22 +346,17 @@ def manuel_kirici_kontrol(komut):
     
     try:
         if komut == "ileri":
-            print("🔧 [MANUEL] Kırıcı ileri")
             return sistem.motor_kontrol_ref.kirici_ileri()
         elif komut == "geri":
-            print("🔧 [MANUEL] Kırıcı geri")
             return sistem.motor_kontrol_ref.kirici_geri()
         elif komut == "dur":
-            print("🔧 [MANUEL] Kırıcı dur")
+            return sistem.motor_kontrol_ref.kirici_dur()
             return sistem.motor_kontrol_ref.kirici_dur()
         elif komut == "ileri_10sn":
-            print("🔧 [MANUEL] Kırıcı ileri 10 saniye")
             return sistem.motor_kontrol_ref.kirici_ileri_10sn()
         elif komut == "geri_10sn":
-            print("🔧 [MANUEL] Kırıcı geri 10 saniye")
             return sistem.motor_kontrol_ref.kirici_geri_10sn()
         else:
-            print(f"❌ [MANUEL KIRICI] Geçersiz komut: {komut}")
             return False
             
     except Exception as e:
@@ -412,8 +401,17 @@ def lojik_yoneticisi():
     while True:
         time.sleep(0.005) # CPU kullanımını azaltmak için kısa bir uyku
 
+        if not sistem.giris_sensor_durum and (sistem.ysi_lojik or sistem.yso_lojik):
+            print("-----------------------------------------------DENEME----------------------------------------------------------------------")
+
+        if sistem.ysi_lojik:
+            sistem.ysi_lojik = False
+            print("🔄 [LOJİK] YSI lojik işlemleri başlatıldı")
+
+
         if sistem.gsi_lojik:
             sistem.gsi_lojik = False
+            sistem.giris_sensor_durum = True
             sistem.gsi_gecis_lojik = True
             
             if sistem.iade_lojik:
@@ -428,6 +426,7 @@ def lojik_yoneticisi():
         
         if sistem.gso_lojik:
             sistem.gso_lojik = False
+            sistem.giris_sensor_durum = False
 
             if sistem.iade_lojik:
                 
@@ -639,3 +638,6 @@ def mesaj_isle(mesaj):
     if mesaj == "skt":  
         sistem.seperator_kalibrasyon = True
     
+def modbus_mesaj(modbus_verisi):
+    veri = modbus_verisi
+    #print(f"[Oturum Var Modbus] Gelen veri: {modbus_verisi}")

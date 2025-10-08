@@ -50,7 +50,7 @@ class UrunGuncelleyici:
         """Zamanlayıcı döngüsünü çalıştırır"""
         while self.calistiriliyor:
             # Dakika cinsinden saniyeye çevir: dakika * 60 = saniye
-            await asyncio.sleep(self.guncelleme_sikligi_dakika * 60)
+            await asyncio.sleep(self.guncelleme_sikligi_dakika * 60 * 60)
             
             if self.calistiriliyor:
                 print(f"🔄 [URUN_GUNCELLEYICI] Periyodik güncelleme zamanı geldi...")
