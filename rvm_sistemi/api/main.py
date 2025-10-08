@@ -54,6 +54,14 @@ app.include_router(motor.router, prefix="/api/v1")
 app.include_router(sensor.router, prefix="/api/v1")
 app.include_router(sistem.router, prefix="/api/v1")
 
+# Yeni router'ları ekle
+from .endpoints import ac_motor, hazne, kalibrasyon, test, websocket
+app.include_router(ac_motor.router, prefix="/api/v1")
+app.include_router(hazne.router, prefix="/api/v1")
+app.include_router(kalibrasyon.router, prefix="/api/v1")
+app.include_router(test.router, prefix="/api/v1")
+app.include_router(websocket.router, prefix="/api/v1")
+
 # Geriye dönük uyumluluk için eski DİM-DB endpoint'leri (prefix olmadan)
 app.include_router(dimdb.router)
 

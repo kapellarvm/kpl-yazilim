@@ -5,6 +5,11 @@ def olayi_isle(olay):
     print(f"[Bakım Modu] Gelen olay: {olay}")
     # Bakım modunda yapılacak işlemler buraya eklenebilir
 
+def modbus_mesaj(modbus_verisi):
+    """Modbus verilerini işler - geriye dönük uyumluluk için"""
+    print(f"[Bakım Modu] Modbus verisi: {modbus_verisi}")
+    # Modbus verileri artık durum_degistirici.py'de işleniyor
+
 def bakim_moduna_gir(bakim_url="http://192.168.53.2:4321/bakim"):
     """Bakım moduna girildiğinde çalışır - Yeni Chromium penceresi açar"""
     global bakim_chromium_process
