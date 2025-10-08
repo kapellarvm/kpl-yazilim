@@ -128,7 +128,9 @@ async def main():
     # Motor kontrol referansını da oturum_var'a ayarla (otomatik ezici için)
     if motor_kontrol:
         oturum_var.motor_kontrol_referansini_ayarla(motor_kontrol)
-        log_system("Motor kontrol referansı oturum_var modülüne ayarlandı")
+        # Merkezi referans sistemine de kaydet
+        kart_referanslari.ac_motor_kontrol_referansini_ayarla(motor_kontrol)
+        log_system("Motor kontrol referansı oturum_var modülüne ve merkezi sisteme ayarlandı")
 
     # FastAPI sunucusunu başlat
     config = uvicorn.Config(

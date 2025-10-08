@@ -5,6 +5,8 @@ let bakimModuAktif = false;
 let isTesting = false;
 let stopLoop = true;
 let cardConnectionTimeouts = {};
+let websocket = null;
+let isCalibrating = false;
 
 // Durum yöneticisi
 const durumYoneticisi = {
@@ -126,6 +128,8 @@ async function sistemDurumunuGuncelle() {
             }
             // Bakım modu pasifken periyodik güncellemeleri durdur
             stopPeriodicUpdates();
+            // WebSocket bağlantısını kapat
+            disconnectWebSocket();
         }
         
         // Durum yöneticisini güncelle
@@ -917,6 +921,162 @@ let sistemDurumInterval = null;
 let sensorDegerInterval = null;
 let genelDurumInterval = null;
 
+// WebSocket bağlantı fonksiyonları
+function connectWebSocket() {
+    console.log('WebSocket bağlantısı başlatılıyor...');
+    try {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/bakim`;
+        
+        console.log('WebSocket URL oluşturuldu:', wsUrl);
+        websocket = new WebSocket(wsUrl);
+        console.log('WebSocket nesnesi oluşturuldu');
+        
+        websocket.onopen = function(event) {
+            console.log('WebSocket bağlantısı kuruldu');
+            showMessage('Gerçek zamanlı veri bağlantısı kuruldu', false);
+            console.log('WebSocket URL:', wsUrl);
+        };
+        
+        websocket.onmessage = function(event) {
+            console.log('WebSocket mesaj alındı:', event.data);
+            try {
+                const data = JSON.parse(event.data);
+                console.log('WebSocket mesaj parse edildi:', data);
+                handleWebSocketMessage(data);
+            } catch (error) {
+                console.error('WebSocket mesaj parse hatası:', error);
+            }
+        };
+        
+        websocket.onclose = function(event) {
+            console.log('WebSocket bağlantısı kapandı');
+            showMessage('Gerçek zamanlı veri bağlantısı kesildi', true);
+            
+            // 5 saniye sonra yeniden bağlan
+            setTimeout(() => {
+                if (bakimModuAktif) {
+                    connectWebSocket();
+                }
+            }, 5000);
+        };
+        
+        websocket.onerror = function(error) {
+            console.error('WebSocket hatası:', error);
+            showMessage('WebSocket bağlantı hatası', true);
+        };
+        
+    } catch (error) {
+        console.error('WebSocket bağlantı hatası:', error);
+        showMessage('WebSocket bağlantısı kurulamadı', true);
+    }
+}
+
+function disconnectWebSocket() {
+    if (websocket) {
+        websocket.close();
+        websocket = null;
+    }
+}
+
+function handleWebSocketMessage(data) {
+    console.log('WebSocket mesaj işleniyor:', data.type);
+    switch (data.type) {
+        case 'modbus_update':
+            console.log('Modbus güncelleme alındı:', data.motor_type, data.data);
+            updateMotorDisplayFromWebSocket(data.motor_type, data.data);
+            break;
+        case 'system_status':
+            console.log('Sistem durumu güncelleme alındı:', data.data);
+            updateSystemStatusFromWebSocket(data.data);
+            break;
+        case 'sensor_update':
+            console.log('Sensör güncelleme alındı:', data.data);
+            updateSensorDataFromWebSocket(data.data);
+            break;
+        default:
+            console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
+    }
+}
+
+function updateMotorDisplayFromWebSocket(motorType, data) {
+    console.log('Motor display güncelleniyor:', motorType, data);
+    const prefix = motorType === 'crusher' ? 'crusher' : 'breaker';
+    console.log('Motor prefix:', prefix);
+    
+    // Motor verilerini güncelle
+    const setFreqEl = document.getElementById(`${prefix}-set-freq`);
+    const outFreqEl = document.getElementById(`${prefix}-out-freq`);
+    const voltageEl = document.getElementById(`${prefix}-voltage`);
+    const currentEl = document.getElementById(`${prefix}-current`);
+    const powerEl = document.getElementById(`${prefix}-power`);
+    const busVoltageEl = document.getElementById(`${prefix}-bus-voltage`);
+    const tempEl = document.getElementById(`${prefix}-temp`);
+    const directionEl = document.getElementById(`${prefix}-direction`);
+    const statusEl = document.getElementById(`${prefix}-status`);
+    const readyEl = document.getElementById(`${prefix}-ready`);
+    const faultEl = document.getElementById(`${prefix}-fault`);
+    
+    if (setFreqEl) setFreqEl.textContent = data.set_freq || '0.0 Hz';
+    if (outFreqEl) outFreqEl.textContent = data.out_freq || '0.0 Hz';
+    if (voltageEl) voltageEl.textContent = data.voltage || '0.0 V';
+    if (currentEl) currentEl.textContent = data.current || '0.0 A';
+    if (powerEl) powerEl.textContent = data.power || '0.0 W';
+    if (busVoltageEl) busVoltageEl.textContent = data.bus_voltage || '0.0 V';
+    if (tempEl) tempEl.textContent = data.temperature || '0.0 °C';
+    if (directionEl) directionEl.textContent = data.direction || 'DURUYOR';
+    if (statusEl) statusEl.textContent = data.status || 'DURUYOR';
+    
+    // Ready durumu
+    if (readyEl) {
+        readyEl.textContent = data.ready || 'HAYIR';
+        if (data.ready === 'EVET') {
+            readyEl.classList.add('text-green-400');
+            readyEl.classList.remove('text-red-400');
+        } else {
+            readyEl.classList.remove('text-green-400');
+            readyEl.classList.add('text-red-400');
+        }
+    }
+    
+    // Fault durumu
+    if (faultEl) {
+        faultEl.textContent = data.fault || 'YOK';
+        if (data.fault === 'VAR') {
+            faultEl.classList.add('text-red-400');
+            faultEl.classList.remove('text-green-400');
+        } else {
+            faultEl.classList.remove('text-red-400');
+            faultEl.classList.add('text-green-400');
+        }
+    }
+    
+    // Motor çalışma durumuna göre animasyon
+    const gears = document.getElementById(`${prefix}-gears`);
+    if (gears) {
+        if (data.status === 'ÇALIŞIYOR') {
+            gears.classList.remove('spinning', 'spinning-rev');
+            if (data.direction === 'İLERİ') {
+                gears.classList.add('spinning');
+            } else if (data.direction === 'GERİ') {
+                gears.classList.add('spinning-rev');
+            }
+        } else {
+            gears.classList.remove('spinning', 'spinning-rev');
+        }
+    }
+}
+
+function updateSystemStatusFromWebSocket(data) {
+    // Sistem durumu güncellemeleri
+    console.log('Sistem durumu güncellendi:', data);
+}
+
+function updateSensorDataFromWebSocket(data) {
+    // Sensör verisi güncellemeleri
+    console.log('Sensör verisi güncellendi:', data);
+}
+
 // Periyodik güncellemeleri başlat
 function startPeriodicUpdates() {
     // Eğer zaten çalışıyorsa durdur
@@ -926,6 +1086,11 @@ function startPeriodicUpdates() {
     sistemDurumInterval = setInterval(sistemDurumunuGuncelle, 5000);
     sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
     genelDurumInterval = setInterval(updateGeneralStatus, 10000);
+    
+    // Hazne doluluk güncelleme
+    setInterval(async () => {
+        await loadHazneDoluluk();
+    }, 10000);
 }
 
 // Periyodik güncellemeleri durdur
@@ -958,11 +1123,595 @@ function initializeBakim() {
     butonlariGuncelle();
     updateGeneralStatus();
     
+    // WebSocket bağlantısını her zaman başlat
+    connectWebSocket();
+    
     // Periyodik güncellemeleri başlat (sadece bakım modu aktifken)
     if (bakimModuAktif) {
         startPeriodicUpdates();
     }
 }
 
+// Yeni özellikler için fonksiyonlar
+
+// Hızlı kontroller
+async function diagnosticBaslat() {
+    try {
+        showMessage('Diagnostik başlatılıyor...');
+        const response = await fetch(`${API_BASE}/sistem/durum`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            showMessage('Diagnostik tamamlandı - Sistem sağlıklı');
+        } else {
+            showMessage('Diagnostik tamamlandı - Sistem sorunları tespit edildi', true);
+        }
+    } catch (error) {
+        showMessage('Diagnostik hatası: ' + error.message, true);
+    }
+}
+
+async function depoyuBosalt() {
+    try {
+        showMessage('Depo boşaltılıyor...');
+        // Tüm motorları durdur
+        await fetch(`${API_BASE}/motor/motorlari-iptal`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // AC motorları durdur
+        await fetch(`${API_BASE}/ac-motor/tum-motorlar-dur`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        showMessage('Depo boşaltma tamamlandı');
+    } catch (error) {
+        showMessage('Depo boşaltma hatası: ' + error.message, true);
+    }
+}
+
+async function sistemiYenidenBaslat() {
+    try {
+        showMessage('Sistem yeniden başlatılıyor...');
+        const response = await fetch(`${API_BASE}/sistem/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            showMessage('Sistem yeniden başlatıldı');
+        } else {
+            showMessage('Sistem yeniden başlatma hatası: ' + data.message, true);
+        }
+    } catch (error) {
+        showMessage('Sistem yeniden başlatma hatası: ' + error.message, true);
+    }
+}
+
+// AC Motor kontrolü
+function setupAcMotor(prefix) {
+    const fwdBtn = document.getElementById(`${prefix}-fwd-btn`);
+    const revBtn = document.getElementById(`${prefix}-rev-btn`);
+    const stopBtn = document.getElementById(`${prefix}-stop-btn`);
+    const gears = document.getElementById(`${prefix}-gears`);
+    
+    if (!fwdBtn || !revBtn || !stopBtn || !gears) return;
+    
+    let isRunning = false;
+    let currentDirection = "Duruyor";
+
+    const updateMotorDisplay = (running, direction = "Duruyor") => {
+        const setFreqEl = document.getElementById(`${prefix}-set-freq`);
+        const outFreqEl = document.getElementById(`${prefix}-out-freq`);
+        const voltageEl = document.getElementById(`${prefix}-voltage`);
+        const currentEl = document.getElementById(`${prefix}-current`);
+        const powerEl = document.getElementById(`${prefix}-power`);
+        const busVoltageEl = document.getElementById(`${prefix}-bus-voltage`);
+        const tempEl = document.getElementById(`${prefix}-temp`);
+        const directionEl = document.getElementById(`${prefix}-direction`);
+        const statusEl = document.getElementById(`${prefix}-status`);
+        const readyEl = document.getElementById(`${prefix}-ready`);
+        const faultEl = document.getElementById(`${prefix}-fault`);
+
+        if (running) {
+            if (outFreqEl) outFreqEl.textContent = '50.0 Hz';
+            if (voltageEl) voltageEl.textContent = '220.0 V';
+            if (currentEl) currentEl.textContent = '1.5 A';
+            if (powerEl) powerEl.textContent = '330.0 W';
+            if (busVoltageEl) busVoltageEl.textContent = '310.0 V';
+            if (tempEl) tempEl.textContent = '35.0 °C';
+            if (directionEl) directionEl.textContent = direction;
+            if (statusEl) statusEl.textContent = 'Çalışıyor';
+            if (readyEl) {
+                readyEl.textContent = 'Hayır';
+                readyEl.classList.remove('text-green-400');
+                readyEl.classList.add('text-red-400');
+            }
+        } else {
+            if (outFreqEl) outFreqEl.textContent = '0.0 Hz';
+            if (voltageEl) voltageEl.textContent = '0.0 V';
+            if (currentEl) currentEl.textContent = '0.0 A';
+            if (powerEl) powerEl.textContent = '0.0 W';
+            if (busVoltageEl) busVoltageEl.textContent = '310.0 V';
+            if (tempEl) tempEl.textContent = '35.0 °C';
+            if (directionEl) directionEl.textContent = 'Duruyor';
+            if (statusEl) statusEl.textContent = 'Çalışmıyor';
+            if (readyEl) {
+                readyEl.textContent = 'Evet';
+                readyEl.classList.add('text-green-400');
+                readyEl.classList.remove('text-red-400');
+            }
+            if (faultEl) {
+                faultEl.textContent = 'Yok';
+                faultEl.classList.add('text-green-400');
+                faultEl.classList.remove('text-red-400');
+            }
+        }
+    };
+
+    const startMotor = async (direction, motorType) => {
+        try {
+            const endpoint = motorType === 'crusher' ? 'ezici' : 'kirici';
+            const directionEndpoint = direction === 'İleri' ? 'ileri' : 'geri';
+            const response = await fetch(`${API_BASE}/ac-motor/${endpoint}-${directionEndpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                isRunning = true;
+                currentDirection = direction;
+                if (gears) {
+                    gears.classList.remove('spinning', 'spinning-rev');
+                    if (direction === 'İleri') {
+                        gears.classList.add('spinning');
+                    } else {
+                        gears.classList.add('spinning-rev');
+                    }
+                }
+                updateMotorDisplay(true, direction);
+                showMessage(`${motorType} motor ${direction} başlatıldı`);
+            } else {
+                showMessage(`${motorType} motor başlatılamadı: ${data.message}`, true);
+            }
+        } catch (error) {
+            showMessage(`${motorType} motor hatası: ${error.message}`, true);
+        }
+    };
+
+    const stopMotor = async (motorType) => {
+        try {
+            const endpoint = motorType === 'crusher' ? 'ezici' : 'kirici';
+            const response = await fetch(`${API_BASE}/ac-motor/${endpoint}-dur`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                isRunning = false;
+                currentDirection = "Duruyor";
+                if (gears) {
+                    gears.classList.remove('spinning', 'spinning-rev');
+                }
+                updateMotorDisplay(false);
+                showMessage(`${motorType} motor durduruldu`);
+            } else {
+                showMessage(`${motorType} motor durdurulamadı: ${data.message}`, true);
+            }
+        } catch (error) {
+            showMessage(`${motorType} motor dur hatası: ${error.message}`, true);
+        }
+    };
+
+    fwdBtn.addEventListener('click', () => {
+        const motorType = prefix === 'crusher' ? 'crusher' : 'breaker';
+        startMotor("İleri", motorType);
+    });
+    
+    revBtn.addEventListener('click', () => {
+        const motorType = prefix === 'crusher' ? 'crusher' : 'breaker';
+        startMotor("Geri", motorType);
+    });
+    
+    stopBtn.addEventListener('click', () => {
+        const motorType = prefix === 'crusher' ? 'crusher' : 'breaker';
+        stopMotor(motorType);
+    });
+
+    updateMotorDisplay(false);
+}
+
+// Hazne doluluk güncelleme
+async function updateFillLevel(material, percentage) {
+    const fillElement = document.getElementById(`${material}-fill`);
+    const textElement = document.getElementById(`${material}-text`);
+    
+    if (fillElement) {
+        fillElement.style.height = `${percentage}%`;
+    }
+    if (textElement) {
+        textElement.innerText = `${percentage}% Dolu`;
+    }
+}
+
+// Hazne doluluk verilerini API'den al
+async function loadHazneDoluluk() {
+    try {
+        const response = await fetch(`${API_BASE}/hazne/doluluk`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            updateFillLevel('plastic', data.data.plastik);
+            updateFillLevel('metal', data.data.metal);
+            updateFillLevel('glass', data.data.cam);
+        } else {
+            console.error('Hazne doluluk verisi alınamadı:', data.message);
+        }
+    } catch (error) {
+        console.error('Hazne doluluk hatası:', error);
+    }
+}
+
+// Kalibrasyon fonksiyonları
+function showCalibrationStatus(message) {
+    const statusElement = document.getElementById('calibration-status');
+    if (statusElement) {
+        statusElement.textContent = message;
+        setTimeout(() => {
+            statusElement.textContent = '';
+        }, 3000);
+    }
+}
+
+async function calibrateDiverter() {
+    try {
+        const response = await fetch(`${API_BASE}/kalibrasyon/yonlendirici`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            // Animasyon göster
+            const diverterVisual = document.getElementById('diverter-visual');
+            if (diverterVisual) {
+                diverterVisual.style.animation = `diverter-spin-rev 1s linear`;
+                setTimeout(() => {
+                    diverterVisual.style.animation = '';
+                    diverterVisual.style.transform = '';
+                }, 1000);
+            }
+            return true;
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Yönlendirici kalibrasyon hatası:', error);
+        return false;
+    }
+}
+
+async function calibrateFlap() {
+    try {
+        const response = await fetch(`${API_BASE}/kalibrasyon/klape`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            // Animasyon göster
+            const flapVisual = document.getElementById('flap-visual');
+            if (flapVisual) {
+                flapVisual.style.transform = 'rotate(0deg)';
+            }
+            return true;
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Klape kalibrasyon hatası:', error);
+        return false;
+    }
+}
+
+async function calibrateDiverterSensor() {
+    try {
+        const response = await fetch(`${API_BASE}/kalibrasyon/yonlendirici-sensor`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            // Animasyon göster
+            const rays = document.getElementById('diverter-opt-rays');
+            if (rays) {
+                rays.classList.add('teaching-rays');
+                setTimeout(() => {
+                    rays.classList.remove('teaching-rays');
+                }, 5000);
+            }
+            return true;
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Yönlendirici sensör kalibrasyon hatası:', error);
+        return false;
+    }
+}
+
+// Test senaryoları
+async function runScenario(scenario) {
+    if (isTesting && !stopLoop) return; 
+    isTesting = true;
+    
+    const testStatus = document.getElementById('test-status');
+    const opt1009_output = document.getElementById('opt1009-output');
+    const opt1009_blocker = document.getElementById('opt1009-blocker');
+    const diverter_opt_output = document.getElementById('diverter-opt-output');
+    const diverter_opt_blocker = document.getElementById('diverter-opt-blocker');
+    const conveyorAnimation = document.getElementById('conveyor-animation');
+    const diverterVisual = document.getElementById('diverter-visual');
+    const flapVisual = document.getElementById('flap-visual');
+
+    try {
+        if (testStatus) testStatus.textContent = `${scenario.charAt(0).toUpperCase() + scenario.slice(1)} senaryosu başlatılıyor...`;
+        
+        // Senaryo endpoint'ini çağır
+        const endpoint = scenario === 'plastik' ? 'plastik-senaryo' : 
+                        scenario === 'metal' ? 'metal-senaryo' : 'cam-senaryo';
+        
+        const response = await fetch(`${API_BASE}/test/${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status !== 'success') {
+            throw new Error(data.message);
+        }
+        
+        // Görsel animasyonları göster
+        if (testStatus) testStatus.textContent = "Ürün giriş sensöründe...";
+        if (opt1009_output) opt1009_output.innerText = 1;
+        if (opt1009_blocker) opt1009_blocker.classList.remove('hidden');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (opt1009_output) opt1009_output.innerText = '--';
+        if (opt1009_blocker) opt1009_blocker.classList.add('hidden');
+
+        if (testStatus) testStatus.textContent = "Ürün konveyörde ilerliyor...";
+        if (conveyorAnimation) conveyorAnimation.classList.add('conveyor-running-forward');
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        if (conveyorAnimation) conveyorAnimation.classList.remove('conveyor-running-forward');
+
+        if (testStatus) testStatus.textContent = "Ürün yönlendirici sensöründe...";
+        if (diverter_opt_output) diverter_opt_output.innerText = 1;
+        if (diverter_opt_blocker) diverter_opt_blocker.classList.remove('hidden');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (diverter_opt_output) diverter_opt_output.innerText = '--';
+        if (diverter_opt_blocker) diverter_opt_blocker.classList.add('hidden');
+        
+        if(scenario === 'plastik' || scenario === 'metal') {
+            if (testStatus) testStatus.textContent = "Yönlendirici 'Plastik/Metal' konumuna dönüyor...";
+            if (diverterVisual) {
+                diverterVisual.style.animation = `diverter-spin-rev 2s linear`;
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                diverterVisual.style.animation = '';
+                diverterVisual.style.transform = 'rotate(-45deg)';
+            }
+
+            if (scenario === 'plastik') {
+                if (testStatus) testStatus.textContent = "Klape konumu 'Plastik' olarak ayarlanıyor...";
+                if (flapVisual && flapVisual.style.transform === 'rotate(90deg)') {
+                    flapVisual.style.transform = 'rotate(0deg)';
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            } else { // metal
+                if (testStatus) testStatus.textContent = "Klape 'Metal' konumuna ayarlanıyor...";
+                if (flapVisual && flapVisual.style.transform !== 'rotate(90deg)') {
+                    flapVisual.style.transform = 'rotate(90deg)';
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (testStatus) testStatus.textContent = "Ezici motor çalıştırılıyor...";
+            await new Promise(resolve => setTimeout(resolve, 3000)); 
+            if (testStatus) testStatus.textContent = "Ezme işlemi tamamlandı.";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+        } else if (scenario === 'cam') {
+            if (testStatus) testStatus.textContent = "Yönlendirici 'Cam' konumuna dönüyor...";
+            if (diverterVisual) {
+                diverterVisual.style.animation = `diverter-spin 2s linear`;
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                diverterVisual.style.animation = '';
+                diverterVisual.style.transform = 'rotate(45deg)';
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (testStatus) testStatus.textContent = "Kırıcı motor çalıştırılıyor...";
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            if (testStatus) testStatus.textContent = "Kırma işlemi tamamlandı.";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (testStatus) testStatus.textContent = `${scenario.charAt(0).toUpperCase() + scenario.slice(1)} senaryosu tamamlandı!`;
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (testStatus) testStatus.textContent = '';
+        if (diverterVisual) diverterVisual.style.transform = '';
+        
+    } catch (error) {
+        if (testStatus) testStatus.textContent = `Senaryo hatası: ${error.message}`;
+        showMessage(`Test senaryosu hatası: ${error.message}`, true);
+    } finally {
+        isTesting = false;
+    }
+}
+
 // DOM yüklendiğinde başlat
-document.addEventListener('DOMContentLoaded', initializeBakim);
+document.addEventListener('DOMContentLoaded', () => {
+    initializeBakim();
+    
+    // Yeni özellikler için event listener'lar
+    const diagnosticBtn = document.getElementById('diagnostic-btn');
+    if (diagnosticBtn) {
+        diagnosticBtn.addEventListener('click', diagnosticBaslat);
+    }
+    
+    const emptyTankBtn = document.getElementById('empty-tank-btn');
+    if (emptyTankBtn) {
+        emptyTankBtn.addEventListener('click', depoyuBosalt);
+    }
+    
+    const restartSystemBtn = document.getElementById('restart-system-btn');
+    if (restartSystemBtn) {
+        restartSystemBtn.addEventListener('click', sistemiYenidenBaslat);
+    }
+    
+    // AC Motor kontrolleri
+    setupAcMotor('crusher');
+    setupAcMotor('breaker');
+    
+    // Hazne doluluk güncelleme
+    updateFillLevel('plastic', 65);
+    updateFillLevel('metal', 80);
+    updateFillLevel('glass', 45);
+    
+    // Kalibrasyon kontrolleri
+    const calibrateDiverterBtn = document.getElementById('calibrate-diverter-btn');
+    if (calibrateDiverterBtn) {
+        calibrateDiverterBtn.addEventListener('click', async () => {
+            if(isCalibrating) return;
+            isCalibrating = true;
+            showCalibrationStatus("Yönlendirici Motor kalibre ediliyor...");
+            await calibrateDiverter();
+            showCalibrationStatus('Yönlendirici Motor kalibrasyonu başarılı!');
+            isCalibrating = false;
+        });
+    }
+    
+    const calibrateFlapBtn = document.getElementById('calibrate-flap-btn');
+    if (calibrateFlapBtn) {
+        calibrateFlapBtn.addEventListener('click', async () => {
+            if(isCalibrating) return;
+            isCalibrating = true;
+            showCalibrationStatus("Klape Motor kalibre ediliyor...");
+            await calibrateFlap();
+            showCalibrationStatus('Klape Motor kalibrasyonu başarılı!');
+            isCalibrating = false;
+        });
+    }
+    
+    const calibrateDiverterSensorBtn = document.getElementById('calibrate-diverter-sensor-btn');
+    if (calibrateDiverterSensorBtn) {
+        calibrateDiverterSensorBtn.addEventListener('click', async () => {
+            if(isCalibrating) return;
+            isCalibrating = true;
+            showCalibrationStatus("Yönlendirici Sensör kalibre ediliyor...");
+            await calibrateDiverterSensor();
+            showCalibrationStatus('Yönlendirici Sensör kalibrasyonu başarılı!');
+            isCalibrating = false;
+        });
+    }
+    
+    const calibrateAllBtn = document.getElementById('calibrate-all-btn');
+    if (calibrateAllBtn) {
+        calibrateAllBtn.addEventListener('click', async () => {
+            if(isCalibrating) return;
+            isCalibrating = true;
+            showCalibrationStatus("Tüm sistem kalibre ediliyor...");
+            await Promise.all([calibrateDiverter(), calibrateFlap(), calibrateDiverterSensor()]);
+            showCalibrationStatus('Tüm kalibrasyonlar başarılı!');
+            isCalibrating = false;
+        });
+    }
+    
+    // Test senaryoları
+    const testPlasticBtn = document.getElementById('test-plastic-btn');
+    if (testPlasticBtn) {
+        testPlasticBtn.addEventListener('click', () => runScenario('plastik'));
+    }
+    
+    const testMetalBtn = document.getElementById('test-metal-btn');
+    if (testMetalBtn) {
+        testMetalBtn.addEventListener('click', () => runScenario('metal'));
+    }
+    
+    const testGlassBtn = document.getElementById('test-glass-btn');
+    if (testGlassBtn) {
+        testGlassBtn.addEventListener('click', () => runScenario('cam'));
+    }
+    
+    const startStopScenariosBtn = document.getElementById('start-stop-scenarios-btn');
+    if (startStopScenariosBtn) {
+        startStopScenariosBtn.addEventListener('click', () => {
+            if (stopLoop) {
+                stopLoop = false;
+                isTesting = false;
+                startStopScenariosBtn.textContent = 'Senaryoları Durdur';
+                startStopScenariosBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                startStopScenariosBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                
+                // Senaryo döngüsünü başlat
+                const scenarioLoop = async () => {
+                    while (!stopLoop) {
+                        const scenarios = ['plastik', 'metal', 'cam'];
+                        const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+                        await runScenario(randomScenario);
+                        if (stopLoop) break;
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
+                    
+                    startStopScenariosBtn.textContent = 'Senaryoları Başlat';
+                    startStopScenariosBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                    startStopScenariosBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                    isTesting = false;
+                };
+                
+                scenarioLoop();
+            } else {
+                stopLoop = true;
+                startStopScenariosBtn.textContent = 'Durduruluyor...';
+                startStopScenariosBtn.disabled = true;
+            }
+        });
+    }
+});

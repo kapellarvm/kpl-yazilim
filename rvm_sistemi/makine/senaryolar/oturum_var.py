@@ -31,7 +31,9 @@ class SistemDurumu:
     iade_etildi: bool = False
     lojik_thread_basladi: bool = False
     konveyor_durum_kontrol: bool = False
+    yonlendirici_iade: bool = False
     iade_lojik: bool = False
+    kabul_yonu: bool = True
     iade_lojik_onceki_durum: bool = False
     barkod_lojik: bool = False
     gsi_lojik: bool = False
@@ -40,7 +42,8 @@ class SistemDurumu:
     gso_lojik: bool = False
     ysi_lojik: bool = False
     yso_lojik: bool = False
-
+    ezici_durum : bool = False
+    kirici_durum : bool = False
     # Alarmlar
     konveyor_alarm: bool = False
     yonlendirici_alarm: bool = False
@@ -383,12 +386,14 @@ def yonlendirici_hareket():
 
     if sistem.motor_ref:
         if materyal_id == 2: # Cam
-            manuel_kirici_kontrol("ileri_10sn")
+            if sistem.kirici_durum:
+                manuel_kirici_kontrol("ileri_10sn")
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_cam()
             print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
         else: # Plastik/Metal
-            manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
+            if sistem.ezici_durum:
+                manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
             print(f"🟩 [PLASTİK/METAL] Plastik/Metal yönlendiricisine gönderildi")
@@ -401,8 +406,16 @@ def lojik_yoneticisi():
     while True:
         time.sleep(0.005) # CPU kullanımını azaltmak için kısa bir uyku
 
-        if not sistem.giris_sensor_durum and (sistem.ysi_lojik or sistem.yso_lojik):
-            print("-----------------------------------------------DENEME----------------------------------------------------------------------")
+        if not sistem.giris_sensor_durum and (sistem.ysi_lojik or sistem.yso_lojik) and not sistem.kabul_yonu:
+            print("⚠️ [UYARI] Giriş sensörü kapalı iken YSI veya YSO lojik aktif ve kabul yönü yanlış. Sistemi durdur.")
+            #sistem.yonlendirici_iade = True
+            #sistem.iade_lojik = True
+            #sistem.iade_sebep = "Yönlendirici ŞUTTTT"
+            #sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul edilen ürünleri temizle
+            #sistem.veri_senkronizasyon_listesi.clear()  # iade sırasında bekleyen
+            #sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
+            #sistem.kabul_yonu = False
+            #sistem.motor_ref.konveyor_geri()
 
         if sistem.ysi_lojik:
             sistem.ysi_lojik = False
@@ -431,7 +444,7 @@ def lojik_yoneticisi():
             if sistem.iade_lojik:
                 
                 goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
-                if goruntu.mesaj=="nesne_yok":
+                if goruntu.mesaj=="nesne_yok" and sistem.yonlendirici_iade:
                     print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
                     log_oturum_var("İADE AKTIF - Şişe alındı, nesne yok.")
                     sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
@@ -444,16 +457,18 @@ def lojik_yoneticisi():
                     uyari.uyari_kapat()
                     print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
                     log_oturum_var("UYARI - Uyarı ekranı kapatıldı - şişe geri alındı")
+                
                 else:
                     print("🚫 [İADE AKTIF] Görüntü işleme kabul etmedi iade devam.")
                     log_oturum_var("İADE AKTIF - Görüntü işleme kabul etmedi iade devam.")
+                    sistem.kabul_yonu = False
                     sistem.motor_ref.konveyor_geri()
             else:
                 if sistem.barkod_lojik:
                     if sistem.iade_lojik==False:
                         print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
                         log_oturum_var("GSO - Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
-                        
+                        sistem.kabul_yonu = True
                         sistem.sensor_ref.loadcell_olc()
                         goruntu_isleme_tetikle()
                         # Normal akışta gsi_gecis_lojik'i sıfırla
@@ -572,6 +587,7 @@ def lojik_yoneticisi():
 def giris_iade_et(sebep):
     print(f"\n❌ [GİRİŞ İADESİ] Sebep: {sebep}")
     uyari.uyari_goster(mesaj=f"Lütfen şişeyi geri alınız : {sebep}", sure=0)
+    sistem.kabul_yonu = False
     sistem.motor_ref.konveyor_geri()
 
 def mesaj_isle(mesaj):
@@ -600,6 +616,9 @@ def mesaj_isle(mesaj):
         sistem.motor_ref.konveyor_dur()
         sistem.sensor_ref.led_ac()
         sistem.sensor_ref.doluluk_oranı()
+        sistem.kabul_yonu = True
+        sistem.ezici_durum = False
+        sistem.kirici_durum = False
 
     if mesaj.startswith("a:"):
         sistem.agirlik = float(mesaj.split(":")[1].replace(",", "."))

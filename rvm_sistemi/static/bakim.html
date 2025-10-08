@@ -37,8 +37,65 @@
         </header>
 
         <!-- Ana İçerik Grid'i -->
-        <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Sekme Kontrol Bölümü -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Genel Durum & Hızlı Kontroller (Sol Sütun) -->
+            <div class="space-y-6 lg:col-span-1">
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Genel Durum</h2>
+                    <div class="space-y-6">
+                        <!-- Sensör Değerleri -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+                            <!-- KPL04-PN-0001 -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-blue-400">KPL04-PN-0001</h3>
+                                <div class="mt-2 space-y-2 text-sm">
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Sıcaklık:</span><span class="font-mono text-lg font-bold" id="sensor1-temp">None</span></div>
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Basınç:</span><span class="font-mono text-lg font-bold" id="sensor1-pressure">None</span></div>
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Nem:</span><span class="font-mono text-lg font-bold" id="sensor1-humidity">None</span></div>
+                                </div>
+                            </div>
+                            <!-- KPL04-PN-0002 -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-blue-400">KPL04-PN-0002</h3>
+                                <div class="mt-2 space-y-2 text-sm">
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Sıcaklık:</span><span class="font-mono text-lg font-bold" id="sensor2-temp">None</span></div>
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Basınç:</span><span class="font-mono text-lg font-bold" id="sensor2-pressure">None</span></div>
+                                    <div class="flex justify-between items-center bg-gray-700/50 p-2 rounded-md"><span>Nem:</span><span class="font-mono text-lg font-bold" id="sensor2-humidity">None</span></div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Etiket Bilgileri -->
+                        <div class="pt-4 border-t border-gray-700">
+                            <h3 class="text-lg font-semibold text-blue-400 mb-3">Etiket Bilgileri</h3>
+                            <div class="text-sm space-y-2 text-gray-300">
+                                <div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+                                    <span class="font-semibold">Üretici Ünvanı:</span><span class="break-words">KAPELLA ELEKTROMEKANİK A.Ş.</span>
+                                    <span class="font-semibold">Üretici Adresi:</span><span class="break-words">29 Ekim Mah. 10002 Sk. B No:16/1 Menemen/İzmir</span>
+                                    <span class="font-semibold">Marka:</span><span>KapellaRVM</span>
+                                    <span class="font-semibold">Model:</span><span>KPL04</span>
+                                    <span class="font-semibold">Seri No:</span><span>2025-KPL04-0001</span>
+                                    <span class="font-semibold">Beyan Gerilimi:</span><span>220-230 V</span>
+                                    <span class="font-semibold">Beyan Akımı:</span><span>15A</span>
+                                    <span class="font-semibold">Beyan Gücü:</span><span>3.3 kW</span>
+                                    <span class="font-semibold">Beyan Frekansı:</span><span>50-60 Hz</span>
+                                    <span class="font-semibold">Numunenin Tanımı:</span><span>Depozito İade Makinesi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Hızlı Kontroller</h2>
+                    <div class="flex flex-col space-y-3">
+                        <button id="diagnostic-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Diagnostik Başlat</button>
+                        <button id="empty-tank-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Depoyu Boşalt</button>
+                        <button id="restart-system-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Sistemi Yeniden Başlat</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sekme Kontrol Bölümü (Sağ Sütun) -->
             <div class="lg:col-span-2">
                 <!-- Sekme Butonları -->
                 <div class="border-b border-gray-700">
@@ -64,6 +121,7 @@
         </div>
                                 <div class="flex items-center space-x-2">
                                     <button id="toggle-sensors-btn" class="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Paneli Daralt/Genişlet"></button>
+                                    <button id="reset-sensor-card-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kartı Resetle</button>
                         </div>
                     </div>
                             <div id="sensor-details-grid" class="details-grid mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
@@ -90,9 +148,11 @@
                                         <button id="opt1009-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Test Et</button>
                     </div>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Voltaj:</span> <span class="font-mono">24.1 V</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">15 mA</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">0.36 W</span></li>
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="opt1009-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="opt1009-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="opt1009-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="opt1009-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="opt1009-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                 </div>
                                 <!-- Loadcell -->
@@ -133,9 +193,110 @@
                 </div>
                     </div>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Voltaj:</span> <span class="font-mono">12.0 V</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">500 mA</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">6.0 W</span></li>
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="led-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="led-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="led-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="led-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="led-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- Plastik Hazne -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Plastik Hazne Doluluk</h3>
+                                    <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
+                                        <div id="plastic-fill" class="absolute bottom-0 w-full bg-blue-500 transition-all duration-500"></div>
+                                    </div>
+                                    <p id="plastic-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="plastic-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="plastic-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="plastic-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="plastic-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="plastic-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- Metal Hazne -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Metal Hazne Doluluk</h3>
+                                    <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
+                                        <div id="metal-fill" class="absolute bottom-0 w-full bg-gray-400 transition-all duration-500"></div>
+                                    </div>
+                                    <p id="metal-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="metal-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="metal-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="metal-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="metal-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="metal-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- Cam Hazne -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Cam Hazne Doluluk</h3>
+                                    <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
+                                        <div id="glass-fill" class="absolute bottom-0 w-full bg-green-500 transition-all duration-500"></div>
+                                    </div>
+                                    <p id="glass-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="glass-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="glass-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="glass-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="glass-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="glass-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- AC Ezici Motor -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">AC Ezici Motor</h3>
+                                    <div class="relative w-full h-16 mx-auto my-1 flex justify-center items-center">
+                                        <svg id="crusher-gears" class="w-14 h-14 text-gray-400 will-change-transform" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-1.01L14.07 2.42c-.05-.26-.27-.47-.52-.52H10.45c-.25 0-.47.21-.52.47L9.5 4.95c-.61-.28-1.17.61-1.69 1.01l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24-.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69 1.01L9.93 21.5c-.05.26.17.52.47.52h3.1c.25 0 .47-.21.52-.47l.43-2.47c.61-.28 1.17-.61 1.69-1.01l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2 mt-auto">
+                                        <button id="crusher-fwd-btn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">İleri</button>
+                                        <button id="crusher-stop-btn" class="bg-gray-600 hover:bg-gray-500 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Dur</button>
+                                        <button id="crusher-rev-btn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Geri</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Verilen Frekans:</span><span id="crusher-set-freq" class="font-mono">None Hz</span></li>
+                                        <li class="flex justify-between"><span>Çıkış Frekansı:</span><span id="crusher-out-freq" class="font-mono">None Hz</span></li>
+                                        <li class="flex justify-between"><span>Voltaj:</span><span id="crusher-voltage" class="font-mono">None V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span><span id="crusher-current" class="font-mono">None A</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span><span id="crusher-power" class="font-mono">None W</span></li>
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span><span id="crusher-bus-voltage" class="font-mono">None V</span></li>
+                                        <li class="flex justify-between"><span>Sıcaklık:</span><span id="crusher-temp" class="font-mono">None °C</span></li>
+                                        <li class="flex justify-between"><span>Çalışma Yönü:</span><span id="crusher-direction">None</span></li>
+                                        <li class="flex justify-between"><span>Çalışma Durumu:</span><span id="crusher-status">None</span></li>
+                                        <li class="flex justify-between"><span>Hazır Mı:</span><span id="crusher-ready" class="text-gray-400">None</span></li>
+                                        <li class="flex justify-between"><span>Arıza Var Mı:</span><span id="crusher-fault" class="text-gray-400">None</span></li>
+                                    </ul>
+                                </div>
+                                <!-- AC Kırıcı Motor -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">AC Kırıcı Motor</h3>
+                                    <div class="relative w-full h-16 mx-auto my-1 flex justify-center items-center">
+                                        <svg id="breaker-gears" class="w-14 h-14 text-gray-400 will-change-transform" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-1.01L14.07 2.42c-.05-.26-.27-.47-.52-.52H10.45c-.25 0-.47.21-.52.47L9.5 4.95c-.61-.28-1.17.61-1.69 1.01l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24-.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69 1.01L9.93 21.5c-.05.26.17.52.47.52h3.1c.25 0 .47-.21.52-.47l.43-2.47c.61-.28 1.17-.61 1.69-1.01l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2 mt-auto">
+                                        <button id="breaker-fwd-btn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">İleri</button>
+                                        <button id="breaker-stop-btn" class="bg-gray-600 hover:bg-gray-500 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Dur</button>
+                                        <button id="breaker-rev-btn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Geri</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Verilen Frekans:</span><span id="breaker-set-freq" class="font-mono">None Hz</span></li>
+                                        <li class="flex justify-between"><span>Çıkış Frekansı:</span><span id="breaker-out-freq" class="font-mono">None Hz</span></li>
+                                        <li class="flex justify-between"><span>Voltaj:</span><span id="breaker-voltage" class="font-mono">None V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span><span id="breaker-current" class="font-mono">None A</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span><span id="breaker-power" class="font-mono">None W</span></li>
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span><span id="breaker-bus-voltage" class="font-mono">None V</span></li>
+                                        <li class="flex justify-between"><span>Sıcaklık:</span><span id="breaker-temp" class="font-mono">None °C</span></li>
+                                        <li class="flex justify-between"><span>Çalışma Yönü:</span><span id="breaker-direction">None</span></li>
+                                        <li class="flex justify-between"><span>Çalışma Durumu:</span><span id="breaker-status">None</span></li>
+                                        <li class="flex justify-between"><span>Hazır Mı:</span><span id="breaker-ready" class="text-gray-400">None</span></li>
+                                        <li class="flex justify-between"><span>Arıza Var Mı:</span><span id="breaker-fault" class="text-gray-400">None</span></li>
                                     </ul>
                     </div>
                 </div>
@@ -152,6 +313,7 @@
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <button id="toggle-motors-btn" class="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Paneli Daralt/Genişlet"></button>
+                                    <button id="reset-motor-card-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kartı Resetle</button>
                                 </div>
                             </div>
                             <div id="motor-details-grid" class="details-grid mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
@@ -277,6 +439,113 @@
                                         <button id="flap-metal" class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">Metal</button>
                                     </div>
                     </div>
+                                <!-- Yönlendirici OPT Sensörü -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Yönlendirici Sensör</h3>
+                                    <div id="diverter-opt-visual" class="relative w-full h-12 mx-auto my-1">
+                                        <svg class="w-full h-full" viewBox="0 0 100 40">
+                                            <rect x="5" y="10" width="20" height="20" rx="4" fill="#4b5563"/>
+                                            <circle cx="15" cy="20" r="3" fill="#60a5fa" />
+                                            <rect x="75" y="10" width="20" height="20" rx="4" fill="#9ca3af"/>
+                                            <rect x="80" y="15" width="4" height="10" fill="#fbbf24"/>
+                                            <g id="diverter-opt-rays">
+                                                <line class="ray" x1="25" y1="20" x2="75" y2="20" stroke="#facc15" stroke-width="2"/>
+                                            </g>
+                                            <g id="diverter-opt-blocker" class="hidden" opacity="0.6">
+                                                <path d="M 50 5 L 55 10 L 55 30 L 50 35 L 45 30 L 45 10 Z" fill="#60a5fa" stroke="#e0f2fe" stroke-width="1.5"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="text-center mb-2"><span class="text-2xl font-mono" id="diverter-opt-output">--</span></div>
+                                    <div class="flex space-x-2">
+                                        <button id="diverter-opt-teach-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Teach</button>
+                                        <button id="diverter-opt-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Test Et</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="diverter-opt-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="diverter-opt-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="diverter-opt-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="diverter-opt-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="diverter-opt-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- Yönlendirici İndüktif Sensör -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Yönlendirici İndüktif</h3>
+                                    <div class="relative w-full h-16 mx-auto my-1 flex justify-center items-center overflow-hidden">
+                                        <svg class="w-full h-full" viewBox="0 0 100 60">
+                                            <rect id="diverter-inductive-metal" x="0" y="22.5" width="15" height="15" rx="2" fill="#9ca3af" class="transition-transform duration-300" />
+                                            <g transform="translate(75, 15)">
+                                                <rect x="0" y="0" width="20" height="30" rx="4" fill="#4b5563"/>
+                                                <circle cx="10" cy="15" r="6" stroke="#9ca3af" stroke-width="1.5" fill="none"/>
+                                                <circle cx="10" cy="15" r="2" fill="#9ca3af"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="text-center mb-2">
+                                        <span class="text-2xl font-mono" id="diverter-inductive-output">--</span>
+                                    </div>
+                                    <div class="flex mt-auto">
+                                        <button id="diverter-inductive-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Test Et</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="diverter-inductive-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="diverter-inductive-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="diverter-inductive-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="diverter-inductive-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="diverter-inductive-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                <!-- Klape İndüktif Sensör -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Klape İndüktif</h3>
+                                    <div class="relative w-full h-16 mx-auto my-1 flex justify-center items-center overflow-hidden">
+                                        <svg class="w-full h-full" viewBox="0 0 100 60">
+                                            <rect id="flap-inductive-metal" x="0" y="22.5" width="15" height="15" rx="2" fill="#9ca3af" class="transition-transform duration-300" />
+                                            <g transform="translate(75, 15)">
+                                                <rect x="0" y="0" width="20" height="30" rx="4" fill="#4b5563"/>
+                                                <circle cx="10" cy="15" r="6" stroke="#9ca3af" stroke-width="1.5" fill="none"/>
+                                                <circle cx="10" cy="15" r="2" fill="#9ca3af"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="text-center mb-2">
+                                        <span class="text-2xl font-mono" id="flap-inductive-output">--</span>
+                                    </div>
+                                    <div class="flex mt-auto">
+                                        <button id="flap-inductive-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Test Et</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="flap-inductive-bus-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="flap-inductive-shunt-voltage">None</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="flap-inductive-current">None</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="flap-inductive-power">None</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="flap-inductive-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Kalibrasyon ve Test Bölümü -->
+                            <div class="mt-8 pt-4 border-t-2 border-gray-700 space-y-8">
+                                <div id="calibration-section">
+                                    <h3 class="text-lg font-semibold mb-4">Kalibrasyon</h3>
+                                    <div class="flex flex-wrap items-center gap-4">
+                                        <button id="calibrate-diverter-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Yönlendirici Motor</button>
+                                        <button id="calibrate-flap-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Klape Motor</button>
+                                        <button id="calibrate-diverter-sensor-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Yönlendirici Sensör</button>
+                                        <button id="calibrate-all-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tümünü Kalibre Et</button>
+                                        <p id="calibration-status" class="text-green-400 font-semibold h-6"></p>
+                                    </div>
+                                </div>
+                                <div id="test-section">
+                                    <h3 class="text-lg font-semibold mb-4">Motor Test</h3>
+                                    <div class="flex flex-wrap items-center gap-4">
+                                        <button id="test-plastic-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Plastik Senaryosu</button>
+                                        <button id="test-metal-btn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Metal Senaryosu</button>
+                                        <button id="test-glass-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cam Senaryosu</button>
+                                        <button id="start-stop-scenarios-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Senaryoları Başlat</button>
+                                        <p id="test-status" class="text-amber-400 font-semibold h-6"></p>
+                                    </div>
+                                </div>
                     </div>
                 </div>
                     </div>

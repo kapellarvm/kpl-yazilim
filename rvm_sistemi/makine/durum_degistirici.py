@@ -1,5 +1,6 @@
 from .senaryolar import oturum_var, oturum_yok, bakim
 from .senaryolar import uyari
+from .modbus_parser import modbus_parser
 from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
 
 
@@ -41,10 +42,67 @@ class DurumMakinesi:
             bakim.olayi_isle(olay)
 
     def modbus_mesaj(self, modbus_veri):
+        # Modbus verisini parse et
+        parsed_data = modbus_parser.parse_modbus_string(modbus_veri)
+        
+        if parsed_data:
+            motor_id = parsed_data['motor_id']
+            motor_data = parsed_data['data']
+            
+            # Bakım modundaysa veriyi ekrana gönder
+            if self.durum == "bakim":
+                self._send_modbus_to_bakim(motor_id, motor_data)
+        
+        # Eski sistem için geriye dönük uyumluluk
         if self.durum == "oturum_var":
             oturum_var.modbus_mesaj(modbus_veri)
-        #elif self.durum == "bakim":
-         #   bakim.modbus_mesaj(modbus_veri)
+        elif self.durum == "bakim":
+            bakim.modbus_mesaj(modbus_veri)
+    
+    def _send_modbus_to_bakim(self, motor_id, motor_data):
+        """Modbus verisini bakım ekranına gönderir"""
+        try:
+            # Motor tipini belirle
+            motor_type = "crusher" if motor_id == 1 else "breaker"
+            
+            # Veriyi formatla
+            formatted_data = modbus_parser.format_for_display(motor_data)
+            
+            # Konsola yazdır
+            print(f"[BAKIM] {motor_type.upper()} Motor Verisi:")
+            for key, value in formatted_data.items():
+                print(f"  {key}: {value}")
+            
+            # WebSocket ile gerçek zamanlı güncelleme
+            self._send_websocket_update(motor_type, formatted_data)
+            
+        except Exception as e:
+            log_error(f"Modbus bakım gönderim hatası: {e}")
+    
+    def _send_websocket_update(self, motor_type, formatted_data):
+        """WebSocket ile bakım ekranına güncelleme gönder"""
+        try:
+            # WebSocket modülünü import et
+            from ..api.endpoints.websocket import send_modbus_data_to_bakim
+            import asyncio
+            
+            # Asyncio event loop'u al veya oluştur
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            # WebSocket mesajını gönder
+            if loop.is_running():
+                # Eğer loop çalışıyorsa, task olarak ekle
+                asyncio.create_task(send_modbus_data_to_bakim(motor_type, formatted_data))
+            else:
+                # Eğer loop çalışmıyorsa, çalıştır
+                loop.run_until_complete(send_modbus_data_to_bakim(motor_type, formatted_data))
+                
+        except Exception as e:
+            log_error(f"WebSocket güncelleme hatası: {e}")
             
 
 durum_makinesi = DurumMakinesi()
