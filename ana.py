@@ -1,8 +1,6 @@
 import uvicorn
 import asyncio
-import schedule
 import time
-import threading
 
 from rvm_sistemi.dimdb import dimdb_istemcisi
 from rvm_sistemi.utils.logger import rvm_logger, log_system, log_dimdb, log_motor, log_sensor, log_oturum, log_error, setup_exception_handler
@@ -23,21 +21,7 @@ motor = None
 sensor = None
 
 
-async def run_heartbeat_scheduler():
-    """Heartbeat'i periyodik olarak gönderen asenkron görev."""
-    print("Heartbeat zamanlayıcı başlatıldı...")
-    log_system("Heartbeat zamanlayıcı başlatıldı...")
-
-    await dimdb_istemcisi.send_heartbeat()
-
-    def heartbeat_gonder():
-        """Heartbeat gönderen wrapper fonksiyon"""
-        asyncio.create_task(dimdb_istemcisi.send_heartbeat())
-    
-    schedule.every(60).seconds.do(heartbeat_gonder)
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
+# Heartbeat sistemi artık heartbeat_servis.py modülünde yönetiliyor
 
 # Ürün güncelleme zamanlayıcısı - zamanli_gorevler modülüne taşındı
 # run_product_update_scheduler() fonksiyonu kaldırıldı - artık urun_guncelleyici kullanılıyor
@@ -45,23 +29,21 @@ async def run_heartbeat_scheduler():
 
 def sensor_callback(mesaj):
     global motor, sensor
-    # Sensör mesajlarını hem durum makinesine hem de sunucuya gönder
+
     durum_makinesi.olayi_isle(mesaj)
     
-    # Sunucudaki callback'i de çağır (eğer varsa)
-    try:
-        from rvm_sistemi.api.servisler.dimdb_servis import DimdbServis
-        # Sensör callback'i artık API katmanında yönetiliyor
-        # Gerekirse burada DimdbServis metodları çağrılabilir
-    except:
-        pass
-
-
 def motor_callback(mesaj):
     global motor, sensor
-    print(f"\n📡 [MOTOR HAM MESAJ] {mesaj}")
     log_motor(f"HAM MESAJ: {mesaj}")
     durum_makinesi.olayi_isle(mesaj)
+
+
+def modbus_callback(mesaj):
+    """GA500 Modbus verilerini işle"""
+    global motor, sensor
+    #log_motor(f"MODBUS MESAJ: {mesaj}")
+    # Modbus verilerini durum makinesine gönder
+    durum_makinesi.modbus_mesaj(mesaj)
 
 
 async def main():
@@ -103,7 +85,7 @@ async def main():
     log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
 
     # GA500 Modbus Client ve Motor Kontrol Sistemini Başlat
-    client = GA500ModbusClient()
+    client = GA500ModbusClient(callback=modbus_callback, cihaz_adi="ga500")
     if client.connect():
         print("✅ GA500 Modbus bağlantısı başarılı")
         print("📊 Sürekli izleme başlatıldı (0.5s periyod)")
@@ -157,8 +139,9 @@ async def main():
     )
     server = uvicorn.Server(config)
 
-    # Heartbeat görevini başlat
-    heartbeat_task = asyncio.create_task(run_heartbeat_scheduler())
+    # Heartbeat görevini başlat (heartbeat_servis modülünden)
+    from rvm_sistemi.api.servisler.heartbeat_servis import heartbeat_servis
+    await heartbeat_servis.start_heartbeat()
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
@@ -176,7 +159,7 @@ async def main():
     await server.serve()
 
     # Sunucu kapandığında her şeyi durdur
-    heartbeat_task.cancel()
+    await heartbeat_servis.stop_heartbeat()
     product_update_task.cancel()
     urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()
