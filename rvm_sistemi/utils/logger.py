@@ -30,16 +30,29 @@ class RvmLogger:
         if self.logger.handlers:
             self.logger.handlers.clear()
         
-        # Log klasörünü oluştur
-        log_dir = "/home/sshuser/projects/kpl-yazilim/logs"
-        os.makedirs(log_dir, exist_ok=True)
+        # Log klasörlerini oluştur
+        main_log_dir = "/home/sshuser/projects/kpl-yazilim/logs/rvm_sistemi_logs"
+        oturum_log_dir = "/home/sshuser/projects/kpl-yazilim/logs/oturum_var_log"
+        os.makedirs(main_log_dir, exist_ok=True)
+        os.makedirs(oturum_log_dir, exist_ok=True)
         
-        # Dosya handler'ı (tüm loglar)
-        file_handler = logging.FileHandler(
-            os.path.join(log_dir, f"rvm_sistemi_{datetime.now().strftime('%Y%m%d')}.log"),
+        # Klasör izinlerini ayarla
+        os.chmod(main_log_dir, 0o755)
+        os.chmod(oturum_log_dir, 0o755)
+        
+        # Ana dosya handler'ı (tüm loglar)
+        main_file_handler = logging.FileHandler(
+            os.path.join(main_log_dir, f"rvm_sistemi_{datetime.now().strftime('%Y%m%d')}.log"),
             encoding='utf-8'
         )
-        file_handler.setLevel(logging.DEBUG)
+        main_file_handler.setLevel(logging.DEBUG)
+        
+        # Oturum var özel dosya handler'ı
+        oturum_file_handler = logging.FileHandler(
+            os.path.join(oturum_log_dir, f"oturum_var_{datetime.now().strftime('%Y%m%d')}.log"),
+            encoding='utf-8'
+        )
+        oturum_file_handler.setLevel(logging.DEBUG)
         
         # Console handler'ı (terminal çıktısı)
         console_handler = logging.StreamHandler(sys.stdout)
@@ -57,12 +70,16 @@ class RvmLogger:
         )
         
         # Handler'lara formatter'ları ata
-        file_handler.setFormatter(detailed_formatter)
+        main_file_handler.setFormatter(detailed_formatter)
+        oturum_file_handler.setFormatter(detailed_formatter)
         console_handler.setFormatter(simple_formatter)
         
         # Handler'ları logger'a ekle
-        self.logger.addHandler(file_handler)
+        self.logger.addHandler(main_file_handler)
         self.logger.addHandler(console_handler)
+        
+        # Oturum var handler'ını ayrı tutacağız
+        self.oturum_file_handler = oturum_file_handler
     
     def debug(self, message: str):
         """Debug seviyesinde log"""
@@ -119,6 +136,22 @@ class RvmLogger:
         self.logger.info(f"OTURUM: {message}")
         print(f"👤 [OTURUM] {message}")
     
+    def oturum_var(self, message: str):
+        """Oturum var modülü için özel log (ayrı dosyaya yazar)"""
+        # Ana logger'a da yaz
+        self.logger.info(f"OTURUM_VAR: {message}")
+        print(f"🔄 [OTURUM_VAR] {message}")
+        
+        # Oturum var özel dosyasına da yaz
+        oturum_logger = logging.getLogger(f"{self.name}_oturum_var")
+        if not oturum_logger.handlers:
+            oturum_logger.setLevel(logging.DEBUG)
+            oturum_logger.addHandler(self.oturum_file_handler)
+            # Parent logger'dan mesajları almasını engelle
+            oturum_logger.propagate = False
+        
+        oturum_logger.info(f"OTURUM_VAR: {message}")
+    
     def exception(self, message: str, exc_info=None):
         """Exception logları için özel log"""
         if exc_info is None:
@@ -146,49 +179,62 @@ class RvmLogger:
         print(f"🚨 [UNHANDLED_EXCEPTION] Traceback: {traceback.format_exc()}")
 
 
-# Global logger instance
-rvm_logger = RvmLogger("rvm_sistemi")
+# Global logger instance - lazy loading
+rvm_logger = None
+
+def get_rvm_logger():
+    global rvm_logger
+    if rvm_logger is None:
+        rvm_logger = RvmLogger("rvm_sistemi")
+    return rvm_logger
 
 # Kolay erişim için fonksiyonlar
 def log_debug(message: str):
-    rvm_logger.debug(message)
+    get_rvm_logger().debug(message)
 
 def log_info(message: str):
-    rvm_logger.info(message)
+    get_rvm_logger().info(message)
 
 def log_warning(message: str):
-    rvm_logger.warning(message)
+    get_rvm_logger().warning(message)
 
 def log_error(message: str):
-    rvm_logger.error(message)
+    get_rvm_logger().error(message)
 
 def log_critical(message: str):
-    rvm_logger.critical(message)
+    get_rvm_logger().critical(message)
 
 def log_success(message: str):
-    rvm_logger.success(message)
+    get_rvm_logger().success(message)
 
 def log_system(message: str):
-    rvm_logger.system(message)
+    get_rvm_logger().system(message)
 
 def log_dimdb(message: str):
-    rvm_logger.dimdb(message)
+    get_rvm_logger().dimdb(message)
+
+def log_heartbeat(message: str):
+    """Heartbeat özel log fonksiyonu"""
+    get_rvm_logger().dimdb(f"[HEARTBEAT] {message}")
 
 def log_motor(message: str):
-    rvm_logger.motor(message)
+    get_rvm_logger().motor(message)
 
 def log_sensor(message: str):
-    rvm_logger.sensor(message)
+    get_rvm_logger().sensor(message)
 
 def log_oturum(message: str):
-    rvm_logger.oturum(message)
+    get_rvm_logger().oturum(message)
+
+def log_oturum_var(message: str):
+    get_rvm_logger().oturum_var(message)
 
 def log_exception(message: str, exc_info=None):
-    rvm_logger.exception(message, exc_info)
+    get_rvm_logger().exception(message, exc_info)
 
 def log_thread_error(message: str, thread_name: str = None):
-    rvm_logger.thread_error(message, thread_name)
+    get_rvm_logger().thread_error(message, thread_name)
 
 def setup_exception_handler():
     """Unhandled exception'ları yakalamak için handler kurar"""
-    sys.excepthook = rvm_logger.unhandled_exception
+    sys.excepthook = get_rvm_logger().unhandled_exception

@@ -155,32 +155,4 @@ def oturum_sonlandir():
     oturum_var.sistem.onaylanan_urunler.clear()
     print(f"🧹 [OTURUM] Yerel oturum temizlendi")
 
-# Heartbeat sistemi
-heartbeat_task = None
-
-async def start_heartbeat():
-    """Heartbeat sistemini başlatır"""
-    global heartbeat_task
-    if heartbeat_task is None:
-        heartbeat_task = asyncio.create_task(heartbeat_loop())
-        print("✅ [DİM-DB] Heartbeat sistemi başlatıldı")
-
-async def stop_heartbeat():
-    """Heartbeat sistemini durdurur"""
-    global heartbeat_task
-    if heartbeat_task:
-        heartbeat_task.cancel()
-        heartbeat_task = None
-        print("🛑 [DİM-DB] Heartbeat sistemi durduruldu")
-
-async def heartbeat_loop():
-    """60 saniyede bir heartbeat gönderir"""
-    while True:
-        try:
-            await dimdb_istemcisi.send_heartbeat()
-            await asyncio.sleep(60)  # 60 saniye bekle
-        except asyncio.CancelledError:
-            break
-        except Exception as e:
-            print(f"❌ [DİM-DB] Heartbeat hatası: {e}")
-            await asyncio.sleep(60)  # Hata durumunda da 60 saniye bekle
+# Heartbeat sistemi artık heartbeat_servis.py modülünde yönetiliyor

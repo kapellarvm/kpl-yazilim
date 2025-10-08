@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 DB_PATH = os.path.join(PROJECT_ROOT, "rvm_veritabani.db")
 
-# Türkiye saati (UTC+3)
+# Türkiye saati (sistem artık Türkiye saat diliminde)
 def turkiye_saati():
-    """Türkiye saatini (UTC+3) döndürür"""
-    return datetime.now() + timedelta(hours=3)
+    """Türkiye saatini döndürür (sistem artık Türkiye saat diliminde)"""
+    return datetime.now()
 
 def init_db():
     """

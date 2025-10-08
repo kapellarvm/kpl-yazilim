@@ -7,6 +7,7 @@ from ..uyari_yoneticisi import uyari_yoneticisi
 import uuid as uuid_lib
 from dataclasses import dataclass, field
 from . import uyari
+from ...utils.logger import log_oturum_var, log_error, log_success, log_warning, log_system
 
 @dataclass
 class SistemDurumu:
@@ -83,11 +84,13 @@ def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, ka
         sunucu_dimdb_bildirim(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji)
     except Exception as e:
         print(f"❌ [DİM-DB BİLDİRİM] Hata: {e}")
+        log_error(f"DİM-DB BİLDİRİM Hata: {e}")
 
 def motor_referansini_ayarla(motor):
     sistem.motor_ref = motor
     sistem.motor_ref.yonlendirici_sensor_teach()
     print("✅ Motor hazır - Sistem başlatıldı")
+    log_oturum_var("Motor hazır - Sistem başlatıldı")
 
 def sensor_referansini_ayarla(sensor):
     sistem.sensor_ref = sensor
@@ -97,14 +100,17 @@ def motor_kontrol_referansini_ayarla(motor_kontrol):
     """GA500 Motor Kontrol referansını ayarla"""
     sistem.motor_kontrol_ref = motor_kontrol
     print("✅ Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif")
+    log_oturum_var("Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif")
 
 def barkod_verisi_al(barcode):
     if sistem.iade_lojik:
         print(f"🚫 [İADE AKTIF] Barkod görmezden gelindi: {barcode}")
+        log_oturum_var(f"İADE AKTIF - Barkod görmezden gelindi: {barcode}")
         return
 
     if sistem.barkod_lojik: # Kuyruğa bir limit koymak iyi olabilir
         print(f"⚠️ [BARKOD] Kuyruk dolu, yeni barkod görmezden gelindi: {barcode}")
+        log_warning(f"BARKOD - Kuyruk dolu, yeni barkod görmezden gelindi: {barcode}")
         return
 
     paket_uuid = str(uuid_lib.uuid4())
@@ -113,11 +119,13 @@ def barkod_verisi_al(barcode):
     
     veri_senkronizasyonu(barkod=barcode)
     print(f"\n📋 [YENİ ÜRÜN] Barkod okundu: {barcode}, UUID: {paket_uuid}")
+    log_oturum_var(f"YENİ ÜRÜN - Barkod okundu: {barcode}, UUID: {paket_uuid}")
 
 def goruntu_isleme_tetikle():
     """Görüntü işlemeyi tetikler ve sonuçları veri senkronizasyonuna gönderir"""
     goruntu_sonuc = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
     print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
+    log_oturum_var(f"GÖRÜNTÜ İŞLEME - Sonuç: {goruntu_sonuc}")
     
     veri_senkronizasyonu(
         materyal_turu=goruntu_sonuc.tur.value, 
@@ -139,6 +147,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
                 'isleniyor': False # Ürünün işleme alınıp alınmadığını takip eden bayrak
             })
             print(f"➕ [KUYRUK] Yeni ürün eklendi: {barkod}. Kuyruk boyutu: {len(sistem.veri_senkronizasyon_listesi)}")
+            log_oturum_var(f"KUYRUK - Yeni ürün eklendi: {barkod}. Kuyruk boyutu: {len(sistem.veri_senkronizasyon_listesi)}")
             # Eğer sadece barkod geldiyse, diğer verileri bekle, hemen çık.
             if all(v is None for v in [agirlik, materyal_turu, uzunluk, genislik]):
                 return
@@ -155,6 +164,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
         if target_urun is None and barkod is None:
             sebep = "Barkod bilgisi olmadan ürün verisi (ağırlık vb.) geldi."
             print(f"❌ [HATA] {sebep}")
+            log_error(f"HATA - {sebep}")
             sistem.iade_lojik = True
             sistem.iade_sebep = sebep
             dimdb_bildirim_gonder("BARKOD_YOK", agirlik or 0, materyal_turu or 0, uzunluk or 0, genislik or 0, False, 6, sebep)
@@ -167,6 +177,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
             if uzunluk is not None: target_urun['uzunluk'] = uzunluk
             if genislik is not None: target_urun['genislik'] = genislik
             print(f"✏️  [GÜNCELLEME] Barkod {target_urun.get('barkod')} için veri güncellendi.")
+            log_oturum_var(f"GÜNCELLEME - Barkod {target_urun.get('barkod')} için veri güncellendi.")
 
         # 3. İŞLEME (Verisi Tamamlanmış Ürünleri Kontrol Et)
         for urun in sistem.veri_senkronizasyon_listesi:
@@ -174,6 +185,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
             
             if tum_veriler_dolu and not urun['isleniyor']:
                 print(f"✅ [VERİ SENKRONİZASYONU] Tüm veriler alındı, doğrulama başlıyor: {urun['barkod']}")
+                log_oturum_var(f"VERİ SENKRONİZASYONU - Tüm veriler alındı, doğrulama başlıyor: {urun['barkod']}")
                 urun['isleniyor'] = True # Tekrar işleme alınmasını engelle
                 
                 # Motor kontrolü (Klape Ayarı)
@@ -186,22 +198,26 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
                 # İşlenen ürünü kuyruktan kaldır.
                 sistem.veri_senkronizasyon_listesi.remove(urun)
                 print(f"➖ [KUYRUK] Ürün işlendi ve kuyruktan çıkarıldı: {urun['barkod']}. Kalan: {len(sistem.veri_senkronizasyon_listesi)}")
+                log_oturum_var(f"KUYRUK - Ürün işlendi ve kuyruktan çıkarıldı: {urun['barkod']}. Kalan: {len(sistem.veri_senkronizasyon_listesi)}")
 
                 # Eğer kuyrukta başka ürün kalmadıysa barkod_lojik'i kapat.
                 if not sistem.veri_senkronizasyon_listesi:
                     sistem.barkod_lojik = False
                     print("🏁 [KUYRUK] İşlenecek başka ürün kalmadı.")
+                    log_oturum_var("KUYRUK - İşlenecek başka ürün kalmadı.")
                 break # Her çağrıda sadece bir ürünü işle, FIFO mantığını koru.
 
 def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     print(f"\n📊 [DOĞRULAMA] Mevcut durum: barkod={barkod}, ağırlık={agirlik}, materyal türü={materyal_turu}, uzunluk={uzunluk}, genişlik={genislik}")
+    log_oturum_var(f"DOĞRULAMA - Mevcut durum: barkod={barkod}, ağırlık={agirlik}, materyal türü={materyal_turu}, uzunluk={uzunluk}, genişlik={genislik}")
 
     urun = veritabani_yoneticisi.barkodu_dogrula(barkod)
     
     if not urun:
         sebep = f"Ürün veritabanında yok (Barkod: {barkod})"
         print(f"❌ [DOĞRULAMA] {sebep}")
+        log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
@@ -217,6 +233,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     print(f"📊 [DOĞRULAMA] Min Agirlik: {min_agirlik}, Max Agirlik: {max_agirlik}, Min Genişlik: {min_genislik}, Max Genişlik: {max_genislik}, Min Uzunluk: {min_uzunluk}, Max Uzunluk: {max_uzunluk}, Materyal_id: {materyal_id}")
     print(f"📊 [DOĞRULAMA] Ölçülen ağırlık: {agirlik} gr")
+    log_oturum_var(f"DOĞRULAMA - Min Agirlik: {min_agirlik}, Max Agirlik: {max_agirlik}, Min Genişlik: {min_genislik}, Max Genişlik: {max_genislik}, Min Uzunluk: {min_uzunluk}, Max Uzunluk: {max_uzunluk}, Materyal_id: {materyal_id}")
+    log_oturum_var(f"DOĞRULAMA - Ölçülen ağırlık: {agirlik} gr")
     
     agirlik_kabul = False
     if min_agirlik is None and max_agirlik is None:
@@ -229,10 +247,12 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         agirlik_kabul = (agirlik <= max_agirlik+20)
 
     print(f"📊 [DOĞRULAMA] Ağırlık kontrol sonucu: {agirlik_kabul}")
+    log_oturum_var(f"DOĞRULAMA - Ağırlık kontrol sonucu: {agirlik_kabul}")
 
     if not agirlik_kabul:
         sebep = f"Ağırlık sınırları dışında ({agirlik}g)"
         print(f"❌ [DOĞRULAMA] {sebep}")
+        log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
@@ -240,9 +260,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     if min_genislik-10 <= genislik <= max_genislik+10:
         print(f"✅ [DOĞRULAMA] Genişlik kontrolü geçti: {genislik} mm")
+        log_success(f"DOĞRULAMA - Genişlik kontrolü geçti: {genislik} mm")
     else:
         sebep = f"Genişlik sınırları dışında ({genislik}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
+        log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
@@ -250,9 +272,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     if min_uzunluk-10 <= uzunluk <= max_uzunluk+10 :
         print(f"✅ [DOĞRULAMA] Uzunluk kontrolü geçti: {uzunluk} mm")
+        log_success(f"DOĞRULAMA - Uzunluk kontrolü geçti: {uzunluk} mm")
     else:
         sebep = f"Uzunluk sınırları dışında ({uzunluk}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
+        log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
@@ -261,12 +285,14 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     if materyal_id != materyal_turu:
         sebep = f"Materyal türü uyuşmuyor (Beklenen: {materyal_id}, Gelen: {materyal_turu})"
         print(f"❌ [DOĞRULAMA] {sebep}")
+        log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
         return
     
     print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
+    log_success(f"DOĞRULAMA - Materyal türü kontrolü geçti: {materyal_turu}")
 
     kabul_edilen_urun = {
         'barkod': barkod, 'agirlik': agirlik, 'materyal_turu': materyal_turu,
@@ -277,6 +303,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     print(f"📦 [KUYRUK] Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
+    log_success(f"DOĞRULAMA - Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
+    log_oturum_var(f"KUYRUK - Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
     
 def manuel_ezici_kontrol(komut):
     """
@@ -390,10 +418,12 @@ def lojik_yoneticisi():
             
             if sistem.iade_lojik:
                 print("🚫 [İADE AKTIF] Şişeyi Alınız.")
+                log_oturum_var("İADE AKTIF - Şişeyi Alınız.")
                 time.sleep(0.25)
                 sistem.motor_ref.konveyor_dur()
             else:
                 print("🔄 [LOJİK] GSI lojik işlemleri başlatıldı")
+                log_oturum_var("LOJİK - GSI lojik işlemleri başlatıldı")
                 sistem.motor_ref.konveyor_ileri()
         
         if sistem.gso_lojik:
@@ -404,6 +434,7 @@ def lojik_yoneticisi():
                 goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
                 if goruntu.mesaj=="nesne_yok":
                     print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
+                    log_oturum_var("İADE AKTIF - Şişe alındı, nesne yok.")
                     sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
                     sistem.iade_lojik = False
                     sistem.barkod_lojik = False
@@ -413,13 +444,16 @@ def lojik_yoneticisi():
                     sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul
                     uyari.uyari_kapat()
                     print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
+                    log_oturum_var("UYARI - Uyarı ekranı kapatıldı - şişe geri alındı")
                 else:
                     print("🚫 [İADE AKTIF] Görüntü işleme kabul etmedi iade devam.")
+                    log_oturum_var("İADE AKTIF - Görüntü işleme kabul etmedi iade devam.")
                     sistem.motor_ref.konveyor_geri()
             else:
                 if sistem.barkod_lojik:
                     if sistem.iade_lojik==False:
                         print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
+                        log_oturum_var("GSO - Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
                         
                         sistem.sensor_ref.loadcell_olc()
                         goruntu_isleme_tetikle()
@@ -427,15 +461,18 @@ def lojik_yoneticisi():
                         sistem.gsi_gecis_lojik = False
                     else:
                         print("🚫 [İADE AKTIF] Görüntü İşleme Başlatılamıyor.")
+                        log_oturum_var("İADE AKTIF - Görüntü İşleme Başlatılamıyor.")
                 else:
                     sebep = "Barkod okunmadı"
                     print(f"🚫 [GSO] {sebep}, ürünü iade et.")
+                    log_oturum_var(f"GSO - {sebep}, ürünü iade et.")
                     sistem.iade_lojik = True
                     sistem.iade_sebep = sebep
 
         if sistem.yso_lojik:
             sistem.yso_lojik = False
             print("🔄 [LOJİK] YSO lojik işlemleri başlatıldı")
+            log_oturum_var("LOJİK - YSO lojik işlemleri başlatıldı")
             yonlendirici_hareket()
 
         if sistem.yonlendirici_konumda:
@@ -544,11 +581,13 @@ def mesaj_isle(mesaj):
     if mesaj == "oturum_var":
         if not sistem.lojik_thread_basladi:
             print("🟢 [OTURUM] Aktif oturum başlatıldı")
+            log_oturum_var("OTURUM - Aktif oturum başlatıldı")
             t1 = threading.Thread(target=lojik_yoneticisi, daemon=True)
             t1.start()
             sistem.lojik_thread_basladi = True
         else:
             print("⚠️ [OTURUM] Lojik yöneticisi zaten çalışıyor, yeni thread başlatılmadı.")
+            log_warning("OTURUM - Lojik yöneticisi zaten çalışıyor, yeni thread başlatılmadı.")
 
         sistem.iade_lojik = False
         sistem.iade_lojik_onceki_durum = False
