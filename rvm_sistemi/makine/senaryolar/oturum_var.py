@@ -412,8 +412,8 @@ def lojik_yoneticisi():
     while True:
         time.sleep(0.005) # CPU kullanımını azaltmak için kısa bir uyku
 
-        if not sistem.giris_sensor_durum and (sistem.ysi_lojik or sistem.yso_lojik) and not sistem.kabul_yonu:
-            print("⚠️ [UYARI] Giriş sensörü kapalı iken YSI veya YSO lojik aktif ve kabul yönü yanlış. Sistemi durdur.")
+        #if not sistem.giris_sensor_durum and (sistem.ysi_lojik or sistem.yso_lojik) and not sistem.kabul_yonu:
+           # print("⚠️ [UYARI] Giriş sensörü kapalı iken YSI veya YSO lojik aktif ve kabul yönü yanlış. Sistemi durdur.")
             #sistem.yonlendirici_iade = True
             #sistem.iade_lojik = True
             #sistem.iade_sebep = "Yönlendirici ŞUTTTT"
@@ -549,8 +549,8 @@ def lojik_yoneticisi():
                     sistem.iade_sebep = None
                     sistem.iade_etildi = True
         
-            else:
-                print("⚠️ [İADE] İade lojik aktif ama sistemde bekleyen ürün var, iade işlemi bekliyor...")
+            #else:
+                #print("⚠️ [İADE] İade lojik aktif ama sistemde bekleyen ürün var, iade işlemi bekliyor...")
         else:
             # iade_lojik kapandığında tekrar aktifleşmeye izin ver
             sistem.iade_etildi = False
