@@ -136,7 +136,6 @@ def oturum_sonlandir():
     from ..makine.uyari_yoneticisi import uyari_yoneticisi
     
     uyari_yoneticisi.uyari_kapat()
-    oturum_var.sistem.sensor_ref.tare()
     
     if not oturum_var.sistem.aktif_oturum["aktif"]:
         print("⚠️ [OTURUM] Aktif oturum yok, sonlandırma yapılmadı")

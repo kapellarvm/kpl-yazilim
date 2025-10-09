@@ -45,9 +45,9 @@ async def hazne_doluluk():
         return {
             "status": "success",
             "data": {
-                "plastik": 65,  # Gerçek değer sensor kartından alınacak
-                "metal": 80,
-                "cam": 45
+                "plastik": 11,  # Gerçek değer sensor kartından alınacak
+                "metal": 4,
+                "cam": 16
             }
         }
     except Exception as e:

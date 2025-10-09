@@ -14,9 +14,8 @@ def sensor_referansini_ayarla(sensor):
     
     
 def olayi_isle(olay):
-    print(f"[Oturum Yok] Gelen olay: {olay}")
+    #print(f"[Oturum Yok] Gelen olay: {olay}")
     if olay.strip().lower() == "oturum_yok":
-        sensor_ref.tare()
         sensor_ref.led_kapat()
 
     elif olay.strip().lower() == "gsi":

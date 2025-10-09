@@ -28,8 +28,6 @@ class ConnectionManager:
         else:
             self.active_connections.append(websocket)
             print(f"[WebSocket] Genel bağlantı eklendi. Toplam: {len(self.active_connections)}")
-        
-        print(f"[WebSocket] Bağlantı kabul edildi. Tip: {connection_type}")
     
     def disconnect(self, websocket: WebSocket, connection_type: str = "general"):
         """WebSocket bağlantısını kapat"""
@@ -51,26 +49,20 @@ class ConnectionManager:
     
     async def broadcast_to_bakim(self, message: str):
         """Tüm bakım ekranı bağlantılarına mesaj gönder"""
-        print(f"[WebSocket] Bakım bağlantı sayısı: {len(self.bakim_connections)}")
-        
         if not self.bakim_connections:
-            print("[WebSocket] Hiç bakım bağlantısı yok!")
             return
         
         disconnected = []
-        for i, connection in enumerate(self.bakim_connections):
+        for connection in self.bakim_connections:
             try:
-                print(f"[WebSocket] Mesaj gönderiliyor bağlantı {i+1}: {message[:100]}...")
                 await connection.send_text(message)
-                print(f"[WebSocket] Mesaj başarıyla gönderildi bağlantı {i+1}")
             except Exception as e:
-                print(f"[WebSocket] Bakım broadcast hatası bağlantı {i+1}: {e}")
+                print(f"[WebSocket] Bakım broadcast hatası: {e}")
                 disconnected.append(connection)
         
         # Bağlantısı kopanları temizle
         for connection in disconnected:
             self.bakim_connections.remove(connection)
-            print(f"[WebSocket] Bağlantı temizlendi, kalan: {len(self.bakim_connections)}")
     
     async def broadcast(self, message: str):
         """Tüm aktif bağlantılara mesaj gönder"""
@@ -93,7 +85,6 @@ manager = ConnectionManager()
 @router.websocket("/bakim")
 async def websocket_bakim(websocket: WebSocket):
     """Bakım ekranı için WebSocket bağlantısı"""
-    print("[WebSocket] Bakım WebSocket endpoint'i çağrıldı")
     await manager.connect(websocket, "bakim")
     
     try:
@@ -103,8 +94,6 @@ async def websocket_bakim(websocket: WebSocket):
         while True:
             # Client'tan gelen mesajları dinle
             data = await websocket.receive_text()
-            print(f"[WebSocket] Client mesajı alındı: {data}")
-            
             # Echo mesajı gönder
             await manager.send_personal_message(f"Echo: {data}", websocket)
             
@@ -178,6 +167,20 @@ async def send_sensor_data_to_bakim(sensor_data: Dict[str, Any]):
     except Exception as e:
         print(f"Sensör veri gönderme hatası: {e}")
 
+async def send_alarm_data_to_bakim(alarm_data: Dict[str, Any]):
+    """Alarm verisini bakım ekranına gönder"""
+    try:
+        message = {
+            "type": "alarm_update",
+            "data": alarm_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        await manager.broadcast_to_bakim(json.dumps(message))
+        
+    except Exception as e:
+        print(f"Alarm veri gönderme hatası: {e}")
+
 @router.get("/status")
 async def websocket_status():
     """WebSocket bağlantı durumunu döndürür"""
@@ -187,3 +190,37 @@ async def websocket_status():
         "general_connections": len(manager.active_connections),
         "total_connections": len(manager.bakim_connections) + len(manager.active_connections)
     }
+
+@router.post("/test-alarm")
+async def test_alarm(alarm_type: str = "kma"):
+    """Test için alarm mesajı gönder"""
+    try:
+        # Alarm verisini hazırla
+        alarm_data = {}
+        
+        if alarm_type == "kma":
+            alarm_data['konveyor_alarm'] = True
+        elif alarm_type == "yma":
+            alarm_data['yonlendirici_alarm'] = True
+        elif alarm_type == "sma":
+            alarm_data['seperator_alarm'] = True
+        elif alarm_type == "kmk":
+            alarm_data['konveyor_alarm'] = False
+        elif alarm_type == "ymk":
+            alarm_data['yonlendirici_alarm'] = False
+        elif alarm_type == "smk":
+            alarm_data['seperator_alarm'] = False
+        else:
+            return {"status": "error", "message": "Geçersiz alarm tipi"}
+        
+        # WebSocket'e gönder
+        await send_alarm_data_to_bakim(alarm_data)
+        
+        return {
+            "status": "success",
+            "message": f"Test alarm gönderildi: {alarm_type}",
+            "alarm_data": alarm_data
+        }
+        
+    except Exception as e:
+        return {"status": "error", "message": f"Test alarm hatası: {str(e)}"}

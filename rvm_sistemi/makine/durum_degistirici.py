@@ -40,6 +40,7 @@ class DurumMakinesi:
             oturum_var.mesaj_isle(olay)
         elif self.durum == "bakim":
             bakim.olayi_isle(olay)
+    
 
     def modbus_mesaj(self, modbus_veri):
         # Modbus verisini parse et
@@ -69,9 +70,9 @@ class DurumMakinesi:
             formatted_data = modbus_parser.format_for_display(motor_data)
             
             # Konsola yazdır
-            print(f"[BAKIM] {motor_type.upper()} Motor Verisi:")
-            for key, value in formatted_data.items():
-                print(f"  {key}: {value}")
+            #print(f"[BAKIM] {motor_type.upper()} Motor Verisi:")
+            #for key, value in formatted_data.items():
+             #   print(f"  {key}: {value}")
             
             # WebSocket ile gerçek zamanlı güncelleme
             self._send_websocket_update(motor_type, formatted_data)

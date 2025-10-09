@@ -112,7 +112,7 @@ class SensorKart:
                 komutlar = {
                     "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n", "ezici_ileri": b"ei\n",
                     "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
-                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"tare\n", "ledfull_ac": b"la\n",
+                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"lt\n", "ledfull_ac": b"la\n",
                     "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
                 }
                 if command in komutlar:
@@ -185,26 +185,26 @@ class SensorKart:
             time.sleep(5)
 
     def agirlik_olc(self):
-        """Loadcell'den ağırlık ölçümü yapar"""
+        """Loadcell'den ağırlık ölçümü yapar - Yeni sistem: 'lo' komutu gönderir"""
         try:
-            if not self.seri_port or not self.seri_port.is_open:
-                return 0.0
+            if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
+                print("[SENSOR] Seri port açık değil")
+                return False
             
-            # Ağırlık ölçüm komutu gönder
-            self.seri_port.write(b"agirlik_olc\n")
-            time.sleep(0.1)  # Kısa bekleme
+            # Yeni sistem: 'lo' komutunu queue'ya ekle
+            self.write_queue.put(("loadcell_olc", None))
+            print("[SENSOR] Ağırlık ölçüm komutu queue'ya eklendi: lo")
+            return True
             
-            # Cevap bekle (basit implementasyon)
-            return round(random.uniform(0, 50), 1)  # Şimdilik rastgele değer
         except Exception as e:
             print(f"[SENSOR] Ağırlık ölçüm hatası: {e}")
-            return 0.0
+            return False
 
     def reset(self):
         """Sensör kartını resetler"""
         try:
-            if self.seri_port and self.seri_port.is_open:
-                self.seri_port.write(b"reset\n")
+            if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                self.seri_nesnesi.write(b"reset\n")
                 time.sleep(0.1)
         except Exception as e:
             print(f"[SENSOR] Reset hatası: {e}")

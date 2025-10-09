@@ -42,19 +42,21 @@ async def sensor_teach():
 
 @router.post("/agirlik-olc")
 async def agirlik_olc():
-    """Ağırlık ölçümü yapar"""
+    """Ağırlık ölçümü yapar - Yeni sistem: 'lo' komutu gönderir"""
     try:
         sensor = get_sensor_kart()
         if not sensor:
             raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
         
-        # Ağırlık ölçümü yap
-        mesajlar = sensor.agirlik_olc()
-        return {
-            "status": "success",
-            "mesajlar": mesajlar,
-            "message": "Ağırlık ölçümü tamamlandı"
-        }
+        # Yeni sistem: 'lo' komutu gönder, ağırlık callback ile gelecek
+        result = sensor.agirlik_olc()
+        if result:
+            return {
+                "status": "success",
+                "message": "Ağırlık ölçüm komutu gönderildi, sonuç callback ile gelecek"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Ağırlık ölçüm komutu gönderilemedi")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ağırlık ölçüm hatası: {str(e)}")
 
@@ -67,7 +69,7 @@ async def sensor_tare():
             raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
         
         # Tare işlemi
-        sensor.tare()
+        #sensor.tare()
         return SuccessResponse(message="Loadcell tare tamamlandı")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Tare hatası: {str(e)}")

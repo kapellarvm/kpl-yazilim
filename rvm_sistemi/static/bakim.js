@@ -399,54 +399,44 @@ function setupSensorControls() {
     const loadcellOutput = document.getElementById('loadcell-output');
     const loadcellMessage = document.getElementById('loadcell-message');
     
+    // Ağırlık ölçüm timer'ı
+    let agirlikOlcTimer = null;
+    let agirlikOlcAktif = false;
+
     if (measureBtn) {
         measureBtn.addEventListener('click', async () => {
             if (measureBtn.disabled) return;
+            
+            if (agirlikOlcAktif) {
+                // Eğer zaten çalışıyorsa durdur
+                agirlikOlcDurdur();
+                measureBtn.textContent = 'Ağırlık Ölç';
+                measureBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                measureBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                return;
+            }
+            
             if (tareBtn) tareBtn.disabled = true;
             measureBtn.disabled = true;
-            if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm yapılıyor...';
+            if (loadcellMessage) loadcellMessage.innerText = 'Ağırlık ölçümü başlatılıyor...';
             if (loadcellVisual) loadcellVisual.classList.add('measuring');
             
             try {
+                // İlk komutu gönder
                 const response = await fetch(`${API_BASE}/sensor/agirlik-olc`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await response.json();
                 
-                if (data.status === 'success' && data.mesajlar) {
-                    // Gelen mesajları parse et - "a:123.32" formatını ara
-                    let agirlik = 0.0;
-                    let bulundu = false;
-                    
-                    for (let mesaj of data.mesajlar) {
-                        console.log('Ağırlık mesajı:', mesaj);
-                        // "a:123.32" formatını kontrol et
-                        if (mesaj.startsWith('a:')) {
-                            try {
-                                const agirlikStr = mesaj.substring(2); // "a:" kısmını atla
-                                agirlik = parseFloat(agirlikStr);
-                                if (!isNaN(agirlik)) {
-                                    bulundu = true;
-                                    break;
-                                }
-                            } catch (e) {
-                                console.error('Ağırlık parse hatası:', e);
-                            }
-                        }
-                    }
-                    
-                    if (bulundu) {
-                        if (loadcellOutput) {
-                            loadcellOutput.innerHTML = `${agirlik.toFixed(2)} <span class="text-2xl">gr</span>`;
-                        }
-                        if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm tamamlandı';
-                        showMessage(`✓ Ağırlık: ${agirlik.toFixed(2)} gr`, true);
-                    } else {
-                        if (loadcellMessage) loadcellMessage.innerText = 'Ağırlık verisi bulunamadı';
-                        showMessage('✗ Ağırlık verisi bulunamadı (a: formatı bekleniyor)', false);
-                        console.log('Gelen mesajlar:', data.mesajlar);
-                    }
+                if (data.status === 'success') {
+                    // Sürekli ölçümü başlat
+                    agirlikOlcBaslat();
+                    measureBtn.textContent = 'Durdur';
+                    measureBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    measureBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                    if (loadcellMessage) loadcellMessage.innerText = 'Sürekli ölçüm aktif (500ms)';
+                    showMessage('✓ Sürekli ağırlık ölçümü başlatıldı', true);
                 } else {
                     if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                     showMessage('✗ Ölçüm hatası: ' + data.message, false);
@@ -455,11 +445,39 @@ function setupSensorControls() {
                 if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                 showMessage('✗ Ölçüm hatası: ' + error.message, false);
             } finally {
-                if (loadcellVisual) loadcellVisual.classList.remove('measuring');
                 if (tareBtn) tareBtn.disabled = false;
                 measureBtn.disabled = false;
             }
         });
+    }
+
+    // Sürekli ağırlık ölçümü başlat
+    function agirlikOlcBaslat() {
+        agirlikOlcAktif = true;
+        agirlikOlcTimer = setInterval(async () => {
+            try {
+                await fetch(`${API_BASE}/sensor/agirlik-olc`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                console.log('Ağırlık ölçüm komutu gönderildi (500ms)');
+            } catch (error) {
+                console.error('Ağırlık ölçüm hatası:', error);
+            }
+        }, 500); // 500ms aralıklarla
+    }
+
+    // Sürekli ağırlık ölçümü durdur
+    function agirlikOlcDurdur() {
+        agirlikOlcAktif = false;
+        if (agirlikOlcTimer) {
+            clearInterval(agirlikOlcTimer);
+            agirlikOlcTimer = null;
+        }
+        if (loadcellVisual) loadcellVisual.classList.remove('measuring');
+        if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm durduruldu';
+        showMessage('✓ Ağırlık ölçümü durduruldu', true);
+        console.log('Ağırlık ölçümü durduruldu');
     }
     
     if (tareBtn) {
@@ -977,6 +995,11 @@ function disconnectWebSocket() {
         websocket.close();
         websocket = null;
     }
+    
+    // Ağırlık ölçüm timer'ını durdur
+    if (agirlikOlcAktif) {
+        agirlikOlcDurdur();
+    }
 }
 
 function handleWebSocketMessage(data) {
@@ -993,6 +1016,10 @@ function handleWebSocketMessage(data) {
         case 'sensor_update':
             console.log('Sensör güncelleme alındı:', data.data);
             updateSensorDataFromWebSocket(data.data);
+            break;
+        case 'alarm_update':
+            console.log('Alarm güncelleme alındı:', data.data);
+            updateAlarmDisplayFromWebSocket(data.data);
             break;
         default:
             console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
@@ -1075,6 +1102,38 @@ function updateSystemStatusFromWebSocket(data) {
 function updateSensorDataFromWebSocket(data) {
     // Sensör verisi güncellemeleri
     console.log('Sensör verisi güncellendi:', data);
+    
+    // Ağırlık verisi kontrolü
+    if (data.agirlik !== undefined) {
+        const loadcellOutput = document.getElementById('loadcell-output');
+        const loadcellMessage = document.getElementById('loadcell-message');
+        const loadcellVisual = document.getElementById('loadcell-visual');
+        
+        if (loadcellOutput) {
+            loadcellOutput.innerHTML = `${data.agirlik.toFixed(2)} <span class="text-2xl">gr</span>`;
+        }
+        if (loadcellMessage) {
+            loadcellMessage.innerText = 'Ölçüm başlatıldı';
+        }
+        if (loadcellVisual) {
+            loadcellVisual.classList.remove('measuring');
+            loadcellVisual.classList.add('success');
+            
+            // 2 saniye sonra success class'ını kaldır
+            setTimeout(() => {
+                loadcellVisual.classList.remove('success');
+            }, 2000);
+        }
+        
+        showMessage(`✓ Ağırlık: ${data.agirlik.toFixed(2)} gr`, true);
+        console.log('Ağırlık verisi güncellendi:', data.agirlik);
+    }
+    
+    // Motor verisi kontrolü
+    if (data.uzunluk_motor_verisi !== undefined) {
+        console.log('Motor verisi güncellendi:', data.uzunluk_motor_verisi);
+        // Motor verisi işleme kodu buraya eklenebilir
+    }
 }
 
 // Periyodik güncellemeleri başlat
@@ -1715,3 +1774,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Alarm durumlarını güncelleyen fonksiyon
+function updateAlarmDisplayFromWebSocket(data) {
+    console.log('Alarm display güncelleniyor:', data);
+    
+    // Konveyor alarm
+    if (data.konveyor_alarm !== undefined) {
+        const conveyorAlarmLed = document.getElementById('conveyor-alarm-led');
+        if (conveyorAlarmLed) {
+            if (data.konveyor_alarm) {
+                conveyorAlarmLed.classList.remove('bg-green-500');
+                conveyorAlarmLed.classList.add('bg-red-500');
+                console.log('Konveyor alarm aktif - LED kırmızı');
+            } else {
+                conveyorAlarmLed.classList.remove('bg-red-500');
+                conveyorAlarmLed.classList.add('bg-green-500');
+                console.log('Konveyor alarm pasif - LED yeşil');
+            }
+        }
+    }
+    
+    // Yönlendirici alarm
+    if (data.yonlendirici_alarm !== undefined) {
+        const diverterAlarmLed = document.getElementById('diverter-alarm-led');
+        if (diverterAlarmLed) {
+            if (data.yonlendirici_alarm) {
+                diverterAlarmLed.classList.remove('bg-green-500');
+                diverterAlarmLed.classList.add('bg-red-500');
+                console.log('Yönlendirici alarm aktif - LED kırmızı');
+            } else {
+                diverterAlarmLed.classList.remove('bg-red-500');
+                diverterAlarmLed.classList.add('bg-green-500');
+                console.log('Yönlendirici alarm pasif - LED yeşil');
+            }
+        }
+    }
+    
+    // Klape alarm
+    if (data.seperator_alarm !== undefined) {
+        const flapAlarmLed = document.getElementById('flap-alarm-led');
+        if (flapAlarmLed) {
+            if (data.seperator_alarm) {
+                flapAlarmLed.classList.remove('bg-green-500');
+                flapAlarmLed.classList.add('bg-red-500');
+                console.log('Klape alarm aktif - LED kırmızı');
+            } else {
+                flapAlarmLed.classList.remove('bg-red-500');
+                flapAlarmLed.classList.add('bg-green-500');
+                console.log('Klape alarm pasif - LED yeşil');
+            }
+        }
+    }
+}
