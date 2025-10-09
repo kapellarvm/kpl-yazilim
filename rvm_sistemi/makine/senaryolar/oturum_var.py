@@ -373,9 +373,15 @@ def yonlendirici_hareket():
         sistem.iade_sebep = "Yönlendirme için ürün yok."
         sistem.veri_senkronizasyon_listesi.clear()  # Tüm bekleyen verileri temizle
         sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
+        sistem.agirlik_kuyruk.clear()  # Tüm bekleyen ağırlıkları temizle
         return
-    
+    sistem.motor_ref.atik_uzunluk()
+    print("Atık uzunluğu ölçülüyor...")
+    time.sleep(0.05)  # Ölçüm için bekleme süresi
+    print(sistem.uzunluk_motor_verisi)
+
     urun = sistem.kabul_edilen_urunler[0]
+    print(f"📦 [YÖNLENDİRME] İşlenecek ürün: {urun}")
     sistem.son_islenen_urun = urun.copy()
     materyal_id = urun.get('materyal_turu')
     
@@ -444,16 +450,16 @@ def lojik_yoneticisi():
             if sistem.iade_lojik:
                 
                 goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
-                if goruntu.mesaj=="nesne_yok" and sistem.yonlendirici_iade:
+                if goruntu.mesaj=="nesne_yok":
                     print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
                     log_oturum_var("İADE AKTIF - Şişe alındı, nesne yok.")
-                    sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
                     sistem.iade_lojik = False
                     sistem.barkod_lojik = False
                     
                     # Uyarı ekranını kapat - şişe geri alındı
                     sistem.veri_senkronizasyon_listesi.clear()  # iade sırasında bekleyen verileri temizle
                     sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul
+                    sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
                     uyari.uyari_kapat()
                     print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
                     log_oturum_var("UYARI - Uyarı ekranı kapatıldı - şişe geri alındı")
@@ -542,6 +548,9 @@ def lojik_yoneticisi():
                     giris_iade_et(sistem.iade_sebep)  # her iade durumunda çağrılıyor
                     sistem.iade_sebep = None
                     sistem.iade_etildi = True
+        
+            else:
+                print("⚠️ [İADE] İade lojik aktif ama sistemde bekleyen ürün var, iade işlemi bekliyor...")
         else:
             # iade_lojik kapandığında tekrar aktifleşmeye izin ver
             sistem.iade_etildi = False
@@ -615,7 +624,6 @@ def mesaj_isle(mesaj):
         sistem.sensor_ref.tare()
         sistem.motor_ref.konveyor_dur()
         sistem.sensor_ref.led_ac()
-        sistem.sensor_ref.doluluk_oranı()
         sistem.kabul_yonu = True
         sistem.ezici_durum = False
         sistem.kirici_durum = False

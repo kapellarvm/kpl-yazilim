@@ -103,16 +103,22 @@ class MotorKart:
         self.write_queue.put(("klape_metal", None))
         self.klape_flag = True
 
-    def yonlendirici_sensor_teach(self):
-        self.write_queue.put(("yonlendirici_sensor_teach", None))
-        self.klape_flag = True
-
-    
-
     def klape_plastik(self):
         if self.klape_flag:
             self.write_queue.put(("klape_plastik", None))
             self.klape_flag = False
+
+    def yonlendirici_sensor_teach(self):
+        self.write_queue.put(("yonlendirici_sensor_teach", None))
+
+    def bme_sensor_veri(self):
+        self.write_queue.put(("bme_sensor_veri", None))
+    
+    def sensor_saglik_durumu(self):
+        self.write_queue.put(("sensor_saglik_durumu", None))
+    
+    def atik_uzunluk(self):
+        self.write_queue.put(("atik_uzunluk", None))
 
     def dinlemeyi_baslat(self):
         if not self.running:
@@ -198,6 +204,12 @@ class MotorKart:
                         self.seri_port.write(b"yst\n")
                     elif command == "ping":
                         self.seri_port.write(b"ping\n")
+                    elif command == "bme_sensor_veri":
+                        self.seri_port.write(b"bme\n")
+                    elif command == "sensor_saglik_durumu":
+                        self.seri_port.write(b"msd\n")
+                    elif command == "atik_uzunluk":
+                        self.seri_port.write(b"au\n")
 
                     print(f"[{self.cihaz_adi}] Komut gönderildi: {command}")
                     

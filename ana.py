@@ -137,7 +137,7 @@ async def main():
         "rvm_sistemi.api.main:app",
         host="0.0.0.0",
         port=4321,
-        log_level="info"
+        log_level="warning"
     )
     server = uvicorn.Server(config)
 

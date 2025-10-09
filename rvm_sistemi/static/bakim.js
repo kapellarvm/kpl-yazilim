@@ -414,39 +414,11 @@ function setupSensorControls() {
                 });
                 const data = await response.json();
                 
-                if (data.status === 'success' && data.mesajlar) {
-                    // Gelen mesajları parse et - "a:123.32" formatını ara
-                    let agirlik = 0.0;
-                    let bulundu = false;
-                    
-                    for (let mesaj of data.mesajlar) {
-                        console.log('Ağırlık mesajı:', mesaj);
-                        // "a:123.32" formatını kontrol et
-                        if (mesaj.startsWith('a:')) {
-                            try {
-                                const agirlikStr = mesaj.substring(2); // "a:" kısmını atla
-                                agirlik = parseFloat(agirlikStr);
-                                if (!isNaN(agirlik)) {
-                                    bulundu = true;
-                                    break;
-                                }
-                            } catch (e) {
-                                console.error('Ağırlık parse hatası:', e);
-                            }
-                        }
-                    }
-                    
-                    if (bulundu) {
-                        if (loadcellOutput) {
-                            loadcellOutput.innerHTML = `${agirlik.toFixed(2)} <span class="text-2xl">gr</span>`;
-                        }
-                        if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm tamamlandı';
-                        showMessage(`✓ Ağırlık: ${agirlik.toFixed(2)} gr`, true);
-                    } else {
-                        if (loadcellMessage) loadcellMessage.innerText = 'Ağırlık verisi bulunamadı';
-                        showMessage('✗ Ağırlık verisi bulunamadı (a: formatı bekleniyor)', false);
-                        console.log('Gelen mesajlar:', data.mesajlar);
-                    }
+                if (data.status === 'success') {
+                    // Yeni sistem: Komut gönderildi, ağırlık WebSocket ile gelecek
+                    if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm komutu gönderildi, bekleniyor...';
+                    showMessage('✓ Ağırlık ölçüm komutu gönderildi, sonuç bekleniyor...', true);
+                    console.log('Ağırlık ölçüm komutu gönderildi, WebSocket ile sonuç bekleniyor');
                 } else {
                     if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                     showMessage('✗ Ölçüm hatası: ' + data.message, false);
@@ -994,6 +966,10 @@ function handleWebSocketMessage(data) {
             console.log('Sensör güncelleme alındı:', data.data);
             updateSensorDataFromWebSocket(data.data);
             break;
+        case 'alarm_update':
+            console.log('Alarm güncelleme alındı:', data.data);
+            updateAlarmDisplayFromWebSocket(data.data);
+            break;
         default:
             console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
     }
@@ -1075,6 +1051,38 @@ function updateSystemStatusFromWebSocket(data) {
 function updateSensorDataFromWebSocket(data) {
     // Sensör verisi güncellemeleri
     console.log('Sensör verisi güncellendi:', data);
+    
+    // Ağırlık verisi kontrolü
+    if (data.agirlik !== undefined) {
+        const loadcellOutput = document.getElementById('loadcell-output');
+        const loadcellMessage = document.getElementById('loadcell-message');
+        const loadcellVisual = document.getElementById('loadcell-visual');
+        
+        if (loadcellOutput) {
+            loadcellOutput.innerHTML = `${data.agirlik.toFixed(2)} <span class="text-2xl">gr</span>`;
+        }
+        if (loadcellMessage) {
+            loadcellMessage.innerText = 'Ölçüm tamamlandı';
+        }
+        if (loadcellVisual) {
+            loadcellVisual.classList.remove('measuring');
+            loadcellVisual.classList.add('success');
+            
+            // 2 saniye sonra success class'ını kaldır
+            setTimeout(() => {
+                loadcellVisual.classList.remove('success');
+            }, 2000);
+        }
+        
+        showMessage(`✓ Ağırlık: ${data.agirlik.toFixed(2)} gr`, true);
+        console.log('Ağırlık verisi güncellendi:', data.agirlik);
+    }
+    
+    // Motor verisi kontrolü
+    if (data.uzunluk_motor_verisi !== undefined) {
+        console.log('Motor verisi güncellendi:', data.uzunluk_motor_verisi);
+        // Motor verisi işleme kodu buraya eklenebilir
+    }
 }
 
 // Periyodik güncellemeleri başlat
@@ -1715,3 +1723,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Alarm durumlarını güncelleyen fonksiyon
+function updateAlarmDisplayFromWebSocket(data) {
+    console.log('Alarm display güncelleniyor:', data);
+    
+    // Konveyor alarm
+    if (data.konveyor_alarm !== undefined) {
+        const conveyorAlarmLed = document.getElementById('conveyor-alarm-led');
+        if (conveyorAlarmLed) {
+            if (data.konveyor_alarm) {
+                conveyorAlarmLed.classList.remove('bg-green-500');
+                conveyorAlarmLed.classList.add('bg-red-500');
+                console.log('Konveyor alarm aktif - LED kırmızı');
+            } else {
+                conveyorAlarmLed.classList.remove('bg-red-500');
+                conveyorAlarmLed.classList.add('bg-green-500');
+                console.log('Konveyor alarm pasif - LED yeşil');
+            }
+        }
+    }
+    
+    // Yönlendirici alarm
+    if (data.yonlendirici_alarm !== undefined) {
+        const diverterAlarmLed = document.getElementById('diverter-alarm-led');
+        if (diverterAlarmLed) {
+            if (data.yonlendirici_alarm) {
+                diverterAlarmLed.classList.remove('bg-green-500');
+                diverterAlarmLed.classList.add('bg-red-500');
+                console.log('Yönlendirici alarm aktif - LED kırmızı');
+            } else {
+                diverterAlarmLed.classList.remove('bg-red-500');
+                diverterAlarmLed.classList.add('bg-green-500');
+                console.log('Yönlendirici alarm pasif - LED yeşil');
+            }
+        }
+    }
+    
+    // Klape alarm
+    if (data.seperator_alarm !== undefined) {
+        const flapAlarmLed = document.getElementById('flap-alarm-led');
+        if (flapAlarmLed) {
+            if (data.seperator_alarm) {
+                flapAlarmLed.classList.remove('bg-green-500');
+                flapAlarmLed.classList.add('bg-red-500');
+                console.log('Klape alarm aktif - LED kırmızı');
+            } else {
+                flapAlarmLed.classList.remove('bg-red-500');
+                flapAlarmLed.classList.add('bg-green-500');
+                console.log('Klape alarm pasif - LED yeşil');
+            }
+        }
+    }
+}
