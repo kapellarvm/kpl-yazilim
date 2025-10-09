@@ -215,13 +215,19 @@ def mesaj_isle(mesaj):
     # Hata durumları
     elif mesaj == "kmh":
         bakim_durumu.konveyor_hata = True
+        bakim_durumu.konveyor_alarm = True  # Hata durumunda alarm LED'i kırmızı olsun
         print("[Bakım Modu] Konveyor hata")
+        _send_alarm_to_websocket()
     elif mesaj == "ymh":  
         bakim_durumu.yonlendirici_hata = True
+        bakim_durumu.yonlendirici_alarm = True  # Hata durumunda alarm LED'i kırmızı olsun
         print("[Bakım Modu] Yönlendirici hata")
+        _send_alarm_to_websocket()
     elif mesaj == "smh":  
         bakim_durumu.seperator_hata = True
+        bakim_durumu.seperator_alarm = True  # Hata durumunda alarm LED'i kırmızı olsun
         print("[Bakım Modu] Klape hata")
+        _send_alarm_to_websocket()
     elif mesaj == "kmp":  
         bakim_durumu.konveyor_adim_problem = True
         print("[Bakım Modu] Konveyor adım problemi")
@@ -239,7 +245,7 @@ def _send_alarm_to_websocket():
     """Alarm durumlarını WebSocket ile bakım ekranına gönderir"""
     try:
         # WebSocket modülünü import et
-        from ..api.endpoints.websocket import send_alarm_data_to_bakim
+        from ...api.endpoints.websocket import send_alarm_data_to_bakim
         import asyncio
         
         # Alarm verisini hazırla
@@ -273,7 +279,7 @@ def _send_sensor_data_to_websocket():
     """Sensör verilerini WebSocket ile bakım ekranına gönderir"""
     try:
         # WebSocket modülünü import et
-        from ..api.endpoints.websocket import send_sensor_data_to_bakim
+        from ...api.endpoints.websocket import send_sensor_data_to_bakim
         import asyncio
         
         # Sensör verisini hazırla

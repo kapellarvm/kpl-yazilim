@@ -399,15 +399,30 @@ function setupSensorControls() {
     const loadcellOutput = document.getElementById('loadcell-output');
     const loadcellMessage = document.getElementById('loadcell-message');
     
+    // Ağırlık ölçüm timer'ı
+    let agirlikOlcTimer = null;
+    let agirlikOlcAktif = false;
+
     if (measureBtn) {
         measureBtn.addEventListener('click', async () => {
             if (measureBtn.disabled) return;
+            
+            if (agirlikOlcAktif) {
+                // Eğer zaten çalışıyorsa durdur
+                agirlikOlcDurdur();
+                measureBtn.textContent = 'Ağırlık Ölç';
+                measureBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                measureBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                return;
+            }
+            
             if (tareBtn) tareBtn.disabled = true;
             measureBtn.disabled = true;
-            if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm yapılıyor...';
+            if (loadcellMessage) loadcellMessage.innerText = 'Ağırlık ölçümü başlatılıyor...';
             if (loadcellVisual) loadcellVisual.classList.add('measuring');
             
             try {
+                // İlk komutu gönder
                 const response = await fetch(`${API_BASE}/sensor/agirlik-olc`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
@@ -415,10 +430,13 @@ function setupSensorControls() {
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    // Yeni sistem: Komut gönderildi, ağırlık WebSocket ile gelecek
-                    if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm komutu gönderildi, bekleniyor...';
-                    showMessage('✓ Ağırlık ölçüm komutu gönderildi, sonuç bekleniyor...', true);
-                    console.log('Ağırlık ölçüm komutu gönderildi, WebSocket ile sonuç bekleniyor');
+                    // Sürekli ölçümü başlat
+                    agirlikOlcBaslat();
+                    measureBtn.textContent = 'Durdur';
+                    measureBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    measureBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                    if (loadcellMessage) loadcellMessage.innerText = 'Sürekli ölçüm aktif (500ms)';
+                    showMessage('✓ Sürekli ağırlık ölçümü başlatıldı', true);
                 } else {
                     if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                     showMessage('✗ Ölçüm hatası: ' + data.message, false);
@@ -427,11 +445,39 @@ function setupSensorControls() {
                 if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                 showMessage('✗ Ölçüm hatası: ' + error.message, false);
             } finally {
-                if (loadcellVisual) loadcellVisual.classList.remove('measuring');
                 if (tareBtn) tareBtn.disabled = false;
                 measureBtn.disabled = false;
             }
         });
+    }
+
+    // Sürekli ağırlık ölçümü başlat
+    function agirlikOlcBaslat() {
+        agirlikOlcAktif = true;
+        agirlikOlcTimer = setInterval(async () => {
+            try {
+                await fetch(`${API_BASE}/sensor/agirlik-olc`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                console.log('Ağırlık ölçüm komutu gönderildi (500ms)');
+            } catch (error) {
+                console.error('Ağırlık ölçüm hatası:', error);
+            }
+        }, 500); // 500ms aralıklarla
+    }
+
+    // Sürekli ağırlık ölçümü durdur
+    function agirlikOlcDurdur() {
+        agirlikOlcAktif = false;
+        if (agirlikOlcTimer) {
+            clearInterval(agirlikOlcTimer);
+            agirlikOlcTimer = null;
+        }
+        if (loadcellVisual) loadcellVisual.classList.remove('measuring');
+        if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm durduruldu';
+        showMessage('✓ Ağırlık ölçümü durduruldu', true);
+        console.log('Ağırlık ölçümü durduruldu');
     }
     
     if (tareBtn) {
@@ -949,6 +995,11 @@ function disconnectWebSocket() {
         websocket.close();
         websocket = null;
     }
+    
+    // Ağırlık ölçüm timer'ını durdur
+    if (agirlikOlcAktif) {
+        agirlikOlcDurdur();
+    }
 }
 
 function handleWebSocketMessage(data) {
@@ -1062,7 +1113,7 @@ function updateSensorDataFromWebSocket(data) {
             loadcellOutput.innerHTML = `${data.agirlik.toFixed(2)} <span class="text-2xl">gr</span>`;
         }
         if (loadcellMessage) {
-            loadcellMessage.innerText = 'Ölçüm tamamlandı';
+            loadcellMessage.innerText = 'Ölçüm başlatıldı';
         }
         if (loadcellVisual) {
             loadcellVisual.classList.remove('measuring');
