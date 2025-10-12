@@ -29,7 +29,7 @@ sensor = None
 
 def sensor_callback(mesaj):
     global motor, sensor
-
+    print(f"🔔 [SENSOR] MESAJ: {mesaj}")
     durum_makinesi.olayi_isle(mesaj)
     
 def motor_callback(mesaj):

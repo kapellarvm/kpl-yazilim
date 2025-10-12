@@ -240,7 +240,7 @@ class KameraServisi:
         pixel_formati = kare_bilgisi.enPixelType
         genislik = kare_bilgisi.nWidth
         yukseklik = kare_bilgisi.nHeight
-        
+    
         try:
             print(f"🔍 [KAMERA] Pixel formatı: 0x{pixel_formati:x}")
             

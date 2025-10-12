@@ -17,14 +17,15 @@ def olayi_isle(olay):
     #print(f"[Oturum Yok] Gelen olay: {olay}")
     if olay.strip().lower() == "oturum_yok":
         sensor_ref.led_kapat()
-
-    elif olay.strip().lower() == "gsi":
-        if motor_ref:
+        sensor_ref.makine_oturum_yok()
+        
+    #elif olay.strip().lower() == "gsi":
+      #  if motor_ref:
             
-            motor_ref.konveyor_geri()
-            time.sleep(1)  # Motorun aktifleşmesi için kısa bir bekleme
-            motor_ref.konveyor_dur()
-            print("[Oturum Yok] Motor aktif edildi.")
-        else:
-            print("[Oturum Yok] Motor referansı bulunamadı.")
+     #       motor_ref.konveyor_geri()
+      #      time.sleep(1)  # Motorun aktifleşmesi için kısa bir bekleme
+      #      motor_ref.konveyor_dur()
+      #      print("[Oturum Yok] Motor aktif edildi.")
+      #  else:
+      #      print("[Oturum Yok] Motor referansı bulunamadı.")
     # Oturum yokken yapılacak diğer işlemler buraya eklenebilir

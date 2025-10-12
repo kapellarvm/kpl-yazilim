@@ -38,7 +38,7 @@ async def hazne_doluluk():
             }
         
         # Doluluk oranlarını al
-        sensor.doluluk_oranı()
+        #sensor.doluluk_oranı()
         
         # Şimdilik simüle edilmiş değerler döndür
         # Gerçek implementasyonda sensör kartından alınacak
@@ -70,7 +70,7 @@ async def plastik_doluluk():
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
         # Plastik hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        #sensor.doluluk_oranı()
         
         return {
             "status": "success",
@@ -88,7 +88,7 @@ async def metal_doluluk():
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
         # Metal hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        #sensor.doluluk_oranı()
         
         return {
             "status": "success",
@@ -106,7 +106,7 @@ async def cam_doluluk():
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
         # Cam hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        #sensor.doluluk_oranı()
         
         return {
             "status": "success",

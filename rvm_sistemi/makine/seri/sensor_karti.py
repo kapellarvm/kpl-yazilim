@@ -39,6 +39,9 @@ class SensorKart:
     def kirici_geri(self): self.write_queue.put(("kirici_geri", None))
     def kirici_dur(self): self.write_queue.put(("kirici_dur", None))
     def doluluk_oranı(self): self.write_queue.put(("doluluk_oranı", None))
+    def makine_oturum_var(self): self.write_queue.put(("makine_oturum_var", None))
+    def makine_oturum_yok(self): self.write_queue.put(("makine_oturum_yok", None))
+    def makine_bakim_modu(self): self.write_queue.put(("makine_bakim_modu", None))
     def ping(self):
         self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
         self.write_queue.put(("ping", None))
@@ -113,7 +116,8 @@ class SensorKart:
                     "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n", "ezici_ileri": b"ei\n",
                     "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
                     "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"lt\n", "ledfull_ac": b"la\n",
-                    "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n"
+                    "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n",
+                    "makine_oturum_var": b"mov\n", "makine_oturum_yok": b"moy\n", "makine_bakim_modu": b"mb\n" 
                 }
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])
