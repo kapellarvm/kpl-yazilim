@@ -9,6 +9,10 @@ from . import uyari
 from ...utils.logger import log_oturum_var, log_error, log_success, log_warning, log_system
 from enum import Enum, auto
 
+sistem = SistemDurumu()
+goruntu_isleme_servisi = GoruntuIslemeServisi()
+veri_lock = threading.Lock()
+
 class SistemAkisDurumu(Enum):
     BEKLEMEDE = auto()          # Sistem yeni bir ürünün yerleştirilmesini (GSI) bekliyor.
     GIRIS_ALGILANDI = auto()    # Ürün algılandı (GSI), konveyörde ilerliyor, GSO bekleniyor.
@@ -17,17 +21,6 @@ class SistemAkisDurumu(Enum):
     YONLENDIRME = auto()        # Doğrulama başarılı, ürün yönlendiriciye gidiyor.
     IADE_EDILIYOR = auto()      # Hata/Başarısız doğrulama, ürün iade ediliyor.
 
-@dataclass
-class Urun:
-    uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
-    barkod: str = None
-    agirlik: float = None
-    uzunluk: float = None
-    genislik: float = None
-    materyal_turu: int = None
-    akis_durumu: SistemAkisDurumu = SistemAkisDurumu.BEKLEMEDE
-    durum_zamani: float = field(default_factory=time.time)
-    iade_sebep: str = None
 
 @dataclass
 class SistemDurumu:
@@ -109,10 +102,7 @@ class SistemDurumu:
     # Son işlenen ürün bilgisi (ymk için)
     son_islenen_urun: dict = None
     
-# 🌍 Tekil (global) sistem nesneleri
-sistem = SistemDurumu()
-goruntu_isleme_servisi = GoruntuIslemeServisi()
-veri_lock = threading.Lock() # Eş zamanlı erişimi kontrol etmek için Kilit mekanizması
+
 
 # DİM-DB bildirim fonksiyonu - direkt import ile
 def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
