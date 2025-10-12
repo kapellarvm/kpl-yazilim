@@ -26,17 +26,45 @@ def get_sensor_kart():
         log_error(f"Sensör kartı alınamadı: {e}")
         return None
 
-@router.post("/teach")
-async def sensor_teach():
-    """Gyro sensör teach işlemini başlatır"""
+@router.get("/durum")
+async def sensor_durum():
+    """Sensör kartı durumunu kontrol eder"""
     try:
         sensor = get_sensor_kart()
         if not sensor:
-            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
+            return {
+                "status": "error",
+                "message": "Sensör kartı bağlantısı yok. Sistem çalıştırılmamış olabilir.",
+                "bagli": False
+            }
         
-        # Gyro sensör teach işlemi
-        sensor.gyro_teach()
-        return SuccessResponse(message="Gyro sensör teach tamamlandı")
+        # Sensör sağlık durumunu kontrol et
+        saglikli = sensor.getir_saglik_durumu()
+        return {
+            "status": "success",
+            "message": "Sensör kartı bağlı",
+            "bagli": True,
+            "saglikli": saglikli,
+            "port": sensor.port_adi
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Sensör durum kontrolü hatası: {str(e)}",
+            "bagli": False
+        }
+
+@router.post("/teach")
+async def sensor_teach():
+    """Giriş sensör teach işlemini başlatır"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok. Sistem çalıştırılmamış olabilir.")
+        
+        # Giriş sensör teach işlemi
+        sensor.teach()
+        return SuccessResponse(message="Giriş sensör teach tamamlandı")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Teach hatası: {str(e)}")
 
@@ -66,10 +94,10 @@ async def sensor_tare():
     try:
         sensor = get_sensor_kart()
         if not sensor:
-            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok. Sistem çalıştırılmamış olabilir.")
         
         # Tare işlemi
-        #sensor.tare()
+        sensor.tare()
         return SuccessResponse(message="Loadcell tare tamamlandı")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Tare hatası: {str(e)}")
@@ -131,6 +159,20 @@ async def sensor_son_deger():
             "message": f"Sensör değer alma hatası: {str(e)}",
             "data": None
         }
+
+@router.post("/reset")
+async def sensor_reset():
+    """Sensör kartını resetler"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok. Sistem çalıştırılmamış olabilir.")
+        
+        # Sensör kartını resetle
+        sensor.reset()
+        return SuccessResponse(message="Sensör kartı başarıyla resetlendi")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sensör reset hatası: {str(e)}")
 
 @router.get("/durum")
 async def sensor_durum():

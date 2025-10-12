@@ -1,5 +1,9 @@
 // RVM Bakım Paneli v2 - JavaScript
 
+// Translate özelliğini kapat
+document.documentElement.setAttribute('translate', 'no');
+document.documentElement.setAttribute('class', 'notranslate');
+
 // Global değişkenler
 let bakimModuAktif = false;
 let isTesting = false;
@@ -345,6 +349,26 @@ function setupSensorControls() {
         if (teachBtn) {
             teachBtn.addEventListener('click', async () => {
                 if (teachBtn.disabled) return;
+                
+                // Önce sensör durumunu kontrol et
+                try {
+                    const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                    const durumData = await durumResponse.json();
+                    
+                    if (!durumData.bagli) {
+                        showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                        return;
+                    }
+                    
+                    if (!durumData.saglikli) {
+                        showMessage('✗ Sensör kartı sağlıksız. Bağlantı kontrol ediliyor...', false);
+                        return;
+                    }
+                } catch (error) {
+                    showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                    return;
+                }
+                
                 teachBtn.disabled = true;
                 if (testBtn) testBtn.disabled = true;
                 
@@ -359,12 +383,13 @@ function setupSensorControls() {
                     const data = await response.json();
                     
                     if (data.status === 'success') {
-                        showMessage('✓ Gyro sensör teach tamamlandı', true);
+                        showMessage('✓ Giriş sensör teach tamamlandı', true);
                     } else {
                         showMessage('✗ Teach hatası: ' + data.message, false);
                     }
                 } catch (error) {
                     showMessage('✗ Teach hatası: ' + error.message, false);
+                    console.error('Teach API hatası:', error);
                 } finally {
                     if (rays) rays.classList.remove('teaching-rays');
                     teachBtn.innerText = "Teach";
@@ -407,6 +432,25 @@ function setupSensorControls() {
         measureBtn.addEventListener('click', async () => {
             if (measureBtn.disabled) return;
             
+            // Önce sensör durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+                
+                if (!durumData.saglikli) {
+                    showMessage('✗ Sensör kartı sağlıksız. Bağlantı kontrol ediliyor...', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
             if (agirlikOlcAktif) {
                 // Eğer zaten çalışıyorsa durdur
                 agirlikOlcDurdur();
@@ -444,6 +488,7 @@ function setupSensorControls() {
             } catch (error) {
                 if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
                 showMessage('✗ Ölçüm hatası: ' + error.message, false);
+                console.error('Ağırlık ölçüm API hatası:', error);
             } finally {
                 if (tareBtn) tareBtn.disabled = false;
                 measureBtn.disabled = false;
@@ -483,6 +528,26 @@ function setupSensorControls() {
     if (tareBtn) {
         tareBtn.addEventListener('click', async () => {
             if(tareBtn.disabled) return;
+            
+            // Önce sensör durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+                
+                if (!durumData.saglikli) {
+                    showMessage('✗ Sensör kartı sağlıksız. Bağlantı kontrol ediliyor...', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
             tareBtn.disabled = true;
             if (measureBtn) measureBtn.disabled = true;
             if (loadcellMessage) loadcellMessage.innerText = 'Konveyörü boşaltın...';
@@ -500,7 +565,7 @@ function setupSensorControls() {
                 });
                 const data = await response.json();
                 
-                if (data.status === 'success') {
+                if (data.message && data.message.includes('tamamlandı')) {
                     if (loadcellOutput) {
                         loadcellOutput.innerHTML = `0.0 <span class="text-2xl">gr</span>`;
                     }
@@ -508,11 +573,12 @@ function setupSensorControls() {
                     showMessage('✓ Loadcell tare tamamlandı', true);
                 } else {
                     if (loadcellMessage) loadcellMessage.innerText = 'Tare hatası';
-                    showMessage('✗ Tare hatası: ' + data.message, false);
+                    showMessage('✗ Tare hatası: ' + (data.message || 'Bilinmeyen hata'), false);
                 }
             } catch (error) {
                 if (loadcellMessage) loadcellMessage.innerText = 'Tare hatası';
                 showMessage('✗ Tare hatası: ' + error.message, false);
+                console.error('Tare API hatası:', error);
             } finally {
                 if (loadcellVisual) loadcellVisual.classList.remove('measuring');
                 if (tareBtn) tareBtn.disabled = false;
@@ -553,14 +619,52 @@ function setupSensorControls() {
     const ledOffBtn = document.getElementById('led-off-btn');
     
     if (ledOnBtn) {
-        ledOnBtn.addEventListener('click', () => {
+        ledOnBtn.addEventListener('click', async () => {
+            // Önce sensör durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+                
+                if (!durumData.saglikli) {
+                    showMessage('✗ Sensör kartı sağlıksız. Bağlantı kontrol ediliyor...', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
             updateLedState(100);
             sensorKontrol('led-ac');
         });
     }
     
     if (ledOffBtn) {
-        ledOffBtn.addEventListener('click', () => {
+        ledOffBtn.addEventListener('click', async () => {
+            // Önce sensör durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+                
+                if (!durumData.saglikli) {
+                    showMessage('✗ Sensör kartı sağlıksız. Bağlantı kontrol ediliyor...', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
             updateLedState(0);
             sensorKontrol('led-kapat');
         });
@@ -1827,3 +1931,96 @@ function updateAlarmDisplayFromWebSocket(data) {
         }
     }
 }
+
+// Reset butonları için event listener'lar
+document.addEventListener('DOMContentLoaded', function() {
+    // Sensör kartı reset butonu
+    const resetSensorBtn = document.getElementById('reset-sensor-card-btn');
+    if (resetSensorBtn) {
+        resetSensorBtn.addEventListener('click', async () => {
+            if (resetSensorBtn.disabled) return;
+            
+            // Önce sensör durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Sensör kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Sensör durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
+            resetSensorBtn.disabled = true;
+            resetSensorBtn.textContent = 'Resetting...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/sensor/reset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.message && data.message.includes('resetlendi')) {
+                    showMessage('✓ Sensör kartı başarıyla resetlendi', true);
+                } else {
+                    showMessage('✗ Sensör reset hatası: ' + (data.message || 'Bilinmeyen hata'), false);
+                }
+            } catch (error) {
+                showMessage('✗ Sensör reset hatası: ' + error.message, false);
+                console.error('Sensör reset API hatası:', error);
+            } finally {
+                resetSensorBtn.disabled = false;
+                resetSensorBtn.textContent = 'Kartı Resetle';
+            }
+        });
+    }
+    
+    // Motor kartı reset butonu
+    const resetMotorBtn = document.getElementById('reset-motor-card-btn');
+    if (resetMotorBtn) {
+        resetMotorBtn.addEventListener('click', async () => {
+            if (resetMotorBtn.disabled) return;
+            
+            // Önce motor durumunu kontrol et
+            try {
+                const durumResponse = await fetch(`${API_BASE}/motor/durum`);
+                const durumData = await durumResponse.json();
+                
+                if (!durumData.bagli) {
+                    showMessage('✗ Motor kartı bağlı değil. Sistem çalıştırılmamış olabilir.', false);
+                    return;
+                }
+            } catch (error) {
+                showMessage('✗ Motor durum kontrolü başarısız: ' + error.message, false);
+                return;
+            }
+            
+            resetMotorBtn.disabled = true;
+            resetMotorBtn.textContent = 'Resetting...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/motor/reset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.message && data.message.includes('resetlendi')) {
+                    showMessage('✓ Motor kartı başarıyla resetlendi', true);
+                } else {
+                    showMessage('✗ Motor reset hatası: ' + (data.message || 'Bilinmeyen hata'), false);
+                }
+            } catch (error) {
+                showMessage('✗ Motor reset hatası: ' + error.message, false);
+                console.error('Motor reset API hatası:', error);
+            } finally {
+                resetMotorBtn.disabled = false;
+                resetMotorBtn.textContent = 'Kartı Resetle';
+            }
+        });
+    }
+});

@@ -14,12 +14,12 @@ goruntu_isleme_servisi = GoruntuIslemeServisi()
 veri_lock = threading.Lock()
 
 class SistemAkisDurumu(Enum):
-    BEKLEMEDE = auto()          # Sistem yeni bir ürünün yerleştirilmesini (GSI) bekliyor.
-    GIRIS_ALGILANDI = auto()    # Ürün algılandı (GSI), konveyörde ilerliyor, GSO bekleniyor.
-    DOGRULAMA_BASLADI = auto()  # GSO ve barkod OK. Asenkron veri toplama işlemlerini TETİKLE.
-    VERI_BEKLENIYOR = auto()    # Ağırlık ve görüntü verilerinin gelmesini BEKLE.
-    YONLENDIRME = auto()        # Doğrulama başarılı, ürün yönlendiriciye gidiyor.
-    IADE_EDILIYOR = auto()      # Hata/Başarısız doğrulama, ürün iade ediliyor.
+    BEKLEMEDE = auto()
+    GIRIS_ALGILANDI = auto()
+    DOGRULAMA_BASLADI = auto()
+    VERI_BEKLENIYOR = auto()
+    YONLENDIRME = auto()
+    IADE_EDILIYOR = auto()
 
 
 @dataclass
@@ -46,32 +46,20 @@ class SistemDurumu:
     uzunluk_goruntu_isleme: float = None
 
     # Listeler
-    veri_senkronizasyon_listesi: list = field(default_factory=list)
     kabul_edilen_urunler: deque = field(default_factory=deque)
-    onaylanan_urunler: list = field(default_factory=list)
-    agirlik_kuyruk: deque = field(default_factory=deque)  # Ağırlık kuyruğu
     
     # İade Sebep String
     iade_sebep: str = None
 
     # Lojikler
-    iade_etildi: bool = False
     lojik_thread_basladi: bool = False
-    konveyor_durum_kontrol: bool = False
-    yonlendirici_iade: bool = False
-    yonlendirici_calisiyor: bool = False
-    iade_lojik: bool = False
-    kabul_yonu: bool = True
-    iade_lojik_onceki_durum: bool = False
-    barkod_lojik: bool = False
     gsi_lojik: bool = False
-    gsi_gecis_lojik: bool = False
-    giris_sensor_durum: bool = False
     gso_lojik: bool = False
     ysi_lojik: bool = False
     yso_lojik: bool = False
     ezici_durum : bool = False
     kirici_durum : bool = False
+    
     # Alarmlar
     konveyor_alarm: bool = False
     yonlendirici_alarm: bool = False
@@ -91,17 +79,6 @@ class SistemDurumu:
     # Kalibrasyonlar
     yonlendirici_kalibrasyon: bool = False
     seperator_kalibrasyon: bool = False
-
-    aktif_oturum: dict = field(default_factory=lambda: {
-        "aktif": False,
-        "sessionId": None,
-        "userId": None,
-        "paket_uuid_map": {}
-    })
-    
-    # Son işlenen ürün bilgisi (ymk için)
-    son_islenen_urun: dict = None
-    
 
 
 # DİM-DB bildirim fonksiyonu - direkt import ile
@@ -141,24 +118,15 @@ def barkod_verisi_al(barcode):
 def goruntu_isleme_tetikle():
     """Görüntü işlemeyi tetikler ve sonuçları veri senkronizasyonuna gönderir"""
     goruntu_sonuc = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
+    
     print(f"\n📷 [GÖRÜNTÜ İŞLEME] Sonuç: {goruntu_sonuc}")
+    
     log_oturum_var(f"GÖRÜNTÜ İŞLEME - Sonuç: {goruntu_sonuc}")
-    sistem.uzunluk_goruntu_isleme = float(goruntu_sonuc.genislik_mm)
-    veri_senkronizasyonu(
-        materyal_turu=goruntu_sonuc.tur.value, 
-        uzunluk=float(goruntu_sonuc.genislik_mm), 
-        genislik=float(goruntu_sonuc.yukseklik_mm)
-    )
 
-def veri_senkronizasyonu(materyal_turu=None, uzunluk=None, genislik=None):
-    # Sadece veri bekliyorsak verileri kaydet
-    if sistem.akis_durumu == SistemAkisDurumu.VERI_BEKLENIYOR:
-        sistem.mevcut_materyal_turu = materyal_turu
-        sistem.mevcut_uzunluk = uzunluk
-        sistem.mevcut_genislik = genislik
-        print(f"📷 Görüntü işleme verileri alındı.")
-    else:
-        print(f"⚠️ Görüntü işleme verisi geldi ama sistem beklemiyordu. Yok sayıldı.")
+    sistem.uzunluk_goruntu_isleme = float(goruntu_sonuc.genislik_mm)
+    sistem.mevcut_materyal_turu = goruntu_sonuc.tur.value
+    sistem.mevcut_uzunluk = float(goruntu_sonuc.genislik_mm)""
+    sistem.mevcut_genislik = float(goruntu_sonuc.yukseklik_mm)
 
 def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
 
@@ -171,7 +139,6 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         sebep = f"Ürün veritabanında yok (Barkod: {barkod})"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
-        sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
         return
@@ -206,7 +173,6 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         sebep = f"Ağırlık sınırları dışında ({agirlik}g)"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
-        sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
         return
@@ -218,7 +184,6 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         sebep = f"Genişlik sınırları dışında ({genislik}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
-        sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
         return
@@ -230,7 +195,6 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         sebep = f"Uzunluk sınırları dışında ({uzunluk}mm)"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
-        sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
         return
@@ -239,7 +203,6 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         sebep = f"Materyal türü uyuşmuyor (Beklenen: {materyal_id}, Gelen: {materyal_turu})"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
-        sistem.iade_lojik = True
         sistem.iade_sebep = sebep
         dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
         return
@@ -252,14 +215,11 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         'uzunluk': uzunluk, 'genislik': genislik,
     }
     sistem.kabul_edilen_urunler.append(kabul_edilen_urun)
-    sistem.onaylanan_urunler.append(kabul_edilen_urun.copy())
 
     print(f"✅ [DOĞRULAMA] Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     print(f"📦 [KUYRUK] Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
     log_success(f"DOĞRULAMA - Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     log_oturum_var(f"KUYRUK - Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
-    
-
 
 def uzunluk_dogrulama(uzunluk):
     if sistem.uzunluk_goruntu_isleme-20 <= sistem.uzunluk_motor_verisi <= sistem.uzunluk_goruntu_isleme+20:
@@ -277,12 +237,10 @@ def yonlendirici_hareket():
 
     if not sistem.kabul_edilen_urunler:
         print(f"⚠️ [YÖNLENDİRME] Kabul edilen ürün kuyruğu boş.")
-        sistem.iade_lojik = True
         sistem.iade_sebep = "Yönlendirme için ürün yok."
-        sistem.veri_senkronizasyon_listesi.clear()  # Tüm bekleyen verileri temizle
         sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-        sistem.agirlik_kuyruk.clear()  # Tüm bekleyen ağırlıkları temizle
         return
+        
     sistem.uzunluk_motor_verisi = sistem.motor_ref.atik_uzunluk()
     time.sleep(0.05)  # Ölçüm için bekleme süresi 
     print(f"📏 [YÖNLENDİRME] Motor uzunluk verisi: {sistem.uzunluk_motor_verisi} mm")
@@ -291,24 +249,17 @@ def yonlendirici_hareket():
             print(f"✅ [YÖNLENDİRME] Uzunluk Verisi Doğrulandı.")
         else:
             print(f"❌ [YÖNLENDİRME] Uzunluk Verisi Uyuşmazlığı.")
-            sistem.iade_lojik = True
             sistem.iade_sebep = "Uzunluk Verisi Uyuşmazlığı"
-            sistem.veri_senkronizasyon_listesi.clear()  # Tüm bekleyen verileri temizle
             sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-            sistem.agirlik_kuyruk.clear()  # Tüm bekleyen ağırlıkları temizle
             return
     else:
         print(f"⚠️ [YÖNLENDİRME] Uzunluk Verisi Gelmedi")
-        sistem.iade_lojik = True
         sistem.iade_sebep = "Uzunluk Verisi Uyuşmazlığı"
-        sistem.veri_senkronizasyon_listesi.clear()  # Tüm bekleyen verileri temizle
         sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-        sistem.agirlik_kuyruk.clear()  # Tüm bekleyen ağırlıkları temizle
         return
 
     urun = sistem.kabul_edilen_urunler[0]
     print(f"📦 [YÖNLENDİRME] İşlenecek ürün: {urun}")
-    sistem.son_islenen_urun = urun.copy()
     materyal_id = urun.get('materyal_turu')
     
     materyal_isimleri = {1: "PET", 2: "CAM", 3: "ALÜMİNYUM"}
@@ -316,7 +267,6 @@ def yonlendirici_hareket():
     
     print(f"\n🔄 [YÖNLENDİRME] {materyal_adi} ürün işleniyor: {urun['barkod']}")
 
-    sistem.yonlendirici_calisiyor = True
     if sistem.motor_ref:
         if materyal_id == 2: # Cam
             if sistem.kirici_durum:
@@ -344,7 +294,7 @@ def lojik_yoneticisi():
         if sistem.akis_durumu == SistemAkisDurumu.BEKLEMEDE:
             if sistem.gsi_lojik:
                 sistem.gsi_lojik = False # Gelen sinyali işledik, sıfırla.
-                print("➡️ [GSI] Giriş algılandı. Konveyör ileri...")
+
                 sistem.motor_ref.konveyor_ileri()
                 sistem.akis_durumu = SistemAkisDurumu.GIRIS_ALGILANDI
 
@@ -461,21 +411,14 @@ def mesaj_isle(mesaj):
             log_warning("OTURUM - Lojik yöneticisi zaten çalışıyor, yeni thread başlatılmadı.")
 
         sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
-        sistem.iade_lojik = False
-        sistem.iade_lojik_onceki_durum = False
-        sistem.barkod_lojik = False
-        sistem.veri_senkronizasyon_listesi.clear()
         sistem.kabul_edilen_urunler.clear()
-        sistem.onaylanan_urunler.clear()
         sistem.uzunluk_goruntu_isleme = None
-        sistem.agirlik_kuyruk.clear()
         sistem.uzunluk_motor_verisi = None
 
         sistem.motor_ref.motorlari_aktif_et()
         sistem.sensor_ref.tare()
         sistem.motor_ref.konveyor_dur()
         sistem.sensor_ref.led_ac()
-        sistem.kabul_yonu = True
         sistem.ezici_durum = False
         sistem.kirici_durum = False
 
