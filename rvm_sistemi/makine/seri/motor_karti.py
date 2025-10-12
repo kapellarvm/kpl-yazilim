@@ -99,6 +99,9 @@ class MotorKart:
     def yonlendirici_cam(self):
         self.write_queue.put(("yonlendirici_cam", None))
 
+    def yonlendirici_dur(self):
+        self.write_queue.put(("yonlendirici_dur", None))
+
     def klape_metal(self):
         self.write_queue.put(("klape_metal", None))
         self.klape_flag = True
@@ -196,6 +199,8 @@ class MotorKart:
                         self.seri_port.write(b"ymp\n")
                     elif command == "yonlendirici_cam":
                         self.seri_port.write(b"ymc\n")
+                    elif command == "yonlendirici_dur":
+                        self.seri_port.write(b"ymd\n")
                     elif command == "klape_metal":
                         self.seri_port.write(b"smm\n")
                     elif command == "klape_plastik":

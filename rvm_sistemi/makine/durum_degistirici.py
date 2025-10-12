@@ -2,14 +2,16 @@ from .senaryolar import oturum_var, oturum_yok, bakim
 from .senaryolar import uyari
 from .modbus_parser import modbus_parser
 from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
+from .goruntu.goruntu_isleme_servisi import GoruntuIslemeServisi
 
+goruntu_isleme_servisi = GoruntuIslemeServisi()
 
 class DurumMakinesi:
     def __init__(self):
         self.durum = "oturum_yok"  # Başlangıç durumu
         self.onceki_durum = None  # Önceki durumu takip et
         self.bakim_url = "http://192.168.53.2:4321/bakim"  # Varsayılan bakım URL'i
-
+        
     def durum_degistir(self, yeni_durum):
         print(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
         log_system(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
@@ -34,14 +36,25 @@ class DurumMakinesi:
         self.olayi_isle(self.durum)
 
     def olayi_isle(self, olay):
+
+        if olay == "gsb":
+            print("🔐 [GÜVENLİK] GSB moduna geçiliyor...")
+            barkod = goruntu_isleme_servisi.goruntu_yakala_ve_isle("qr")
+            print(f"🔍 [GÜVENLİK] Okunan barkod: {barkod}")
+            if barkod == "KPL-Bakim-9G5SQ61T2Q3Q":
+                print("✅ [GÜVENLİK] GSB barkodu doğrulandı, bakım moduna geçiliyor")
+                self.durum_degistir("bakim")
+            else:
+                print("❌ [GÜVENLİK] Geçersiz GSB barkodu, oturum yok moduna dönülüyor")
+
         if self.durum == "oturum_yok":
             oturum_yok.olayi_isle(olay)
         elif self.durum == "oturum_var":
             oturum_var.mesaj_isle(olay)
         elif self.durum == "bakim":
             bakim.olayi_isle(olay)
-    
-
+        
+                
     def modbus_mesaj(self, modbus_veri):
         # Modbus verisini parse et
         parsed_data = modbus_parser.parse_modbus_string(modbus_veri)
