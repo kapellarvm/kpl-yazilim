@@ -2,6 +2,24 @@
 
 body {
     font-family: 'Inter', sans-serif;
+   /* cursor: none;  Mouse imlecini kaldır */
+}
+
+/* Tüm elementlerde mouse imlecini kaldır 
+* {
+    cursor: none !important;
+}
+*/
+
+/* Translate özelliğini kapat */
+html {
+    -webkit-translate: none;
+    translate: none;
+}
+
+body {
+    -webkit-translate: none;
+    translate: none;
 }
 
 .status-dot {
@@ -54,8 +72,21 @@ body {
     width: 20px; 
     height: 20px; 
     background: #3b82f6; 
-    cursor: pointer; 
+    cursor: pointer !important; 
     border-radius: 50%;
+}
+
+/* Slider'lar için cursor'ı geri ekle */
+input[type="range"] {
+    cursor: pointer !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    cursor: pointer !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+    cursor: pointer !important;
 }
 
 .details-grid {

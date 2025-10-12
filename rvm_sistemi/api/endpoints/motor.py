@@ -158,6 +158,20 @@ async def motor_hiz_ayarla(request: MotorHizRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hız ayarlama hatası: {str(e)}")
 
+@router.post("/reset")
+async def motor_reset():
+    """Motor kartını resetler"""
+    try:
+        motor = get_motor_kart()
+        if not motor:
+            raise HTTPException(status_code=500, detail="Motor kartı bağlantısı yok. Sistem çalıştırılmamış olabilir.")
+        
+        # Motor kartını resetle
+        motor.reset()
+        return SuccessResponse(message="Motor kartı başarıyla resetlendi")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Motor reset hatası: {str(e)}")
+
 @router.get("/durum")
 async def motor_durum():
     """Motor durumunu döndürür"""

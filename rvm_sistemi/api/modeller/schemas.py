@@ -90,6 +90,7 @@ class ErrorResponse(BaseModel):
 class SuccessResponse(BaseModel):
     errorCode: int = 0
     errorMessage: str = ""
+    message: str = ""
 
 
 # --- Sistem Durumu Modelleri ---

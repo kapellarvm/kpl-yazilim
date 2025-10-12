@@ -473,51 +473,7 @@ def lojik_yoneticisi():
                 log_oturum_var("LOJİK - GSI lojik işlemleri başlatıldı")
                 sistem.motor_ref.konveyor_ileri()
         
-        if sistem.gso_lojik:
-            sistem.gso_lojik = False
-            sistem.giris_sensor_durum = False
-
-            if sistem.iade_lojik:
-                
-                goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
-                if goruntu.mesaj=="nesne_yok":
-                    print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
-                    log_oturum_var("İADE AKTIF - Şişe alındı, nesne yok.")
-                    sistem.iade_lojik = False
-                    sistem.barkod_lojik = False
-                    
-                    # Uyarı ekranını kapat - şişe geri alındı
-                    sistem.veri_senkronizasyon_listesi.clear()  # iade sırasında bekleyen verileri temizle
-                    sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul
-                    sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
-                    uyari.uyari_kapat()
-                    print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
-                    log_oturum_var("UYARI - Uyarı ekranı kapatıldı - şişe geri alındı")
-                
-                else:
-                    print("🚫 [İADE AKTIF] Görüntü işleme kabul etmedi iade devam.")
-                    log_oturum_var("İADE AKTIF - Görüntü işleme kabul etmedi iade devam.")
-                    sistem.kabul_yonu = False
-                    sistem.motor_ref.konveyor_geri()
-            else:
-                if sistem.barkod_lojik:
-                    if sistem.iade_lojik==False:
-                        print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
-                        log_oturum_var("GSO - Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
-                        sistem.kabul_yonu = True
-                        sistem.sensor_ref.loadcell_olc()
-                        goruntu_isleme_tetikle()
-                        # Normal akışta gsi_gecis_lojik'i sıfırla
-                        sistem.gsi_gecis_lojik = False
-                    else:
-                        print("🚫 [İADE AKTIF] Görüntü İşleme Başlatılamıyor.")
-                        log_oturum_var("İADE AKTIF - Görüntü İşleme Başlatılamıyor.")
-                else:
-                    sebep = "Barkod okunmadı"
-                    print(f"🚫 [GSO] {sebep}, ürünü iade et.")
-                    log_oturum_var(f"GSO - {sebep}, ürünü iade et.")
-                    sistem.iade_lojik = True
-                    sistem.iade_sebep = sebep
+        
 
         if sistem.yso_lojik:
             sistem.yso_lojik = False
@@ -624,7 +580,7 @@ def lojik_yoneticisi():
                         
                         # Uyarı ekranını kapat - şişe geri alındı
                         uyari.uyari_kapat()
-                        print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
+                        print("✅ [UYARI] Uyarı ekranı k  apatıldı - şişe geri alındı")
 
                     else:
                         sistem.iade_lojik = True
@@ -633,6 +589,52 @@ def lojik_yoneticisi():
                 print("⚠️ [KONVEYÖR HATA] Konveyör adım problemi algılandı, ancak sistem boş değil veya iade lojik aktif, konveyör durdurulmadı")
                 sistem.motor_ref.konveyor_problem_yok()     
         
+        if sistem.gso_lojik:
+            sistem.gso_lojik = False
+            sistem.giris_sensor_durum = False
+
+            if sistem.iade_lojik:
+                
+                goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
+                if goruntu.mesaj=="nesne_yok":
+                    print("🚫 [İADE AKTIF] Şişe alındı, nesne yok.")
+                    log_oturum_var("İADE AKTIF - Şişe alındı, nesne yok.")
+                    sistem.iade_lojik = False
+                    sistem.barkod_lojik = False
+                    
+                    # Uyarı ekranını kapat - şişe geri alındı
+                    sistem.veri_senkronizasyon_listesi.clear()  # iade sırasında bekleyen verileri temizle
+                    sistem.kabul_edilen_urunler.clear()  # iade sırasında bekleyen kabul
+                    sistem.agirlik_kuyruk.clear()  # iade sırasında bekleyen ağırlıkları temizle
+                    uyari.uyari_kapat()
+                    print("✅ [UYARI] Uyarı ekranı kapatıldı - şişe geri alındı")
+                    log_oturum_var("UYARI - Uyarı ekranı kapatıldı - şişe geri alındı")
+                
+                else:
+                    print("🚫 [İADE AKTIF] Görüntü işleme kabul etmedi iade devam.")
+                    log_oturum_var("İADE AKTIF - Görüntü işleme kabul etmedi iade devam.")
+                    sistem.kabul_yonu = False
+                    sistem.motor_ref.konveyor_geri()
+            else:
+                if sistem.barkod_lojik:
+                    if sistem.iade_lojik==False:
+                        print("[GSO] Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
+                        log_oturum_var("GSO - Sistem Normal Çalışıyor. Görüntü İşleme Başlatılıyor.")
+                        sistem.kabul_yonu = True
+                        sistem.sensor_ref.loadcell_olc()
+                        goruntu_isleme_tetikle()
+                        # Normal akışta gsi_gecis_lojik'i sıfırla
+                        sistem.gsi_gecis_lojik = False
+                    else:
+                        print("🚫 [İADE AKTIF] Görüntü İşleme Başlatılamıyor.")
+                        log_oturum_var("İADE AKTIF - Görüntü İşleme Başlatılamıyor.")
+                else:
+                    sebep = "Barkod okunmadı"
+                    print(f"🚫 [GSO] {sebep}, ürünü iade et.")
+                    log_oturum_var(f"GSO - {sebep}, ürünü iade et.")
+                    sistem.iade_lojik = True
+                    sistem.iade_sebep = sebep
+
         if sistem.ysi_lojik:
             sistem.ysi_lojik = False
             print("🔄 [LOJİK] YSI lojik işlemleri başlatıldı")   
