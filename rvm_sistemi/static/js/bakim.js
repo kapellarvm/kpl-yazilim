@@ -257,6 +257,8 @@ async function sistemReset() {
         const data = await response.json();
         
         if (data.status === 'success') {
+            // Motor toggle'larını kapat
+            turnOffMotorToggles();
             showMessage('✓ ' + data.message);
             setTimeout(sistemDurumunuGuncelle, 2000);
         } else {
@@ -682,8 +684,133 @@ function setupSensorControls() {
     }
 }
 
+// Motor toggle'larını senkronize et
+function setupMotorToggles() {
+    const conveyorToggle = document.getElementById('conveyor-power');
+    const diverterToggle = document.getElementById('diverter-power');
+    const flapToggle = document.getElementById('flap-power');
+    
+    if (!conveyorToggle || !diverterToggle || !flapToggle) {
+        return;
+    }
+    
+    // Toggle'ları senkronize et - birini kapatınca hepsi kapansın
+    const toggles = [conveyorToggle, diverterToggle, flapToggle];
+    
+    // Programatik değişiklik flag'i
+    let isProgrammaticChange = false;
+    
+    // Toggle'ı güvenli şekilde değiştir
+    function setToggleChecked(toggle, checked) {
+        if (isProgrammaticChange) {
+            return;
+        }
+        
+        isProgrammaticChange = true;
+        toggle.checked = checked;
+        
+        // CSS animasyonunu tetiklemek için class ekle/çıkar
+        toggle.classList.add('force-update');
+        setTimeout(() => {
+            toggle.classList.remove('force-update');
+        }, 10);
+        
+        isProgrammaticChange = false;
+    }
+    
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', async () => {
+            // Programatik değişiklik ise event'i yok say
+            if (isProgrammaticChange) {
+                return;
+            }
+            
+            if (toggle.checked) {
+                // Toggle açıldığında - diğer toggle'ları da aç
+                toggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle && !otherToggle.checked) {
+                        setToggleChecked(otherToggle, true);
+                    }
+                });
+                
+                // Motorları aktif et
+                try {
+                    const response = await fetch(`${API_BASE}/motor/motorlari-aktif`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.errorCode === 0) {
+                        showMessage('Motorlar aktif edildi');
+                    } else {
+                        showMessage(data.message || data.errorMessage, true);
+                        // Hata durumunda toggle'ları kapat
+                        toggles.forEach(t => setToggleChecked(t, false));
+                    }
+                } catch (error) {
+                    // Network hatası ise toggle'ları açık bırak
+                    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                        showMessage('API sunucusu çalışmıyor. Motorlar aktif edilemedi ama toggle açık bırakıldı.', false);
+                    } else {
+                        showMessage(`Motor aktif etme hatası: ${error.message}`, true);
+                        // Hata durumunda toggle'ları kapat
+                        toggles.forEach(t => setToggleChecked(t, false));
+                    }
+                }
+            } else {
+                // Toggle kapandığında - diğer toggle'ları da kapat
+                toggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle && otherToggle.checked) {
+                        setToggleChecked(otherToggle, false);
+                    }
+                });
+                
+                // Motorları iptal et
+                try {
+                    const response = await fetch(`${API_BASE}/motor/motorlari-iptal`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+                    if (data.errorCode === 0) {
+                        showMessage('Motorlar iptal edildi');
+                    } else {
+                        showMessage(data.message || data.errorMessage, true);
+                    }
+                } catch (error) {
+                    showMessage(`Motor iptal etme hatası: ${error.message}`, true);
+                }
+            }
+        });
+    });
+}
+
+// Motor toggle'larını kapat (reset sonrası kullanım için)
+function turnOffMotorToggles() {
+    const conveyorToggle = document.getElementById('conveyor-power');
+    const diverterToggle = document.getElementById('diverter-power');
+    const flapToggle = document.getElementById('flap-power');
+    
+    const toggles = [conveyorToggle, diverterToggle, flapToggle];
+    toggles.forEach(toggle => {
+        if (toggle) {
+            // Toggle'ı kapat
+            toggle.checked = false;
+            // CSS animasyonunu tetiklemek için class ekle/çıkar
+            toggle.classList.add('force-update');
+            setTimeout(() => {
+                toggle.classList.remove('force-update');
+            }, 10);
+        }
+    });
+}
+
 // Motor kontrolleri
 function setupMotorControls() {
+    // Motor toggle'larını senkronize et
+    setupMotorToggles();
+    
     // Konveyör Motor Kontrolü
     const conveyorFwdBtn = document.getElementById('conveyor-fwd');
     const conveyorStopBtn = document.getElementById('conveyor-stop');
@@ -1279,6 +1406,7 @@ function initializeBakim() {
     setupSensorControls();
     setupMotorControls();
     setupPlaceholderFunctions();
+    setupSafetyControls();
     
     // İlk durum güncellemesi
     sistemDurumunuGuncelle();
@@ -2010,7 +2138,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (data.message && data.message.includes('resetlendi')) {
-                    showMessage('✓ Motor kartı başarıyla resetlendi', true);
+                    // Motor toggle'larını kapat
+                    turnOffMotorToggles();
+                    showMessage('✓ Motor kartı başarıyla resetlendi. Motorlar kapatıldı.', true);
                 } else {
                     showMessage('✗ Motor reset hatası: ' + (data.message || 'Bilinmeyen hata'), false);
                 }
@@ -2024,3 +2154,340 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// --- GÜVENLİK KARTI KONTROLLERİ ---
+function setupFanControl() {
+    const fanSvg = document.getElementById('fan-svg');
+    const speedSlider = document.getElementById('fan-speed-slider');
+    const speedInput = document.getElementById('fan-speed-input');
+    const onBtn = document.getElementById('fan-on-btn');
+    const offBtn = document.getElementById('fan-off-btn');
+
+    if (!fanSvg || !speedSlider || !speedInput || !onBtn || !offBtn) return;
+
+    const updateFanState = (speed) => {
+        const value = Math.max(0, Math.min(100, parseInt(speed, 10)));
+        speedSlider.value = value;
+        speedInput.value = value;
+
+        if (value > 0) {
+            fanSvg.classList.add('fan-active', 'text-blue-400');
+            fanSvg.classList.remove('text-gray-500');
+            // Speed affects animation duration. Faster speed = shorter duration.
+            const duration = (2.5 - (value / 100) * 2.3).toFixed(2);
+            fanSvg.style.setProperty('--fan-duration', `${duration}s`);
+            
+        } else {
+            fanSvg.classList.remove('fan-active', 'text-blue-400');
+            fanSvg.classList.add('text-gray-500');
+            fanSvg.style.removeProperty('--fan-duration');
+        }
+    };
+
+    onBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-ac`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(speedInput.value > 0 ? speedInput.value : 100);
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan açma hatası: ${error.message}`, true);
+        }
+    });
+    
+    offBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-kapat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(0);
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan kapatma hatası: ${error.message}`, true);
+        }
+    });
+    speedSlider.addEventListener('input', async () => {
+        const hiz = parseInt(speedSlider.value);
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-hiz?hiz=${hiz}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(hiz);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan hız ayarlama hatası: ${error.message}`, true);
+        }
+    });
+    
+    speedInput.addEventListener('input', async () => {
+        const hiz = parseInt(speedInput.value);
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-hiz?hiz=${hiz}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(hiz);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan hız ayarlama hatası: ${error.message}`, true);
+        }
+    });
+    
+    updateFanState(0); // Initial state
+}
+
+function setupMagneticSensor(prefix) {
+    const visual = document.getElementById(`${prefix}-visual`);
+    const statusLed = document.getElementById(`${prefix}-status-led`);
+    const statusText = document.getElementById(`${prefix}-status-text`);
+    const testBtn = document.getElementById(`${prefix}-test-btn`);
+    
+    if (!visual || !statusLed || !statusText) return null;
+    
+    const setActive = () => {
+        visual.classList.remove('inactive');
+        statusLed.classList.remove('bg-red-500');
+        statusLed.classList.add('bg-green-500');
+        statusText.textContent = 'Aktif (Kapak Kapalı)';
+        statusText.classList.remove('text-red-400');
+        statusText.classList.add('text-green-400');
+    };
+
+    const setPassive = () => {
+         visual.classList.add('inactive');
+        statusLed.classList.remove('bg-green-500');
+        statusLed.classList.add('bg-red-500');
+        statusText.textContent = 'Pasif (Kapak Açık)';
+        statusText.classList.remove('text-green-400');
+        statusText.classList.add('text-red-400');
+    };
+    
+    // Test butonu event listener'ı
+    if (testBtn) {
+        testBtn.addEventListener('click', async () => {
+            try {
+                const sensorTipi = prefix === 'top-sensor' ? 'ust' : 'alt';
+                const response = await fetch(`${API_BASE}/guvenlik/sensor-test?sensor_tipi=${sensorTipi}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Sensör durumunu geçici olarak değiştir (test için)
+                    if (statusText.textContent.includes('Aktif')) {
+                        setPassive();
+                    } else {
+                        setActive();
+                    }
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage(`Sensör test hatası: ${error.message}`, true);
+            }
+        });
+    }
+    
+    return { setActive, setPassive };
+}
+
+function setupLockControl(prefix, sensorControls) {
+    const visual = document.getElementById(`${prefix}-visual`);
+    const statusLed = document.getElementById(`${prefix}-status-led`);
+    const statusText = document.getElementById(`${prefix}-status-text`);
+    const tongueLed = document.getElementById(`${prefix}-tongue-led`);
+    const tongueText = document.getElementById(`${prefix}-tongue-text`);
+    const openBtn = document.getElementById(`${prefix}-open-btn`);
+    const closeBtn = document.getElementById(`${prefix}-close-btn`);
+
+    if (!visual || !statusLed || !statusText || !tongueLed || !tongueText || !openBtn || !closeBtn) return;
+
+    openBtn.addEventListener('click', async () => {
+        try {
+            const endpoint = prefix === 'top-lock' ? 'ust-kilit-ac' : 'alt-kilit-ac';
+            const response = await fetch(`${API_BASE}/guvenlik/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                visual.classList.add('unlocked');
+                statusLed.classList.remove('bg-red-500');
+                statusLed.classList.add('bg-green-500');
+                statusText.textContent = 'Kilit Açık';
+                statusText.classList.remove('text-red-400');
+                statusText.classList.add('text-green-400');
+
+                tongueLed.classList.remove('bg-green-500');
+                tongueLed.classList.add('bg-red-500');
+                tongueText.textContent = 'Dil Yok';
+                tongueText.classList.remove('text-green-400');
+                tongueText.classList.add('text-red-400');
+
+                if (sensorControls) sensorControls.setPassive();
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Kilit açma hatası: ${error.message}`, true);
+        }
+    });
+
+    closeBtn.addEventListener('click', async () => {
+        try {
+            const endpoint = prefix === 'top-lock' ? 'ust-kilit-kapat' : 'alt-kilit-kapat';
+            const response = await fetch(`${API_BASE}/guvenlik/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                visual.classList.remove('unlocked');
+                statusLed.classList.remove('bg-green-500');
+                statusLed.classList.add('bg-red-500');
+                statusText.textContent = 'Kilit Kapalı';
+                statusText.classList.remove('text-green-400');
+                statusText.classList.add('text-red-400');
+
+                tongueLed.classList.remove('bg-red-500');
+                tongueLed.classList.add('bg-green-500');
+                tongueText.textContent = 'Dil Var';
+                tongueText.classList.remove('text-red-400');
+                tongueText.classList.add('text-green-400');
+
+                if (sensorControls) sensorControls.setActive();
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Kilit kapatma hatası: ${error.message}`, true);
+        }
+    });
+}
+
+function setupSafetyRelay() {
+    const resetBtn = document.getElementById('safety-relay-reset-btn');
+    const bypassBtn = document.getElementById('safety-relay-bypass-btn');
+    
+    const relayLed = document.getElementById('safety-relay-led');
+    const relayText = document.getElementById('safety-relay-text');
+    const bypassLed = document.getElementById('bypass-led');
+    const bypassText = document.getElementById('bypass-text');
+
+    if (!resetBtn || !bypassBtn || !relayLed || !relayText || !bypassLed || !bypassText) return;
+
+    let isBypassActive = false;
+
+    resetBtn.addEventListener('click', async () => {
+        // Butonları devre dışı bırak
+        resetBtn.disabled = true;
+        bypassBtn.disabled = true;
+
+        // "Resetleniyor" durumuna ayarla
+        relayLed.classList.remove('bg-red-500', 'bg-green-500');
+        relayLed.classList.add('bg-yellow-500');
+        relayText.textContent = 'Resetleniyor...';
+        relayText.classList.remove('text-red-400', 'text-green-400');
+        relayText.classList.add('text-yellow-400');
+
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/role-reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // "Aktif" durumuna ayarla
+                relayLed.classList.remove('bg-red-500', 'bg-yellow-500');
+                relayLed.classList.add('bg-green-500');
+                relayText.textContent = 'Röle Aktif';
+                relayText.classList.remove('text-red-400', 'text-yellow-400');
+                relayText.classList.add('text-green-400');
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Röle reset hatası: ${error.message}`, true);
+        } finally {
+            // Butonları tekrar aktif et
+            resetBtn.disabled = false;
+            bypassBtn.disabled = false;
+        }
+    });
+
+    bypassBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/role-bypass`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                isBypassActive = !isBypassActive;
+                if (isBypassActive) {
+                    bypassLed.classList.remove('bg-green-500');
+                    bypassLed.classList.add('bg-red-500');
+                    bypassText.textContent = 'Kilitler Pasif';
+                    bypassText.classList.remove('text-green-400');
+                    bypassText.classList.add('text-red-400');
+                } else {
+                    bypassLed.classList.remove('bg-red-500');
+                    bypassLed.classList.add('bg-green-500');
+                    bypassText.textContent = 'Kilitler Aktif';
+                    bypassText.classList.remove('text-red-400');
+                    bypassText.classList.add('text-green-400');
+                }
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Röle bypass hatası: ${error.message}`, true);
+        }
+    });
+}
+
+// Güvenlik kartı kontrollerini başlat
+function setupSafetyControls() {
+    const topSensorControls = setupMagneticSensor('top-sensor');
+    const bottomSensorControls = setupMagneticSensor('bottom-sensor');
+    setupLockControl('top-lock', topSensorControls);
+    setupLockControl('bottom-lock', bottomSensorControls);
+    setupFanControl();
+    setupSafetyRelay();
+}

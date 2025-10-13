@@ -32,10 +32,13 @@ async def uyari_goster(request: UyariRequest):
     """Hızlı uyarı gösterir - belirtilen süre sonra otomatik kapanır"""
     try:
         # Uyarıyı göster
-        basarili = uyari_yoneticisi.uyari_goster(request.mesaj, request.sure)
+        basarili = uyari_yoneticisi.uyari_goster(request.mesaj, request.sure, request.suresiz)
         
         if basarili:
-            return {"status": "success", "message": f"Uyarı gösterildi: {request.mesaj}", "sure": request.sure}
+            if request.suresiz:
+                return {"status": "success", "message": f"Süresiz uyarı gösterildi: {request.mesaj}", "suresiz": True}
+            else:
+                return {"status": "success", "message": f"Uyarı gösterildi: {request.mesaj}", "sure": request.sure}
         else:
             return {"status": "error", "message": "Uyarı gösterilemedi"}
     except Exception as e:

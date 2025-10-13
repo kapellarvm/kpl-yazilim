@@ -89,6 +89,29 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer !important;
 }
 
+/* Güvenlik Kartı Animasyonları */
+.lock-head {
+    transition: transform 0.3s ease-in-out;
+}
+.lock-visual.unlocked .lock-head {
+    transform: translateY(-15px);
+}
+
+#fan-blades {
+    transform-origin: center;
+}
+
+#fan-svg.fan-active #fan-blades {
+    animation: gear-spin var(--fan-duration, 2s) linear infinite;
+}
+
+.sensor-part-movable {
+    transition: transform 0.3s ease-in-out;
+}
+.sensor-visual.inactive .sensor-part-movable {
+    transform: translateX(25px);
+}
+
 .details-grid {
     transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out, opacity 0.3s ease-in-out;
     overflow: hidden;
@@ -230,6 +253,14 @@ input[type="range"]::-moz-range-thumb {
 .power-switch-switch { display: block; width: 18px; margin: 3px; background: #FFFFFF; position: absolute; top: 0; bottom: 0; right: 26px; border: 0 solid #bbb; border-radius: 20px; transition: all 0.3s ease-in 0s; }
 .power-switch input:checked + .power-switch-label .power-switch-inner { margin-left: 0; }
 .power-switch input:checked + .power-switch-label .power-switch-switch { right: 0px; }
+
+/* Force update class for programmatic changes */
+.power-switch input.force-update + .power-switch-label .power-switch-inner { 
+    transition: none; 
+}
+.power-switch input.force-update + .power-switch-label .power-switch-switch { 
+    transition: none; 
+}
 
 /* Tab Styles */
 .tab-btn.active-tab {
