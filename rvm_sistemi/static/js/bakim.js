@@ -111,6 +111,12 @@ async function sistemDurumunuGuncelle() {
             }
         }
         
+        // Sekme başlıklarını güncelle
+        updateTabTitles(data);
+        
+        // Bağlantı durumlarını güncelle
+        updateConnectionStatus(data);
+        
         // Bakım modu durumunu güncelle
         if (data.durum === 'bakim' && !bakimModuAktif) {
             bakimModuAktif = true;
@@ -120,7 +126,8 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                 butonlariGuncelle();
             }
-            // Bakım modu aktifken periyodik güncellemeleri başlat
+            // Bakım modu aktifken tüm güncellemeleri başlat
+            startStatusUpdates();
             startPeriodicUpdates();
         } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
@@ -130,10 +137,13 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
                 butonlariGuncelle();
             }
-            // Bakım modu pasifken periyodik güncellemeleri durdur
+            // Bakım modu pasifken tüm güncellemeleri durdur
+            stopStatusUpdates();
             stopPeriodicUpdates();
             // WebSocket bağlantısını kapat
             disconnectWebSocket();
+            // Durum göstergelerini gri yap
+            setStatusIndicatorsGray();
         }
         
         // Durum yöneticisini güncelle
@@ -143,6 +153,64 @@ async function sistemDurumunuGuncelle() {
         
     } catch (error) {
         console.error('Durum güncellemesi başarısız:', error);
+    }
+}
+
+// Sekme başlıklarını güncelle
+function updateTabTitles(data) {
+    const sensorTab = document.getElementById('tab-btn-sensors');
+    const motorTab = document.getElementById('tab-btn-motors');
+    
+    if (sensorTab) {
+        if (data.sensor_baglanti) {
+            sensorTab.innerHTML = `Sensör Kartı <span class="text-green-400">●</span>`;
+        } else {
+            sensorTab.innerHTML = `Sensör Kartı <span class="text-red-400">●</span>`;
+        }
+    }
+    
+    if (motorTab) {
+        if (data.motor_baglanti) {
+            motorTab.innerHTML = `Motor Kartı <span class="text-green-400">●</span>`;
+        } else {
+            motorTab.innerHTML = `Motor Kartı <span class="text-red-400">●</span>`;
+        }
+    }
+}
+
+// Bağlantı durumlarını güncelle
+function updateConnectionStatus(data) {
+    const sensorConnectionStatus = document.getElementById('sensor-connection-status');
+    const motorConnectionStatus = document.getElementById('motor-connection-status');
+    
+    if (sensorConnectionStatus) {
+        const dot = sensorConnectionStatus.querySelector('div');
+        const text = sensorConnectionStatus.querySelector('span');
+        
+        if (data.sensor_baglanti) {
+            dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            text.textContent = 'Bağlı';
+            text.className = 'text-xs text-green-400';
+        } else {
+            dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            text.textContent = 'Bağlantı Yok';
+            text.className = 'text-xs text-red-400';
+        }
+    }
+    
+    if (motorConnectionStatus) {
+        const dot = motorConnectionStatus.querySelector('div');
+        const text = motorConnectionStatus.querySelector('span');
+        
+        if (data.motor_baglanti) {
+            dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            text.textContent = 'Bağlı';
+            text.className = 'text-xs text-green-400';
+        } else {
+            dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            text.textContent = 'Bağlantı Yok';
+            text.className = 'text-xs text-red-400';
+        }
     }
 }
 
@@ -1367,15 +1435,157 @@ function updateSensorDataFromWebSocket(data) {
     }
 }
 
-// Periyodik güncellemeleri başlat
+// Sadece durum güncellemelerini başlat (hafif işlemler)
+function startStatusUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopStatusUpdates();
+    
+    // Ping ile sağlık durumu kontrolü (3 saniyede bir)
+    sistemDurumInterval = setInterval(pingKartlar, 3000); // 3 saniyede bir
+}
+
+// Durum güncellemelerini durdur
+function stopStatusUpdates() {
+    if (sistemDurumInterval) {
+        clearInterval(sistemDurumInterval);
+        sistemDurumInterval = null;
+    }
+}
+
+// Kartları ping ile sağlık durumunu kontrol et
+async function pingKartlar() {
+    try {
+        // Sensör kartını ping et
+        const sensorResponse = await fetch(`${API_BASE}/sensor/ping`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const sensorData = await sensorResponse.json();
+        
+        // Motor kartını ping et
+        const motorResponse = await fetch(`${API_BASE}/motor/ping`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const motorData = await motorResponse.json();
+        
+        // Ping sonuçlarına göre durum göstergelerini güncelle
+        updateConnectionStatusFromPing(sensorData, motorData);
+        
+    } catch (error) {
+        console.log('Ping hatası:', error);
+        // Hata durumunda gri göster
+        setStatusIndicatorsGray();
+    }
+}
+
+// Ping sonuçlarına göre durum göstergelerini güncelle
+function updateConnectionStatusFromPing(sensorData, motorData) {
+    // Sensör kartı durumu
+    const sensorHealthy = sensorData && sensorData.saglikli === true;
+    updateSingleConnectionStatus('sensor', sensorHealthy);
+    
+    // Motor kartı durumu
+    const motorHealthy = motorData && motorData.saglikli === true;
+    updateSingleConnectionStatus('motor', motorHealthy);
+}
+
+// Tek bir kartın durum göstergesini güncelle
+function updateSingleConnectionStatus(cardType, isHealthy) {
+    const isSensor = cardType === 'sensor';
+    const tabId = isSensor ? 'tab-btn-sensors' : 'tab-btn-motors';
+    const statusId = isSensor ? 'sensor-connection-status' : 'motor-connection-status';
+    const cardName = isSensor ? 'Sensör Kartı' : 'Motor Kartı';
+    
+    // Sekme başlığını güncelle
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        if (isHealthy) {
+            tab.innerHTML = `${cardName} <span class="text-green-400">●</span>`;
+        } else {
+            tab.innerHTML = `${cardName} <span class="text-red-400">●</span>`;
+        }
+    }
+    
+    // Bağlantı durumu göstergesini güncelle
+    const statusElement = document.getElementById(statusId);
+    if (statusElement) {
+        const dot = statusElement.querySelector('div');
+        const text = statusElement.querySelector('span');
+        
+        if (dot) {
+            if (isHealthy) {
+                dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            }
+        }
+        
+        if (text) {
+            if (isHealthy) {
+                text.textContent = 'Bağlı';
+                text.className = 'text-xs text-green-400';
+            } else {
+                text.textContent = 'Bağlantı Yok';
+                text.className = 'text-xs text-red-400';
+            }
+        }
+    }
+}
+
+// Durum göstergelerini gri yap (bakım modu pasifken)
+function setStatusIndicatorsGray() {
+    // Sekme başlıklarındaki durum göstergelerini gri yap
+    const sensorTab = document.getElementById('tab-btn-sensors');
+    const motorTab = document.getElementById('tab-btn-motors');
+    
+    if (sensorTab) {
+        sensorTab.innerHTML = `Sensör Kartı <span class="text-gray-400">●</span>`;
+    }
+    
+    if (motorTab) {
+        motorTab.innerHTML = `Motor Kartı <span class="text-gray-400">●</span>`;
+    }
+    
+    // Bağlantı & Kontroller bölümündeki durum göstergelerini gri yap
+    const sensorConnectionStatus = document.getElementById('sensor-connection-status');
+    const motorConnectionStatus = document.getElementById('motor-connection-status');
+    
+    if (sensorConnectionStatus) {
+        const dot = sensorConnectionStatus.querySelector('div');
+        const text = sensorConnectionStatus.querySelector('span');
+        
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+        }
+        if (text) {
+            text.textContent = 'Bakım Modu Pasif';
+            text.className = 'text-xs text-gray-400';
+        }
+    }
+    
+    if (motorConnectionStatus) {
+        const dot = motorConnectionStatus.querySelector('div');
+        const text = motorConnectionStatus.querySelector('span');
+        
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+        }
+        if (text) {
+            text.textContent = 'Bakım Modu Pasif';
+            text.className = 'text-xs text-gray-400';
+        }
+    }
+}
+
+// Periyodik güncellemeleri başlat (ağır işlemler - sadece bakım modu aktifken)
 function startPeriodicUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopPeriodicUpdates();
     
-    // Periyodik güncellemeleri başlat
-    sistemDurumInterval = setInterval(sistemDurumunuGuncelle, 5000);
+    // Ağır periyodik güncellemeleri başlat
     sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
-    genelDurumInterval = setInterval(updateGeneralStatus, 10000);
+    genelDurumInterval = setInterval(updateGeneralStatus, 5000); // 5 saniyede bir
     
     // Hazne doluluk güncelleme
     setInterval(async () => {
@@ -1383,12 +1593,8 @@ function startPeriodicUpdates() {
     }, 10000);
 }
 
-// Periyodik güncellemeleri durdur
+// Periyodik güncellemeleri durdur (ağır işlemler)
 function stopPeriodicUpdates() {
-    if (sistemDurumInterval) {
-        clearInterval(sistemDurumInterval);
-        sistemDurumInterval = null;
-    }
     if (sensorDegerInterval) {
         clearInterval(sensorDegerInterval);
         sensorDegerInterval = null;
@@ -1417,9 +1623,13 @@ function initializeBakim() {
     // WebSocket bağlantısını her zaman başlat
     connectWebSocket();
     
-    // Periyodik güncellemeleri başlat (sadece bakım modu aktifken)
+    // Sadece bakım modu aktifken tüm işlemleri başlat
     if (bakimModuAktif) {
+        startStatusUpdates();
         startPeriodicUpdates();
+    } else {
+        // Bakım modu pasifken durum göstergelerini gri yap
+        setStatusIndicatorsGray();
     }
 }
 

@@ -160,6 +160,36 @@ async def sensor_son_deger():
             "data": None
         }
 
+@router.post("/ping")
+async def sensor_ping():
+    """Sensör kartını ping eder ve sağlık durumunu döndürür"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            return {
+                "status": "error",
+                "message": "Sensör kartı bulunamadı",
+                "saglikli": False
+            }
+        
+        # Ping işlemini başlat
+        sensor.ping()
+        
+        # Sağlık durumunu al
+        saglikli = sensor.getir_saglik_durumu()
+        
+        return {
+            "status": "success",
+            "message": "Ping tamamlandı",
+            "saglikli": saglikli
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Ping hatası: {str(e)}",
+            "saglikli": False
+        }
+
 @router.post("/reset")
 async def sensor_reset():
     """Sensör kartını resetler"""
