@@ -53,6 +53,7 @@ class SistemDurumu:
     iade_sebep: str = None
 
     # Lojikler
+    barkod_lojik: bool = False
     lojik_thread_basladi: bool = False
     gsi_lojik: bool = False
     gso_lojik: bool = False
@@ -117,8 +118,9 @@ def motor_kontrol_referansini_ayarla(motor_kontrol):
 
 def barkod_verisi_al(barcode):
     # Ürün bekleme veya giriş aşamasındayken barkodu kabul et
-    if sistem.akis_durumu in [SistemAkisDurumu.BEKLEMEDE, SistemAkisDurumu.GIRIS_ALGILANDI]:
+    if not sistem.barkod_lojik:
          sistem.mevcut_barkod = barcode
+         sistem.barkod_lojik = True 
          print(f"🔗 [{barcode}] Barkod alındı.")
     else:
          print(f"⚠️ Barkod okundu ama sistem ürün kabul etmiyor. Durum: {sistem.akis_durumu}")
@@ -382,6 +384,7 @@ def lojik_yoneticisi():
                     # Barkod gelmişse, doğrulama adımları başlar.
                     print(f"✅ [GSO] Ürün içeride. Barkod: {sistem.mevcut_barkod}. Doğrulama başlıyor.")
                     sistem.akis_durumu = SistemAkisDurumu.VERI_BEKLENIYOR
+                    sistem.barkod_lojik = False # Barkod işlendi, sıfırla.
                     sistem.sensor_ref.loadcell_olc()
                     goruntu_isleme_tetikle()
         
