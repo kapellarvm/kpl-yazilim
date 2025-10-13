@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from . import uyari
 from ...utils.logger import log_oturum_var, log_error, log_success, log_warning, log_system
 from enum import Enum, auto
+from datetime import datetime
+from pprint import pprint
 
 class SistemAkisDurumu(Enum):
     BEKLEMEDE = auto()
@@ -24,9 +26,9 @@ class SistemAkisDurumu(Enum):
 class SistemDurumu:
 
     akis_durumu: SistemAkisDurumu = SistemAkisDurumu.BEKLEMEDE
-    mevcut_barkod: str = None
     
-    # Doğrulama için gelen verileri tutacak alanlar
+    
+    mevcut_barkod: str = None
     mevcut_agirlik: float = None
     mevcut_materyal_turu: int = None
     mevcut_uzunluk: float = None
@@ -45,7 +47,8 @@ class SistemDurumu:
 
     # Listeler
     kabul_edilen_urunler: deque = field(default_factory=deque)
-    
+    urun_listesi: list = field(default_factory=list)
+    son_id : int = 0
     # İade Sebep String
     iade_sebep: str = None
 
@@ -240,6 +243,48 @@ def uzunluk_dogrulama(uzunluk):
         sistem.uzunluk_goruntu_isleme = None
         return False
 
+def yeni_urun_ekle(barkod: str = None, agirlik: float = None, materyal: str= None, uzunluk: float = None, genislik: float = None, durum: bool = None, iade_sebep: str = None):
+    """
+    Yeni bir ürünü gerekli bilgilerle oluşturur ve ana listeye ekler.
+    ID ve giriş zamanını otomatik olarak atar.
+
+    Args:
+        barkod (str): Ürünün barkodu.
+        agirlik (float): Ürünün kilogram cinsinden ağırlığı.
+        materyal (str): Ürünün materyal türü (örn: "Plastik", "Metal").
+        uzunluk (float): Ürünün santimetre cinsinden uzunluğu.
+        genislik (float): Ürünün santimetre cinsinden genişliği.
+        durum (str, optional): Ürünün mevcut durumu. Varsayılan: "Giriş Yapıldı".
+        iade_sebep (str, optional): Eğer bir iade ise sebebi. Varsayılan: None.
+        
+    Returns:
+        dict: Listeye yeni eklenen ürünün sözlük hali.
+    """
+    global son_id
+    
+    # ID'yi bir artır
+    son_id += 1
+    
+    # Yeni ürün için sözlük oluştur
+    yeni_urun = {
+        "id": son_id,
+        "durum": durum,
+        "barkod": barkod,
+        "agirlik": agirlik,
+        "materyal": materyal,
+        "uzunluk": uzunluk,
+        "genislik": genislik,
+        "iade_sebep": iade_sebep,
+        "giris_zamani": datetime.now().strftime("%Y-%m-%d %H:%M:%S") # Mevcut zamanı formatla
+    }
+    
+    # Oluşturulan yeni ürünü ana listeye ekle
+    urun_listesi.append(yeni_urun)
+    
+    print(f"✅ ID: {son_id} olan '{barkod}' barkodlu ürün listeye başarıyla eklendi.")
+    
+    return yeni_urun
+
 def yonlendirici():
 
     if not sistem.kabul_edilen_urunler:
@@ -278,13 +323,11 @@ def yonlendirici():
         if materyal_id == 2: # Cam
             if sistem.kirici_durum:
                 manuel_kirici_kontrol("ileri_10sn")
-            sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_cam()
             print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
         elif materyal_id == 1 or materyal_id == 3: # Plastik/Metal
             if sistem.ezici_durum:
                 manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
-            sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
             print(f"🟩 [PLASTİK/METAL] Plastik/Metal yönlendiricisine gönderildi")
         else:
@@ -338,22 +381,13 @@ def lojik_yoneticisi():
                 else:
                     # Barkod gelmişse, doğrulama adımları başlar.
                     print(f"✅ [GSO] Ürün içeride. Barkod: {sistem.mevcut_barkod}. Doğrulama başlıyor.")
-                    sistem.akis_durumu = SistemAkisDurumu.DOGRULAMA_BASLADI
+                    sistem.akis_durumu = SistemAkisDurumu.VERI_BEKLENIYOR
+                    sistem.sensor_ref.loadcell_olc()
+                    goruntu_isleme_tetikle()
         
             else:
                 lojik_sifirlama()
 
-        # Durum 3: DOGRULAMA_BASLADI
-        # Görevi: Asenkron işlemleri BİR KEZ tetiklemek ve durumu değiştirmek.
-        elif sistem.akis_durumu == SistemAkisDurumu.DOGRULAMA_BASLADI:
-            print("⚖️ Görüntü işleme ve ağırlık ölçümü tetikleniyor...")
-            sistem.akis_durumu = SistemAkisDurumu.VERI_BEKLENIYOR
-            sistem.sensor_ref.loadcell_olc()
-            goruntu_isleme_tetikle()
-            
-            lojik_sifirlama()
-
-        # Durum 4: VERI_BEKLENIYOR
         # Görevi: Tüm verilerin gelip gelmediğini sürekli kontrol etmek.
         elif sistem.akis_durumu == SistemAkisDurumu.VERI_BEKLENIYOR:
             # Gerekli tüm verilerin gelip gelmediğini kontrol et
@@ -387,6 +421,23 @@ def lojik_yoneticisi():
                 sistem.mevcut_uzunluk = None
                 sistem.mevcut_genislik = None
             
+            if sistem.gso_lojik:
+                sistem.gso_lojik = False # Gelen sinyali işledik, sıfırla.
+                
+                # Kritik Kontrol: Bu noktada barkod verisi gelmiş mi?
+                if sistem.mevcut_barkod is None:
+                    
+                    print("❌ [GSO] Ürün içeride ama barkod yok! İade ediliyor...")
+                    sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                    sistem.motor_ref.konveyor_geri()
+
+                else:
+                    # Barkod gelmişse, doğrulama adımları başlar.
+                    print(f"✅ [GSO] Ürün içeride. Barkod: {sistem.mevcut_barkod}. Doğrulama başlıyor.")
+                    sistem.akis_durumu = SistemAkisDurumu.VERI_BEKLENIYOR
+                    sistem.sensor_ref.loadcell_olc()
+                    goruntu_isleme_tetikle()
+
             
             lojik_sifirlama()
         
@@ -395,6 +446,7 @@ def lojik_yoneticisi():
             if sistem.yso_lojik:
                 sistem.yso_lojik = False
                 print("✅ [YSO] Ürün yönlendiriciye ulaştı.")
+                sistem.motor_ref.konveyor_dur()
                 yonlendirici_basarili = yonlendirici()
                 if yonlendirici_basarili:
                     print("👍 Yönlendirme başarılı. Ürün yönlendiriciye gönderildi.")
@@ -466,6 +518,7 @@ def lojik_yoneticisi():
                 print(f"📷 [GÖRÜNTÜ İŞLEME - İADE] Sonuç: {goruntu}")
                 if goruntu.mesaj=="nesne_yok":
                     print("👍 Ürün geri alındı. Sistem normale dönüyor.")
+                    time.sleep(2)
                     sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
                     sistem.mevcut_barkod = None
                     sistem.mevcut_agirlik = None
@@ -510,7 +563,6 @@ def lojik_sifirlama():
     # Kalibrasyonlar
     sistem.yonlendirici_kalibrasyon = False
     sistem.seperator_kalibrasyon = False
-
 
 def mesaj_isle(mesaj):
     mesaj = mesaj.strip().lower()
@@ -589,8 +641,6 @@ def mesaj_isle(mesaj):
 def modbus_mesaj(modbus_verisi):
     veri = modbus_verisi
     #print(f"[Oturum Var Modbus] Gelen veri: {modbus_verisi}")
-
-
 
 sistem = SistemDurumu()
 goruntu_isleme_servisi = GoruntuIslemeServisi()

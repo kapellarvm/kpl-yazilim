@@ -45,7 +45,7 @@ def olayi_isle(olay):
 def modbus_mesaj(modbus_verisi):
     """Modbus verilerini işler - geriye dönük uyumluluk için"""
     #print(f"[Bakım Modu] Modbus verisi: {modbus_verisi}")
-    # Modbus verileri artık durum_degistirici.py'de işleniyor
+    # Modbus verileri durum_degistirici.py'de işleniyor
 
 def bakim_moduna_gir(bakim_url="http://192.168.53.2:4321/bakim"):
     """Bakım moduna girildiğinde çalışır - Yeni Chromium penceresi açar"""
@@ -146,9 +146,6 @@ def bakim_modundan_cik():
             print("[Bakım Modu] Bakım Chromium zaten kapalı")
     except Exception as e:
         print(f"[Bakım Modu] Bakım kapatma hatası: {e}")
-
-
-
 
 
 def mesaj_isle(mesaj):
