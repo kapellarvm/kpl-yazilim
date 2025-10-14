@@ -4,6 +4,7 @@ from .modbus_parser import modbus_parser
 from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
 from .goruntu.goruntu_isleme_servisi import GoruntuIslemeServisi
 
+
 goruntu_isleme_servisi = GoruntuIslemeServisi()
 
 class DurumMakinesi:
@@ -56,11 +57,57 @@ class DurumMakinesi:
             elif barkod == "KPL-Temizlik-9G5SQ6UTYQ3Q":
                 print("✅ [GÜVENLİK] GSB barkodu doğrulandı, temizlik moduna geçiliyor")
                 self.durum_degistir("temizlik")
-            else:
-                print("❌ [GÜVENLİK] Geçersiz GSB barkodu, oturum yok moduna dönülüyor")
+
+
+       #xxxxxxxxxxxxxxxxxxxx--yonlendiriciInduktifSensor--xxxxxxxxxxxxxxxxxxxx
+        elif olay == "yiba":
+            print("🔐 [GÜVENLİK] Yiba moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Induktif Besleme Arızası", sure=0)
+        elif olay == "yibk":
+            print("🔐 [GÜVENLİK] Yibk moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Induktif Bağlantı Kopuk", sure=0)
+        elif olay == "yisa":
+            print("🔐 [GÜVENLİK] Yisa moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Induktif Sensör Arızası", sure=0)
+        elif olay == "yino":
+            print("🔐 [GÜVENLİK] yino moduna geçiliyor...")
+            uyari.uyari_kapat()
+         
+
+        #xxxxxxxxxxxxxxxxxxxx--klapeInduktifSensor--xxxxxxxxxxxxxxxxxxxx
+        elif olay == "kiba":
+            print("🔐 [GÜVENLİK] kiba moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Klape Induktif Besleme Arızası", sure=0)
+        elif olay == "kibk":
+            print("🔐 [GÜVENLİK] kibk moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Klape Induktif Bağlantı Kopuk", sure=0)
+        elif olay == "kisa":
+            print("🔐 [GÜVENLİK] kisa moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Klape Induktif Sensör Arızası", sure=0)
+        elif olay == "kino":
+            print("🔐 [GÜVENLİK] kino moduna geçiliyor...")
+            uyari.uyari_kapat()
+
+        #xxxxxxxxxxxxxxxxxxxx--yonlendiriciOptikSensor--xxxxxxxxxxxxxxxxxxxx
+        elif olay == "yoba":
+            print("🔐 [GÜVENLİK] yoba moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Optik Besleme Arızası", sure=0)
+        elif olay == "yobk":
+            print("🔐 [GÜVENLİK] yobk moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Optik Bağlantı Kopuk", sure=0)
+        elif olay == "yosa":
+            print("🔐 [GÜVENLİK] yosa moduna geçiliyor...")
+            uyari.uyari_goster(mesaj=f"Yönlendirici Optik Sensör Arızası", sure=0)
+        elif olay == "yono":
+            print("🔐 [GÜVENLİK] yono moduna geçiliyor...")
+            uyari.uyari_kapat() 
+            
+            
+
+
 
         if self.durum == "oturum_yok":
-            oturum_yok.olayi_isle(olay)
+            oturum_yok.olayi_isle(olay) 
         elif self.durum == "oturum_var":
             oturum_var.mesaj_isle(olay)
         elif self.durum == "bakim":
