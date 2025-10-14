@@ -313,3 +313,29 @@ async def test_alarm(alarm_type: str = "kma"):
         
     except Exception as e:
         return {"status": "error", "message": f"Test alarm hatası: {str(e)}"}
+
+async def send_measurement_status_to_bakim(is_measuring: bool):
+    """Ölçüm durumunu bakım ekranına gönder"""
+    try:
+        if not manager.bakim_connections:
+            return
+        
+        message = {
+            "type": "measurement_status",
+            "is_measuring": is_measuring,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        # Tüm bakım bağlantılarına gönder
+        for connection in manager.bakim_connections:
+            try:
+                await connection.send_text(json.dumps(message))
+            except Exception as e:
+                print(f"[WebSocket] Ölçüm durumu gönderim hatası: {e}")
+                # Bağlantıyı listeden çıkar
+                manager.bakim_connections.remove(connection)
+        
+        print(f"[WebSocket] Ölçüm durumu gönderildi: {is_measuring}")
+        
+    except Exception as e:
+        print(f"[WebSocket] Ölçüm durumu gönderim hatası: {e}")

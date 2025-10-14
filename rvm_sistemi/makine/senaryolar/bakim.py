@@ -158,6 +158,8 @@ def mesaj_isle(mesaj):
         bakim_durumu.agirlik = float(mesaj.split(":")[1].replace(",", "."))
         print(f"[Bakım Modu] Ağırlık güncellendi: {bakim_durumu.agirlik}")
         _send_sensor_data_to_websocket()
+        
+        # WebSocket ölçüm bildirimi kaldırıldı - sadece manuel kontrol
     
     # Sensör lojik durumları
     elif mesaj == "gsi":
@@ -304,6 +306,28 @@ def _send_sensor_data_to_websocket():
         
     except Exception as e:
         print(f"[Bakım Modu] WebSocket sensör gönderim hatası: {e}")
+
+def _send_measurement_status_to_websocket(is_measuring):
+    """Ölçüm durumunu WebSocket ile bakım ekranına gönder"""
+    try:
+        from ...api.endpoints.websocket import send_measurement_status_to_bakim
+        import asyncio
+        
+        # Asyncio event loop'u al veya oluştur
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        # WebSocket mesajını gönder
+        if loop.is_running():
+            asyncio.create_task(send_measurement_status_to_bakim(is_measuring))
+        else:
+            loop.run_until_complete(send_measurement_status_to_bakim(is_measuring))
+            
+    except Exception as e:
+        print(f"[Bakım Modu] WebSocket ölçüm durumu gönderim hatası: {e}")
 
 def get_bakim_durumu():
     """Bakım durumunu döndürür"""

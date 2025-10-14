@@ -12,6 +12,94 @@ let cardConnectionTimeouts = {};
 let websocket = null;
 let isCalibrating = false;
 
+// Yeni temiz kuyruk sistemi
+let sensorQueue = [];
+let motorQueue = [];
+let systemQueue = [];
+let isPingInProgress = false;
+
+// Temiz kuyruk yöneticisi sınıfı
+class CardQueueManager {
+    constructor(cardType) {
+        this.cardType = cardType;
+        this.queue = [];
+        this.isProcessing = false;
+        this.delay = cardType === 'sensor' ? 800 : cardType === 'motor' ? 600 : 400; // ms - daha güvenli
+        this.maxRetries = 3;
+    }
+    
+    async addOperation(operation, priority = false) {
+        const operationData = {
+            id: Date.now() + Math.random(),
+            operation: operation,
+            priority: priority,
+            retries: 0,
+            timestamp: Date.now()
+        };
+        
+        if (priority) {
+            this.queue.unshift(operationData);
+        } else {
+            this.queue.push(operationData);
+        }
+        
+        this.processQueue();
+    }
+    
+    async processQueue() {
+        if (this.isProcessing || this.queue.length === 0) return;
+        
+        this.isProcessing = true;
+        console.log(`🔄 ${this.cardType.toUpperCase()} kuyruğu işleniyor (${this.queue.length} işlem)`);
+        
+        while (this.queue.length > 0) {
+            const operationData = this.queue.shift();
+            
+            try {
+                await operationData.operation();
+                console.log(`✅ ${this.cardType.toUpperCase()} işlemi tamamlandı`);
+                
+                // İşlemler arası güvenlik beklemesi
+                await this.sleep(this.delay);
+                
+            } catch (error) {
+                console.error(`❌ ${this.cardType.toUpperCase()} kuyruk hatası:`, error);
+                
+                // Retry mekanizması
+                if (operationData.retries < this.maxRetries) {
+                    operationData.retries++;
+                    console.log(`🔄 ${this.cardType.toUpperCase()} işlemi tekrar deneniyor (${operationData.retries}/${this.maxRetries})`);
+                    this.queue.unshift(operationData);
+                    await this.sleep(1000); // Retry için bekle
+                } else {
+                    console.error(`💥 ${this.cardType.toUpperCase()} işlemi başarısız, atlanıyor`);
+                }
+            }
+        }
+        
+        this.isProcessing = false;
+        console.log(`🏁 ${this.cardType.toUpperCase()} kuyruğu tamamlandı`);
+    }
+    
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    getQueueStatus() {
+        return {
+            cardType: this.cardType,
+            queueLength: this.queue.length,
+            isProcessing: this.isProcessing,
+            delay: this.delay
+        };
+    }
+}
+
+// Kuyruk yöneticilerini oluştur
+const sensorQueueManager = new CardQueueManager('sensor');
+const motorQueueManager = new CardQueueManager('motor');
+const systemQueueManager = new CardQueueManager('system');
+
 // Durum yöneticisi
 const durumYoneticisi = {
     durum: 'oturum_yok',
@@ -71,6 +159,8 @@ async function bakimModuToggle() {
                 showMessage('✓ ' + data.message);
                 // Bakım modu pasifken periyodik güncellemeleri durdur
                 stopPeriodicUpdates();
+                // Tüm işlemleri durdur (güvenlik için)
+                stopAllOperations();
             }
             
             // Butonları güncelle
@@ -266,45 +356,51 @@ async function sensorDegerleriniGuncelle() {
 
 // API çağrı fonksiyonları
 async function motorKontrol(komut) {
-    try {
-        const response = await fetch(`${API_BASE}/motor/${komut}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Motor işlemini motor kuyruğuna ekle
+    motorQueueManager.addOperation(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/motor/${komut}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            showMessage(data.message);
-        } else {
-            showMessage(data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    });
 }
 
 async function sensorKontrol(komut) {
-    try {
-        const response = await fetch(`${API_BASE}/sensor/${komut}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Sensör işlemini sensör kuyruğuna ekle
+    sensorQueueManager.addOperation(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/sensor/${komut}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            showMessage(data.message);
-        } else {
-            showMessage(data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    });
 }
 
 // Sistem reset
@@ -313,28 +409,31 @@ async function sistemReset() {
         return;
     }
     
-    try {
-        showMessage('↻ Sistem resetleniyor...', false);
-        const response = await fetch(`${API_BASE}/sistem/reset`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Sistem işlemini sistem kuyruğuna ekle (yüksek öncelik)
+    systemQueueManager.addOperation(async () => {
+        try {
+            showMessage('↻ Sistem resetleniyor...', false);
+            const response = await fetch(`${API_BASE}/sistem/reset`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Motor toggle'larını kapat
+                turnOffMotorToggles();
+                showMessage('✓ ' + data.message);
+                setTimeout(sistemDurumunuGuncelle, 2000);
+            } else {
+                showMessage('✗ ' + data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            // Motor toggle'larını kapat
-            turnOffMotorToggles();
-            showMessage('✓ ' + data.message);
-            setTimeout(sistemDurumunuGuncelle, 2000);
-        } else {
-            showMessage('✗ ' + data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    }, true); // Yüksek öncelik
 }
 
 // Sekme kontrolü
@@ -584,15 +683,32 @@ function setupSensorControls() {
 
     // Sürekli ağırlık ölçümü durdur
     function agirlikOlcDurdur() {
+        console.log('🛑 Ağırlık ölçümü durduruluyor...');
+        
+        // Bayrağı sıfırla
         agirlikOlcAktif = false;
+        
+        // Timer'ı temizle
         if (agirlikOlcTimer) {
             clearInterval(agirlikOlcTimer);
             agirlikOlcTimer = null;
         }
+        
+        // UI'yi güncelle
         if (loadcellVisual) loadcellVisual.classList.remove('measuring');
         if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm durduruldu';
+        
+        // Buton durumunu sıfırla
+        const measureBtn = document.getElementById('loadcell-measure-btn');
+        if (measureBtn) {
+            measureBtn.textContent = 'Ağırlık Ölç';
+            measureBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            measureBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            measureBtn.disabled = false;
+        }
+        
         showMessage('✓ Ağırlık ölçümü durduruldu', true);
-        console.log('Ağırlık ölçümü durduruldu');
+        console.log('✅ Ağırlık ölçümü durduruldu');
     }
     
     if (tareBtn) {
@@ -711,6 +827,7 @@ function setupSensorControls() {
             
             updateLedState(100);
             sensorKontrol('led-ac');
+            await sendLedPwm(100);
         });
     }
     
@@ -737,19 +854,68 @@ function setupSensorControls() {
             
             updateLedState(0);
             sensorKontrol('led-kapat');
+            await sendLedPwm(0);
         });
     }
     
     if (brightnessSlider) {
-        brightnessSlider.addEventListener('input', () => updateLedState(parseInt(brightnessSlider.value, 10)));
+        brightnessSlider.addEventListener('input', async () => {
+            const value = parseInt(brightnessSlider.value, 10);
+            updateLedState(value);
+            await sendLedPwm(value);
+        });
     }
     
     if (brightnessInput) {
-        brightnessInput.addEventListener('input', () => {
+        brightnessInput.addEventListener('input', async () => {
             const val = parseInt(brightnessInput.value, 10);
-            if (!isNaN(val)) updateLedState(val);
+            if (!isNaN(val)) {
+                updateLedState(val);
+                await sendLedPwm(val);
+            }
         });
     }
+}
+
+// LED PWM değerini sensör kartına gönder
+async function sendLedPwm(value) {
+    // LED PWM işlemini sensör kuyruğuna ekle
+    sensorQueueManager.addOperation(async () => {
+        try {
+            // Önce sensör durumunu kontrol et
+            const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+            const durumData = await durumResponse.json();
+            
+            if (!durumData.bagli) {
+                console.warn('Sensör kartı bağlı değil, LED PWM gönderilemedi');
+                return;
+            }
+            
+            if (!durumData.saglikli) {
+                console.warn('Sensör kartı sağlıksız, LED PWM gönderilemedi');
+                return;
+            }
+            
+            // PWM değerini gönder
+            const response = await fetch(`${API_BASE}/sensor/led-pwm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ deger: value })
+            });
+            
+            const data = await response.json();
+            
+            if (data.errorCode === 0) {
+                console.log(`LED PWM değeri ${value} olarak ayarlandı`);
+            } else {
+                console.error('LED PWM ayarlama hatası:', data.message);
+            }
+        } catch (error) {
+            console.error('LED PWM gönderme hatası:', error);
+        }
+    });
 }
 
 // Motor toggle'larını senkronize et
@@ -1295,10 +1461,8 @@ function disconnectWebSocket() {
         websocket = null;
     }
     
-    // Ağırlık ölçüm timer'ını durdur
-    if (agirlikOlcAktif) {
-        agirlikOlcDurdur();
-    }
+    // Tüm işlemleri durdur (güvenlik için)
+    stopAllOperations();
 }
 
 function handleWebSocketMessage(data) {
@@ -1320,6 +1484,7 @@ function handleWebSocketMessage(data) {
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
             break;
+        // measurement_status case kaldırıldı
         default:
             console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
     }
@@ -1440,8 +1605,8 @@ function startStatusUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopStatusUpdates();
     
-    // Ping ile sağlık durumu kontrolü (3 saniyede bir)
-    sistemDurumInterval = setInterval(pingKartlar, 3000); // 3 saniyede bir
+    // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
+    sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir
 }
 
 // Durum güncellemelerini durdur
@@ -1452,30 +1617,92 @@ function stopStatusUpdates() {
     }
 }
 
+// Eski kuyruk sistemi kaldırıldı - yeni CardQueueManager kullanılıyor
+
 // Kartları ping ile sağlık durumunu kontrol et
 async function pingKartlar() {
+    // Ağırlık ölçümü aktifse ping atma
+    if (typeof agirlikOlcAktif !== 'undefined' && agirlikOlcAktif) {
+        console.log('📏 Ağırlık ölçümü aktif - Ping atlanıyor');
+        return;
+    }
+    
+    // Kuyruklarda bekleyen işlem varsa ping atma
+    if (sensorQueueManager.queue.length > 0 || motorQueueManager.queue.length > 0 || systemQueueManager.queue.length > 0) {
+        console.log('⏳ Kuyruklarda bekleyen işlem var - Ping atlanıyor');
+        return;
+    }
+    
+    // Kuyruklar işleniyorsa ping atma
+    if (sensorQueueManager.isProcessing || motorQueueManager.isProcessing || systemQueueManager.isProcessing) {
+        console.log('🔄 Kuyruklar işleniyor - Ping atlanıyor');
+        return;
+    }
+    
+    if (isPingInProgress) {
+        return; // Zaten ping devam ediyorsa atla
+    }
+    
+    isPingInProgress = true;
+    console.log('📡 Ping işlemi başlatılıyor...');
+    
     try {
-        // Sensör kartını ping et
-        const sensorResponse = await fetch(`${API_BASE}/sensor/ping`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const sensorData = await sensorResponse.json();
+        // Sensör kartını ping et (timeout ile)
+        const sensorData = await pingSingleCard('sensor');
         
-        // Motor kartını ping et
-        const motorResponse = await fetch(`${API_BASE}/motor/ping`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const motorData = await motorResponse.json();
+        // Motor kartını ping et (timeout ile)
+        const motorData = await pingSingleCard('motor');
         
         // Ping sonuçlarına göre durum göstergelerini güncelle
         updateConnectionStatusFromPing(sensorData, motorData);
         
     } catch (error) {
-        console.log('Ping hatası:', error);
+        console.log('📡 Ping genel hatası:', error.message);
         // Hata durumunda gri göster
         setStatusIndicatorsGray();
+    } finally {
+        isPingInProgress = false;
+        console.log('📡 Ping işlemi tamamlandı');
+    }
+}
+
+// Tek kart ping işlemi (güvenli)
+async function pingSingleCard(cardType) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+        controller.abort();
+    }, 3000); // 3 saniye timeout - daha uzun
+    
+    try {
+        const response = await fetch(`${API_BASE}/${cardType}/ping`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log(`📡 ${cardType.toUpperCase()} ping başarılı:`, data.saglikli ? 'Sağlıklı' : 'Sağlıksız');
+        return data;
+        
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log(`📡 ${cardType.toUpperCase()} ping timeout - atlanıyor`);
+        } else {
+            console.log(`📡 ${cardType.toUpperCase()} ping hatası:`, error.message);
+        }
+        
+        // Hata durumunda varsayılan değer döndür
+        return {
+            saglikli: false,
+            message: `Ping hatası: ${error.message}`,
+            error: true
+        };
+    } finally {
+        clearTimeout(timeout);
     }
 }
 
@@ -2091,6 +2318,20 @@ async function runScenario(scenario) {
 document.addEventListener('DOMContentLoaded', () => {
     initializeBakim();
     
+    // Sayfa kapatılırken tüm işlemleri durdur (güvenlik için)
+    window.addEventListener('beforeunload', function() {
+        console.log('🛑 Sayfa kapatılıyor - tüm bakım işlemleri durduruluyor...');
+        stopAllOperations();
+    });
+    
+    // Sayfa görünürlük değiştiğinde kontrol et
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            console.log('🛑 Sayfa gizlendi - tüm bakım işlemleri durduruluyor...');
+            stopAllOperations();
+        }
+    });
+    
     // Yeni özellikler için event listener'lar
     const diagnosticBtn = document.getElementById('diagnostic-btn');
     if (diagnosticBtn) {
@@ -2700,4 +2941,53 @@ function setupSafetyControls() {
     setupLockControl('bottom-lock', bottomSensorControls);
     setupFanControl();
     setupSafetyRelay();
+}
+
+// Kuyruk durumu izleme fonksiyonu
+function getQueueStatus() {
+    return {
+        sensor: sensorQueueManager.getQueueStatus(),
+        motor: motorQueueManager.getQueueStatus(),
+        system: systemQueueManager.getQueueStatus(),
+        ping: { isPingInProgress: isPingInProgress }
+    };
+}
+
+// Kuyruk durumunu konsola yazdır (debug için)
+function logQueueStatus() {
+    const status = getQueueStatus();
+    console.log('📊 Kuyruk Durumu:', status);
+    return status;
+}
+
+// Tüm kuyrukları durdur ve temizle (güvenlik için)
+function stopAllOperations() {
+    console.log('🛑 Tüm bakım işlemleri durduruluyor...');
+    
+    // Tüm kuyrukları temizle
+    sensorQueueManager.queue = [];
+    motorQueueManager.queue = [];
+    systemQueueManager.queue = [];
+    
+    // İşlem durumlarını sıfırla
+    sensorQueueManager.isProcessing = false;
+    motorQueueManager.isProcessing = false;
+    systemQueueManager.isProcessing = false;
+    
+    // Ağırlık ölçümünü zorla durdur
+    if (typeof agirlikOlcAktif !== 'undefined' && agirlikOlcAktif) {
+        console.log('🛑 Ağırlık ölçümü zorla durduruluyor...');
+        agirlikOlcDurdur();
+    }
+    
+    // Ping işlemini durdur
+    isPingInProgress = false;
+    
+    // Tüm timer'ları temizle
+    if (typeof agirlikOlcTimer !== 'undefined' && agirlikOlcTimer) {
+        clearInterval(agirlikOlcTimer);
+        agirlikOlcTimer = null;
+    }
+    
+    console.log('✅ Tüm işlemler durduruldu');
 }
