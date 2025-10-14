@@ -188,6 +188,47 @@
             color: #d1d5db; /* gray-300 */
         }
 
+        /* Güvenlik Kartı Animasyonları */
+        .lock-head {
+            transition: transform 0.3s ease-in-out;
+        }
+        .lock-visual.unlocked .lock-head {
+            transform: translateY(-15px);
+        }
+
+        #fan-blades {
+            transform-origin: center;
+        }
+
+        #fan-svg.fan-active #fan-blades {
+            animation: gear-spin var(--fan-duration, 2s) linear infinite;
+        }
+
+        .sensor-part-movable {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sensor-visual.inactive .sensor-part-movable {
+            transform: translateX(25px);
+        }
+
+        /* Acil Durdurma Butonu */
+        #emergency-stop-button {
+            box-shadow: 0px 8px 0px #991b1b; /* red-800 for 3D effect */
+            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+        }
+        #emergency-stop-button-container.pressed #emergency-stop-button {
+            transform: translateY(6px);
+            box-shadow: 0px 2px 0px #991b1b;
+        }
+        @keyframes emergency-glow {
+            0%, 100% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0); }
+            50% { box-shadow: 0 0 25px 10px rgba(239, 68, 68, 0.7); }
+        }
+        .emergency-active {
+            animation: emergency-glow 1.5s infinite;
+        }
+
+
     </style>
 </head>
 <body class="bg-gray-900 text-white">
@@ -211,6 +252,20 @@
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Genel Durum & Hızlı Kontroller (Sol Sütun) -->
              <div class="space-y-6 lg:col-span-1">
+                <!-- Acil Durdurma Butonu -->
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Acil Durdurma</h2>
+                    <div id="emergency-stop-container" class="flex flex-col items-center justify-center gap-4">
+                        <div id="emergency-stop-button-container" class="w-32 h-32 bg-yellow-400 rounded-lg shadow-lg flex items-center justify-center cursor-pointer p-2">
+                             <div class="w-28 h-28 bg-black rounded-full flex items-center justify-center shadow-inner">
+                                <div id="emergency-stop-button" class="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-center text-white font-bold">
+                                    ACİL DURDURMA
+                                </div>
+                            </div>
+                        </div>
+                        <span id="emergency-stop-status" class="font-semibold text-green-400 text-lg">Sistem Aktif</span>
+                    </div>
+                </div>
                 <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Genel Durum</h2>
                    <div class="space-y-6">
@@ -276,6 +331,9 @@
                         </button>
                         <button id="tab-btn-motors" class="tab-btn inactive-tab whitespace-nowrap py-3 px-2 sm:py-4 sm:px-1 border-b-2 font-medium text-base sm:text-lg">
                             Motor Kartı
+                        </button>
+                        <button id="tab-btn-safety" class="tab-btn inactive-tab whitespace-nowrap py-3 px-2 sm:py-4 sm:px-1 border-b-2 font-medium text-base sm:text-lg">
+                            Güvenlik Kartı
                         </button>
                     </nav>
                 </div>
@@ -551,33 +609,228 @@
                                     </ul>
                                 </div>
                             </div>
-                            <!-- Kalibrasyon ve Test Bölümü (Motor Kartına Taşındı) -->
                         </div>
-                            </div>
-                            <!-- Kalibrasyon ve Test Bölümü -->
-                             <div class="mt-8 pt-4 border-t-2 border-gray-700 space-y-8">
-                                <div id="calibration-section">
-                                    <h3 class="text-lg font-semibold mb-4">Kalibrasyon</h3>
-                                    <div class="flex flex-wrap items-center gap-4">
-                                        <button id="calibrate-diverter-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Yönlendirici Motor</button>
-                                        <button id="calibrate-flap-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Klape Motor</button>
-                                        <button id="calibrate-diverter-sensor-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Yönlendirici Sensör</button>
-                                        <button id="calibrate-all-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tümünü Kalibre Et</button>
-                                        <p id="calibration-status" class="text-green-400 font-semibold h-6"></p>
+                    </div>
+                     <!-- Güvenlik Kartı İçeriği -->
+                    <div id="tab-content-safety" class="tab-content hidden">
+                         <div class="bg-gray-800 p-4 sm:p-6 rounded-b-2xl shadow-lg">
+                             <div class="flex flex-wrap justify-between items-center gap-4 mb-4 border-b border-gray-700 pb-2">
+                                <h2 class="text-xl font-semibold">Güvenlik Kartı Detayları</h2>
+                             </div>
+                              <div id="safety-details-grid" class="details-grid mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+                                <!-- Üst Kapak Kilit -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Üst Kapak Kilidi</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div id="top-lock-visual" class="lock-visual w-16 h-16">
+                                            <svg viewBox="0 -15 50 95" class="w-full h-full">
+                                                <rect x="5" y="15" width="40" height="65" rx="3" fill="#111827" />
+                                                <g class="lock-head">
+                                                    <rect x="10" y="5" width="30" height="15" rx="2" fill="#f59e0b" />
+                                                    <rect x="15" y="8" width="20" height="5" fill="#111827" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                     <div class="flex items-center justify-center space-x-4 mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div id="top-lock-status-led" class="w-3 h-3 rounded-full bg-red-500"></div>
+                                            <span id="top-lock-status-text" class="font-semibold text-red-400">Kilit Kapalı</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <div id="top-lock-tongue-led" class="w-3 h-3 rounded-full bg-green-500"></div>
+                                            <span id="top-lock-tongue-text" class="font-semibold text-green-400">Dil Var</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 mt-auto">
+                                        <button id="top-lock-open-btn" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded-lg text-sm">Kilit Aç</button>
+                                        <button id="top-lock-close-btn" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded-lg text-sm">Kilit Kapat</button>
+                                    </div>
+                                    <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono">12.0 V</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono">15.1 mV</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">75 mA</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">0.9 W</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1">İyi <span class="w-2 h-2 rounded-full bg-green-500"></span></span></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Alt Kapak Kilit -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Alt Kapak Kilidi</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div id="bottom-lock-visual" class="lock-visual w-16 h-16">
+                                            <svg viewBox="0 -15 50 95" class="w-full h-full">
+                                                <rect x="5" y="15" width="40" height="65" rx="3" fill="#111827" />
+                                                <g class="lock-head">
+                                                    <rect x="10" y="5" width="30" height="15" rx="2" fill="#f59e0b" />
+                                                    <rect x="15" y="8" width="20" height="5" fill="#111827" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-center space-x-4 mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div id="bottom-lock-status-led" class="w-3 h-3 rounded-full bg-red-500"></div>
+                                            <span id="bottom-lock-status-text" class="font-semibold text-red-400">Kilit Kapalı</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <div id="bottom-lock-tongue-led" class="w-3 h-3 rounded-full bg-green-500"></div>
+                                            <span id="bottom-lock-tongue-text" class="font-semibold text-green-400">Dil Var</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 mt-auto">
+                                        <button id="bottom-lock-open-btn" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded-lg text-sm">Kilit Aç</button>
+                                        <button id="bottom-lock-close-btn" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded-lg text-sm">Kilit Kapat</button>
+                                    </div>
+                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono">12.1 V</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono">14.8 mV</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">74 mA</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">0.89 W</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1">İyi <span class="w-2 h-2 rounded-full bg-green-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Üst Kapak Manyetik Sensör -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Üst Kapak Emniyet Sensörü</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div id="top-sensor-visual" class="sensor-visual w-24 h-16">
+                                            <svg viewBox="0 0 100 50" class="w-full h-full">
+                                                <!-- Sabit Parça -->
+                                                <g>
+                                                    <rect x="5" y="10" width="30" height="30" rx="3" fill="#f59e0b"/>
+                                                    <rect x="30" y="10" width="5" height="30" fill="#111827"/>
+                                                    <circle cx="15" cy="20" r="4" fill="#1f2937"/>
+                                                    <circle cx="15" cy="30" r="4" fill="#1f2937"/>
+                                                </g>
+                                                <!-- Hareketli Parça -->
+                                                <g class="sensor-part-movable">
+                                                    <rect x="45" y="10" width="30" height="30" rx="3" fill="#f59e0b"/>
+                                                    <rect x="45" y="10" width="5" height="30" fill="#111827"/>
+                                                    <circle cx="65" cy="20" r="4" fill="#1f2937"/>
+                                                    <circle cx="65" cy="30" r="4" fill="#1f2937"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                     <div class="flex items-center justify-center space-x-2 mb-3">
+                                        <div id="top-sensor-status-led" class="w-3 h-3 rounded-full bg-green-500"></div>
+                                        <span id="top-sensor-status-text" class="font-semibold text-green-400">Aktif (Kapak Kapalı)</span>
+                                    </div>
+                                     <ul class="mt-auto space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono">5.0 V</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono">2.1 mV</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">5 mA</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">0.025 W</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1">İyi <span class="w-2 h-2 rounded-full bg-green-500"></span></span></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Alt Kapak Manyetik Sensör -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Alt Kapak Emniyet Sensörü</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div id="bottom-sensor-visual" class="sensor-visual w-24 h-16">
+                                             <svg viewBox="0 0 100 50" class="w-full h-full">
+                                                <!-- Sabit Parça -->
+                                                <g>
+                                                    <rect x="5" y="10" width="30" height="30" rx="3" fill="#f59e0b"/>
+                                                    <rect x="30" y="10" width="5" height="30" fill="#111827"/>
+                                                    <circle cx="15" cy="20" r="4" fill="#1f2937"/>
+                                                    <circle cx="15" cy="30" r="4" fill="#1f2937"/>
+                                                </g>
+                                                <!-- Hareketli Parça -->
+                                                <g class="sensor-part-movable">
+                                                    <rect x="45" y="10" width="30" height="30" rx="3" fill="#f59e0b"/>
+                                                    <rect x="45" y="10" width="5" height="30" fill="#111827"/>
+                                                    <circle cx="65" cy="20" r="4" fill="#1f2937"/>
+                                                    <circle cx="65" cy="30" r="4" fill="#1f2937"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-center space-x-2 mb-3">
+                                        <div id="bottom-sensor-status-led" class="w-3 h-3 rounded-full bg-green-500"></div>
+                                        <span id="bottom-sensor-status-text" class="font-semibold text-green-400">Aktif (Kapak Kapalı)</span>
+                                    </div>
+                                    <ul class="mt-auto space-y-1 text-xs text-gray-300">
+                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono">5.0 V</span></li>
+                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono">2.2 mV</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono">5 mA</span></li>
+                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono">0.025 W</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1">İyi <span class="w-2 h-2 rounded-full bg-green-500"></span></span></li>
+                                    </ul>
+                                </div>
+                                  <!-- Soğutma Fanı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Soğutma Fanı</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div class="w-20 h-20">
+                                            <svg id="fan-svg" viewBox="0 0 100 100" class="w-full h-full text-gray-500 transition-colors duration-300">
+                                                <!-- Frame -->
+                                                <rect width="100" height="100" rx="10" fill="#1f2937" />
+                                                <path d="M50,10 A40,40 0 1,1 50,90 A40,40 0 1,1 50,10 M50,18 A32,32 0 1,0 50,82 A32,32 0 1,0 50,18" fill="#111827"/>
+                                                <circle cx="15" cy="15" r="5" fill="#111827" />
+                                                <circle cx="85" cy="15" r="5" fill="#111827" />
+                                                <circle cx="15" cy="85" r="5" fill="#111827" />
+                                                <circle cx="85" cy="85" r="5" fill="#111827" />
+                                                
+                                                <!-- Blades and Hub -->
+                                                <g id="fan-blades">
+                                                    <circle cx="50" cy="50" r="18" fill="#1f2937" />
+                                                    <path d="M50 50 L 35 25 C 50 20, 50 20, 65 25 Z" fill="currentColor"/>
+                                                    <path d="M50 50 L 25 65 C 20 50, 20 50, 25 35 Z" fill="currentColor"/>
+                                                    <path d="M50 50 L 65 75 C 50 80, 50 80, 35 75 Z" fill="currentColor"/>
+                                                    <path d="M50 50 L 75 35 C 80 50, 80 50, 75 65 Z" fill="currentColor"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 mt-auto">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="range" id="fan-speed-slider" min="0" max="100" value="0" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer speed-slider">
+                                            <input type="number" id="fan-speed-input" min="0" max="100" value="0" class="w-16 bg-gray-900 text-center font-mono rounded-md border border-gray-600 p-1 text-sm">
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button id="fan-on-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Aç</button>
+                                            <button id="fan-off-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Kapat</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="test-section">
-                                    <h3 class="text-lg font-semibold mb-4">Motor Test</h3>
-                                    <div class="flex flex-wrap items-center gap-4">
-                                        <button id="test-plastic-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Plastik Senaryosu</button>
-                                        <button id="test-metal-btn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Metal Senaryosu</button>
-                                        <button id="test-glass-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cam Senaryosu</button>
-                                        <button id="start-stop-scenarios-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Senaryoları Başlat</button>
-                                        <p id="test-status" class="text-amber-400 font-semibold h-6"></p>
+                                
+                                <!-- Güvenlik Rölesi -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-2 text-center">Güvenlik Rölesi</h3>
+                                    <div class="flex-grow flex items-center justify-center my-2">
+                                        <div class="w-20 h-24 p-2">
+                                             <svg id="safety-relay-icon" viewBox="0 0 60 80" class="w-full h-full">
+                                                <rect x="0" y="0" width="60" height="80" rx="5" fill="#f59e0b"/>
+                                                <rect x="0" y="0" width="25" height="80" fill="#111827" ry="5" rx="5"/>
+                                                <rect x="30" y="20" width="25" height="40" fill="#111827" opacity="0.7" rx="2"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                     <div class="grid grid-cols-2 gap-2 text-sm text-center mb-3 px-2">
+                                        <div id="safety-relay-status" class="flex items-center justify-center space-x-2 py-1 bg-gray-900/50 rounded-md">
+                                            <div id="safety-relay-led" class="w-3 h-3 rounded-full bg-red-500"></div>
+                                            <span id="safety-relay-text" class="font-semibold text-red-400">Röle Pasif</span>
+                                        </div>
+                                         <div id="bypass-status" class="flex items-center justify-center space-x-2 py-1 bg-gray-900/50 rounded-md">
+                                            <div id="bypass-led" class="w-3 h-3 rounded-full bg-green-500"></div>
+                                            <span id="bypass-text" class="font-semibold text-green-400">Kilitler Aktif</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 mt-auto">
+                                        <button id="safety-relay-reset-btn" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-sm">Reset</button>
+                                        <button id="safety-relay-bypass-btn" class="w-full bg-yellow-600 hover:bg-yellow-700 p-2 rounded-lg text-sm">Bypass</button>
                                     </div>
                                 </div>
+
+
                             </div>
-                        </div>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -921,8 +1174,8 @@
                     }
                     
                     if (isChecked) {
-                        const posLed = document.getElementById(`${motorPrefix}-pos-led`);
-                        const alarmLed = document.getElementById(`${motorPrefix}-alarm-led`);
+                        const posLed = document.getElementById(`${prefix}-pos-led`);
+                        const alarmLed = document.getElementById(`${prefix}-alarm-led`);
                         if (posLed) posLed.className = 'w-4 h-4 rounded-full bg-gray-600';
                         if (alarmLed) alarmLed.className = 'w-4 h-4 rounded-full bg-green-500';
                     }
@@ -1037,6 +1290,238 @@
                 fInductiveOut.innerText = result;
                 fInductiveMetal.style.transform = result === 1 ? 'translateX(55px)' : 'translateX(0px)';
             });
+
+            // --- GÜVENLİK KARTI KONTROLLERİ ---
+            function setupFanControl() {
+                const fanSvg = document.getElementById('fan-svg');
+                const speedSlider = document.getElementById('fan-speed-slider');
+                const speedInput = document.getElementById('fan-speed-input');
+                const onBtn = document.getElementById('fan-on-btn');
+                const offBtn = document.getElementById('fan-off-btn');
+
+                const updateFanState = (speed) => {
+                    const value = Math.max(0, Math.min(100, parseInt(speed, 10)));
+                    speedSlider.value = value;
+                    speedInput.value = value;
+
+                    if (value > 0) {
+                        fanSvg.classList.add('fan-active', 'text-blue-400');
+                        fanSvg.classList.remove('text-gray-500');
+                        // Speed affects animation duration. Faster speed = shorter duration.
+                        const duration = (2.5 - (value / 100) * 2.3).toFixed(2);
+                        fanSvg.style.setProperty('--fan-duration', `${duration}s`);
+                        
+                    } else {
+                        fanSvg.classList.remove('fan-active', 'text-blue-400');
+                        fanSvg.classList.add('text-gray-500');
+                        fanSvg.style.removeProperty('--fan-duration');
+                    }
+                };
+
+                onBtn.addEventListener('click', () => updateFanState(speedInput.value > 0 ? speedInput.value : 100));
+                offBtn.addEventListener('click', () => updateFanState(0));
+                speedSlider.addEventListener('input', () => updateFanState(speedSlider.value));
+                speedInput.addEventListener('input', () => updateFanState(speedInput.value));
+                
+                updateFanState(0); // Initial state
+            }
+            function setupMagneticSensor(prefix) {
+                const visual = document.getElementById(`${prefix}-visual`);
+                const statusLed = document.getElementById(`${prefix}-status-led`);
+                const statusText = document.getElementById(`${prefix}-status-text`);
+                
+                const setActive = () => {
+                    visual.classList.remove('inactive');
+                    statusLed.classList.remove('bg-red-500');
+                    statusLed.classList.add('bg-green-500');
+                    statusText.textContent = 'Aktif (Kapak Kapalı)';
+                    statusText.classList.remove('text-red-400');
+                    statusText.classList.add('text-green-400');
+                };
+
+                const setPassive = () => {
+                     visual.classList.add('inactive');
+                    statusLed.classList.remove('bg-green-500');
+                    statusLed.classList.add('bg-red-500');
+                    statusText.textContent = 'Pasif (Kapak Açık)';
+                    statusText.classList.remove('text-green-400');
+                    statusText.classList.add('text-red-400');
+                };
+                
+                return { setActive, setPassive };
+            }
+
+            function setupLockControl(prefix, sensorControls) {
+                const visual = document.getElementById(`${prefix}-visual`);
+                const statusLed = document.getElementById(`${prefix}-status-led`);
+                const statusText = document.getElementById(`${prefix}-status-text`);
+                const tongueLed = document.getElementById(`${prefix}-tongue-led`);
+                const tongueText = document.getElementById(`${prefix}-tongue-text`);
+                const openBtn = document.getElementById(`${prefix}-open-btn`);
+                const closeBtn = document.getElementById(`${prefix}-close-btn`);
+
+                openBtn.addEventListener('click', () => {
+                    visual.classList.add('unlocked');
+                    statusLed.classList.remove('bg-red-500');
+                    statusLed.classList.add('bg-green-500');
+                    statusText.textContent = 'Kilit Açık';
+                    statusText.classList.remove('text-red-400');
+                    statusText.classList.add('text-green-400');
+
+                    tongueLed.classList.remove('bg-green-500');
+                    tongueLed.classList.add('bg-red-500');
+                    tongueText.textContent = 'Dil Yok';
+                    tongueText.classList.remove('text-green-400');
+                    tongueText.classList.add('text-red-400');
+
+                    if (sensorControls) sensorControls.setPassive();
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    visual.classList.remove('unlocked');
+                    statusLed.classList.remove('bg-green-500');
+                    statusLed.classList.add('bg-red-500');
+                    statusText.textContent = 'Kilit Kapalı';
+                    statusText.classList.remove('text-green-400');
+                    statusText.classList.add('text-red-400');
+
+                    tongueLed.classList.remove('bg-red-500');
+                    tongueLed.classList.add('bg-green-500');
+                    tongueText.textContent = 'Dil Var';
+                    tongueText.classList.remove('text-red-400');
+                    tongueText.classList.add('text-green-400');
+
+                    if (sensorControls) sensorControls.setActive();
+                });
+            }
+
+             function setupSafetyRelay() {
+                const resetBtn = document.getElementById('safety-relay-reset-btn');
+                const bypassBtn = document.getElementById('safety-relay-bypass-btn');
+                
+                const relayLed = document.getElementById('safety-relay-led');
+                const relayText = document.getElementById('safety-relay-text');
+                const bypassLed = document.getElementById('bypass-led');
+                const bypassText = document.getElementById('bypass-text');
+
+                let isBypassActive = false;
+
+                resetBtn.addEventListener('click', () => {
+                    // Butonları devre dışı bırak
+                    resetBtn.disabled = true;
+                    bypassBtn.disabled = true;
+
+                    // "Resetleniyor" durumuna ayarla
+                    relayLed.classList.remove('bg-red-500', 'bg-green-500');
+                    relayLed.classList.add('bg-yellow-500');
+                    relayText.textContent = 'Resetleniyor...';
+                    relayText.classList.remove('text-red-400', 'text-green-400');
+                    relayText.classList.add('text-yellow-400');
+
+                    // 2 saniye bekle
+                    setTimeout(() => {
+                        // "Aktif" durumuna ayarla
+                        relayLed.classList.remove('bg-red-500', 'bg-yellow-500');
+                        relayLed.classList.add('bg-green-500');
+                        relayText.textContent = 'Röle Aktif';
+                        relayText.classList.remove('text-red-400', 'text-yellow-400');
+                        relayText.classList.add('text-green-400');
+
+                        // Butonları tekrar aktif et
+                        resetBtn.disabled = false;
+                        bypassBtn.disabled = false;
+                    }, 2000);
+                });
+
+                bypassBtn.addEventListener('click', () => {
+                    isBypassActive = !isBypassActive;
+                    if (isBypassActive) {
+                        bypassLed.classList.remove('bg-green-500');
+                        bypassLed.classList.add('bg-red-500');
+                        bypassText.textContent = 'Kilitler Pasif';
+                        bypassText.classList.remove('text-green-400');
+                        bypassText.classList.add('text-red-400');
+                    } else {
+                        bypassLed.classList.remove('bg-red-500');
+                        bypassLed.classList.add('bg-green-500');
+                        bypassText.textContent = 'Kilitler Aktif';
+                        bypassText.classList.remove('text-red-400');
+                        bypassText.classList.add('text-green-400');
+                    }
+                });
+            }
+
+            // --- ACİL DURDURMA KONTROLÜ ---
+            function setupEmergencyStop() {
+                const eStopContainer = document.getElementById('emergency-stop-button-container');
+                const eStopButton = document.getElementById('emergency-stop-button');
+                const eStopStatus = document.getElementById('emergency-stop-status');
+                
+                let isStopped = false;
+
+                eStopContainer.addEventListener('click', () => {
+                    isStopped = !isStopped;
+                    
+                    // Tüm motor güç anahtarları
+                    const powerToggles = document.querySelectorAll('.motor-power-toggle');
+                    
+                    if (isStopped) {
+                        // Sistemi durdur
+                        eStopContainer.classList.add('pressed', 'emergency-active');
+                        eStopButton.textContent = 'AKTİF ET';
+                        eStopStatus.textContent = 'ACİL DURUM';
+                        eStopStatus.classList.remove('text-green-400');
+                        eStopStatus.classList.add('text-red-400');
+
+                        // Tüm motorların gücünü kapat
+                        powerToggles.forEach(toggle => {
+                            if(toggle.checked) {
+                                toggle.checked = false;
+                                toggle.dispatchEvent(new Event('change'));
+                            }
+                        });
+                        document.getElementById('crusher-stop-btn').click();
+                        document.getElementById('breaker-stop-btn').click();
+
+                        // Diğer tüm kontrolleri devre dışı bırak
+                        document.querySelectorAll('button, input').forEach(el => {
+                            if (!el.closest('#emergency-stop-container')) {
+                                el.disabled = true;
+                            }
+                        });
+                        
+                    } else {
+                        // Sistemi yeniden başlat
+                        eStopContainer.classList.remove('pressed', 'emergency-active');
+                        eStopButton.textContent = 'ACİL DURDURMA';
+                        eStopStatus.textContent = 'Sistem Aktif';
+                        eStopStatus.classList.remove('text-red-400');
+                        eStopStatus.classList.add('text-green-400');
+
+                        // Tüm motorların gücünü aç (varsayılan olarak)
+                        powerToggles.forEach(toggle => {
+                             if(!toggle.checked) {
+                                toggle.checked = true;
+                                toggle.dispatchEvent(new Event('change'));
+                            }
+                        });
+
+                        // Diğer tüm kontrolleri aktif et
+                         document.querySelectorAll('button, input').forEach(el => {
+                            el.disabled = false;
+                        });
+                    }
+                });
+            }
+
+
+            const topSensorControls = setupMagneticSensor('top-sensor');
+            const bottomSensorControls = setupMagneticSensor('bottom-sensor');
+            setupLockControl('top-lock', topSensorControls);
+            setupLockControl('bottom-lock', bottomSensorControls);
+            setupFanControl();
+            setupSafetyRelay();
+            setupEmergencyStop();
             
             // Kalibrasyon Kontrolleri
             const calibrateDiverterBtn = document.getElementById('calibrate-diverter-btn');
@@ -1136,7 +1621,7 @@
             const allTestButtons = [...scenarioButtons, startStopScenariosBtn];
             
             function toggleAllControls(disable) {
-                document.querySelectorAll('#motor-details-grid button, #motor-details-grid input, #sensor-details-grid button, #sensor-details-grid input, #calibration-section button, #test-section button').forEach(el => {
+                document.querySelectorAll('#motor-details-grid button, #motor-details-grid input, #sensor-details-grid button, #sensor-details-grid input, #calibration-section button, #test-section button, #safety-details-grid button').forEach(el => {
                     if (!el.closest('.power-switch') && el.id !== 'start-stop-scenarios-btn') {
                         el.disabled = disable;
                     }
@@ -1291,6 +1776,10 @@
 
 </body>
 </html>
+
+
+
+
 
 
 

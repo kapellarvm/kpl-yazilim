@@ -67,17 +67,46 @@ async def sistem_durumu():
 
 @router.post("/reset")
 async def sistem_reset():
-    """Sistemi resetler"""
+    """Sistemi resetler - hem sensör hem motor kartını resetler"""
     try:
+        reset_mesajlari = []
+        
+        # Motor kartını resetle
+        try:
+            motor = get_motor_kart()
+            if motor:
+                motor.reset()
+                reset_mesajlari.append("Motor kartı resetlendi")
+            else:
+                reset_mesajlari.append("Motor kartı bulunamadı")
+        except Exception as e:
+            reset_mesajlari.append(f"Motor kartı reset hatası: {str(e)}")
+        
+        # Sensör kartını resetle
+        try:
+            sensor = get_sensor_kart()
+            if sensor:
+                sensor.reset()
+                reset_mesajlari.append("Sensör kartı resetlendi")
+            else:
+                reset_mesajlari.append("Sensör kartı bulunamadı")
+        except Exception as e:
+            reset_mesajlari.append(f"Sensör kartı reset hatası: {str(e)}")
+        
+        # Durum makinesini sıfırla
+        try:
+            durum_makinesi.durum_degistir("oturum_yok")
+            reset_mesajlari.append("Durum makinesi sıfırlandı")
+        except Exception as e:
+            reset_mesajlari.append(f"Durum makinesi sıfırlama hatası: {str(e)}")
+        
         # Tüm kartları yeniden başlat
         global motor_kart, sensor_kart
         motor_kart = None
         sensor_kart = None
         
-        # Durum makinesini sıfırla
-        durum_makinesi.durum_degistir("oturum_yok")
-        
-        return SuccessResponse(message="Sistem başarıyla resetlendi")
+        mesaj = "Sistem resetlendi: " + ", ".join(reset_mesajlari)
+        return SuccessResponse(message=mesaj)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Sistem reset hatası: {str(e)}")
 

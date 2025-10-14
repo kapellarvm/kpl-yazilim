@@ -15,7 +15,7 @@ class UyariYoneticisi:
         self.uyari_timer: Optional[threading.Timer] = None
         self.aktif_uyari = False
         
-    def uyari_goster(self, mesaj: str = "Lütfen şişeyi alınız", sure: int = 2) -> bool:
+    def uyari_goster(self, mesaj: str = "Lütfen şişeyi alınız", sure: int = 2, suresiz: bool = False) -> bool:
         """Hızlı uyarı gösterir - belirtilen süre sonra otomatik kapanır"""
         print(f"[Uyarı Yöneticisi] Uyarı gösteriliyor: {mesaj}")
         
@@ -89,11 +89,15 @@ class UyariYoneticisi:
             
             print(f"[Uyarı Yöneticisi] Uyarı Chromium açıldı (PID: {self.uyari_chromium_process.pid}): {uyari_url}")
             
-            # Timer başlat - belirtilen süre sonra otomatik kapat
-            self.uyari_timer = threading.Timer(sure, self.uyari_kapat)
-            self.uyari_timer.start()
+            # Timer başlat - süresiz değilse belirtilen süre sonra otomatik kapat
+            if not suresiz:
+                self.uyari_timer = threading.Timer(sure, self.uyari_kapat)
+                self.uyari_timer.start()
+                print(f"[Uyarı Yöneticisi] {sure} saniye sonra otomatik kapanacak")
+            else:
+                print(f"[Uyarı Yöneticisi] Süresiz uyarı - manuel kapatma gerekli")
+            
             self.aktif_uyari = True
-            print(f"[Uyarı Yöneticisi] {sure} saniye sonra otomatik kapanacak")
             return True
             
         except Exception as e:

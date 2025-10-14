@@ -4,6 +4,7 @@ Sensör kontrolü ve ölçüm endpoint'leri
 """
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from ..modeller.schemas import SuccessResponse, ErrorResponse
 from ...makine.seri.sensor_karti import SensorKart
 from ...makine.durum_degistirici import durum_makinesi
@@ -11,6 +12,10 @@ from ...utils.logger import log_sensor, log_error, log_success, log_warning
 import asyncio
 
 router = APIRouter(prefix="/sensor", tags=["Sensör"])
+
+# Pydantic modelleri
+class LedPwmRequest(BaseModel):
+    deger: int
 
 # Sensör kartı referansı (ana.py'dan alınacak)
 sensor_kart = None
@@ -130,6 +135,23 @@ async def led_kapat():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LED kapatma hatası: {str(e)}")
 
+@router.post("/led-pwm")
+async def led_pwm(request: LedPwmRequest):
+    """LED PWM değerini ayarlar (0-100)"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
+        
+        # Değeri 0-100 arasında sınırla
+        deger = max(0, min(100, request.deger))
+        
+        # LED PWM değerini ayarla
+        sensor.led_pwm(deger)
+        return SuccessResponse(message=f"LED PWM değeri {deger} olarak ayarlandı")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"LED PWM ayarlama hatası: {str(e)}")
+
 @router.get("/son-deger")
 async def sensor_son_deger():
     """Son sensör değerlerini döndürür"""
@@ -158,6 +180,36 @@ async def sensor_son_deger():
             "status": "error",
             "message": f"Sensör değer alma hatası: {str(e)}",
             "data": None
+        }
+
+@router.post("/ping")
+async def sensor_ping():
+    """Sensör kartını ping eder ve sağlık durumunu döndürür"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            return {
+                "status": "error",
+                "message": "Sensör kartı bulunamadı",
+                "saglikli": False
+            }
+        
+        # Ping işlemini başlat
+        sensor.ping()
+        
+        # Sağlık durumunu al
+        saglikli = sensor.getir_saglik_durumu()
+        
+        return {
+            "status": "success",
+            "message": "Ping tamamlandı",
+            "saglikli": saglikli
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Ping hatası: {str(e)}",
+            "saglikli": False
         }
 
 @router.post("/reset")

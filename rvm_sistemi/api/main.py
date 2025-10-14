@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
-from .endpoints import dimdb, bakim, uyari, motor, sensor, sistem
+from .endpoints import dimdb, bakim, uyari, motor, sensor, sistem, guvenlik, temizlik
 from .middleware.log_filter import log_filter_middleware
 
 
@@ -53,6 +53,8 @@ app.include_router(uyari.router, prefix="/api/v1")
 app.include_router(motor.router, prefix="/api/v1")
 app.include_router(sensor.router, prefix="/api/v1")
 app.include_router(sistem.router, prefix="/api/v1")
+app.include_router(guvenlik.router, prefix="/api/v1")
+app.include_router(temizlik.router, prefix="/api/v1")
 
 # Yeni router'ları ekle
 from .endpoints import ac_motor, hazne, kalibrasyon, test, websocket
@@ -96,6 +98,16 @@ async def bakim_ekrani_eski():
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
         return HTMLResponse(content="<h1>Bakım ekranı dosyası bulunamadı</h1>", status_code=404)
+
+@app.get("/temizlik")
+async def temizlik_ekrani():
+    """Temizlik ekranını döndürür"""
+    try:
+        from .endpoints.temizlik import temizlik_ekrani as temizlik_endpoint
+        return await temizlik_endpoint()
+    except Exception as e:
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(content=f"<h1>Temizlik ekranı yüklenemedi: {str(e)}</h1>", status_code=500)
 
 @app.get("/uyari")
 async def uyari_ekrani_eski(mesaj: str = "Lütfen şişeyi alınız", sure: int = 2):

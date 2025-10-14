@@ -30,6 +30,7 @@ class SensorKart:
     def led_full_ac(self): self.write_queue.put(("ledfull_ac", None))
     def led_full_kapat(self): self.write_queue.put(("ledfull_kapat", None))
     def led_kapat(self): self.write_queue.put(("led_kapat", None))
+    def led_pwm(self, deger): self.write_queue.put(("led_pwm", deger))
     def tare(self): self.write_queue.put(("tare", None))
     def reset(self): self.write_queue.put(("reset", None))
     def ezici_ileri(self): self.write_queue.put(("ezici_ileri", None))
@@ -115,7 +116,7 @@ class SensorKart:
                 komutlar = {
                     "loadcell_olc": b"lo\n", "teach": b"gst\n", "led_ac": b"as\n", "ezici_ileri": b"ei\n",
                     "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
-                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"lst\n", "ledfull_ac": b"la\n",
+                    "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"lst\n", "ledfull_ac": b"la\n", "led_pwm": f"l:{data}\n".encode(),
                     "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n",
                     "makine_oturum_var": b"mov\n", "makine_oturum_yok": b"moy\n", "makine_bakim_modu": b"mb\n" 
                 }
@@ -135,7 +136,17 @@ class SensorKart:
                 if self.seri_nesnesi and self.seri_nesnesi.is_open and self.seri_nesnesi.in_waiting > 0:
                     data = self.seri_nesnesi.readline().decode(errors='ignore').strip()
                     if data:
-                        self._mesaj_isle(data)
+                        if data.lower() == "resetlendi":  # Reset mesajını kontrol et
+                            print(f"[{self.cihaz_adi}] Kart resetlendi, bağlantı yeniden başlatılıyor...")
+                            log_warning(f"{self.cihaz_adi} kart resetlendi, bağlantı yeniden başlatılıyor...")
+                            self.running = False  # Thread'i durdur
+                            if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                                self.seri_nesnesi.close()
+                            time.sleep(1)  # Portun kapanması için bekle
+                            self._baglanti_kontrol()  # Yeniden bağlantı işlemini başlat
+                            break  # Mevcut thread'den çık
+                        else:
+                            self._mesaj_isle(data)  # Normal mesaj işleme
                 else:
                     time.sleep(0.05)
             except (serial.SerialException, OSError) as e:
@@ -208,10 +219,12 @@ class SensorKart:
         """Sensör kartını resetler"""
         try:
             if self.seri_nesnesi and self.seri_nesnesi.is_open:
-                self.seri_nesnesi.write(b"reset\n")
-                time.sleep(0.1)
+                print(f"[{self.cihaz_adi}] Reset komutu gönderiliyor...")
+                log_system(f"{self.cihaz_adi} reset komutu gönderiliyor...")
+                self.write_queue.put(("reset", None))  # Write queue üzerinden gönder
         except Exception as e:
-            print(f"[SENSOR] Reset hatası: {e}")
+            print(f"[{self.cihaz_adi}] Reset hatası: {e}")
+            log_error(f"{self.cihaz_adi} reset hatası: {e}")
 
     def _mesaj_isle(self, mesaj):
         if not mesaj.isprintable():  # Mesajın yazdırılabilir olup olmadığını kontrol edin

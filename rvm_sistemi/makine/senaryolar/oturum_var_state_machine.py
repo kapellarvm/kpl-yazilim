@@ -7,6 +7,7 @@ import uuid as uuid_lib
 from dataclasses import dataclass, field
 from . import uyari
 from ...utils.logger import log_oturum_var, log_error, log_success, log_warning, log_system
+from ...dimdb.hata_kodlari import AcceptPackageResultCodes, hata_kodu_al, hata_mesaji_al
 
 @dataclass
 class SistemDurumu:
@@ -172,7 +173,7 @@ def veri_senkronizasyonu(barkod=None, agirlik=None, materyal_turu=None, uzunluk=
             log_error(f"HATA - {sebep}")
             sistem.iade_lojik = True
             sistem.iade_sebep = sebep
-            dimdb_bildirim_gonder("BARKOD_YOK", agirlik or 0, materyal_turu or 0, uzunluk or 0, genislik or 0, False, 6, sebep)
+            dimdb_bildirim_gonder("BARKOD_YOK", agirlik or 0, materyal_turu or 0, uzunluk or 0, genislik or 0, False, AcceptPackageResultCodes.DIGER, sebep)
             return
 
         # Gelen verileri hedef ürüne ata
@@ -225,7 +226,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, AcceptPackageResultCodes.TANIMA_HATASI, "Tanıma Hatası")
         return
 
     min_agirlik = urun.get('packMinWeight')
@@ -260,7 +261,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, AcceptPackageResultCodes.COK_AGIR, "Çok Ağır")
         return
 
     if min_genislik-10 <= genislik <= max_genislik+10:
@@ -272,7 +273,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, AcceptPackageResultCodes.GENIS_PROFIL_UYGUN_DEGIL, "Geniş profil uygun değil")
         return
 
     if min_uzunluk-10 <= uzunluk <= max_uzunluk+10 :
@@ -284,7 +285,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, AcceptPackageResultCodes.YUKSEKLIK_UYGUN_DEGIL, "Yükseklik uygun değil")
         return
 
     if materyal_id != materyal_turu:
@@ -293,7 +294,7 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_lojik = True
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
+        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, AcceptPackageResultCodes.CESITLI_RED, "Çeşitli Red")
         return
     
     print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
@@ -355,7 +356,6 @@ def manuel_kirici_kontrol(komut):
         elif komut == "geri":
             return sistem.motor_kontrol_ref.kirici_geri()
         elif komut == "dur":
-            return sistem.motor_kontrol_ref.kirici_dur()
             return sistem.motor_kontrol_ref.kirici_dur()
         elif komut == "ileri_10sn":
             return sistem.motor_kontrol_ref.kirici_ileri_10sn()
@@ -428,14 +428,14 @@ def yonlendirici_hareket():
         if materyal_id == 2: # Cam
             if sistem.kirici_durum:
                 manuel_kirici_kontrol("ileri_10sn")
-            sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_cam()
+            sistem.agirlik_kuyruk.popleft() if sistem.agirlik_kuyruk else None
             print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
         else: # Plastik/Metal
             if sistem.ezici_durum:
                 manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
-            sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
+            sistem.agirlik_kuyruk.popleft() if sistem.agirlik_kuyruk else None
             print(f"🟩 [PLASTİK/METAL] Plastik/Metal yönlendiricisine gönderildi")
     
     sistem.kabul_edilen_urunler.popleft()
@@ -479,9 +479,11 @@ def lojik_yoneticisi():
             sistem.yso_lojik = False
             print("🔄 [LOJİK] YSO lojik işlemleri başlatıldı")
             log_oturum_var("LOJİK - YSO lojik işlemleri başlatıldı")
+            sistem.motor_ref.konveyor_dur()
             yonlendirici_hareket()
 
         if sistem.yonlendirici_calisiyor and (sistem.ysi_lojik or sistem.yso_lojik):
+            sistem.son_islenen_urun = None
             sistem.motor_ref.yonlendirici_dur()
             print(f"⚠️ [SAHTECİLİK] Yönlendiricinin içinden çekti")
             sistem.iade_lojik = True
@@ -493,10 +495,9 @@ def lojik_yoneticisi():
         if sistem.yonlendirici_konumda:
             sistem.yonlendirici_konumda = False
             sistem.yonlendirici_calisiyor = False
-            sistem.agirlik_kuyruk.popleft() if sistem.agirlik_kuyruk else None
             # DİM-DB'ye onaylanan bildirimi gönder (ymk geldiğinde)
             if sistem.son_islenen_urun:
-                dimdb_bildirim_gonder(sistem.son_islenen_urun['barkod'],sistem.son_islenen_urun['agirlik'],sistem.son_islenen_urun['materyal_turu'],sistem.son_islenen_urun['uzunluk'],sistem.son_islenen_urun['genislik'],True,0,"Ambalaj Kabul Edildi")
+                dimdb_bildirim_gonder(sistem.son_islenen_urun['barkod'],sistem.son_islenen_urun['agirlik'],sistem.son_islenen_urun['materyal_turu'],sistem.son_islenen_urun['uzunluk'],sistem.son_islenen_urun['genislik'],True,AcceptPackageResultCodes.BASARILI,"Başarılı")
                 sistem.son_islenen_urun = None  # Temizle
             
             if len(sistem.veri_senkronizasyon_listesi)>0 or len(sistem.kabul_edilen_urunler)>0:
@@ -641,7 +642,7 @@ def lojik_yoneticisi():
 
 def giris_iade_et(sebep):
     print(f"\n❌ [GİRİŞ İADESİ] Sebep: {sebep}")
-    uyari.uyari_goster(mesaj=f"Lütfen şişeyi geri alınız : {sebep}", sure=0)
+    #uyari.uyari_goster(mesaj=f"Lütfen şişeyi geri alınız : {sebep}", sure=0)
     sistem.kabul_yonu = False
     sistem.motor_ref.konveyor_geri()
 
@@ -670,9 +671,12 @@ def mesaj_isle(mesaj):
         sistem.uzunluk_motor_verisi = None
 
         sistem.motor_ref.motorlari_aktif_et()
+        sistem.motor_ref.konveyor_geri()
+        sistem.sensor_ref.makine_oturum_var()
         sistem.sensor_ref.tare()
-        sistem.motor_ref.konveyor_dur()
         sistem.sensor_ref.led_ac()
+        time.sleep(2)
+        sistem.motor_ref.konveyor_dur()
         sistem.kabul_yonu = True
         sistem.ezici_durum = False
         sistem.kirici_durum = False
@@ -717,3 +721,5 @@ def mesaj_isle(mesaj):
 def modbus_mesaj(modbus_verisi):
     veri = modbus_verisi
     #print(f"[Oturum Var Modbus] Gelen veri: {modbus_verisi}")
+
+

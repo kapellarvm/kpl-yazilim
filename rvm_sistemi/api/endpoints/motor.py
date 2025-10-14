@@ -158,6 +158,36 @@ async def motor_hiz_ayarla(request: MotorHizRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hız ayarlama hatası: {str(e)}")
 
+@router.post("/ping")
+async def motor_ping():
+    """Motor kartını ping eder ve sağlık durumunu döndürür"""
+    try:
+        motor = get_motor_kart()
+        if not motor:
+            return {
+                "status": "error",
+                "message": "Motor kartı bulunamadı",
+                "saglikli": False
+            }
+        
+        # Ping işlemini başlat
+        motor.ping()
+        
+        # Sağlık durumunu al
+        saglikli = motor.getir_saglik_durumu()
+        
+        return {
+            "status": "success",
+            "message": "Ping tamamlandı",
+            "saglikli": saglikli
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Ping hatası: {str(e)}",
+            "saglikli": False
+        }
+
 @router.post("/reset")
 async def motor_reset():
     """Motor kartını resetler"""

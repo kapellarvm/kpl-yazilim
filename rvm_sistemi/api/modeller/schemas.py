@@ -68,6 +68,7 @@ class BakimUrlRequest(BaseModel):
 class UyariRequest(BaseModel):
     mesaj: str = "Lütfen şişeyi alınız"
     sure: int = 2
+    suresiz: bool = False
 
 
 # --- Alarm API Modelleri ---

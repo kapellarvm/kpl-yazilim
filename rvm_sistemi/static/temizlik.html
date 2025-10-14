@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="tr" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta name="translate" content="no">
+    <title>RVM Temizlik Paneli</title>
+    <script src="/static/js/tailwindcss.min.js"></script>
+    <link href="/static/fonts/inter-font.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/temizlik.css">
+</head>
+<body class="text-gray-200">
+
+    <div class="container mx-auto p-2 sm:p-4 lg:p-6 max-w-7xl">
+        <!-- Başlık ve Toggle -->
+        <header class="flex flex-col lg:flex-row items-center justify-between mb-8 gap-6">
+        <!-- Başlık -->
+            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl p-6 shadow-2xl flex-1">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">RVM Temizlik Paneli</h1>
+                <p class="text-cyan-100 text-lg">Temizlik işlemleri ve sistem kontrolleri</p>
+            </div>
+            
+            <!-- Temizlik Modu Toggle -->
+            <div class="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+            <label for="maintenance-toggle" class="flex items-center cursor-pointer">
+                    <span class="mr-6 text-xl font-semibold text-white">Temizlik Modu</span>
+                <div class="relative">
+                    <input type="checkbox" id="maintenance-toggle" class="sr-only">
+                        <div class="block bg-gray-600 w-16 h-9 rounded-full shadow-inner"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-7 h-7 rounded-full transition-transform duration-300 ease-in-out shadow-lg"></div>
+                </div>
+                    <span id="maintenance-status" class="ml-6 text-xl font-bold text-red-400 w-20">PASİF</span>
+            </label>
+            </div>
+        </header>
+
+        <main class="space-y-6">
+            <!-- Kilit Kontrolleri Bölümü -->
+            <section id="kilit-kontrolleri" class="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+                <h2 class="text-2xl font-bold mb-6 text-center text-cyan-400 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Kilit Kontrolleri</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Üst Kapak Kilidi -->
+                    <div class="bg-gradient-to-br from-gray-700 to-gray-800 p-6 rounded-2xl flex flex-col items-center shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                        <h3 class="text-xl font-bold mb-4 text-white">Üst Kapak Kilidi</h3>
+                        <div class="mb-6">
+                            <svg id="top-lock-icon" class="lock-icon w-20 h-20 text-cyan-400 drop-shadow-lg" viewBox="0 -10 24 34" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <g class="lock-shackle" style="transform-origin: 12px 10px;">
+                                  <path d="M16 10H8C6.34315 10 5 8.65685 5 7V6C5 4.34315 6.34315 3 8 3H16C17.6569 3 19 4.34315 19 6V7C19 8.65685 17.6569 10 16 10Z" stroke="currentColor"/>
+                                </g>
+                                <g class="lock-body">
+                                  <rect x="4" y="10" width="16" height="11" rx="2" fill="currentColor"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="w-full flex gap-3">
+                            <button onclick="toggleLock('top', false)" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Aç</button>
+                            <button onclick="toggleLock('top', true)" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Kapat</button>
+                        </div>
+                    </div>
+                    <!-- Alt Kapak Kilidi -->
+                    <div class="bg-gradient-to-br from-gray-700 to-gray-800 p-6 rounded-2xl flex flex-col items-center shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                        <h3 class="text-xl font-bold mb-4 text-white">Alt Kapak Kilidi</h3>
+                        <div class="mb-6">
+                             <svg id="bottom-lock-icon" class="lock-icon w-20 h-20 text-cyan-400 drop-shadow-lg" viewBox="0 -10 24 34" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <g class="lock-shackle" style="transform-origin: 12px 10px;">
+                                  <path d="M16 10H8C6.34315 10 5 8.65685 5 7V6C5 4.34315 6.34315 3 8 3H16C17.6569 3 19 4.34315 19 6V7C19 8.65685 17.6569 10 16 10Z" stroke="currentColor"/>
+                                </g>
+                                <g class="lock-body">
+                                  <rect x="4" y="10" width="16" height="11" rx="2" fill="currentColor"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="w-full flex gap-3">
+                            <button onclick="toggleLock('bottom', false)" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Aç</button>
+                            <button onclick="toggleLock('bottom', true)" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Kapat</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sensör Kategorileri -->
+            <section id="sensör-kategorileri" class="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+                <h2 class="text-2xl font-bold mb-8 text-center text-cyan-400 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Sensör Durumları</h2>
+                
+                <!-- Giriş ve Konveyör Sensörleri -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-yellow-400">
+                        Giriş ve Konveyör Sensörleri
+                    </h3>
+                    <div id="giris-konveyor-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div id="giris-sensoru" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600 hover:border-yellow-400">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Giriş Sensörü
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="konveyor-led" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Konveyör LED
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hazne Sensörleri -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-green-400">
+                        Hazne Sensörleri
+                    </h3>
+                    <div id="hazne-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div id="plastik-hazne" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Plastik Hazne
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="metal-hazne" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Metal Hazne
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="cam-hazne" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Cam Hazne
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yönlendirme Sensörleri -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-blue-400">
+                        Yönlendirme Sensörleri
+                    </h3>
+                    <div id="yonlendirme-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div id="yonlendirici-opt-sensor" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Yönlendirici Optik
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="yonlendirici-induktif" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Yönlendirici İndüktif
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="klape-induktif" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Klape İndüktif
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emniyet Sensörleri -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-red-400">
+                        Emniyet Sensörleri
+                    </h3>
+                    <div id="emniyet-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div id="ust-kapak-kilit-sensor" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Üst Kapak Kilit
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="alt-kapak-kilit-sensor" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Alt Kapak Kilit
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ust-kapak-emniyet" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Üst Kapak Emniyet
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="alt-kapak-emniyet" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white">
+                                    Alt Kapak Emniyet
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Şönt V:</span><span class="font-mono font-semibold" data-type="shunt">-- mV</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- mA</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between items-center">
+                                        <span>Sağlık:</span>
+                                        <span class="health-status flex items-center gap-1 font-semibold text-green-400">
+                                            <span class="status-dot status-iyi"></span>
+                                            <span>İyi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AC Motorlar -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-purple-400">
+                        AC Motorlar
+                    </h3>
+                    <div id="motor-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div id="ac-ezici-motor" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white flex items-center">
+                                    <span class="mr-1 text-lg">⚙️</span>
+                                    AC Ezici Motor
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Frekans:</span><span class="font-mono font-semibold" data-type="out-freq">-- Hz</span></div>
+                                    <div class="flex justify-between"><span>Voltaj:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- A</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="bus-voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Sıcaklık:</span><span class="font-mono font-semibold" data-type="temp">-- °C</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between"><span>Durum:</span><span class="font-semibold text-green-400" data-type="status">Hazır</span></div>
+                                    <div class="flex justify-between"><span>Hazır Mı:</span><span class="font-semibold text-gray-400" data-type="ready">--</span></div>
+                                    <div class="flex justify-between"><span>Arıza:</span><span class="font-semibold text-gray-400" data-type="fault">--</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ac-kirici-motor" class="sensor-card bg-gradient-to-br from-gray-700 to-gray-800 p-4 rounded-xl flex flex-col space-y-3 shadow-lg hover:shadow-xl transition duration-300 border border-gray-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-base font-semibold text-white flex items-center">
+                                    <span class="mr-1 text-lg">⚙️</span>
+                                    AC Kırıcı Motor
+                                </h4>
+                                <span class="status-dot status-iyi"></span>
+                            </div>
+                            <div class="text-sm space-y-1 text-gray-300">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between"><span>Frekans:</span><span class="font-mono font-semibold" data-type="out-freq">-- Hz</span></div>
+                                    <div class="flex justify-between"><span>Voltaj:</span><span class="font-mono font-semibold" data-type="voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Akım:</span><span class="font-mono font-semibold" data-type="current">-- A</span></div>
+                                    <div class="flex justify-between"><span>Güç:</span><span class="font-mono font-semibold" data-type="power">-- W</span></div>
+                                    <div class="flex justify-between"><span>Bus V:</span><span class="font-mono font-semibold" data-type="bus-voltage">-- V</span></div>
+                                    <div class="flex justify-between"><span>Sıcaklık:</span><span class="font-mono font-semibold" data-type="temp">-- °C</span></div>
+                                </div>
+                                <div class="pt-1 border-t border-gray-600">
+                                    <div class="flex justify-between"><span>Durum:</span><span class="font-semibold text-green-400" data-type="status">Hazır</span></div>
+                                    <div class="flex justify-between"><span>Hazır Mı:</span><span class="font-semibold text-gray-400" data-type="ready">--</span></div>
+                                    <div class="flex justify-between"><span>Arıza:</span><span class="font-semibold text-gray-400" data-type="fault">--</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = '/api/v1';
+        
+        // Temizlik modu durumu
+        let temizlikModuAktif = false;
+        let sensorUpdateInterval = null;
+        
+        // Global değişkenler
+        let maintenanceStatus;
+        let controlButtons;
+        let sensorGridContainer;
+        let websocket = null;
+        
+
+        const healthStates = [
+            { text: 'İyi', className: 'status-iyi', textColor: 'text-green-400' },
+            { text: 'Uyarı', className: 'status-uyari', textColor: 'text-yellow-400' },
+            { text: 'Hata', className: 'status-hata', textColor: 'text-red-400' }
+        ];
+        
+
+
+        function updateSensorData() {
+            // Gerçek sensör verilerini API'den al
+            fetch(`${API_BASE}/sensor/durum`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Sensör verilerini güncelle
+                        updateSensorFromAPI(data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Sensör verisi alınamadı:', error);
+                });
+        }
+
+        function updateSensorFromAPI(sensorData) {
+            // Giriş sensörü
+            const girisSensor = document.getElementById('giris-sensoru');
+            if (girisSensor && sensorData.giris_sensor !== undefined) {
+                const valueElement = girisSensor.querySelector('.sensor-value');
+                const statusDot = girisSensor.querySelector('.status-dot');
+                
+                if (valueElement) {
+                    valueElement.textContent = sensorData.giris_sensor ? 'AÇIK' : 'KAPALI';
+                }
+                if (statusDot) {
+                    statusDot.className = `status-dot status-${sensorData.giris_sensor ? 'iyi' : 'uyari'}`;
+                }
+            }
+            
+            // Konveyör sensörü
+            const konveyorSensor = document.getElementById('konveyor-sensoru');
+            if (konveyorSensor && sensorData.konveyor_sensor !== undefined) {
+                const valueElement = konveyorSensor.querySelector('.sensor-value');
+                const statusDot = konveyorSensor.querySelector('.status-dot');
+                
+                if (valueElement) {
+                    valueElement.textContent = sensorData.konveyor_sensor ? 'AÇIK' : 'KAPALI';
+                }
+                if (statusDot) {
+                    statusDot.className = `status-dot status-${sensorData.konveyor_sensor ? 'iyi' : 'uyari'}`;
+                }
+            }
+            
+            // Hazne doluluk verileri
+            if (sensorData.hazne_doluluk) {
+                const hazneMetal = document.getElementById('hazne-metal');
+                if (hazneMetal) {
+                    const valueElement = hazneMetal.querySelector('.sensor-value');
+                    const statusDot = hazneMetal.querySelector('.status-dot');
+                    
+                    if (valueElement) {
+                        valueElement.textContent = `${sensorData.hazne_doluluk.metal || 0}%`;
+                    }
+                    if (statusDot) {
+                        const doluluk = sensorData.hazne_doluluk.metal || 0;
+                        statusDot.className = `status-dot status-${doluluk > 80 ? 'hata' : doluluk > 60 ? 'uyari' : 'iyi'}`;
+                    }
+                }
+                
+                const haznePlastik = document.getElementById('hazne-plastik');
+                if (haznePlastik) {
+                    const valueElement = haznePlastik.querySelector('.sensor-value');
+                    const statusDot = haznePlastik.querySelector('.status-dot');
+                    
+                    if (valueElement) {
+                        valueElement.textContent = `${sensorData.hazne_doluluk.plastik || 0}%`;
+                    }
+                    if (statusDot) {
+                        const doluluk = sensorData.hazne_doluluk.plastik || 0;
+                        statusDot.className = `status-dot status-${doluluk > 80 ? 'hata' : doluluk > 60 ? 'uyari' : 'iyi'}`;
+                    }
+                }
+                
+                const hazneCam = document.getElementById('hazne-cam');
+                if (hazneCam) {
+                    const valueElement = hazneCam.querySelector('.sensor-value');
+                    const statusDot = hazneCam.querySelector('.status-dot');
+                    
+                    if (valueElement) {
+                        valueElement.textContent = `${sensorData.hazne_doluluk.cam || 0}%`;
+                    }
+                    if (statusDot) {
+                        const doluluk = sensorData.hazne_doluluk.cam || 0;
+                        statusDot.className = `status-dot status-${doluluk > 80 ? 'hata' : doluluk > 60 ? 'uyari' : 'iyi'}`;
+                    }
+                }
+            }
+            
+            // Yönlendirici sensörü
+            const yonlendiriciSensor = document.getElementById('yonlendirici-sensoru');
+            if (yonlendiriciSensor && sensorData.yonlendirici_sensor !== undefined) {
+                const valueElement = yonlendiriciSensor.querySelector('.sensor-value');
+                const statusDot = yonlendiriciSensor.querySelector('.status-dot');
+                
+                if (valueElement) {
+                    valueElement.textContent = sensorData.yonlendirici_sensor ? 'AÇIK' : 'KAPALI';
+                }
+                if (statusDot) {
+                    statusDot.className = `status-dot status-${sensorData.yonlendirici_sensor ? 'iyi' : 'uyari'}`;
+                }
+            }
+            
+            // Emniyet sensörü
+            const emniyetSensor = document.getElementById('emniyet-sensoru');
+            if (emniyetSensor && sensorData.emniyet_sensor !== undefined) {
+                const valueElement = emniyetSensor.querySelector('.sensor-value');
+                const statusDot = emniyetSensor.querySelector('.status-dot');
+                
+                if (valueElement) {
+                    valueElement.textContent = sensorData.emniyet_sensor ? 'AÇIK' : 'KAPALI';
+                }
+                if (statusDot) {
+                    statusDot.className = `status-dot status-${sensorData.emniyet_sensor ? 'iyi' : 'uyari'}`;
+                }
+            }
+        }
+
+        async function toggleLock(lockId, isLocked) {
+            try {
+                // API çağrısı yap
+                const endpoint = isLocked ? 'kapat' : 'ac';
+                const response = await fetch(`${API_BASE}/guvenlik/${lockId}-kilit-${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.errorCode === 0) {
+                    // Başarılı ise görsel güncelleme
+            const icon = document.getElementById(`${lockId}-lock-icon`);
+            if (isLocked) {
+                icon.classList.remove('unlocked');
+                icon.classList.remove('text-green-400');
+                icon.classList.add('text-gray-400');
+            } else {
+                icon.classList.add('unlocked');
+                icon.classList.remove('text-gray-400');
+                icon.classList.add('text-green-400');
+            }
+                    showMessage(data.message || 'Kilit işlemi başarılı');
+                } else {
+                    showMessage(data.message || data.errorMessage || 'Kilit işlemi başarısız', true);
+                }
+            } catch (error) {
+                console.error('Kilit işlemi hatası:', error);
+                showMessage('Kilit işlemi hatası: ' + error.message, true);
+            }
+        }
+        
+        function showMessage(message, isError = false) {
+            // Basit mesaj gösterimi
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+                isError ? 'bg-red-600' : 'bg-green-600'
+            }`;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(messageDiv);
+            }, 3000);
+        }
+        
+        
+        // WebSocket bağlantı fonksiyonları
+        function connectWebSocket() {
+            console.log('Temizlik WebSocket bağlantısı başlatılıyor...');
+            try {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/temizlik`;
+                
+                console.log('Temizlik WebSocket URL oluşturuldu:', wsUrl);
+                websocket = new WebSocket(wsUrl);
+                console.log('Temizlik WebSocket nesnesi oluşturuldu');
+                
+                websocket.onopen = function(event) {
+                    console.log('Temizlik WebSocket bağlantısı kuruldu');
+                    showMessage('Gerçek zamanlı veri bağlantısı kuruldu', false);
+                };
+                
+                websocket.onmessage = function(event) {
+                    console.log('Temizlik WebSocket mesaj alındı:', event.data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('Temizlik WebSocket mesaj parse edildi:', data);
+                        handleWebSocketMessage(data);
+                    } catch (error) {
+                        console.error('Temizlik WebSocket mesaj parse hatası:', error);
+                    }
+                };
+                
+                websocket.onclose = function(event) {
+                    console.log('Temizlik WebSocket bağlantısı kapandı');
+                    showMessage('Gerçek zamanlı veri bağlantısı kesildi', true);
+                    
+                    // 5 saniye sonra yeniden bağlan
+                    setTimeout(() => {
+                        if (temizlikModuAktif) {
+                            connectWebSocket();
+                        }
+                    }, 5000);
+                };
+                
+                websocket.onerror = function(error) {
+                    console.error('Temizlik WebSocket hatası:', error);
+                    showMessage('WebSocket bağlantı hatası', true);
+                };
+                
+            } catch (error) {
+                console.error('Temizlik WebSocket bağlantı hatası:', error);
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+                console.log('Temizlik WebSocket bağlantısı kapatıldı');
+            }
+        }
+
+        function handleWebSocketMessage(data) {
+            console.log('Temizlik WebSocket mesaj işleniyor:', data.type);
+            switch (data.type) {
+                case 'modbus_update':
+                    console.log('Temizlik Modbus güncelleme alındı:', data.motor_type, data.data);
+                    updateMotorDisplayFromWebSocket(data.motor_type, data.data);
+                    break;
+                case 'system_status':
+                    console.log('Temizlik sistem durumu güncelleme alındı:', data.data);
+                    updateSystemStatusFromWebSocket(data.data);
+                    break;
+                case 'sensor_update':
+                    console.log('Temizlik sensör güncelleme alındı:', data.data);
+                    updateSensorDataFromWebSocket(data.data);
+                    break;
+                default:
+                    console.log('Bilinmeyen Temizlik WebSocket mesaj tipi:', data.type);
+            }
+        }
+
+        function updateMotorDisplayFromWebSocket(motorType, data) {
+            console.log('Temizlik motor display güncelleniyor:', motorType, data);
+            
+            // Motor kartını bul
+            const motorCardId = motorType === 'crusher' ? 'ac-ezici-motor' : 'ac-kirici-motor';
+            const motorCard = document.getElementById(motorCardId);
+            
+            if (!motorCard) {
+                console.error('Motor kartı bulunamadı:', motorCardId);
+                return;
+            }
+            
+            // Motor verilerini güncelle
+            const outFreqEl = motorCard.querySelector('[data-type="out-freq"]');
+            const voltageEl = motorCard.querySelector('[data-type="voltage"]');
+            const currentEl = motorCard.querySelector('[data-type="current"]');
+            const powerEl = motorCard.querySelector('[data-type="power"]');
+            const busVoltageEl = motorCard.querySelector('[data-type="bus-voltage"]');
+            const tempEl = motorCard.querySelector('[data-type="temp"]');
+            const statusEl = motorCard.querySelector('[data-type="status"]');
+            const readyEl = motorCard.querySelector('[data-type="ready"]');
+            const faultEl = motorCard.querySelector('[data-type="fault"]');
+            
+            if (outFreqEl) outFreqEl.textContent = data.out_freq || '0.0 Hz';
+            if (voltageEl) voltageEl.textContent = data.voltage || '0.0 V';
+            if (currentEl) currentEl.textContent = data.current || '0.0 A';
+            if (powerEl) powerEl.textContent = data.power || '0.0 W';
+            if (busVoltageEl) busVoltageEl.textContent = data.bus_voltage || '0.0 V';
+            if (tempEl) tempEl.textContent = data.temperature || '0.0 °C';
+            if (statusEl) {
+                statusEl.textContent = data.status || 'DURUYOR';
+                statusEl.className = data.status === 'ÇALIŞIYOR' ? 'font-semibold text-green-400' : 'font-semibold text-yellow-400';
+            }
+            
+            // Ready durumu
+            if (readyEl) {
+                readyEl.textContent = data.ready || 'HAYIR';
+                if (data.ready === 'EVET') {
+                    readyEl.classList.add('text-green-400');
+                    readyEl.classList.remove('text-red-400', 'text-gray-400');
+                } else {
+                    readyEl.classList.remove('text-green-400');
+                    readyEl.classList.add('text-red-400');
+                }
+            }
+            
+            // Fault durumu
+            if (faultEl) {
+                faultEl.textContent = data.fault || 'YOK';
+                if (data.fault === 'VAR') {
+                    faultEl.classList.add('text-red-400');
+                    faultEl.classList.remove('text-green-400', 'text-gray-400');
+                } else {
+                    faultEl.classList.remove('text-red-400');
+                    faultEl.classList.add('text-green-400');
+                }
+            }
+            
+            console.log('Temizlik motor verisi güncellendi:', motorType, data);
+        }
+
+        function updateSystemStatusFromWebSocket(data) {
+            console.log('Temizlik sistem durumu güncellendi:', data);
+        }
+
+        function updateSensorDataFromWebSocket(data) {
+            console.log('Temizlik sensör verisi güncellendi:', data);
+        }
+
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/temizlik/durum`);
+                const data = await response.json();
+                
+                
+                if (data.temizlik_aktif) {
+                    // Eğer sistem temizlik modundaysa toggle'ı aktif yap
+                    const toggle = document.getElementById('maintenance-toggle');
+                    if (toggle && !toggle.checked) {
+                        toggle.checked = true;
+                        // UI'yi güncelle ve simulasyon verilerini başlat
+                        maintenanceStatus.textContent = 'AKTİF';
+                        maintenanceStatus.classList.remove('text-red-400');
+                        maintenanceStatus.classList.add('text-green-400');
+                        controlButtons.forEach(button => button.disabled = false);
+                        sensorGridContainer.style.opacity = '1';
+                        sensorGridContainer.style.pointerEvents = 'auto';
+                        temizlikModuAktif = true;
+                        
+                        // WebSocket bağlantısını başlat
+                        connectWebSocket();
+                        
+                        // Sensör verisi güncellemeyi başlat
+                        if (!sensorUpdateInterval) {
+                            updateSensorData(); // Moda girince hemen güncelle
+                            sensorUpdateInterval = setInterval(updateSensorData, 2000);
+                        }
+                    }
+                } else {
+                    // Eğer sistem temizlik modunda değilse toggle'ı pasif yap
+                    const toggle = document.getElementById('maintenance-toggle');
+                    if (toggle && toggle.checked) {
+                        toggle.checked = false;
+                        // UI'yi güncelle ve simulasyon verilerini durdur
+                        maintenanceStatus.textContent = 'PASİF';
+                        maintenanceStatus.classList.remove('text-green-400');
+                        maintenanceStatus.classList.add('text-red-400');
+                        controlButtons.forEach(button => button.disabled = true);
+                        sensorGridContainer.style.opacity = '0.5';
+                        sensorGridContainer.style.pointerEvents = 'none';
+                        temizlikModuAktif = false;
+                        
+                        // WebSocket bağlantısını kapat
+                        disconnectWebSocket();
+                        
+                        // Sensör verisi güncellemeyi durdur
+                        if (sensorUpdateInterval) {
+                            clearInterval(sensorUpdateInterval);
+                            sensorUpdateInterval = null;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Sistem durumu kontrol hatası:', error);
+            }
+        }
+        
+        // Sayfa yüklendiğinde hemen çalışacak fonksiyon
+        function initializePage() {
+            // Global değişkenleri tanımla
+            maintenanceStatus = document.getElementById('maintenance-status');
+            controlButtons = document.querySelectorAll('#kilit-kontrolleri button');
+            sensorGridContainer = document.getElementById('sensör-kategorileri');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sayfa başlatma fonksiyonunu çağır
+            initializePage();
+
+            // Bakım Modu Kontrolü
+            const maintenanceToggle = document.getElementById('maintenance-toggle');
+
+            async function setMaintenanceMode(isActive) {
+                try {
+                if (isActive) { // AKTİF -> Her şey AÇIK/ETKİN
+                        // API'ye temizlik modunu aktif et
+                        const response = await fetch(`${API_BASE}/temizlik-modu`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.errorCode === 0) {
+                    maintenanceStatus.textContent = 'AKTİF';
+                    maintenanceStatus.classList.remove('text-red-400');
+                    maintenanceStatus.classList.add('text-green-400');
+                    controlButtons.forEach(button => button.disabled = false);
+                    sensorGridContainer.style.opacity = '1';
+                    sensorGridContainer.style.pointerEvents = 'auto';
+                            temizlikModuAktif = true;
+
+                    // Sensör verisi güncellemeyi başlat
+                    if (!sensorUpdateInterval) {
+                        updateSensorData(); // Moda girince hemen güncelle
+                        sensorUpdateInterval = setInterval(updateSensorData, 2000);
+                            }
+                            
+                            showMessage('Temizlik modu aktif edildi');
+                        } else {
+                            showMessage(data.message || 'Temizlik modu aktif edilemedi', true);
+                    }
+
+                } else { // PASİF -> Her şey KAPALI/DEVRE DIŞI
+                        // API'ye temizlik modundan çık
+                        const response = await fetch(`${API_BASE}/temizlik-modundan-cik`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.errorCode === 0) {
+                    maintenanceStatus.textContent = 'PASİF';
+                    maintenanceStatus.classList.remove('text-green-400');
+                    maintenanceStatus.classList.add('text-red-400');
+                    controlButtons.forEach(button => button.disabled = true);
+                    sensorGridContainer.style.opacity = '0.5';
+                    sensorGridContainer.style.pointerEvents = 'none';
+                            temizlikModuAktif = false;
+
+                    // Sensör verisi güncellemeyi durdur
+                    if (sensorUpdateInterval) {
+                        clearInterval(sensorUpdateInterval);
+                        sensorUpdateInterval = null;
+                    }
+                            
+                            showMessage('Temizlik modundan çıkıldı');
+                        } else {
+                            showMessage(data.message || 'Temizlik modundan çıkılamadı', true);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Temizlik modu hatası:', error);
+                    showMessage('Temizlik modu hatası: ' + error.message, true);
+                }
+            }
+
+            maintenanceToggle.addEventListener('change', (e) => {
+                setMaintenanceMode(e.target.checked);
+            });
+
+            // Başlangıçta kilitleri kapalı ayarla
+            toggleLock('top', true);
+            toggleLock('bottom', true);
+
+            // Başlangıçta sistem durumunu kontrol et
+            checkSystemStatus();
+            
+            // Simulasyon verilerini başlat (Chromium için)
+            updateSensorData();
+            if (!sensorUpdateInterval) {
+                sensorUpdateInterval = setInterval(updateSensorData, 2000);
+            }
+            
+            // Sistem durumunu periyodik olarak kontrol et
+            setInterval(checkSystemStatus, 5000);
+        });
+
+        // Alternatif başlatma - Chromium için
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+
+    </script>
+
+</body>
+</html>
+

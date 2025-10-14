@@ -9,16 +9,14 @@ from . import uyari
 from ...utils.logger import log_oturum_var, log_error, log_success, log_warning, log_system
 from enum import Enum, auto
 
-sistem = SistemDurumu()
-goruntu_isleme_servisi = GoruntuIslemeServisi()
-veri_lock = threading.Lock()
-
 class SistemAkisDurumu(Enum):
     BEKLEMEDE = auto()
     GIRIS_ALGILANDI = auto()
     DOGRULAMA_BASLADI = auto()
     VERI_BEKLENIYOR = auto()
-    YONLENDIRME = auto()
+    YONLENDIRICI_KABUL = auto()
+    YONLENDIRICI_HAREKET = auto()
+    YONLENDIRICI_SAHTECILIK = auto()
     IADE_EDILIYOR = auto()
 
 
@@ -26,9 +24,9 @@ class SistemAkisDurumu(Enum):
 class SistemDurumu:
 
     akis_durumu: SistemAkisDurumu = SistemAkisDurumu.BEKLEMEDE
-    mevcut_barkod: str = None
     
-    # Doğrulama için gelen verileri tutacak alanlar
+    
+    mevcut_barkod: str = None
     mevcut_agirlik: float = None
     mevcut_materyal_turu: int = None
     mevcut_uzunluk: float = None
@@ -81,6 +79,13 @@ class SistemDurumu:
     seperator_kalibrasyon: bool = False
 
 
+    aktif_oturum: dict = field(default_factory=lambda: {
+        "aktif": False,
+        "sessionId": None,
+        "userId": None,
+        "paket_uuid_map": {}
+    })
+
 # DİM-DB bildirim fonksiyonu - direkt import ile
 def dimdb_bildirim_gonder(barcode, agirlik, materyal_turu, uzunluk, genislik, kabul_edildi, sebep_kodu, sebep_mesaji):
     """DİM-DB'ye bildirim gönderir"""
@@ -125,7 +130,7 @@ def goruntu_isleme_tetikle():
 
     sistem.uzunluk_goruntu_isleme = float(goruntu_sonuc.genislik_mm)
     sistem.mevcut_materyal_turu = goruntu_sonuc.tur.value
-    sistem.mevcut_uzunluk = float(goruntu_sonuc.genislik_mm)""
+    sistem.mevcut_uzunluk = float(goruntu_sonuc.genislik_mm)
     sistem.mevcut_genislik = float(goruntu_sonuc.yukseklik_mm)
 
 def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
@@ -140,8 +145,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
-        return
+        #dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 1, "Ürün veritabanında yok")
+        return False
 
     min_agirlik = urun.get('packMinWeight')
     max_agirlik = urun.get('packMaxWeight')
@@ -174,8 +179,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
-        return
+        #dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 2, "Ağırlık sınırları dışında")
+        return False
 
     if min_genislik-10 <= genislik <= max_genislik+10:
         print(f"✅ [DOĞRULAMA] Genişlik kontrolü geçti: {genislik} mm")
@@ -185,8 +190,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
-        return
+        #dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 3, "Genişlik sınırları dışında")
+        return False
 
     if min_uzunluk-10 <= uzunluk <= max_uzunluk+10 :
         print(f"✅ [DOĞRULAMA] Uzunluk kontrolü geçti: {uzunluk} mm")
@@ -196,16 +201,16 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
-        return
+        #dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 4, "Uzunluk sınırları dışında")
+        return False
 
     if materyal_id != materyal_turu:
         sebep = f"Materyal türü uyuşmuyor (Beklenen: {materyal_id}, Gelen: {materyal_turu})"
         print(f"❌ [DOĞRULAMA] {sebep}")
         log_error(f"DOĞRULAMA - {sebep}")
         sistem.iade_sebep = sebep
-        dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
-        return
+        #dimdb_bildirim_gonder(barkod, agirlik, materyal_turu, uzunluk, genislik, False, 5, "Materyal türü uyuşmuyor")
+        return False
     
     print(f"✅ [DOĞRULAMA] Materyal türü kontrolü geçti: {materyal_turu}")
     log_success(f"DOĞRULAMA - Materyal türü kontrolü geçti: {materyal_turu}")
@@ -221,6 +226,8 @@ def dogrulama(barkod, agirlik, materyal_turu, uzunluk, genislik):
     log_success(f"DOĞRULAMA - Ürün kabul edildi ve kuyruğa eklendi: {barkod}")
     log_oturum_var(f"KUYRUK - Toplam kabul edilen ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
 
+    return True
+
 def uzunluk_dogrulama(uzunluk):
     if sistem.uzunluk_goruntu_isleme-20 <= sistem.uzunluk_motor_verisi <= sistem.uzunluk_goruntu_isleme+20:
         print(f"✅ [UZUNLUK DOĞRULAMA] Uzunluk kontrolü geçti. Motor Uzunluk: {sistem.uzunluk_motor_verisi} mm | Görüntü Uzunluk: {sistem.uzunluk_goruntu_isleme} mm")
@@ -233,13 +240,13 @@ def uzunluk_dogrulama(uzunluk):
         sistem.uzunluk_goruntu_isleme = None
         return False
 
-def yonlendirici_hareket():
+def yonlendirici():
 
     if not sistem.kabul_edilen_urunler:
         print(f"⚠️ [YÖNLENDİRME] Kabul edilen ürün kuyruğu boş.")
         sistem.iade_sebep = "Yönlendirme için ürün yok."
         sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-        return
+        return False
         
     sistem.uzunluk_motor_verisi = sistem.motor_ref.atik_uzunluk()
     time.sleep(0.05)  # Ölçüm için bekleme süresi 
@@ -251,12 +258,12 @@ def yonlendirici_hareket():
             print(f"❌ [YÖNLENDİRME] Uzunluk Verisi Uyuşmazlığı.")
             sistem.iade_sebep = "Uzunluk Verisi Uyuşmazlığı"
             sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-            return
+            return False
     else:
         print(f"⚠️ [YÖNLENDİRME] Uzunluk Verisi Gelmedi")
         sistem.iade_sebep = "Uzunluk Verisi Uyuşmazlığı"
         sistem.kabul_edilen_urunler.clear()  # Tüm kabul edilen ürünleri temizle
-        return
+        return False
 
     urun = sistem.kabul_edilen_urunler[0]
     print(f"📦 [YÖNLENDİRME] İşlenecek ürün: {urun}")
@@ -274,16 +281,24 @@ def yonlendirici_hareket():
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_cam()
             print(f"🟦 [CAM] Cam yönlendiricisine gönderildi")
-        else: # Plastik/Metal
+        elif materyal_id == 1 or materyal_id == 3: # Plastik/Metal
             if sistem.ezici_durum:
                 manuel_ezici_kontrol("ileri_10sn")  # Otomatik ezici 10 saniye ileri
             sistem.motor_ref.konveyor_dur()
             sistem.motor_ref.yonlendirici_plastik()
             print(f"🟩 [PLASTİK/METAL] Plastik/Metal yönlendiricisine gönderildi")
-    
+        else:
+            print(f"❌ [YÖNLENDİRME] Bilinmeyen materyal türü: {materyal_id}. İade ediliyor.")
+            sistem.iade_sebep = "Bilinmeyen materyal türü"
+            return False
+    else:
+        print("❌ [YÖNLENDİRME] Motor referansı ayarlı değil!")
+        log_error("YÖNLENDİRME - Motor referansı ayarlı değil!")
+        return False
+
+    return True
     sistem.kabul_edilen_urunler.popleft()
     print(f"📦 [KUYRUK] Kalan ürün sayısı: {len(sistem.kabul_edilen_urunler)}")
-    print(f"✅ [YÖNLENDİRME] İşlem tamamlandı\n")
 
 def lojik_yoneticisi():
     while True:
@@ -294,10 +309,19 @@ def lojik_yoneticisi():
         if sistem.akis_durumu == SistemAkisDurumu.BEKLEMEDE:
             if sistem.gsi_lojik:
                 sistem.gsi_lojik = False # Gelen sinyali işledik, sıfırla.
-
                 sistem.motor_ref.konveyor_ileri()
                 sistem.akis_durumu = SistemAkisDurumu.GIRIS_ALGILANDI
 
+            if sistem.ysi_lojik or sistem.yso_lojik:
+                sistem.ysi_lojik = False
+                sistem.yso_lojik = False
+                print("⚠️ [YÖNLENDİRİCİ] Beklenmeyen YSI/YSO sinyali! İade ediliyor.")
+                sistem.iade_sebep = "Beklenmeyen YSI/YSO sinyali"
+                sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                sistem.motor_ref.konveyor_geri()
+
+            else:
+                lojik_sifirlama()
         # Durum 2: GIRIS_ALGILANDI
         # Konveyör ilerliyor ve ürünün tamamen girmesini (GSO sinyali) bekler.
         elif sistem.akis_durumu == SistemAkisDurumu.GIRIS_ALGILANDI:
@@ -306,17 +330,18 @@ def lojik_yoneticisi():
                 
                 # Kritik Kontrol: Bu noktada barkod verisi gelmiş mi?
                 if sistem.mevcut_barkod is None:
+                    
                     print("❌ [GSO] Ürün içeride ama barkod yok! İade ediliyor...")
                     sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
-                    # Konveyörü 1 saniye geri çevirme işlemi burada tetiklenmeli.
                     sistem.motor_ref.konveyor_geri()
-                    time.sleep(1)
-                    sistem.motor_ref.konveyor_dur()
+
                 else:
                     # Barkod gelmişse, doğrulama adımları başlar.
                     print(f"✅ [GSO] Ürün içeride. Barkod: {sistem.mevcut_barkod}. Doğrulama başlıyor.")
                     sistem.akis_durumu = SistemAkisDurumu.DOGRULAMA_BASLADI
         
+            else:
+                lojik_sifirlama()
 
         # Durum 3: DOGRULAMA_BASLADI
         # Görevi: Asenkron işlemleri BİR KEZ tetiklemek ve durumu değiştirmek.
@@ -326,6 +351,7 @@ def lojik_yoneticisi():
             sistem.sensor_ref.loadcell_olc()
             goruntu_isleme_tetikle()
             
+            lojik_sifirlama()
 
         # Durum 4: VERI_BEKLENIYOR
         # Görevi: Tüm verilerin gelip gelmediğini sürekli kontrol etmek.
@@ -342,13 +368,13 @@ def lojik_yoneticisi():
             if veriler_tamam_mi:
                 print("✅ Tüm veriler toplandı. Nihai doğrulama yapılıyor.")
                 # Orijinal doğrulama fonksiyonunuzu burada çağırın
-                # sonuc_basarili_mi = dogrulama(sistem.mevcut_barkod, sistem.mevcut_agirlik, ...)
-                dogrulama(sistem.mevcut_barkod, sistem.mevcut_agirlik, sistem.mevcut_materyal_turu, sistem.mevcut_uzunluk, sistem.mevcut_genislik) 
-                sonuc_basarili_mi = True # Örnek olarak True varsayalım
+
+                sonuc_basarili_mi = dogrulama(sistem.mevcut_barkod, sistem.mevcut_agirlik, sistem.mevcut_materyal_turu, sistem.mevcut_uzunluk, sistem.mevcut_genislik) 
 
                 if sonuc_basarili_mi:
                     print("👍 Doğrulama başarılı. Yönlendirme durumuna geçiliyor.")
-                    sistem.akis_durumu = SistemAkisDurumu.YONLENDIRME
+                    sistem.akis_durumu = SistemAkisDurumu.YONLENDIRICI_KABUL
+
                 else:
                     print("👎 Doğrulama başarısız. İade ediliyor.")
                     # dogrulama fonksiyonu iade sebebini 'sistem.iade_sebep'e yazmalı
@@ -360,41 +386,131 @@ def lojik_yoneticisi():
                 sistem.mevcut_materyal_turu = None
                 sistem.mevcut_uzunluk = None
                 sistem.mevcut_genislik = None
+            
+            
+            lojik_sifirlama()
         
-        # Durum 5: YONLENDIRME
-        elif sistem.akis_durumu == SistemAkisDurumu.YONLENDIRME:
+        # Durum 5: YONLENDİRİCİ KABUL
+        elif sistem.akis_durumu == SistemAkisDurumu.YONLENDIRICI_KABUL:
             if sistem.yso_lojik:
                 sistem.yso_lojik = False
                 print("✅ [YSO] Ürün yönlendiriciye ulaştı.")
-                yonlendirici_hareket()
-                sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
-                # Bir sonraki ürün için geçici verileri temizle
-                sistem.mevcut_barkod = None
-                sistem.mevcut_agirlik = None
-                sistem.mevcut_materyal_turu = None
-                sistem.mevcut_uzunluk = None
-                sistem.mevcut_genislik = None
+                yonlendirici_basarili = yonlendirici()
+                if yonlendirici_basarili:
+                    print("👍 Yönlendirme başarılı. Ürün yönlendiriciye gönderildi.")
+                    sistem.akis_durumu = SistemAkisDurumu.YONLENDIRICI_HAREKET
+                    # Bir sonraki ürün için geçici verileri temizle
+                    sistem.mevcut_barkod = None
+                    sistem.mevcut_agirlik = None
+                    sistem.mevcut_materyal_turu = None
+                    sistem.mevcut_uzunluk = None
+                    sistem.mevcut_genislik = None
+                else:
+                    print("❌ Yönlendirme başarısız. İade ediliyor.")
+                    sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                    sistem.motor_ref.konveyor_geri()
             # Bu kısım ürünün yönlendiriciye ulaştığını (YSO) bekler
-            print("🚚 Ürün yönlendiriciye doğru ilerliyor...")
-            # yso_lojik gelince işlem tamamlanır ve BEKLEMEDE'ye dönülür.
-            pass
+            else:
+                lojik_sifirlama()
 
+        elif sistem.akis_durumu == SistemAkisDurumu.YONLENDIRICI_HAREKET:
+            if sistem.yonlendirici_konumda:
+                sistem.yonlendirici_konumda = False
+                print("✅ [YONLENDİRİCİ] Ürün yönlendirildi. Sistem bekleme moduna dönüyor.")
+                sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
+
+            elif sistem.yonlendirici_hata:
+                sistem.yonlendirici_hata = False
+                print("❌ [YONLENDİRİCİ] Hata oluştu! Ürün iade ediliyor.")
+                sistem.iade_sebep = "Yönlendirici hatası"
+                sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                sistem.motor_ref.konveyor_geri()
+            
+            elif sistem.yonlendirici_alarm:
+                sistem.yonlendirici_alarm = False
+                print("⚠️ [YONLENDİRİCİ] Alarm durumu! Ürün iade ediliyor.")
+                sistem.iade_sebep = "Yönlendirici alarmı"
+                sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                sistem.motor_ref.konveyor_geri()
+
+            elif sistem.ysi_lojik or sistem.yso_lojik:
+                sistem.ysi_lojik = False
+                sistem.yso_lojik = False
+                print("⚠️ [YONLENDİRİCİ] Beklenmeyen YSI/YSO sinyali! İade ediliyor.")
+                sistem.motor_ref.yonlendirici_dur()
+                sistem.iade_sebep = "Beklenmeyen YSI/YSO sinyali"
+                sistem.akis_durumu = SistemAkisDurumu.IADE_EDILIYOR
+                sistem.motor_ref.konveyor_geri()
+            else:
+                lojik_sifirlama()
 
         elif sistem.akis_durumu == SistemAkisDurumu.IADE_EDILIYOR:
             # İstenen davranış: İade modundayken gelen GSI sinyallerini yok say.
             if sistem.gsi_lojik:
                 sistem.gsi_lojik = False # Sinyali tüket ama hiçbir şey yapma.
-                print("⚠️ [IADE MODU] GSI sinyali yok sayıldı.")
+                time.sleep(0.25)
+                sistem.motor_ref.konveyor_dur()
+                print("⚠️ [GSI] İade modunda ürünü lütfen alınız.")
             
             # İade edilen ürün alındığında tekrar GSO sinyali gelir.
-            if sistem.gso_lojik:
+            
+            elif sistem.ysi_lojik or sistem.yso_lojik:
+                sistem.ysi_lojik = False
+                sistem.yso_lojik = False
+                print("⚠️ [YÖNLENDİRİCİ] Beklenmeyen YSI/YSO sinyali! İade işlemine devam ediliyor.")
+                sistem.motor_ref.konveyor_geri()
+            
+            elif sistem.gso_lojik:
                 sistem.gso_lojik = False
-                print("👍 Ürün geri alındı. Sistem normale dönüyor.")
-                # Konveyörün durduğundan emin ol
-                # sistem.motor_ref.konveyor_dur()
-                sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
-                sistem.mevcut_barkod = None # Barkod bilgisini temizle
+                goruntu = goruntu_isleme_servisi.goruntu_yakala_ve_isle()
+                print(f"📷 [GÖRÜNTÜ İŞLEME - İADE] Sonuç: {goruntu}")
+                if goruntu.mesaj=="nesne_yok":
+                    print("👍 Ürün geri alındı. Sistem normale dönüyor.")
+                    time.sleep(2)
+                    sistem.akis_durumu = SistemAkisDurumu.BEKLEMEDE
+                    sistem.mevcut_barkod = None
+                    sistem.mevcut_agirlik = None
+                    sistem.mevcut_materyal_turu = None
+                    sistem.mevcut_uzunluk = None
+                    sistem.mevcut_genislik = None
+                    lojik_sifirlama()
+                else:
+                    print("❌ Ürün geri alınamadı veya konveyörde başka ürün var. İade işlemine devam ediliyor.")
+                    sistem.motor_ref.konveyor_geri()
 
+            else:
+                lojik_sifirlama()
+
+def lojik_sifirlama():
+
+
+
+    sistem.gsi_lojik = False
+    sistem.gso_lojik = False
+    sistem.ysi_lojik = False
+    sistem.yso_lojik = False
+    sistem.ezici_durum = False
+    sistem.kirici_durum = False
+
+    # Alarmlar
+    sistem.konveyor_alarm = False
+    sistem.yonlendirici_alarm = False
+    sistem.seperator_alarm = False
+    
+    # Konumlar
+    sistem.konveyor_konumda = False
+    sistem.yonlendirici_konumda = False
+    sistem.seperator_konumda = False
+    
+    # Hatalar
+    sistem.konveyor_hata = False
+    sistem.yonlendirici_hata = False
+    sistem.seperator_hata = False
+    sistem.konveyor_adim_problem = False
+    
+    # Kalibrasyonlar
+    sistem.yonlendirici_kalibrasyon = False
+    sistem.seperator_kalibrasyon = False
 
 def mesaj_isle(mesaj):
     mesaj = mesaj.strip().lower()
@@ -416,9 +532,12 @@ def mesaj_isle(mesaj):
         sistem.uzunluk_motor_verisi = None
 
         sistem.motor_ref.motorlari_aktif_et()
+        sistem.motor_ref.konveyor_geri()
         sistem.sensor_ref.tare()
-        sistem.motor_ref.konveyor_dur()
         sistem.sensor_ref.led_ac()
+        time.sleep(2)
+        sistem.motor_ref.konveyor_dur()
+        sistem.sensor_ref.makine_oturum_var()
         sistem.ezici_durum = False
         sistem.kirici_durum = False
 
@@ -427,6 +546,7 @@ def mesaj_isle(mesaj):
         if sistem.akis_durumu == SistemAkisDurumu.VERI_BEKLENIYOR:
             agirlik = float(mesaj.split(":")[1].replace(",", "."))
             sistem.mevcut_agirlik = agirlik
+            agirlik = None
             print(f"⚖️ Ağırlık verisi alındı: {agirlik} gr")
         else:
             print(f"⚠️ Ağırlık verisi geldi ama sistem beklemiyordu. Yok sayıldı.")
@@ -469,3 +589,7 @@ def mesaj_isle(mesaj):
 def modbus_mesaj(modbus_verisi):
     veri = modbus_verisi
     #print(f"[Oturum Var Modbus] Gelen veri: {modbus_verisi}")
+
+sistem = SistemDurumu()
+goruntu_isleme_servisi = GoruntuIslemeServisi()
+veri_lock = threading.Lock()

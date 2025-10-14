@@ -12,6 +12,94 @@ let cardConnectionTimeouts = {};
 let websocket = null;
 let isCalibrating = false;
 
+// Yeni temiz kuyruk sistemi
+let sensorQueue = [];
+let motorQueue = [];
+let systemQueue = [];
+let isPingInProgress = false;
+
+// Temiz kuyruk yöneticisi sınıfı
+class CardQueueManager {
+    constructor(cardType) {
+        this.cardType = cardType;
+        this.queue = [];
+        this.isProcessing = false;
+        this.delay = cardType === 'sensor' ? 800 : cardType === 'motor' ? 600 : 400; // ms - daha güvenli
+        this.maxRetries = 3;
+    }
+    
+    async addOperation(operation, priority = false) {
+        const operationData = {
+            id: Date.now() + Math.random(),
+            operation: operation,
+            priority: priority,
+            retries: 0,
+            timestamp: Date.now()
+        };
+        
+        if (priority) {
+            this.queue.unshift(operationData);
+        } else {
+            this.queue.push(operationData);
+        }
+        
+        this.processQueue();
+    }
+    
+    async processQueue() {
+        if (this.isProcessing || this.queue.length === 0) return;
+        
+        this.isProcessing = true;
+        console.log(`🔄 ${this.cardType.toUpperCase()} kuyruğu işleniyor (${this.queue.length} işlem)`);
+        
+        while (this.queue.length > 0) {
+            const operationData = this.queue.shift();
+            
+            try {
+                await operationData.operation();
+                console.log(`✅ ${this.cardType.toUpperCase()} işlemi tamamlandı`);
+                
+                // İşlemler arası güvenlik beklemesi
+                await this.sleep(this.delay);
+                
+            } catch (error) {
+                console.error(`❌ ${this.cardType.toUpperCase()} kuyruk hatası:`, error);
+                
+                // Retry mekanizması
+                if (operationData.retries < this.maxRetries) {
+                    operationData.retries++;
+                    console.log(`🔄 ${this.cardType.toUpperCase()} işlemi tekrar deneniyor (${operationData.retries}/${this.maxRetries})`);
+                    this.queue.unshift(operationData);
+                    await this.sleep(1000); // Retry için bekle
+                } else {
+                    console.error(`💥 ${this.cardType.toUpperCase()} işlemi başarısız, atlanıyor`);
+                }
+            }
+        }
+        
+        this.isProcessing = false;
+        console.log(`🏁 ${this.cardType.toUpperCase()} kuyruğu tamamlandı`);
+    }
+    
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    getQueueStatus() {
+        return {
+            cardType: this.cardType,
+            queueLength: this.queue.length,
+            isProcessing: this.isProcessing,
+            delay: this.delay
+        };
+    }
+}
+
+// Kuyruk yöneticilerini oluştur
+const sensorQueueManager = new CardQueueManager('sensor');
+const motorQueueManager = new CardQueueManager('motor');
+const systemQueueManager = new CardQueueManager('system');
+
 // Durum yöneticisi
 const durumYoneticisi = {
     durum: 'oturum_yok',
@@ -71,6 +159,8 @@ async function bakimModuToggle() {
                 showMessage('✓ ' + data.message);
                 // Bakım modu pasifken periyodik güncellemeleri durdur
                 stopPeriodicUpdates();
+                // Tüm işlemleri durdur (güvenlik için)
+                stopAllOperations();
             }
             
             // Butonları güncelle
@@ -111,6 +201,12 @@ async function sistemDurumunuGuncelle() {
             }
         }
         
+        // Sekme başlıklarını güncelle
+        updateTabTitles(data);
+        
+        // Bağlantı durumlarını güncelle
+        updateConnectionStatus(data);
+        
         // Bakım modu durumunu güncelle
         if (data.durum === 'bakim' && !bakimModuAktif) {
             bakimModuAktif = true;
@@ -120,7 +216,8 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                 butonlariGuncelle();
             }
-            // Bakım modu aktifken periyodik güncellemeleri başlat
+            // Bakım modu aktifken tüm güncellemeleri başlat
+            startStatusUpdates();
             startPeriodicUpdates();
         } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
@@ -130,10 +227,13 @@ async function sistemDurumunuGuncelle() {
                 btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
                 butonlariGuncelle();
             }
-            // Bakım modu pasifken periyodik güncellemeleri durdur
+            // Bakım modu pasifken tüm güncellemeleri durdur
+            stopStatusUpdates();
             stopPeriodicUpdates();
             // WebSocket bağlantısını kapat
             disconnectWebSocket();
+            // Durum göstergelerini gri yap
+            setStatusIndicatorsGray();
         }
         
         // Durum yöneticisini güncelle
@@ -143,6 +243,64 @@ async function sistemDurumunuGuncelle() {
         
     } catch (error) {
         console.error('Durum güncellemesi başarısız:', error);
+    }
+}
+
+// Sekme başlıklarını güncelle
+function updateTabTitles(data) {
+    const sensorTab = document.getElementById('tab-btn-sensors');
+    const motorTab = document.getElementById('tab-btn-motors');
+    
+    if (sensorTab) {
+        if (data.sensor_baglanti) {
+            sensorTab.innerHTML = `Sensör Kartı <span class="text-green-400">●</span>`;
+        } else {
+            sensorTab.innerHTML = `Sensör Kartı <span class="text-red-400">●</span>`;
+        }
+    }
+    
+    if (motorTab) {
+        if (data.motor_baglanti) {
+            motorTab.innerHTML = `Motor Kartı <span class="text-green-400">●</span>`;
+        } else {
+            motorTab.innerHTML = `Motor Kartı <span class="text-red-400">●</span>`;
+        }
+    }
+}
+
+// Bağlantı durumlarını güncelle
+function updateConnectionStatus(data) {
+    const sensorConnectionStatus = document.getElementById('sensor-connection-status');
+    const motorConnectionStatus = document.getElementById('motor-connection-status');
+    
+    if (sensorConnectionStatus) {
+        const dot = sensorConnectionStatus.querySelector('div');
+        const text = sensorConnectionStatus.querySelector('span');
+        
+        if (data.sensor_baglanti) {
+            dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            text.textContent = 'Bağlı';
+            text.className = 'text-xs text-green-400';
+        } else {
+            dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            text.textContent = 'Bağlantı Yok';
+            text.className = 'text-xs text-red-400';
+        }
+    }
+    
+    if (motorConnectionStatus) {
+        const dot = motorConnectionStatus.querySelector('div');
+        const text = motorConnectionStatus.querySelector('span');
+        
+        if (data.motor_baglanti) {
+            dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            text.textContent = 'Bağlı';
+            text.className = 'text-xs text-green-400';
+        } else {
+            dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            text.textContent = 'Bağlantı Yok';
+            text.className = 'text-xs text-red-400';
+        }
     }
 }
 
@@ -198,45 +356,51 @@ async function sensorDegerleriniGuncelle() {
 
 // API çağrı fonksiyonları
 async function motorKontrol(komut) {
-    try {
-        const response = await fetch(`${API_BASE}/motor/${komut}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Motor işlemini motor kuyruğuna ekle
+    motorQueueManager.addOperation(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/motor/${komut}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            showMessage(data.message);
-        } else {
-            showMessage(data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    });
 }
 
 async function sensorKontrol(komut) {
-    try {
-        const response = await fetch(`${API_BASE}/sensor/${komut}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Sensör işlemini sensör kuyruğuna ekle
+    sensorQueueManager.addOperation(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/sensor/${komut}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            showMessage(data.message);
-        } else {
-            showMessage(data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    });
 }
 
 // Sistem reset
@@ -245,26 +409,31 @@ async function sistemReset() {
         return;
     }
     
-    try {
-        showMessage('↻ Sistem resetleniyor...', false);
-        const response = await fetch(`${API_BASE}/sistem/reset`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    // Sistem işlemini sistem kuyruğuna ekle (yüksek öncelik)
+    systemQueueManager.addOperation(async () => {
+        try {
+            showMessage('↻ Sistem resetleniyor...', false);
+            const response = await fetch(`${API_BASE}/sistem/reset`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Motor toggle'larını kapat
+                turnOffMotorToggles();
+                showMessage('✓ ' + data.message);
+                setTimeout(sistemDurumunuGuncelle, 2000);
+            } else {
+                showMessage('✗ ' + data.message, true);
             }
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            showMessage('✓ ' + data.message);
-            setTimeout(sistemDurumunuGuncelle, 2000);
-        } else {
-            showMessage('✗ ' + data.message, true);
+        } catch (error) {
+            showMessage('Bağlantı hatası: ' + error.message, true);
         }
-    } catch (error) {
-        showMessage('Bağlantı hatası: ' + error.message, true);
-    }
+    }, true); // Yüksek öncelik
 }
 
 // Sekme kontrolü
@@ -514,15 +683,32 @@ function setupSensorControls() {
 
     // Sürekli ağırlık ölçümü durdur
     function agirlikOlcDurdur() {
+        console.log('🛑 Ağırlık ölçümü durduruluyor...');
+        
+        // Bayrağı sıfırla
         agirlikOlcAktif = false;
+        
+        // Timer'ı temizle
         if (agirlikOlcTimer) {
             clearInterval(agirlikOlcTimer);
             agirlikOlcTimer = null;
         }
+        
+        // UI'yi güncelle
         if (loadcellVisual) loadcellVisual.classList.remove('measuring');
         if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm durduruldu';
+        
+        // Buton durumunu sıfırla
+        const measureBtn = document.getElementById('loadcell-measure-btn');
+        if (measureBtn) {
+            measureBtn.textContent = 'Ağırlık Ölç';
+            measureBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            measureBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            measureBtn.disabled = false;
+        }
+        
         showMessage('✓ Ağırlık ölçümü durduruldu', true);
-        console.log('Ağırlık ölçümü durduruldu');
+        console.log('✅ Ağırlık ölçümü durduruldu');
     }
     
     if (tareBtn) {
@@ -641,6 +827,7 @@ function setupSensorControls() {
             
             updateLedState(100);
             sensorKontrol('led-ac');
+            await sendLedPwm(100);
         });
     }
     
@@ -667,23 +854,197 @@ function setupSensorControls() {
             
             updateLedState(0);
             sensorKontrol('led-kapat');
+            await sendLedPwm(0);
         });
     }
     
     if (brightnessSlider) {
-        brightnessSlider.addEventListener('input', () => updateLedState(parseInt(brightnessSlider.value, 10)));
+        brightnessSlider.addEventListener('input', async () => {
+            const value = parseInt(brightnessSlider.value, 10);
+            updateLedState(value);
+            await sendLedPwm(value);
+        });
     }
     
     if (brightnessInput) {
-        brightnessInput.addEventListener('input', () => {
+        brightnessInput.addEventListener('input', async () => {
             const val = parseInt(brightnessInput.value, 10);
-            if (!isNaN(val)) updateLedState(val);
+            if (!isNaN(val)) {
+                updateLedState(val);
+                await sendLedPwm(val);
+            }
         });
     }
 }
 
+// LED PWM değerini sensör kartına gönder
+async function sendLedPwm(value) {
+    // LED PWM işlemini sensör kuyruğuna ekle
+    sensorQueueManager.addOperation(async () => {
+        try {
+            // Önce sensör durumunu kontrol et
+            const durumResponse = await fetch(`${API_BASE}/sensor/durum`);
+            const durumData = await durumResponse.json();
+            
+            if (!durumData.bagli) {
+                console.warn('Sensör kartı bağlı değil, LED PWM gönderilemedi');
+                return;
+            }
+            
+            if (!durumData.saglikli) {
+                console.warn('Sensör kartı sağlıksız, LED PWM gönderilemedi');
+                return;
+            }
+            
+            // PWM değerini gönder
+            const response = await fetch(`${API_BASE}/sensor/led-pwm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ deger: value })
+            });
+            
+            const data = await response.json();
+            
+            if (data.errorCode === 0) {
+                console.log(`LED PWM değeri ${value} olarak ayarlandı`);
+            } else {
+                console.error('LED PWM ayarlama hatası:', data.message);
+            }
+        } catch (error) {
+            console.error('LED PWM gönderme hatası:', error);
+        }
+    });
+}
+
+// Motor toggle'larını senkronize et
+function setupMotorToggles() {
+    const conveyorToggle = document.getElementById('conveyor-power');
+    const diverterToggle = document.getElementById('diverter-power');
+    const flapToggle = document.getElementById('flap-power');
+    
+    if (!conveyorToggle || !diverterToggle || !flapToggle) {
+        return;
+    }
+    
+    // Toggle'ları senkronize et - birini kapatınca hepsi kapansın
+    const toggles = [conveyorToggle, diverterToggle, flapToggle];
+    
+    // Programatik değişiklik flag'i
+    let isProgrammaticChange = false;
+    
+    // Toggle'ı güvenli şekilde değiştir
+    function setToggleChecked(toggle, checked) {
+        if (isProgrammaticChange) {
+            return;
+        }
+        
+        isProgrammaticChange = true;
+        toggle.checked = checked;
+        
+        // CSS animasyonunu tetiklemek için class ekle/çıkar
+        toggle.classList.add('force-update');
+        setTimeout(() => {
+            toggle.classList.remove('force-update');
+        }, 10);
+        
+        isProgrammaticChange = false;
+    }
+    
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', async () => {
+            // Programatik değişiklik ise event'i yok say
+            if (isProgrammaticChange) {
+                return;
+            }
+            
+            if (toggle.checked) {
+                // Toggle açıldığında - diğer toggle'ları da aç
+                toggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle && !otherToggle.checked) {
+                        setToggleChecked(otherToggle, true);
+                    }
+                });
+                
+                // Motorları aktif et
+                try {
+                    const response = await fetch(`${API_BASE}/motor/motorlari-aktif`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.errorCode === 0) {
+                        showMessage('Motorlar aktif edildi');
+                    } else {
+                        showMessage(data.message || data.errorMessage, true);
+                        // Hata durumunda toggle'ları kapat
+                        toggles.forEach(t => setToggleChecked(t, false));
+                    }
+                } catch (error) {
+                    // Network hatası ise toggle'ları açık bırak
+                    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                        showMessage('API sunucusu çalışmıyor. Motorlar aktif edilemedi ama toggle açık bırakıldı.', false);
+                    } else {
+                        showMessage(`Motor aktif etme hatası: ${error.message}`, true);
+                        // Hata durumunda toggle'ları kapat
+                        toggles.forEach(t => setToggleChecked(t, false));
+                    }
+                }
+            } else {
+                // Toggle kapandığında - diğer toggle'ları da kapat
+                toggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle && otherToggle.checked) {
+                        setToggleChecked(otherToggle, false);
+                    }
+                });
+                
+                // Motorları iptal et
+                try {
+                    const response = await fetch(`${API_BASE}/motor/motorlari-iptal`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+                    if (data.errorCode === 0) {
+                        showMessage('Motorlar iptal edildi');
+                    } else {
+                        showMessage(data.message || data.errorMessage, true);
+                    }
+                } catch (error) {
+                    showMessage(`Motor iptal etme hatası: ${error.message}`, true);
+                }
+            }
+        });
+    });
+}
+
+// Motor toggle'larını kapat (reset sonrası kullanım için)
+function turnOffMotorToggles() {
+    const conveyorToggle = document.getElementById('conveyor-power');
+    const diverterToggle = document.getElementById('diverter-power');
+    const flapToggle = document.getElementById('flap-power');
+    
+    const toggles = [conveyorToggle, diverterToggle, flapToggle];
+    toggles.forEach(toggle => {
+        if (toggle) {
+            // Toggle'ı kapat
+            toggle.checked = false;
+            // CSS animasyonunu tetiklemek için class ekle/çıkar
+            toggle.classList.add('force-update');
+            setTimeout(() => {
+                toggle.classList.remove('force-update');
+            }, 10);
+        }
+    });
+}
+
 // Motor kontrolleri
 function setupMotorControls() {
+    // Motor toggle'larını senkronize et
+    setupMotorToggles();
+    
     // Konveyör Motor Kontrolü
     const conveyorFwdBtn = document.getElementById('conveyor-fwd');
     const conveyorStopBtn = document.getElementById('conveyor-stop');
@@ -1100,10 +1461,8 @@ function disconnectWebSocket() {
         websocket = null;
     }
     
-    // Ağırlık ölçüm timer'ını durdur
-    if (agirlikOlcAktif) {
-        agirlikOlcDurdur();
-    }
+    // Tüm işlemleri durdur (güvenlik için)
+    stopAllOperations();
 }
 
 function handleWebSocketMessage(data) {
@@ -1125,6 +1484,7 @@ function handleWebSocketMessage(data) {
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
             break;
+        // measurement_status case kaldırıldı
         default:
             console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
     }
@@ -1240,15 +1600,219 @@ function updateSensorDataFromWebSocket(data) {
     }
 }
 
-// Periyodik güncellemeleri başlat
+// Sadece durum güncellemelerini başlat (hafif işlemler)
+function startStatusUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopStatusUpdates();
+    
+    // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
+    sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir
+}
+
+// Durum güncellemelerini durdur
+function stopStatusUpdates() {
+    if (sistemDurumInterval) {
+        clearInterval(sistemDurumInterval);
+        sistemDurumInterval = null;
+    }
+}
+
+// Eski kuyruk sistemi kaldırıldı - yeni CardQueueManager kullanılıyor
+
+// Kartları ping ile sağlık durumunu kontrol et
+async function pingKartlar() {
+    // Ağırlık ölçümü aktifse ping atma
+    if (typeof agirlikOlcAktif !== 'undefined' && agirlikOlcAktif) {
+        console.log('📏 Ağırlık ölçümü aktif - Ping atlanıyor');
+        return;
+    }
+    
+    // Kuyruklarda bekleyen işlem varsa ping atma
+    if (sensorQueueManager.queue.length > 0 || motorQueueManager.queue.length > 0 || systemQueueManager.queue.length > 0) {
+        console.log('⏳ Kuyruklarda bekleyen işlem var - Ping atlanıyor');
+        return;
+    }
+    
+    // Kuyruklar işleniyorsa ping atma
+    if (sensorQueueManager.isProcessing || motorQueueManager.isProcessing || systemQueueManager.isProcessing) {
+        console.log('🔄 Kuyruklar işleniyor - Ping atlanıyor');
+        return;
+    }
+    
+    if (isPingInProgress) {
+        return; // Zaten ping devam ediyorsa atla
+    }
+    
+    isPingInProgress = true;
+    console.log('📡 Ping işlemi başlatılıyor...');
+    
+    try {
+        // Sensör kartını ping et (timeout ile)
+        const sensorData = await pingSingleCard('sensor');
+        
+        // Motor kartını ping et (timeout ile)
+        const motorData = await pingSingleCard('motor');
+        
+        // Ping sonuçlarına göre durum göstergelerini güncelle
+        updateConnectionStatusFromPing(sensorData, motorData);
+        
+    } catch (error) {
+        console.log('📡 Ping genel hatası:', error.message);
+        // Hata durumunda gri göster
+        setStatusIndicatorsGray();
+    } finally {
+        isPingInProgress = false;
+        console.log('📡 Ping işlemi tamamlandı');
+    }
+}
+
+// Tek kart ping işlemi (güvenli)
+async function pingSingleCard(cardType) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+        controller.abort();
+    }, 3000); // 3 saniye timeout - daha uzun
+    
+    try {
+        const response = await fetch(`${API_BASE}/${cardType}/ping`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log(`📡 ${cardType.toUpperCase()} ping başarılı:`, data.saglikli ? 'Sağlıklı' : 'Sağlıksız');
+        return data;
+        
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log(`📡 ${cardType.toUpperCase()} ping timeout - atlanıyor`);
+        } else {
+            console.log(`📡 ${cardType.toUpperCase()} ping hatası:`, error.message);
+        }
+        
+        // Hata durumunda varsayılan değer döndür
+        return {
+            saglikli: false,
+            message: `Ping hatası: ${error.message}`,
+            error: true
+        };
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+// Ping sonuçlarına göre durum göstergelerini güncelle
+function updateConnectionStatusFromPing(sensorData, motorData) {
+    // Sensör kartı durumu
+    const sensorHealthy = sensorData && sensorData.saglikli === true;
+    updateSingleConnectionStatus('sensor', sensorHealthy);
+    
+    // Motor kartı durumu
+    const motorHealthy = motorData && motorData.saglikli === true;
+    updateSingleConnectionStatus('motor', motorHealthy);
+}
+
+// Tek bir kartın durum göstergesini güncelle
+function updateSingleConnectionStatus(cardType, isHealthy) {
+    const isSensor = cardType === 'sensor';
+    const tabId = isSensor ? 'tab-btn-sensors' : 'tab-btn-motors';
+    const statusId = isSensor ? 'sensor-connection-status' : 'motor-connection-status';
+    const cardName = isSensor ? 'Sensör Kartı' : 'Motor Kartı';
+    
+    // Sekme başlığını güncelle
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        if (isHealthy) {
+            tab.innerHTML = `${cardName} <span class="text-green-400">●</span>`;
+        } else {
+            tab.innerHTML = `${cardName} <span class="text-red-400">●</span>`;
+        }
+    }
+    
+    // Bağlantı durumu göstergesini güncelle
+    const statusElement = document.getElementById(statusId);
+    if (statusElement) {
+        const dot = statusElement.querySelector('div');
+        const text = statusElement.querySelector('span');
+        
+        if (dot) {
+            if (isHealthy) {
+                dot.className = 'w-2 h-2 rounded-full bg-green-500';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-red-500';
+            }
+        }
+        
+        if (text) {
+            if (isHealthy) {
+                text.textContent = 'Bağlı';
+                text.className = 'text-xs text-green-400';
+            } else {
+                text.textContent = 'Bağlantı Yok';
+                text.className = 'text-xs text-red-400';
+            }
+        }
+    }
+}
+
+// Durum göstergelerini gri yap (bakım modu pasifken)
+function setStatusIndicatorsGray() {
+    // Sekme başlıklarındaki durum göstergelerini gri yap
+    const sensorTab = document.getElementById('tab-btn-sensors');
+    const motorTab = document.getElementById('tab-btn-motors');
+    
+    if (sensorTab) {
+        sensorTab.innerHTML = `Sensör Kartı <span class="text-gray-400">●</span>`;
+    }
+    
+    if (motorTab) {
+        motorTab.innerHTML = `Motor Kartı <span class="text-gray-400">●</span>`;
+    }
+    
+    // Bağlantı & Kontroller bölümündeki durum göstergelerini gri yap
+    const sensorConnectionStatus = document.getElementById('sensor-connection-status');
+    const motorConnectionStatus = document.getElementById('motor-connection-status');
+    
+    if (sensorConnectionStatus) {
+        const dot = sensorConnectionStatus.querySelector('div');
+        const text = sensorConnectionStatus.querySelector('span');
+        
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+        }
+        if (text) {
+            text.textContent = 'Bakım Modu Pasif';
+            text.className = 'text-xs text-gray-400';
+        }
+    }
+    
+    if (motorConnectionStatus) {
+        const dot = motorConnectionStatus.querySelector('div');
+        const text = motorConnectionStatus.querySelector('span');
+        
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+        }
+        if (text) {
+            text.textContent = 'Bakım Modu Pasif';
+            text.className = 'text-xs text-gray-400';
+        }
+    }
+}
+
+// Periyodik güncellemeleri başlat (ağır işlemler - sadece bakım modu aktifken)
 function startPeriodicUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopPeriodicUpdates();
     
-    // Periyodik güncellemeleri başlat
-    sistemDurumInterval = setInterval(sistemDurumunuGuncelle, 5000);
+    // Ağır periyodik güncellemeleri başlat
     sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
-    genelDurumInterval = setInterval(updateGeneralStatus, 10000);
+    genelDurumInterval = setInterval(updateGeneralStatus, 5000); // 5 saniyede bir
     
     // Hazne doluluk güncelleme
     setInterval(async () => {
@@ -1256,12 +1820,8 @@ function startPeriodicUpdates() {
     }, 10000);
 }
 
-// Periyodik güncellemeleri durdur
+// Periyodik güncellemeleri durdur (ağır işlemler)
 function stopPeriodicUpdates() {
-    if (sistemDurumInterval) {
-        clearInterval(sistemDurumInterval);
-        sistemDurumInterval = null;
-    }
     if (sensorDegerInterval) {
         clearInterval(sensorDegerInterval);
         sensorDegerInterval = null;
@@ -1279,6 +1839,7 @@ function initializeBakim() {
     setupSensorControls();
     setupMotorControls();
     setupPlaceholderFunctions();
+    setupSafetyControls();
     
     // İlk durum güncellemesi
     sistemDurumunuGuncelle();
@@ -1289,9 +1850,13 @@ function initializeBakim() {
     // WebSocket bağlantısını her zaman başlat
     connectWebSocket();
     
-    // Periyodik güncellemeleri başlat (sadece bakım modu aktifken)
+    // Sadece bakım modu aktifken tüm işlemleri başlat
     if (bakimModuAktif) {
+        startStatusUpdates();
         startPeriodicUpdates();
+    } else {
+        // Bakım modu pasifken durum göstergelerini gri yap
+        setStatusIndicatorsGray();
     }
 }
 
@@ -1753,6 +2318,20 @@ async function runScenario(scenario) {
 document.addEventListener('DOMContentLoaded', () => {
     initializeBakim();
     
+    // Sayfa kapatılırken tüm işlemleri durdur (güvenlik için)
+    window.addEventListener('beforeunload', function() {
+        console.log('🛑 Sayfa kapatılıyor - tüm bakım işlemleri durduruluyor...');
+        stopAllOperations();
+    });
+    
+    // Sayfa görünürlük değiştiğinde kontrol et
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            console.log('🛑 Sayfa gizlendi - tüm bakım işlemleri durduruluyor...');
+            stopAllOperations();
+        }
+    });
+    
     // Yeni özellikler için event listener'lar
     const diagnosticBtn = document.getElementById('diagnostic-btn');
     if (diagnosticBtn) {
@@ -2010,7 +2589,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (data.message && data.message.includes('resetlendi')) {
-                    showMessage('✓ Motor kartı başarıyla resetlendi', true);
+                    // Motor toggle'larını kapat
+                    turnOffMotorToggles();
+                    showMessage('✓ Motor kartı başarıyla resetlendi. Motorlar kapatıldı.', true);
                 } else {
                     showMessage('✗ Motor reset hatası: ' + (data.message || 'Bilinmeyen hata'), false);
                 }
@@ -2024,3 +2605,389 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// --- GÜVENLİK KARTI KONTROLLERİ ---
+function setupFanControl() {
+    const fanSvg = document.getElementById('fan-svg');
+    const speedSlider = document.getElementById('fan-speed-slider');
+    const speedInput = document.getElementById('fan-speed-input');
+    const onBtn = document.getElementById('fan-on-btn');
+    const offBtn = document.getElementById('fan-off-btn');
+
+    if (!fanSvg || !speedSlider || !speedInput || !onBtn || !offBtn) return;
+
+    const updateFanState = (speed) => {
+        const value = Math.max(0, Math.min(100, parseInt(speed, 10)));
+        speedSlider.value = value;
+        speedInput.value = value;
+
+        if (value > 0) {
+            fanSvg.classList.add('fan-active', 'text-blue-400');
+            fanSvg.classList.remove('text-gray-500');
+            // Speed affects animation duration. Faster speed = shorter duration.
+            const duration = (2.5 - (value / 100) * 2.3).toFixed(2);
+            fanSvg.style.setProperty('--fan-duration', `${duration}s`);
+            
+        } else {
+            fanSvg.classList.remove('fan-active', 'text-blue-400');
+            fanSvg.classList.add('text-gray-500');
+            fanSvg.style.removeProperty('--fan-duration');
+        }
+    };
+
+    onBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-ac`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(speedInput.value > 0 ? speedInput.value : 100);
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan açma hatası: ${error.message}`, true);
+        }
+    });
+    
+    offBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-kapat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(0);
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan kapatma hatası: ${error.message}`, true);
+        }
+    });
+    speedSlider.addEventListener('input', async () => {
+        const hiz = parseInt(speedSlider.value);
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-hiz?hiz=${hiz}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(hiz);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan hız ayarlama hatası: ${error.message}`, true);
+        }
+    });
+    
+    speedInput.addEventListener('input', async () => {
+        const hiz = parseInt(speedInput.value);
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/fan-hiz?hiz=${hiz}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                updateFanState(hiz);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Fan hız ayarlama hatası: ${error.message}`, true);
+        }
+    });
+    
+    updateFanState(0); // Initial state
+}
+
+function setupMagneticSensor(prefix) {
+    const visual = document.getElementById(`${prefix}-visual`);
+    const statusLed = document.getElementById(`${prefix}-status-led`);
+    const statusText = document.getElementById(`${prefix}-status-text`);
+    const testBtn = document.getElementById(`${prefix}-test-btn`);
+    
+    if (!visual || !statusLed || !statusText) return null;
+    
+    const setActive = () => {
+        visual.classList.remove('inactive');
+        statusLed.classList.remove('bg-red-500');
+        statusLed.classList.add('bg-green-500');
+        statusText.textContent = 'Aktif (Kapak Kapalı)';
+        statusText.classList.remove('text-red-400');
+        statusText.classList.add('text-green-400');
+    };
+
+    const setPassive = () => {
+         visual.classList.add('inactive');
+        statusLed.classList.remove('bg-green-500');
+        statusLed.classList.add('bg-red-500');
+        statusText.textContent = 'Pasif (Kapak Açık)';
+        statusText.classList.remove('text-green-400');
+        statusText.classList.add('text-red-400');
+    };
+    
+    // Test butonu event listener'ı
+    if (testBtn) {
+        testBtn.addEventListener('click', async () => {
+            try {
+                const sensorTipi = prefix === 'top-sensor' ? 'ust' : 'alt';
+                const response = await fetch(`${API_BASE}/guvenlik/sensor-test?sensor_tipi=${sensorTipi}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Sensör durumunu geçici olarak değiştir (test için)
+                    if (statusText.textContent.includes('Aktif')) {
+                        setPassive();
+                    } else {
+                        setActive();
+                    }
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, true);
+                }
+            } catch (error) {
+                showMessage(`Sensör test hatası: ${error.message}`, true);
+            }
+        });
+    }
+    
+    return { setActive, setPassive };
+}
+
+function setupLockControl(prefix, sensorControls) {
+    const visual = document.getElementById(`${prefix}-visual`);
+    const statusLed = document.getElementById(`${prefix}-status-led`);
+    const statusText = document.getElementById(`${prefix}-status-text`);
+    const tongueLed = document.getElementById(`${prefix}-tongue-led`);
+    const tongueText = document.getElementById(`${prefix}-tongue-text`);
+    const openBtn = document.getElementById(`${prefix}-open-btn`);
+    const closeBtn = document.getElementById(`${prefix}-close-btn`);
+
+    if (!visual || !statusLed || !statusText || !tongueLed || !tongueText || !openBtn || !closeBtn) return;
+
+    openBtn.addEventListener('click', async () => {
+        try {
+            const endpoint = prefix === 'top-lock' ? 'ust-kilit-ac' : 'alt-kilit-ac';
+            const response = await fetch(`${API_BASE}/guvenlik/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                visual.classList.add('unlocked');
+                statusLed.classList.remove('bg-red-500');
+                statusLed.classList.add('bg-green-500');
+                statusText.textContent = 'Kilit Açık';
+                statusText.classList.remove('text-red-400');
+                statusText.classList.add('text-green-400');
+
+                tongueLed.classList.remove('bg-green-500');
+                tongueLed.classList.add('bg-red-500');
+                tongueText.textContent = 'Dil Yok';
+                tongueText.classList.remove('text-green-400');
+                tongueText.classList.add('text-red-400');
+
+                if (sensorControls) sensorControls.setPassive();
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Kilit açma hatası: ${error.message}`, true);
+        }
+    });
+
+    closeBtn.addEventListener('click', async () => {
+        try {
+            const endpoint = prefix === 'top-lock' ? 'ust-kilit-kapat' : 'alt-kilit-kapat';
+            const response = await fetch(`${API_BASE}/guvenlik/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                visual.classList.remove('unlocked');
+                statusLed.classList.remove('bg-green-500');
+                statusLed.classList.add('bg-red-500');
+                statusText.textContent = 'Kilit Kapalı';
+                statusText.classList.remove('text-green-400');
+                statusText.classList.add('text-red-400');
+
+                tongueLed.classList.remove('bg-red-500');
+                tongueLed.classList.add('bg-green-500');
+                tongueText.textContent = 'Dil Var';
+                tongueText.classList.remove('text-red-400');
+                tongueText.classList.add('text-green-400');
+
+                if (sensorControls) sensorControls.setActive();
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Kilit kapatma hatası: ${error.message}`, true);
+        }
+    });
+}
+
+function setupSafetyRelay() {
+    const resetBtn = document.getElementById('safety-relay-reset-btn');
+    const bypassBtn = document.getElementById('safety-relay-bypass-btn');
+    
+    const relayLed = document.getElementById('safety-relay-led');
+    const relayText = document.getElementById('safety-relay-text');
+    const bypassLed = document.getElementById('bypass-led');
+    const bypassText = document.getElementById('bypass-text');
+
+    if (!resetBtn || !bypassBtn || !relayLed || !relayText || !bypassLed || !bypassText) return;
+
+    let isBypassActive = false;
+
+    resetBtn.addEventListener('click', async () => {
+        // Butonları devre dışı bırak
+        resetBtn.disabled = true;
+        bypassBtn.disabled = true;
+
+        // "Resetleniyor" durumuna ayarla
+        relayLed.classList.remove('bg-red-500', 'bg-green-500');
+        relayLed.classList.add('bg-yellow-500');
+        relayText.textContent = 'Resetleniyor...';
+        relayText.classList.remove('text-red-400', 'text-green-400');
+        relayText.classList.add('text-yellow-400');
+
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/role-reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // "Aktif" durumuna ayarla
+                relayLed.classList.remove('bg-red-500', 'bg-yellow-500');
+                relayLed.classList.add('bg-green-500');
+                relayText.textContent = 'Röle Aktif';
+                relayText.classList.remove('text-red-400', 'text-yellow-400');
+                relayText.classList.add('text-green-400');
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Röle reset hatası: ${error.message}`, true);
+        } finally {
+            // Butonları tekrar aktif et
+            resetBtn.disabled = false;
+            bypassBtn.disabled = false;
+        }
+    });
+
+    bypassBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/role-bypass`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                isBypassActive = !isBypassActive;
+                if (isBypassActive) {
+                    bypassLed.classList.remove('bg-green-500');
+                    bypassLed.classList.add('bg-red-500');
+                    bypassText.textContent = 'Kilitler Pasif';
+                    bypassText.classList.remove('text-green-400');
+                    bypassText.classList.add('text-red-400');
+                } else {
+                    bypassLed.classList.remove('bg-red-500');
+                    bypassLed.classList.add('bg-green-500');
+                    bypassText.textContent = 'Kilitler Aktif';
+                    bypassText.classList.remove('text-red-400');
+                    bypassText.classList.add('text-green-400');
+                }
+                showMessage(data.message);
+            } else {
+                showMessage(data.message, true);
+            }
+        } catch (error) {
+            showMessage(`Röle bypass hatası: ${error.message}`, true);
+        }
+    });
+}
+
+// Güvenlik kartı kontrollerini başlat
+function setupSafetyControls() {
+    const topSensorControls = setupMagneticSensor('top-sensor');
+    const bottomSensorControls = setupMagneticSensor('bottom-sensor');
+    setupLockControl('top-lock', topSensorControls);
+    setupLockControl('bottom-lock', bottomSensorControls);
+    setupFanControl();
+    setupSafetyRelay();
+}
+
+// Kuyruk durumu izleme fonksiyonu
+function getQueueStatus() {
+    return {
+        sensor: sensorQueueManager.getQueueStatus(),
+        motor: motorQueueManager.getQueueStatus(),
+        system: systemQueueManager.getQueueStatus(),
+        ping: { isPingInProgress: isPingInProgress }
+    };
+}
+
+// Kuyruk durumunu konsola yazdır (debug için)
+function logQueueStatus() {
+    const status = getQueueStatus();
+    console.log('📊 Kuyruk Durumu:', status);
+    return status;
+}
+
+// Tüm kuyrukları durdur ve temizle (güvenlik için)
+function stopAllOperations() {
+    console.log('🛑 Tüm bakım işlemleri durduruluyor...');
+    
+    // Tüm kuyrukları temizle
+    sensorQueueManager.queue = [];
+    motorQueueManager.queue = [];
+    systemQueueManager.queue = [];
+    
+    // İşlem durumlarını sıfırla
+    sensorQueueManager.isProcessing = false;
+    motorQueueManager.isProcessing = false;
+    systemQueueManager.isProcessing = false;
+    
+    // Ağırlık ölçümünü zorla durdur
+    if (typeof agirlikOlcAktif !== 'undefined' && agirlikOlcAktif) {
+        console.log('🛑 Ağırlık ölçümü zorla durduruluyor...');
+        agirlikOlcDurdur();
+    }
+    
+    // Ping işlemini durdur
+    isPingInProgress = false;
+    
+    // Tüm timer'ları temizle
+    if (typeof agirlikOlcTimer !== 'undefined' && agirlikOlcTimer) {
+        clearInterval(agirlikOlcTimer);
+        agirlikOlcTimer = null;
+    }
+    
+    console.log('✅ Tüm işlemler durduruldu');
+}
