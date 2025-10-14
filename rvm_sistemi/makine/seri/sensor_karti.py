@@ -43,6 +43,22 @@ class SensorKart:
     def makine_oturum_var(self): self.write_queue.put(("makine_oturum_var", None))
     def makine_oturum_yok(self): self.write_queue.put(("makine_oturum_yok", None))
     def makine_bakim_modu(self): self.write_queue.put(("makine_bakim_modu", None))
+
+    # ---------------------------------------------- Güvenlik Kartı Komutları ----------------------------------------------
+    def ust_kilit_ac(self): self.write_queue.put(("ust_kilit_ac", None))
+    def ust_kilit_kapat(self): self.write_queue.put(("ust_kilit_kapat", None))
+    def alt_kilit_ac(self): self.write_queue.put(("alt_kilit_ac", None))
+    def alt_kilit_kapat(self): self.write_queue.put(("alt_kilit_kapat", None))
+    def ust_kilit_durum_sorgula(self): self.write_queue.put(("ust_kilit_durum_sorgula", None))
+    def alt_kilit_durum_sorgula(self): self.write_queue.put(("alt_kilit_durum_sorgula", None))
+    def bme_guvenlik(self): self.write_queue.put(("bme_guvenlik", None))
+    def manyetik_saglik(self): self.write_queue.put(("manyetik_saglik", None))
+    def fan_pwm(self, deger): self.write_queue.put(("fan_pwm", deger))
+    def bypass_modu_ac(self): self.write_queue.put(("bypass_modu_ac", None))
+    def bypass_modu_kapat(self): self.write_queue.put(("bypass_modu_kapat", None))
+    def guvenlik_role_reset(self): self.write_queue.put(("guvenlik_role_reset", None))
+    def guvenlik_kart_reset(self): self.write_queue.put(("guvenlik_kart_reset", None))
+
     def ping(self):
         self.saglikli = False  # Sağlık durumunu her ping öncesi sıfırla
         self.write_queue.put(("ping", None))
@@ -118,7 +134,12 @@ class SensorKart:
                     "ezici_geri": b"eg\n", "ezici_dur": b"ed\n", "kirici_ileri": b"ki\n", "kirici_geri": b"kg\n",
                     "kirici_dur": b"kd\n", "led_kapat": b"ad\n", "tare": b"lst\n", "ledfull_ac": b"la\n", "led_pwm": f"l:{data}\n".encode(),
                     "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n",
-                    "makine_oturum_var": b"mov\n", "makine_oturum_yok": b"moy\n", "makine_bakim_modu": b"mb\n" 
+                    "makine_oturum_var": b"mov\n", "makine_oturum_yok": b"moy\n", "makine_bakim_modu": b"mb\n",
+                    
+                    "ust_kilit_ac": b"#uka\n", "ust_kilit_kapat": b"#ukk\n", "alt_kilit_ac": b"#aka\n", "alt_kilit_kapat": b"#akk\n",
+                    "ust_kilit_durum_sorgula": b"#msud\n", "alt_kilit_durum_sorgula": b"#msad\n", "bme_guvenlik": b"#bme\n",
+                    "manyetik_saglik": b"#mesd\n", "fan_pwm": f"#f:{data}\n".encode(), "bypass_modu_ac": b"#bypa\n",
+                    "bypass_modu_kapat": b"#bypp\n", "guvenlik_role_reset": b"#gr\n", "guvenlik_kart_reset": b"#reset\n"
                 }
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])
