@@ -1694,7 +1694,7 @@ function startSdsUpdates() {
         } catch (error) {
             console.error('SDS sensör sorgulama hatası:', error);
         }
-    }, 1000); // 1 saniye
+    }, 500); // 0.5 saniye
     
     console.log('SDS sensör güncellemeleri başlatıldı (1s aralık)');
 }
@@ -1714,7 +1714,7 @@ function startDolulukUpdates() {
         } catch (error) {
             console.error('Doluluk oranı sorgulama hatası:', error);
         }
-    }, 1000); // 1 saniye
+    }, 10000); // 1 saniye
     
     console.log('Doluluk oranı güncellemeleri başlatıldı (5s aralık)');
 }
@@ -1819,7 +1819,7 @@ function startStatusUpdates() {
     stopStatusUpdates();
     
     // Ping ile sağlık durumu kontrolü (15 saniyede bir - güvenli aralık)
-    sistemDurumInterval = setInterval(pingKartlar, 3000); // 15 saniyede bir - GÜVENLİ
+    sistemDurumInterval = setInterval(pingKartlar, 1000); // 15 saniyede bir - GÜVENLİ
 }
 
 // Durum güncellemelerini durdur
