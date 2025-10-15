@@ -1628,6 +1628,9 @@ function updateSdsDataFromWebSocket(data) {
             updateSingleSdsSensor(mapping.sensorPrefix, data[mapping.sdsKey]);
         }
     });
+    
+    // Doluluk kartlarının sağlık durumlarını güncelle
+    updateDolulukHealthFromSDS(data);
 }
 
 function updateSingleSdsSensor(prefix, sensorData) {
@@ -1766,14 +1769,57 @@ function updateDolulukDataFromWebSocket(data) {
     }
 }
 
+function updateDolulukHealthFromSDS(sdsData) {
+    console.log('Doluluk sağlık durumu güncellendi:', sdsData);
+    
+    // Plastik hazne sağlık durumu
+    if (sdsData.sds_plastik) {
+        updateSingleDolulukHealth('plastic', sdsData.sds_plastik);
+    }
+    
+    // Metal hazne sağlık durumu
+    if (sdsData.sds_metal) {
+        updateSingleDolulukHealth('metal', sdsData.sds_metal);
+    }
+    
+    // Cam hazne sağlık durumu
+    if (sdsData.sds_cam) {
+        updateSingleDolulukHealth('glass', sdsData.sds_cam);
+    }
+}
+
+function updateSingleDolulukHealth(hazneType, sensorData) {
+    const healthEl = document.getElementById(`${hazneType}-health`);
+    if (healthEl) {
+        healthEl.innerHTML = `${sensorData.saglik} <span class="w-2 h-2 rounded-full"></span>`;
+        const healthDot = healthEl.querySelector('.w-2.h-2.rounded-full');
+        
+        // Sağlık durumunu temizle ve küçük harfe çevir
+        const cleanSaglik = sensorData.saglik.trim().toLowerCase();
+        
+        // Sağlık durumuna göre renk ayarla
+        if (healthDot) {
+            healthDot.classList.remove('bg-gray-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
+            
+            if (cleanSaglik === 'normal') {
+                healthDot.classList.add('bg-green-500');
+            } else if (cleanSaglik.includes('bağlantı kopuk') || cleanSaglik.includes('kopuk') || cleanSaglik.includes('baglanti kopuk')) {
+                healthDot.classList.add('bg-red-500');
+            } else {
+                healthDot.classList.add('bg-yellow-500');
+            }
+        }
+    }
+}
+
 
 // Sadece durum güncellemelerini başlat (hafif işlemler)
 function startStatusUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopStatusUpdates();
     
-    // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
-     sistemDurumInterval = setInterval(pingKartlar, 1000); // 10 saniyede bir - DEAKTIF
+    // Ping ile sağlık durumu kontrolü (15 saniyede bir - güvenli aralık)
+    sistemDurumInterval = setInterval(pingKartlar, 3000); // 15 saniyede bir - GÜVENLİ
 }
 
 // Durum güncellemelerini durdur
@@ -1818,10 +1864,8 @@ async function pingKartlar() {
     console.log('📡 Ping işlemi başlatılıyor...');
     
     try {
-        // Sensör kartını ping et (timeout ile)
+        // Sadece mevcut bağlantıları ping et (port arama yapma)
         const sensorData = await pingSingleCard('sensor');
-        
-        // Motor kartını ping et (timeout ile)
         const motorData = await pingSingleCard('motor');
         
         // Ping sonuçlarına göre durum göstergelerini güncelle

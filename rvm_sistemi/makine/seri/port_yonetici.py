@@ -153,8 +153,8 @@ class SerialConnection:
                         port=port_device,
                         baudrate=self.baudrate,
                         timeout=timeout,
-                        write_timeout=timeout,
-                        exclusive=True  # Exclusive erişim
+                        write_timeout=timeout
+                        # exclusive=True kaldırıldı - port çakışmasına neden oluyor
                     )
                     return ser
                     
