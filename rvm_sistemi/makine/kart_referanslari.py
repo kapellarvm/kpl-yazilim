@@ -9,13 +9,13 @@ def motor_referansini_ayarla(motor_instance):
     """Motor kartı referansını ayarlar"""
     global motor
     motor = motor_instance
-    print(f"[kart_referanslari] Motor referansı ayarlandı: {motor}")
+    #print(f"[kart_referanslari] Motor referansı ayarlandı: {motor}")
 
 def sensor_referansini_ayarla(sensor_instance):
     """Sensor kartı referansını ayarlar"""
     global sensor
     sensor = sensor_instance
-    print(f"[kart_referanslari] Sensor referansı ayarlandı: {sensor}")
+    #print(f"[kart_referanslari] Sensor referansı ayarlandı: {sensor}")
 
 def motor_al():
     """Motor kartı referansını döndürür"""
@@ -29,7 +29,7 @@ def ac_motor_kontrol_referansini_ayarla(ac_motor_instance):
     """AC Motor kontrol referansını ayarlar"""
     global ac_motor_kontrol
     ac_motor_kontrol = ac_motor_instance
-    print(f"[kart_referanslari] AC Motor kontrol referansı ayarlandı: {ac_motor_kontrol}")
+    #print(f"[kart_referanslari] AC Motor kontrol referansı ayarlandı: {ac_motor_kontrol}")
 
 def ac_motor_kontrol_al():
     """AC Motor kontrol referansını döndürür"""

@@ -54,9 +54,9 @@ class RvmLogger:
         )
         oturum_file_handler.setLevel(logging.DEBUG)
         
-        # Console handler'ı (terminal çıktısı)
+        # Console handler'ı (terminal çıktısı) - sadece CRITICAL ve üzeri
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(logging.CRITICAL)
         
         # Formatter'lar
         detailed_formatter = logging.Formatter(
@@ -82,64 +82,56 @@ class RvmLogger:
         self.oturum_file_handler = oturum_file_handler
     
     def debug(self, message: str):
-        """Debug seviyesinde log"""
+        """Debug seviyesinde log - sadece dosyaya yazılır"""
         self.logger.debug(message)
-        print(f"🔍 [DEBUG] {message}")
     
     def info(self, message: str):
-        """Info seviyesinde log"""
+        """Info seviyesinde log - sadece dosyaya yazılır"""
         self.logger.info(message)
-        print(f"ℹ️  [INFO] {message}")
     
     def warning(self, message: str):
-        """Warning seviyesinde log"""
+        """Warning seviyesinde log - sadece dosyaya yazılır"""
         self.logger.warning(message)
-        print(f"⚠️  [WARNING] {message}")
     
     def error(self, message: str):
-        """Error seviyesinde log"""
+        """Error seviyesinde log - terminale de yazılır"""
         self.logger.error(message)
         print(f"❌ [ERROR] {message}")
     
     def critical(self, message: str):
-        """Critical seviyesinde log"""
+        """Critical seviyesinde log - terminale de yazılır"""
         self.logger.critical(message)
         print(f"🚨 [CRITICAL] {message}")
     
     def success(self, message: str):
-        """Başarı mesajları için özel log"""
+        """Başarı mesajları için özel log - terminale de yazılır"""
         self.logger.info(f"SUCCESS: {message}")
         print(f"✅ [SUCCESS] {message}")
     
     def system(self, message: str):
-        """Sistem mesajları için özel log"""
+        """Sistem mesajları için özel log - sadece dosyaya yazılır"""
         self.logger.info(f"SYSTEM: {message}")
-        print(f"🔄 [SYSTEM] {message}")
     
     def dimdb(self, message: str):
-        """DİM-DB mesajları için özel log"""
+        """DİM-DB mesajları için özel log - sadece dosyaya yazılır"""
         self.logger.info(f"DIMDB: {message}")
-        print(f"📡 [DİM-DB] {message}")
     
     def motor(self, message: str):
-        """Motor mesajları için özel log"""
+        """Motor mesajları için özel log - sadece dosyaya yazılır"""
         self.logger.info(f"MOTOR: {message}")
     
     def sensor(self, message: str):
-        """Sensör mesajları için özel log"""
+        """Sensör mesajları için özel log - sadece dosyaya yazılır"""
         self.logger.info(f"SENSOR: {message}")
-        print(f"📊 [SENSOR] {message}")
     
     def oturum(self, message: str):
-        """Oturum mesajları için özel log"""
+        """Oturum mesajları için özel log - sadece dosyaya yazılır"""
         self.logger.info(f"OTURUM: {message}")
-        print(f"👤 [OTURUM] {message}")
     
     def oturum_var(self, message: str):
-        """Oturum var modülü için özel log (ayrı dosyaya yazar)"""
+        """Oturum var modülü için özel log (ayrı dosyaya yazar) - sadece dosyaya yazılır"""
         # Ana logger'a da yaz
         self.logger.info(f"OTURUM_VAR: {message}")
-        print(f"🔄 [OTURUM_VAR] {message}")
         
         # Oturum var özel dosyasına da yaz
         oturum_logger = logging.getLogger(f"{self.name}_oturum_var")
@@ -152,7 +144,7 @@ class RvmLogger:
         oturum_logger.info(f"OTURUM_VAR: {message}")
     
     def exception(self, message: str, exc_info=None):
-        """Exception logları için özel log"""
+        """Exception logları için özel log - terminale de yazılır"""
         if exc_info is None:
             exc_info = sys.exc_info()
         self.logger.error(f"EXCEPTION: {message}", exc_info=exc_info)
@@ -161,7 +153,7 @@ class RvmLogger:
             print(f"💥 [EXCEPTION] Traceback: {traceback.format_exc()}")
     
     def thread_error(self, message: str, thread_name: str = None):
-        """Thread hataları için özel log"""
+        """Thread hataları için özel log - terminale de yazılır"""
         thread_info = f" (Thread: {thread_name or threading.current_thread().name})"
         self.logger.error(f"THREAD_ERROR: {message}{thread_info}")
         print(f"🧵 [THREAD_ERROR] {message}{thread_info}")

@@ -37,10 +37,8 @@ app.middleware("http")(log_filter_middleware)
 # Static dosyaları serve et
 try:
     static_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
-    print(f"Static dosya yolu: {static_path}")
     if os.path.exists(static_path):
         app.mount("/static", StaticFiles(directory=static_path), name="static")
-        print("Static dosyalar başarıyla yüklendi.")
     else:
         print(f"Static klasör bulunamadı: {static_path}")
 except Exception as e:

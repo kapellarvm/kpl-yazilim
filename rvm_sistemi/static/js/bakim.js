@@ -358,48 +358,48 @@ async function sensorDegerleriniGuncelle() {
 async function motorKontrol(komut) {
     // Motor işlemini motor kuyruğuna ekle
     motorQueueManager.addOperation(async () => {
-        try {
-            const response = await fetch(`${API_BASE}/motor/${komut}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                showMessage(data.message);
-            } else {
-                showMessage(data.message, true);
+    try {
+        const response = await fetch(`${API_BASE}/motor/${komut}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showMessage(data.message);
+        } else {
+            showMessage(data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     });
 }
 
 async function sensorKontrol(komut) {
     // Sensör işlemini sensör kuyruğuna ekle
     sensorQueueManager.addOperation(async () => {
-        try {
-            const response = await fetch(`${API_BASE}/sensor/${komut}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                showMessage(data.message);
-            } else {
-                showMessage(data.message, true);
+    try {
+        const response = await fetch(`${API_BASE}/sensor/${komut}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showMessage(data.message);
+        } else {
+            showMessage(data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     });
 }
 
@@ -411,28 +411,28 @@ async function sistemReset() {
     
     // Sistem işlemini sistem kuyruğuna ekle (yüksek öncelik)
     systemQueueManager.addOperation(async () => {
-        try {
-            showMessage('↻ Sistem resetleniyor...', false);
-            const response = await fetch(`${API_BASE}/sistem/reset`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
+    try {
+        showMessage('↻ Sistem resetleniyor...', false);
+        const response = await fetch(`${API_BASE}/sistem/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
                 // Motor toggle'larını kapat
                 turnOffMotorToggles();
-                showMessage('✓ ' + data.message);
-                setTimeout(sistemDurumunuGuncelle, 2000);
-            } else {
-                showMessage('✗ ' + data.message, true);
-            }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+            showMessage('✓ ' + data.message);
+            setTimeout(sistemDurumunuGuncelle, 2000);
+        } else {
+            showMessage('✗ ' + data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     }, true); // Yüksek öncelik
 }
 

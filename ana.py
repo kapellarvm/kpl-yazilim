@@ -130,14 +130,13 @@ async def main():
         oturum_var.motor_kontrol_referansini_ayarla(motor_kontrol)
         # Merkezi referans sistemine de kaydet
         kart_referanslari.ac_motor_kontrol_referansini_ayarla(motor_kontrol)
-        log_system("Motor kontrol referansı oturum_var modülüne ve merkezi sisteme ayarlandı")
 
     # FastAPI sunucusunu başlat
     config = uvicorn.Config(
         "rvm_sistemi.api.main:app",
         host="0.0.0.0",
         port=4321,
-        log_level="warning"
+        log_level="error"
     )
     server = uvicorn.Server(config)
 
@@ -150,7 +149,6 @@ async def main():
 
     print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
-    print("🔄 Ürün güncelleme: Her 6 saatte bir otomatik")
     print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
     
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")

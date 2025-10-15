@@ -26,21 +26,20 @@ class UrunGuncelleyici:
     async def baslat(self):
         """Ürün güncelleme zamanlayıcısını başlatır"""
         if self.calistiriliyor:
-            print("⚠️ [URUN_GUNCELLEYICI] Zaten çalışıyor!")
+            # Zaten çalışıyor - sadece log dosyasına yazılır
             log_warning("Ürün güncelleyici zaten çalışıyor!")
             return
             
         self.calistiriliyor = True
-        print(f"🔄 [URUN_GUNCELLEYICI] Başlatılıyor (her {self.guncelleme_sikligi_dakika} dakikada bir)")
-        log_system(f"Ürün güncelleyici başlatılıyor (her {self.guncelleme_sikligi_dakika} dakikada bir)")
+        # Başlatılıyor - sadece log dosyasına yazılır
         
         # İlk güncellemeyi yap (eğer isteniyorsa)
         if self.ilk_guncelleme_yap:
-            print("🔄 [URUN_GUNCELLEYICI] İlk güncelleme yapılıyor...")
-            log_system("İlk ürün güncellemesi yapılıyor...")
+            # İlk güncelleme yapılıyor - sadece log dosyasına yazılır
+            
             await self._urun_guncelle()
         else:
-            print("⏭️ [URUN_GUNCELLEYICI] İlk güncelleme atlandı")
+            # İlk güncelleme atlandı - sadece log dosyasına yazılır
             log_system("İlk ürün güncellemesi atlandı")
         
         # Zamanlayıcı döngüsünü başlat
@@ -53,7 +52,7 @@ class UrunGuncelleyici:
             await asyncio.sleep(self.guncelleme_sikligi_dakika * 60 * 60)
             
             if self.calistiriliyor:
-                print(f"🔄 [URUN_GUNCELLEYICI] Periyodik güncelleme zamanı geldi...")
+                # Periyodik güncelleme zamanı geldi - sadece log dosyasına yazılır
                 log_system("Periyodik ürün güncelleme zamanı geldi...")
                 await self._urun_guncelle()
     
@@ -62,35 +61,34 @@ class UrunGuncelleyici:
         try:
             # UTC saatini kullan
             utc_time = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
-            print(f"🔄 [URUN_GUNCELLEYICI] Ürün güncellemesi başlatılıyor... ({utc_time})")
+            # Ürün güncellemesi başlatılıyor - sadece log dosyasına yazılır
             log_system(f"Ürün güncellemesi başlatılıyor... ({utc_time})")
             await dimdb_istemcisi.get_all_products_and_save()
             utc_time_end = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
-            print(f"✅ [URUN_GUNCELLEYICI] Ürün güncellemesi tamamlandı ({utc_time_end})")
+            # Ürün güncellemesi tamamlandı - sadece log dosyasına yazılır
             log_success(f"Ürün güncellemesi tamamlandı ({utc_time_end})")
         except Exception as e:
-            print(f"❌ [URUN_GUNCELLEYICI] Ürün güncelleme hatası: {e}")
+            # Ürün güncelleme hatası - sadece log dosyasına yazılır
             import traceback
-            print(f"❌ [URUN_GUNCELLEYICI] Hata detayı: {traceback.format_exc()}")
             log_error(f"Ürün güncelleme hatası: {e}")
             log_error(f"Hata detayı: {traceback.format_exc()}")
     
     def durdur(self):
         """Ürün güncelleme zamanlayıcısını durdurur"""
         if not self.calistiriliyor:
-            print("⚠️ [URUN_GUNCELLEYICI] Zaten durmuş!")
+            # Zaten durmuş - sadece log dosyasına yazılır
             log_warning("Ürün güncelleyici zaten durmuş!")
             return
             
         self.calistiriliyor = False
         if self._gorev:
             self._gorev.cancel()
-        print("⏹️ [URUN_GUNCELLEYICI] Durduruldu")
+        # Durduruldu - sadece log dosyasına yazılır
         log_system("Ürün güncelleyici durduruldu")
     
     def manuel_guncelle(self):
         """Manuel ürün güncellemesi başlatır"""
-        print("🔄 [URUN_GUNCELLEYICI] Manuel güncelleme başlatılıyor...")
+        # Manuel güncelleme başlatılıyor - sadece log dosyasına yazılır
         log_system("Manuel ürün güncellemesi başlatılıyor...")
         asyncio.create_task(self._urun_guncelle())
     

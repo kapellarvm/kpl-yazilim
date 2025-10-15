@@ -26,7 +26,7 @@ class SensorKart:
 
     def _ilk_baglanti(self):
         """İlk bağlantıyı kurar - port_adi verilmemişse otomatik bulur"""
-        print(f"[{self.cihaz_adi}] İlk bağlantı kuruluyor...")
+        # İlk bağlantı kuruluyor - sadece log dosyasına yazılır
         log_system(f"{self.cihaz_adi} ilk bağlantı kuruluyor...")
         
         if self.port_adi:
@@ -63,7 +63,7 @@ class SensorKart:
         while not self.seri_nesnesi or not self.seri_nesnesi.is_open:
             time.sleep(5)  # 5 saniye bekle
             
-            print(f"[{self.cihaz_adi}] Port tekrar aranıyor...")
+            # Port tekrar aranıyor - sadece log dosyasına yazılır
             log_system(f"{self.cihaz_adi} port tekrar aranıyor...")
             
             basarili, mesaj, portlar = self.port_yoneticisi.baglan(cihaz_adi=self.cihaz_adi)
@@ -119,7 +119,7 @@ class SensorKart:
     def ping(self):
         """Kartın sağlık durumunu kontrol eder"""
         if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
-            print(f"[{self.cihaz_adi}] Port açık değil, ping gönderilemedi")
+            # Port açık değil, ping gönderilemedi - sadece log dosyasına yazılır
             log_warning(f"{self.cihaz_adi} port açık değil, ping gönderilemedi")
             self._baglanti_kontrol()
             return False
@@ -129,12 +129,12 @@ class SensorKart:
         time.sleep(0.2)  # Ping cevabı için bekle
         
         if not self.saglikli:
-            print(f"[{self.cihaz_adi}] Ping cevabı alınamadı, sağlıksız")
+            # Ping cevabı alınamadı, sağlıksız - sadece log dosyasına yazılır
             log_warning(f"{self.cihaz_adi} ping cevabı alınamadı, bağlantı kontrol ediliyor...")
             self._baglanti_kontrol()
             return False
         else:
-            print(f"[{self.cihaz_adi}] Ping başarılı, sağlıklı")
+            # Ping başarılı, sağlıklı - sadece log dosyasına yazılır
             return True
 
     def getir_saglik_durumu(self): 
@@ -143,7 +143,7 @@ class SensorKart:
     def portu_ac(self):
         """Verilen port adına seri bağlantı açar."""
         if not self.port_adi:
-            print(f"[{self.cihaz_adi}] Port adı belirtilmemiş!")
+            # Port adı belirtilmemiş - sadece log dosyasına yazılır
             return False
             
         try:
@@ -152,14 +152,14 @@ class SensorKart:
                 self.seri_nesnesi.close()
                 time.sleep(0.5)
                 
-            print(f"[{self.cihaz_adi}] {self.port_adi} portu açılıyor...")
+            # Port açılıyor - sadece log dosyasına yazılır
             self.seri_nesnesi = serial.Serial(self.port_adi, baudrate=115200, timeout=1)
-            print(f"✅ [{self.cihaz_adi}] {self.port_adi} portuna başarıyla bağlandı.")
+            # Port başarıyla bağlandı - sadece log dosyasına yazılır
             log_success(f"{self.cihaz_adi} {self.port_adi} portuna bağlandı")
             self.saglikli = True
             return True
         except serial.SerialException as e:
-            print(f"❌ [{self.cihaz_adi}] {self.port_adi} portu AÇILAMADI: {e}")
+            # Port açılamadı - sadece log dosyasına yazılır
             log_error(f"{self.cihaz_adi} {self.port_adi} portu açılamadı: {e}")
             self.seri_nesnesi = None
             self.saglikli = False
@@ -182,12 +182,12 @@ class SensorKart:
             self.write_thread = threading.Thread(target=self._yaz, daemon=True)
             self.write_thread.start()
             
-            print(f"[{self.cihaz_adi}] Dinleme ve yazma thread'leri başlatıldı")
+            # Dinleme ve yazma thread'leri başlatıldı - sadece log dosyasına yazılır
             log_system(f"{self.cihaz_adi} dinleme ve yazma thread'leri başlatıldı")
 
     def dinlemeyi_durdur(self):
         """Thread'leri güvenli bir şekilde durdurur"""
-        print(f"[{self.cihaz_adi}] Thread'ler durduruluyor...")
+        # Thread'ler durduruluyor - sadece log dosyasına yazılır
         self.running = False
         
         # Yazma thread'ini güvenli kapat
@@ -199,7 +199,7 @@ class SensorKart:
         if self.write_thread and self.write_thread.is_alive():
             self.write_thread.join(timeout=1)
             
-        print(f"[{self.cihaz_adi}] Thread'ler durduruldu")
+        # Thread'ler durduruldu - sadece log dosyasına yazılır
 
     def _yaz(self):
         """Yazma thread'i - queue'dan komutları alıp seri porta yazar"""
@@ -216,7 +216,7 @@ class SensorKart:
 
                 # Port kontrolü
                 if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
-                    print(f"[{self.cihaz_adi}] Yazma: Port açık değil, komut atlanıyor: {command}")
+                    # Port açık değil, komut atlanıyor - sadece log dosyasına yazılır
                     time.sleep(0.5)
                     continue
 
@@ -241,18 +241,18 @@ class SensorKart:
                 
                 if command in komutlar:
                     self.seri_nesnesi.write(komutlar[command])
-                    print(f"[{self.cihaz_adi}] Komut gönderildi: {command}")
+                    # Komut gönderildi - sadece log dosyasına yazılır
                 else:
-                    print(f"[{self.cihaz_adi}] Bilinmeyen komut: {command}")
-                    
+                    # Bilinmeyen komut - sadece log dosyasına yazılır
+                    pass
             except (serial.SerialException, OSError) as e:
-                print(f"[{self.cihaz_adi}] YAZMA HATASI: {e}")
+                # YAZMA HATASI - sadece log dosyasına yazılır
                 log_error(f"{self.cihaz_adi} yazma hatası: {e}")
                 self.running = False  # Thread'i durdur
                 self._baglanti_kontrol()  # Yeniden bağlan
                 break
             except Exception as e:
-                print(f"[{self.cihaz_adi}] Yazma thread'inde beklenmeyen hata: {e}")
+                # Yazma thread'inde beklenmeyen hata - sadece log dosyasına yazılır
                 log_exception(f"{self.cihaz_adi} yazma hatası", exc_info=(type(e), e, e.__traceback__))
 
     def _dinle(self):
@@ -261,7 +261,7 @@ class SensorKart:
             try:
                 # Port kontrolü
                 if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
-                    print(f"[{self.cihaz_adi}] Dinleme: Port açık değil")
+                    # Port açık değil - sadece log dosyasına yazılır
                     time.sleep(1)
                     continue
                     
@@ -271,7 +271,7 @@ class SensorKart:
                     if data:
                         # Reset mesajını kontrol et
                         if data.lower() == "resetlendi":
-                            print(f"[{self.cihaz_adi}] Kart resetlendi bildirimi alındı")
+                            # Kart resetlendi - sadece log dosyasına yazılır
                             log_warning(f"{self.cihaz_adi} kart resetlendi")
                             self.saglikli = False
                             # Reset sonrası yeniden bağlantı kur
@@ -284,19 +284,19 @@ class SensorKart:
                     time.sleep(0.05)  # CPU kullanımını azalt
                     
             except (serial.SerialException, OSError) as e:
-                print(f"[{self.cihaz_adi}] OKUMA HATASI: {e}")
+                # OKUMA HATASI - sadece log dosyasına yazılır
                 log_error(f"{self.cihaz_adi} okuma hatası: {e}")
                 self.running = False
                 self._baglanti_kontrol()
                 break
             except Exception as e:
-                print(f"[{self.cihaz_adi}] Dinleme thread'inde beklenmeyen hata: {e}")
+                # Dinleme thread'inde beklenmeyen hata - sadece log dosyasına yazılır
                 log_exception(f"{self.cihaz_adi} dinleme hatası", exc_info=(type(e), e, e.__traceback__))
                 time.sleep(1)  # Hata durumunda biraz bekle
 
     def _baglanti_kontrol(self):
         """Bağlantı koptuğunda yeniden bağlanmayı dener"""
-        print(f"[{self.cihaz_adi}] Bağlantı kontrolü başlatıldı...")
+        # Bağlantı kontrolü başlatıldı - sadece log dosyasına yazılır
         log_system(f"{self.cihaz_adi} bağlantı kontrolü başlatıldı")
         
         # Thread'leri durdur
@@ -322,7 +322,7 @@ class SensorKart:
         
         while deneme_sayisi < max_deneme:
             deneme_sayisi += 1
-            print(f"[{self.cihaz_adi}] Yeniden bağlanma denemesi {deneme_sayisi}/{max_deneme}")
+            # Yeniden bağlanma denemesi - sadece log dosyasına yazılır
             log_system(f"{self.cihaz_adi} yeniden bağlanma denemesi {deneme_sayisi}/{max_deneme}")
             
             # Port ara
@@ -343,20 +343,20 @@ class SensorKart:
             
             # Bekleme süresi (her denemede artar)
             bekleme_suresi = min(5 * deneme_sayisi, 30)  # Max 30 saniye
-            print(f"[{self.cihaz_adi}] {bekleme_suresi} saniye sonra tekrar denenecek...")
+            # Bekleme süresi - sadece log dosyasına yazılır
             time.sleep(bekleme_suresi)
         
         log_error(f"{self.cihaz_adi} maksimum deneme sayısına ulaşıldı, bağlantı kurulamadı!")
-        print(f"[{self.cihaz_adi}] HATA: Maksimum deneme sayısına ulaşıldı!")
+        # Maksimum deneme sayısına ulaşıldı - sadece log dosyasına yazılır
 
     def agirlik_olc(self):
         """Loadcell'den ağırlık ölçümü yapar"""
         if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
-            print(f"[{self.cihaz_adi}] Port açık değil, ağırlık ölçülemedi")
+            # Port açık değil, ağırlık ölçülemedi - sadece log dosyasına yazılır
             return False
         
         self.write_queue.put(("loadcell_olc", None))
-        print(f"[{self.cihaz_adi}] Ağırlık ölçüm komutu gönderildi")
+        # Ağırlık ölçüm komutu gönderildi - sadece log dosyasına yazılır
         return True
 
     def _mesaj_isle(self, mesaj):
@@ -367,12 +367,12 @@ class SensorKart:
         # Ping cevabını kontrol et
         if mesaj.lower() == "pong":
             self.saglikli = True
-            print(f"[{self.cihaz_adi}] Pong alındı - sağlıklı")
+            # Pong alındı - sağlıklı - sadece log dosyasına yazılır
         
         # Callback varsa çağır
         if self.callback:
             try:
                 self.callback(mesaj)
             except Exception as e:
-                print(f"[{self.cihaz_adi}] Callback hatası: {e}")
+                # Callback hatası - sadece log dosyasına yazılır
                 log_error(f"{self.cihaz_adi} callback hatası: {e}")
