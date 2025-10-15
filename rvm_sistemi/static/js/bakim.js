@@ -219,6 +219,7 @@ async function sistemDurumunuGuncelle() {
             // Bakım modu aktifken tüm güncellemeleri başlat
             startStatusUpdates();
             startPeriodicUpdates();
+            startSdsUpdates();
         } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
             const btn = document.getElementById('bakimModBtn');
@@ -1480,6 +1481,10 @@ function handleWebSocketMessage(data) {
             console.log('Sensör güncelleme alındı:', data.data);
             updateSensorDataFromWebSocket(data.data);
             break;
+        case 'sds_update':
+            console.log('SDS güncelleme alındı:', data.data);
+            updateSdsDataFromWebSocket(data.data);
+            break;
         case 'alarm_update':
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
@@ -1600,6 +1605,99 @@ function updateSensorDataFromWebSocket(data) {
     }
 }
 
+function updateSdsDataFromWebSocket(data) {
+    // SDS sensör verilerini mevcut sensörlere entegre et
+    console.log('SDS verisi güncellendi:', data);
+    
+    // SDS verilerini mevcut sensörlere eşleştir
+    const sensorMapping = [
+        { sdsKey: 'sds_giris', sensorPrefix: 'opt1009' },
+        { sdsKey: 'sds_plastik', sensorPrefix: 'plastic' },
+        { sdsKey: 'sds_cam', sensorPrefix: 'glass' },
+        { sdsKey: 'sds_metal', sensorPrefix: 'metal' },
+        { sdsKey: 'sds_led', sensorPrefix: 'led' }
+    ];
+    
+    sensorMapping.forEach(mapping => {
+        if (data[mapping.sdsKey]) {
+            updateSingleSdsSensor(mapping.sensorPrefix, data[mapping.sdsKey]);
+        }
+    });
+}
+
+function updateSingleSdsSensor(prefix, sensorData) {
+    // Mevcut sensör kartındaki SDS verilerini güncelle
+    const voltageEl = document.getElementById(`${prefix}-voltage`);
+    const currentEl = document.getElementById(`${prefix}-current`);
+    const healthEl = document.getElementById(`${prefix}-health`);
+    const healthDot = healthEl?.querySelector('.w-2.h-2.rounded-full');
+    
+    // Gerilim güncelle
+    if (voltageEl) {
+        voltageEl.textContent = `${sensorData.gerilim.toFixed(2)} V`;
+    }
+    
+    // Akım güncelle
+    if (currentEl) {
+        currentEl.textContent = `${sensorData.akim.toFixed(2)} A`;
+    }
+    
+    // Sağlık durumu güncelle
+    if (healthEl) {
+        healthEl.innerHTML = `${sensorData.saglik} <span class="w-2 h-2 rounded-full"></span>`;
+        const newHealthDot = healthEl.querySelector('.w-2.h-2.rounded-full');
+        
+        // Sağlık durumunu temizle ve küçük harfe çevir
+        const cleanSaglik = sensorData.saglik.trim().toLowerCase();
+        
+        // Sağlık durumuna göre renk ayarla
+        if (newHealthDot) {
+            newHealthDot.classList.remove('bg-gray-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
+            
+            if (cleanSaglik === 'normal') {
+                newHealthDot.classList.add('bg-green-500');
+            } else if (cleanSaglik.includes('bağlantı kopuk') || cleanSaglik.includes('kopuk') || cleanSaglik.includes('baglanti kopuk')) {
+                newHealthDot.classList.add('bg-red-500');
+            } else {
+                newHealthDot.classList.add('bg-yellow-500');
+            }
+        }
+    }
+    
+    console.log(`SDS ${prefix} sensörü güncellendi:`, sensorData);
+}
+
+// SDS sensör sorgulama sistemi
+let sdsInterval = null;
+
+function startSdsUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopSdsUpdates();
+    
+    // 10 saniyede bir SDS komutunu gönder
+    sdsInterval = setInterval(async () => {
+        try {
+            await fetch(`${API_BASE}/sensor/sds-sensorler`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log('SDS sensör sorgulama komutu gönderildi (10s)');
+        } catch (error) {
+            console.error('SDS sensör sorgulama hatası:', error);
+        }
+    }, 5000); // 5 saniye
+    
+    console.log('SDS sensör güncellemeleri başlatıldı (10s aralık)');
+}
+
+function stopSdsUpdates() {
+    if (sdsInterval) {
+        clearInterval(sdsInterval);
+        sdsInterval = null;
+        console.log('SDS sensör güncellemeleri durduruldu');
+    }
+}
+
 // Sadece durum güncellemelerini başlat (hafif işlemler)
 function startStatusUpdates() {
     // Eğer zaten çalışıyorsa durdur
@@ -1615,6 +1713,8 @@ function stopStatusUpdates() {
         clearInterval(sistemDurumInterval);
         sistemDurumInterval = null;
     }
+    // SDS güncellemelerini de durdur
+    stopSdsUpdates();
 }
 
 // Eski kuyruk sistemi kaldırıldı - yeni CardQueueManager kullanılıyor
@@ -1854,6 +1954,7 @@ function initializeBakim() {
     if (bakimModuAktif) {
         startStatusUpdates();
         startPeriodicUpdates();
+        startSdsUpdates();
     } else {
         // Bakım modu pasifken durum göstergelerini gri yap
         setStatusIndicatorsGray();

@@ -228,6 +228,7 @@ class SensorKart:
                     "led_pwm": f"l:{data}\n".encode() if data else b"l:0\n",
                     "ledfull_kapat": b"ls\n", "doluluk_oranı": b"do\n", "reset": b"reset\n", "ping": b"ping\n",
                     "makine_oturum_var": b"mov\n", "makine_oturum_yok": b"moy\n", "makine_bakim_modu": b"mb\n",
+                    "sds_sensorler": b"sds\n",  # SDS sensör durumları
                     
                     # Güvenlik kartı komutları
                     "ust_kilit_ac": b"#uka\n", "ust_kilit_kapat": b"#ukk\n", "alt_kilit_ac": b"#aka\n", 
@@ -357,6 +358,16 @@ class SensorKart:
         
         self.write_queue.put(("loadcell_olc", None))
         # Ağırlık ölçüm komutu gönderildi - sadece log dosyasına yazılır
+        return True
+    
+    def sds_sensorler(self):
+        """SDS sensör durumlarını sorgular"""
+        if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
+            # Port açık değil, SDS sorgulanamadı - sadece log dosyasına yazılır
+            return False
+        
+        self.write_queue.put(("sds_sensorler", None))
+        # SDS sensör sorgulama komutu gönderildi - sadece log dosyasına yazılır
         return True
 
     def _mesaj_isle(self, mesaj):

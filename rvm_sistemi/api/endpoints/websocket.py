@@ -256,6 +256,20 @@ async def send_sensor_data_to_bakim(sensor_data: Dict[str, Any]):
     except Exception as e:
         print(f"Sensör veri gönderme hatası: {e}")
 
+async def send_sds_data_to_bakim(sds_data: Dict[str, Any]):
+    """SDS sensör verilerini bakım ekranına gönder"""
+    try:
+        message = {
+            "type": "sds_update",
+            "data": sds_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        await manager.broadcast_to_bakim(json.dumps(message))
+        
+    except Exception as e:
+        print(f"SDS veri gönderme hatası: {e}")
+
 async def send_alarm_data_to_bakim(alarm_data: Dict[str, Any]):
     """Alarm verisini bakım ekranına gönder"""
     try:
