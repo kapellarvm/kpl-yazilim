@@ -169,6 +169,23 @@ async def sds_sensorler():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"SDS sensör sorgulama hatası: {str(e)}")
 
+@router.post("/doluluk-orani")
+async def doluluk_orani():
+    """Doluluk oranlarını sorgular"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
+        
+        # Doluluk oranı komutunu gönder
+        result = sensor.doluluk_oranı()
+        if result:
+            return SuccessResponse(message="Doluluk oranı sorgulama komutu gönderildi, sonuç callback ile gelecek")
+        else:
+            raise HTTPException(status_code=500, detail="Doluluk oranı sorgulama komutu gönderilemedi")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Doluluk oranı sorgulama hatası: {str(e)}")
+
 @router.get("/son-deger")
 async def sensor_son_deger():
     """Son sensör değerlerini döndürür"""

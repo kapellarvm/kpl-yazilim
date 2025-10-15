@@ -220,6 +220,7 @@ async function sistemDurumunuGuncelle() {
             startStatusUpdates();
             startPeriodicUpdates();
             startSdsUpdates();
+            startDolulukUpdates();
         } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
             const btn = document.getElementById('bakimModBtn');
@@ -1485,6 +1486,10 @@ function handleWebSocketMessage(data) {
             console.log('SDS güncelleme alındı:', data.data);
             updateSdsDataFromWebSocket(data.data);
             break;
+        case 'doluluk_update':
+            console.log('Doluluk güncelleme alındı:', data.data);
+            updateDolulukDataFromWebSocket(data.data);
+            break;
         case 'alarm_update':
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
@@ -1669,25 +1674,46 @@ function updateSingleSdsSensor(prefix, sensorData) {
 
 // SDS sensör sorgulama sistemi
 let sdsInterval = null;
+let dolulukInterval = null;
 
 function startSdsUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopSdsUpdates();
     
-    // 10 saniyede bir SDS komutunu gönder
+    // 1 saniyede bir SDS komutunu gönder
     sdsInterval = setInterval(async () => {
         try {
             await fetch(`${API_BASE}/sensor/sds-sensorler`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            console.log('SDS sensör sorgulama komutu gönderildi (10s)');
+            console.log('SDS sensör sorgulama komutu gönderildi (1s)');
         } catch (error) {
             console.error('SDS sensör sorgulama hatası:', error);
         }
-    }, 5000); // 5 saniye
+    }, 1000); // 1 saniye
     
-    console.log('SDS sensör güncellemeleri başlatıldı (10s aralık)');
+    console.log('SDS sensör güncellemeleri başlatıldı (1s aralık)');
+}
+
+function startDolulukUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopDolulukUpdates();
+    
+    // 5 saniyede bir doluluk komutunu gönder
+    dolulukInterval = setInterval(async () => {
+        try {
+            await fetch(`${API_BASE}/sensor/doluluk-orani`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log('Doluluk oranı sorgulama komutu gönderildi (5s)');
+        } catch (error) {
+            console.error('Doluluk oranı sorgulama hatası:', error);
+        }
+    }, 1000); // 1 saniye
+    
+    console.log('Doluluk oranı güncellemeleri başlatıldı (5s aralık)');
 }
 
 function stopSdsUpdates() {
@@ -1698,13 +1724,56 @@ function stopSdsUpdates() {
     }
 }
 
+function stopDolulukUpdates() {
+    if (dolulukInterval) {
+        clearInterval(dolulukInterval);
+        dolulukInterval = null;
+        console.log('Doluluk oranı güncellemeleri durduruldu');
+    }
+}
+
+function updateDolulukDataFromWebSocket(data) {
+    console.log('Doluluk verisi güncellendi:', data);
+    
+    // Plastik hazne doluluk
+    const plastikEl = document.getElementById('plastik-doluluk');
+    const plastikFill = document.getElementById('plastic-fill');
+    if (plastikEl) {
+        plastikEl.textContent = `${data.plastik}%`;
+    }
+    if (plastikFill) {
+        plastikFill.style.height = `${data.plastik}%`;
+    }
+    
+    // Metal hazne doluluk
+    const metalEl = document.getElementById('metal-doluluk');
+    const metalFill = document.getElementById('metal-fill');
+    if (metalEl) {
+        metalEl.textContent = `${data.metal}%`;
+    }
+    if (metalFill) {
+        metalFill.style.height = `${data.metal}%`;
+    }
+    
+    // Cam hazne doluluk
+    const camEl = document.getElementById('cam-doluluk');
+    const camFill = document.getElementById('glass-fill');
+    if (camEl) {
+        camEl.textContent = `${data.cam}%`;
+    }
+    if (camFill) {
+        camFill.style.height = `${data.cam}%`;
+    }
+}
+
+
 // Sadece durum güncellemelerini başlat (hafif işlemler)
 function startStatusUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopStatusUpdates();
     
     // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
-    // sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir - DEAKTIF
+     sistemDurumInterval = setInterval(pingKartlar, 1000); // 10 saniyede bir - DEAKTIF
 }
 
 // Durum güncellemelerini durdur
@@ -1715,6 +1784,8 @@ function stopStatusUpdates() {
     }
     // SDS güncellemelerini de durdur
     stopSdsUpdates();
+    // Doluluk oranı güncellemelerini de durdur
+    stopDolulukUpdates();
 }
 
 // Eski kuyruk sistemi kaldırıldı - yeni CardQueueManager kullanılıyor
@@ -1955,6 +2026,7 @@ function initializeBakim() {
         startStatusUpdates();
         startPeriodicUpdates();
         startSdsUpdates();
+        startDolulukUpdates();
     } else {
         // Bakım modu pasifken durum göstergelerini gri yap
         setStatusIndicatorsGray();

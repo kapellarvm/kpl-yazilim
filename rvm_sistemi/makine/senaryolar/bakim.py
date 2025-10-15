@@ -40,6 +40,11 @@ class BakimDurumu:
         self.sds_cam = {"gerilim": 0.0, "akim": 0.0, "saglik": "Normal"}
         self.sds_metal = {"gerilim": 0.0, "akim": 0.0, "saglik": "Normal"}
         self.sds_led = {"gerilim": 0.0, "akim": 0.0, "saglik": "Normal"}
+        
+        # Doluluk oranları
+        self.doluluk_plastik = 0
+        self.doluluk_metal = 0
+        self.doluluk_cam = 0
 
 # Global bakım durumu
 bakim_durumu = BakimDurumu()
@@ -158,7 +163,7 @@ def bakim_modundan_cik():
 def mesaj_isle(mesaj):
     """Bakım modunda gelen mesajları işler"""
     mesaj = mesaj.strip().lower()
-    #print(f"[Bakım Modu] Mesaj işleniyor: {mesaj}")
+    print(f"[Bakım Modu] Mesaj işleniyor: '{mesaj}' (uzunluk: {len(mesaj)})")
     
     # Ağırlık verisi
     if mesaj.startswith("a:"):
@@ -171,6 +176,10 @@ def mesaj_isle(mesaj):
     # SDS sensör verileri
     elif mesaj.startswith("sdgo#") or mesaj.startswith("sdpu#") or mesaj.startswith("sdcu#") or mesaj.startswith("sdmu#") or mesaj.startswith("sdle#"):
         _parse_sds_data(mesaj)
+    
+    # Doluluk oranı verileri
+    elif mesaj.startswith("do#"):
+        _parse_doluluk_data(mesaj)
     
     # Sensör lojik durumları
     elif mesaj == "gsi":
@@ -290,7 +299,7 @@ def _parse_sds_data(mesaj):
     try:
         # Mesajı temizle ve büyük harfe çevir
         mesaj = mesaj.strip().upper()
-        print(f"[Bakım Modu] SDS verisi parse ediliyor: {mesaj}")
+        
         
         # Her sensör verisini ayrı ayrı işle
         if "SDGO#" in mesaj:
@@ -372,7 +381,7 @@ def _parse_single_sds_sensor(mesaj, sensor_prefix, sensor_key):
         elif sensor_key == "led":
             bakim_durumu.sds_led = {"gerilim": gerilim, "akim": akim, "saglik": saglik}
             
-        print(f"[Bakım Modu] {sensor_key.upper()} SDS: G={gerilim}V, A={akim}A, SD={saglik}")
+        
         
     except Exception as e:
         print(f"[Bakım Modu] {sensor_key} SDS parse hatası: {e}")
@@ -410,6 +419,101 @@ def _send_sds_data_to_websocket():
         
     except Exception as e:
         print(f"[Bakım Modu] WebSocket SDS gönderim hatası: {e}")
+
+def _parse_doluluk_data(mesaj):
+    """Doluluk oranı verilerini parse eder"""
+    try:
+        # Mesajı temizle: "do#c:100.00#p:100.00#m:100.00"
+        mesaj = mesaj.strip().upper()
+        print(f"[Bakım Modu] Doluluk verisi parse ediliyor: {mesaj}")
+        
+        # Cam doluluk (c:)
+        if "#C:" in mesaj:
+            cam_start = mesaj.find("#C:") + 3
+            cam_end = mesaj.find("#", cam_start)
+            if cam_end == -1:
+                cam_end = len(mesaj)
+            try:
+                cam_value = mesaj[cam_start:cam_end]
+                bakim_durumu.doluluk_cam = int(float(cam_value))
+                print(f"[Bakım Modu] Cam doluluk: {bakim_durumu.doluluk_cam}% (ham: {cam_value})")
+            except Exception as e:
+                print(f"[Bakım Modu] Cam parse hatası: {e}")
+                bakim_durumu.doluluk_cam = 0
+        else:
+            print(f"[Bakım Modu] Cam verisi bulunamadı")
+        
+        # Plastik doluluk (p:)
+        if "#P:" in mesaj:
+            plastik_start = mesaj.find("#P:") + 3
+            plastik_end = mesaj.find("#", plastik_start)
+            if plastik_end == -1:
+                plastik_end = len(mesaj)
+            try:
+                plastik_value = mesaj[plastik_start:plastik_end]
+                bakim_durumu.doluluk_plastik = int(float(plastik_value))
+                print(f"[Bakım Modu] Plastik doluluk: {bakim_durumu.doluluk_plastik}% (ham: {plastik_value})")
+            except Exception as e:
+                print(f"[Bakım Modu] Plastik parse hatası: {e}")
+                bakim_durumu.doluluk_plastik = 0
+        else:
+            print(f"[Bakım Modu] Plastik verisi bulunamadı")
+        
+        # Metal doluluk (m:)
+        if "#M:" in mesaj:
+            metal_start = mesaj.find("#M:") + 3
+            metal_end = mesaj.find("#", metal_start)
+            if metal_end == -1:
+                metal_end = len(mesaj)
+            try:
+                metal_value = mesaj[metal_start:metal_end]
+                bakim_durumu.doluluk_metal = int(float(metal_value))
+                print(f"[Bakım Modu] Metal doluluk: {bakim_durumu.doluluk_metal}% (ham: {metal_value})")
+            except Exception as e:
+                print(f"[Bakım Modu] Metal parse hatası: {e}")
+                bakim_durumu.doluluk_metal = 0
+        else:
+            print(f"[Bakım Modu] Metal verisi bulunamadı")
+        
+        print(f"[Bakım Modu] Parse sonucu - Cam: {bakim_durumu.doluluk_cam}%, Plastik: {bakim_durumu.doluluk_plastik}%, Metal: {bakim_durumu.doluluk_metal}%")
+        
+        # WebSocket'e gönder
+        _send_doluluk_data_to_websocket()
+        
+    except Exception as e:
+        print(f"[Bakım Modu] Doluluk parse hatası: {e}")
+
+def _send_doluluk_data_to_websocket():
+    """Doluluk verilerini WebSocket ile bakım ekranına gönderir"""
+    try:
+        # WebSocket modülünü import et
+        from ...api.endpoints.websocket import send_doluluk_data_to_bakim
+        import asyncio
+        
+        # Doluluk verisini hazırla
+        doluluk_data = {
+            'plastik': bakim_durumu.doluluk_plastik,
+            'metal': bakim_durumu.doluluk_metal,
+            'cam': bakim_durumu.doluluk_cam
+        }
+        
+        # Asyncio event loop'u al veya oluştur
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        # WebSocket mesajını gönder
+        if loop.is_running():
+            # Eğer loop çalışıyorsa, task olarak ekle
+            asyncio.create_task(send_doluluk_data_to_bakim(doluluk_data))
+        else:
+            # Eğer loop çalışmıyorsa, çalıştır
+            loop.run_until_complete(send_doluluk_data_to_bakim(doluluk_data))
+        
+    except Exception as e:
+        print(f"[Bakım Modu] WebSocket doluluk gönderim hatası: {e}")
 
 def _send_sensor_data_to_websocket():
     """Sensör verilerini WebSocket ile bakım ekranına gönderir"""
