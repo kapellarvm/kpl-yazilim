@@ -62,7 +62,6 @@ async def _send_request(endpoint, payload, timeout=10.0):
 
 async def send_heartbeat():
     """DİM DB'ye RVM'nin anlık durumunu bildirir."""
-    print("Heartbeat gönderiliyor...")
     log_dimdb("Heartbeat gönderiliyor...")
     payload = {
         "guid": str(uuid.uuid4()),
@@ -104,7 +103,7 @@ async def send_alarm(alarm_code, alarm_message):
 
 async def get_all_products_and_save():
     """DİM-DB'den ürün listesini alır ve yerel veritabanına kaydeder."""
-    print("Ürün listesi isteniyor...")
+    
     payload = {
         "guid": str(uuid.uuid4()),
         "rvm": RVM_ID,

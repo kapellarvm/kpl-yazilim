@@ -54,8 +54,8 @@
                             </svg>
                         </div>
                         <div class="w-full flex gap-3">
-                            <button onclick="toggleLock('top', false)" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Aç</button>
-                            <button onclick="toggleLock('top', true)" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Kapat</button>
+                            <button onclick="toggleLock('top', false)" class="lock-button w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">🔓 Aç</button>
+                            <button onclick="toggleLock('top', true)" class="lock-button w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">🔒 Kapat</button>
                         </div>
                     </div>
                     <!-- Alt Kapak Kilidi -->
@@ -72,8 +72,8 @@
                             </svg>
                         </div>
                         <div class="w-full flex gap-3">
-                            <button onclick="toggleLock('bottom', false)" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Aç</button>
-                            <button onclick="toggleLock('bottom', true)" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">Kapat</button>
+                            <button onclick="toggleLock('bottom', false)" class="lock-button w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">🔓 Aç</button>
+                            <button onclick="toggleLock('bottom', true)" class="lock-button w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg hover:shadow-xl">🔒 Kapat</button>
                         </div>
                     </div>
                 </div>
@@ -621,35 +621,95 @@
         }
 
         async function toggleLock(lockId, isLocked) {
+            const icon = document.getElementById(`${lockId}-lock-icon`);
+            const buttons = document.querySelectorAll(`button[onclick*="'${lockId}'"]`);
+            
             try {
-                // API çağrısı yap
+                // Animasyon başlat
+                startLockAnimation(icon, isLocked);
+                
+                // Butonları devre dışı bırak
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+                
+                // API çağrısı yap - doğru endpoint formatı
                 const endpoint = isLocked ? 'kapat' : 'ac';
-                const response = await fetch(`${API_BASE}/guvenlik/${lockId}-kilit-${endpoint}`, {
+                const lockType = lockId === 'top' ? 'ust' : 'alt';
+                const response = await fetch(`${API_BASE}/guvenlik/${lockType}-kilit-${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
                 
                 const data = await response.json();
                 
-                if (data.errorCode === 0) {
-                    // Başarılı ise görsel güncelleme
-            const icon = document.getElementById(`${lockId}-lock-icon`);
-            if (isLocked) {
-                icon.classList.remove('unlocked');
-                icon.classList.remove('text-green-400');
-                icon.classList.add('text-gray-400');
-            } else {
-                icon.classList.add('unlocked');
-                icon.classList.remove('text-gray-400');
-                icon.classList.add('text-green-400');
-            }
+                if (data.status === 'success') {
+                    // Başarılı animasyon
+                    await completeLockAnimation(icon, isLocked, true);
                     showMessage(data.message || 'Kilit işlemi başarılı');
                 } else {
-                    showMessage(data.message || data.errorMessage || 'Kilit işlemi başarısız', true);
+                    // Hata animasyonu
+                    await completeLockAnimation(icon, isLocked, false);
+                    showMessage(data.message || 'Kilit işlemi başarısız', true);
                 }
             } catch (error) {
                 console.error('Kilit işlemi hatası:', error);
+                // Hata animasyonu
+                await completeLockAnimation(icon, isLocked, false);
                 showMessage('Kilit işlemi hatası: ' + error.message, true);
+            } finally {
+                // Butonları tekrar aktif et
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                });
+            }
+        }
+        
+        function startLockAnimation(icon, isLocked) {
+            if (!icon) return;
+            
+            // Durum değişim animasyonu başlat
+            icon.classList.add('status-changing');
+            icon.classList.remove('locked', 'unlocked');
+            
+            // Açma/kapama animasyonu
+            if (isLocked) {
+                icon.classList.add('locking');
+            } else {
+                icon.classList.add('opening');
+            }
+        }
+        
+        async function completeLockAnimation(icon, isLocked, success) {
+            if (!icon) return;
+            
+            // Animasyon sınıflarını temizle
+            icon.classList.remove('status-changing', 'locking', 'opening');
+            
+            // Başarı/hata animasyonu
+            if (success) {
+                icon.classList.add('lock-success');
+                
+                // Durum güncelleme
+                if (isLocked) {
+                    icon.classList.add('locked');
+                icon.classList.remove('unlocked');
+                } else {
+                    icon.classList.add('unlocked');
+                    icon.classList.remove('locked');
+                }
+                
+                // Başarı animasyonu tamamlanana kadar bekle
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                icon.classList.remove('lock-success');
+            } else {
+                icon.classList.add('lock-error');
+                
+                // Hata animasyonu tamamlanana kadar bekle
+                await new Promise(resolve => setTimeout(resolve, 800));
+                icon.classList.remove('lock-error');
             }
         }
         
@@ -957,9 +1017,17 @@
                 setMaintenanceMode(e.target.checked);
             });
 
-            // Başlangıçta kilitleri kapalı ayarla
-            toggleLock('top', true);
-            toggleLock('bottom', true);
+            // Başlangıçta kilitleri kapalı ayarla (görsel olarak)
+            const topIcon = document.getElementById('top-lock-icon');
+            const bottomIcon = document.getElementById('bottom-lock-icon');
+            if (topIcon) {
+                topIcon.classList.remove('unlocked', 'text-green-400', 'text-gray-400');
+                topIcon.classList.add('locked');
+            }
+            if (bottomIcon) {
+                bottomIcon.classList.remove('unlocked', 'text-green-400', 'text-gray-400');
+                bottomIcon.classList.add('locked');
+            }
 
             // Başlangıçta sistem durumunu kontrol et
             checkSystemStatus();

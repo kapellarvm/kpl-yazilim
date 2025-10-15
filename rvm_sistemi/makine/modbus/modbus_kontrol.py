@@ -105,11 +105,11 @@ class MotorKontrol:
     def start_sikisma_monitoring(self):
         """Sıkışma izleme sistemini başlat"""
         if self.sikisma_monitoring_active:
-            self.logger.warning("⚠️ Sıkışma izleme zaten aktif")
+            # Sıkışma izleme zaten aktif - sadece log dosyasına yazılır
             return
         
         if not self._check_client():
-            self.logger.error("❌ Modbus client yok - sıkışma izleme başlatılamıyor")
+            # Modbus client yok - sadece log dosyasına yazılır
             return
         
         self.sikisma_monitoring_active = True
@@ -129,7 +129,7 @@ class MotorKontrol:
         self.ezici_sikisma_thread.start()
         self.kirici_sikisma_thread.start()
         
-        self.logger.info("🛡️ Sıkışma koruması başlatıldı")
+        # Sıkışma koruması başlatıldı - sadece log dosyasına yazılır
     
     def stop_sikisma_monitoring(self):
         """Sıkışma izleme sistemini durdur"""

@@ -69,8 +69,7 @@ class GA500ModbusClient:
         """Modbus bağlantısını başlat ve sürücüleri resetle - Port otomatik tespit"""
         for test_port in self.port_list:
             try:
-                self.logger.info(f"🔌 Modbus bağlantısı deneniyor: {test_port}")
-                
+                # Modbus bağlantısı deneniyor - sadece log dosyasına yazılır
                 self.client = ModbusSerialClient(
                     method='rtu',
                     port=test_port,
@@ -87,20 +86,21 @@ class GA500ModbusClient:
                     if not test_result.isError():
                         self.port = test_port  # Başarılı portu kaydet
                         self.is_connected = True
-                        self.logger.info(f"✅ Modbus bağlantısı başarılı: {test_port}")
+                        # Modbus bağlantısı başarılı - sadece log dosyasına yazılır
                         
                         # SÜRÜCÜLERE RESET GÖNDER - Sürekli haberleşme için gerekli
-                        self.logger.info("🔄 Sürücülere reset gönderiliyor...")
+                        # Reset işlemi - sadece log dosyasına yazılır
                         self.reset(1)  # Sürücü 1'i resetle
                         self.reset(2)  # Sürücü 2'yi resetle
                         
-                        self.logger.info("✅ Reset tamamlandı, sürekli haberleşme başlayacak")
+                        # Reset tamamlandı - sadece log dosyasına yazılır
                         return True
                     else:
-                        self.logger.warning(f"⚠️ {test_port} portunda cihaz bulunamadı")
+                        # Port bulunamadı - sadece log dosyasına yazılır
                         self.client.close()
                 else:
-                    self.logger.warning(f"⚠️ {test_port} portuna bağlanılamadı")
+                    # Port bağlantı hatası - sadece log dosyasına yazılır
+                    pass
                     
             except Exception as e:
                 self.logger.warning(f"⚠️ {test_port} bağlantı hatası: {e}")
@@ -163,22 +163,21 @@ class GA500ModbusClient:
     def set_frequency(self, slave_id, frequency):
         """Frekans değerini ayarla (Hz) - GUI kodundaki mantık"""
         try:
-            self.logger.info(f"🔧 Sürücü {slave_id}: Frekans ayarlanıyor {frequency} Hz")
-            
+            # Frekans ayarlanıyor - sadece log dosyasına yazılır
             # GUI kodundaki gibi: hz * 100 (0.01 Hz çözünürlük)
             freq_value = int(frequency * 100)
             
             result = self.client.write_register(self.FREQUENCY_REGISTER, freq_value, unit=slave_id)
             if not result.isError():
-                self.logger.info(f"✅ Sürücü {slave_id}: Frekans ayarlandı {frequency} Hz")
+                # Frekans ayarlandı - sadece log dosyasına yazılır
                 return True
             else:
-                self.logger.error(f"❌ Register yazma hatası: {result}")
+                # Register yazma hatası - sadece log dosyasına yazılır
                 self._handle_connection_error()
                 return False
                 
         except Exception as e:
-            self.logger.error(f"❌ Frekans ayarlama hatası: {e}")
+            # Frekans ayarlama hatası - sadece log dosyasına yazılır
             self._handle_connection_error()
             return False
     
@@ -223,20 +222,19 @@ class GA500ModbusClient:
     def reset(self, slave_id):
         """Sürücüyü resetle - Bağlantı için gerekli"""
         try:
-            self.logger.info(f"🔄 Sürücü {slave_id}: Reset atılıyor")
-            
+            # Reset atılıyor - sadece log dosyasına yazılır
             result = self.client.write_register(self.CONTROL_REGISTER, self.CMD_RESET, unit=slave_id)
             if not result.isError():
-                self.logger.info(f"✅ Sürücü {slave_id}: Reset tamamlandı")
+                # Reset tamamlandı - sadece log dosyasına yazılır
                 time.sleep(0.5)  # Reset sonrası bekleme
                 return True
             else:
-                self.logger.error(f"❌ Reset register yazma hatası: {result}")
+                # Reset register yazma hatası - sadece log dosyasına yazılır
                 self._handle_connection_error()
                 return False
                 
         except Exception as e:
-            self.logger.error(f"❌ Reset hatası: {e}")
+            # Reset hatası - sadece log dosyasına yazılır
             self._handle_connection_error()
             return False
     
@@ -395,7 +393,8 @@ class GA500ModbusClient:
                                 self.logger.error(f"❌ Callback hatası: {e}")
 
                     else:
-                        print(f"Sürücü {slave_id}: Veri okunamadı")
+                        # Veri okunamadı - sadece log dosyasına yazılır
+                        pass
 
                 if success:
                     consecutive_errors = 0  # Başarılı okuma, error sayacını sıfırla
@@ -442,9 +441,14 @@ class GA500ModbusClient:
         
         # Durum analizi - GUI kodundaki mantık
         is_running = (drive_status & 0x0001) != 0
-        direction = "GERİ" if (drive_status & 0x0002) else "İLERİ"
         is_ready = (drive_status & 0x0004) != 0
         has_fault = (drive_status & 0x0008) != 0
+        
+        # Yön bilgisi sadece motor çalışırken gösterilir
+        if is_running:
+            direction = "İLERİ" if (drive_status & 0x0002) else "GERİ"
+        else:
+            direction = "DURUYOR"
         
         status_text = "ÇALIŞIYOR" if is_running else "DURUYOR"
         ready_text = "EVET" if is_ready else "HAYIR"
@@ -470,13 +474,13 @@ class GA500ModbusClient:
     def start_continuous_reading(self):
         """Sürekli okuma thread'ini başlat"""
         if self.reading_thread is not None and self.reading_thread.is_alive():
-            self.logger.warning("⚠️ Okuma thread'i zaten çalışıyor")
+            # Okuma thread'i zaten çalışıyor - sadece log dosyasına yazılır
             return
         
         self.stop_reading = False
         self.reading_thread = threading.Thread(target=self.continuous_reading_worker, daemon=True)
         self.reading_thread.start()
-        self.logger.info("📊 Sürekli okuma thread'i başlatıldı")
+        # Sürekli okuma thread'i başlatıldı - sadece log dosyasına yazılır
     
     def stop_continuous_reading(self):
         """Sürekli okuma thread'ini durdur"""

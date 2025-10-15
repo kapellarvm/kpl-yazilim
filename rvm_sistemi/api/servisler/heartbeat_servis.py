@@ -106,8 +106,6 @@ class HeartbeatServis:
                 if loop_count % 10 == 0:
                     self._log_statistics(loop_count)
                 
-                # Normal bekleme süresi
-                log_heartbeat(f"Sonraki heartbeat için {self.heartbeat_interval} saniye bekleniyor...")
                 await asyncio.sleep(self.heartbeat_interval)
                 
             except asyncio.CancelledError:

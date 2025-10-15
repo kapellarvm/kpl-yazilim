@@ -219,6 +219,8 @@ async function sistemDurumunuGuncelle() {
             // Bakım modu aktifken tüm güncellemeleri başlat
             startStatusUpdates();
             startPeriodicUpdates();
+            startSdsUpdates();
+            startDolulukUpdates();
         } else if (data.durum !== 'bakim' && bakimModuAktif) {
             bakimModuAktif = false;
             const btn = document.getElementById('bakimModBtn');
@@ -358,48 +360,48 @@ async function sensorDegerleriniGuncelle() {
 async function motorKontrol(komut) {
     // Motor işlemini motor kuyruğuna ekle
     motorQueueManager.addOperation(async () => {
-        try {
-            const response = await fetch(`${API_BASE}/motor/${komut}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                showMessage(data.message);
-            } else {
-                showMessage(data.message, true);
+    try {
+        const response = await fetch(`${API_BASE}/motor/${komut}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showMessage(data.message);
+        } else {
+            showMessage(data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     });
 }
 
 async function sensorKontrol(komut) {
     // Sensör işlemini sensör kuyruğuna ekle
     sensorQueueManager.addOperation(async () => {
-        try {
-            const response = await fetch(`${API_BASE}/sensor/${komut}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                showMessage(data.message);
-            } else {
-                showMessage(data.message, true);
+    try {
+        const response = await fetch(`${API_BASE}/sensor/${komut}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showMessage(data.message);
+        } else {
+            showMessage(data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     });
 }
 
@@ -411,28 +413,28 @@ async function sistemReset() {
     
     // Sistem işlemini sistem kuyruğuna ekle (yüksek öncelik)
     systemQueueManager.addOperation(async () => {
-        try {
-            showMessage('↻ Sistem resetleniyor...', false);
-            const response = await fetch(`${API_BASE}/sistem/reset`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
+    try {
+        showMessage('↻ Sistem resetleniyor...', false);
+        const response = await fetch(`${API_BASE}/sistem/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
                 // Motor toggle'larını kapat
                 turnOffMotorToggles();
-                showMessage('✓ ' + data.message);
-                setTimeout(sistemDurumunuGuncelle, 2000);
-            } else {
-                showMessage('✗ ' + data.message, true);
-            }
-        } catch (error) {
-            showMessage('Bağlantı hatası: ' + error.message, true);
+            showMessage('✓ ' + data.message);
+            setTimeout(sistemDurumunuGuncelle, 2000);
+        } else {
+            showMessage('✗ ' + data.message, true);
         }
+    } catch (error) {
+        showMessage('Bağlantı hatası: ' + error.message, true);
+    }
     }, true); // Yüksek öncelik
 }
 
@@ -1480,6 +1482,14 @@ function handleWebSocketMessage(data) {
             console.log('Sensör güncelleme alındı:', data.data);
             updateSensorDataFromWebSocket(data.data);
             break;
+        case 'sds_update':
+            console.log('SDS güncelleme alındı:', data.data);
+            updateSdsDataFromWebSocket(data.data);
+            break;
+        case 'doluluk_update':
+            console.log('Doluluk güncelleme alındı:', data.data);
+            updateDolulukDataFromWebSocket(data.data);
+            break;
         case 'alarm_update':
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
@@ -1600,13 +1610,216 @@ function updateSensorDataFromWebSocket(data) {
     }
 }
 
+function updateSdsDataFromWebSocket(data) {
+    // SDS sensör verilerini mevcut sensörlere entegre et
+    console.log('SDS verisi güncellendi:', data);
+    
+    // SDS verilerini mevcut sensörlere eşleştir
+    const sensorMapping = [
+        { sdsKey: 'sds_giris', sensorPrefix: 'opt1009' },
+        { sdsKey: 'sds_plastik', sensorPrefix: 'plastic' },
+        { sdsKey: 'sds_cam', sensorPrefix: 'glass' },
+        { sdsKey: 'sds_metal', sensorPrefix: 'metal' },
+        { sdsKey: 'sds_led', sensorPrefix: 'led' }
+    ];
+    
+    sensorMapping.forEach(mapping => {
+        if (data[mapping.sdsKey]) {
+            updateSingleSdsSensor(mapping.sensorPrefix, data[mapping.sdsKey]);
+        }
+    });
+    
+    // Doluluk kartlarının sağlık durumlarını güncelle
+    updateDolulukHealthFromSDS(data);
+}
+
+function updateSingleSdsSensor(prefix, sensorData) {
+    // Mevcut sensör kartındaki SDS verilerini güncelle
+    const voltageEl = document.getElementById(`${prefix}-voltage`);
+    const currentEl = document.getElementById(`${prefix}-current`);
+    const healthEl = document.getElementById(`${prefix}-health`);
+    const healthDot = healthEl?.querySelector('.w-2.h-2.rounded-full');
+    
+    // Gerilim güncelle
+    if (voltageEl) {
+        voltageEl.textContent = `${sensorData.gerilim.toFixed(2)} V`;
+    }
+    
+    // Akım güncelle
+    if (currentEl) {
+        currentEl.textContent = `${sensorData.akim.toFixed(2)} A`;
+    }
+    
+    // Sağlık durumu güncelle
+    if (healthEl) {
+        healthEl.innerHTML = `${sensorData.saglik} <span class="w-2 h-2 rounded-full"></span>`;
+        const newHealthDot = healthEl.querySelector('.w-2.h-2.rounded-full');
+        
+        // Sağlık durumunu temizle ve küçük harfe çevir
+        const cleanSaglik = sensorData.saglik.trim().toLowerCase();
+        
+        // Sağlık durumuna göre renk ayarla
+        if (newHealthDot) {
+            newHealthDot.classList.remove('bg-gray-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
+            
+            if (cleanSaglik === 'normal') {
+                newHealthDot.classList.add('bg-green-500');
+            } else if (cleanSaglik.includes('bağlantı kopuk') || cleanSaglik.includes('kopuk') || cleanSaglik.includes('baglanti kopuk')) {
+                newHealthDot.classList.add('bg-red-500');
+            } else {
+                newHealthDot.classList.add('bg-yellow-500');
+            }
+        }
+    }
+    
+    console.log(`SDS ${prefix} sensörü güncellendi:`, sensorData);
+}
+
+// SDS sensör sorgulama sistemi
+let sdsInterval = null;
+let dolulukInterval = null;
+
+function startSdsUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopSdsUpdates();
+    
+    // 1 saniyede bir SDS komutunu gönder
+    sdsInterval = setInterval(async () => {
+        try {
+            await fetch(`${API_BASE}/sensor/sds-sensorler`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log('SDS sensör sorgulama komutu gönderildi (1s)');
+        } catch (error) {
+            console.error('SDS sensör sorgulama hatası:', error);
+        }
+    }, 500); // 0.5 saniye
+    
+    console.log('SDS sensör güncellemeleri başlatıldı (1s aralık)');
+}
+
+function startDolulukUpdates() {
+    // Eğer zaten çalışıyorsa durdur
+    stopDolulukUpdates();
+    
+    // 5 saniyede bir doluluk komutunu gönder
+    dolulukInterval = setInterval(async () => {
+        try {
+            await fetch(`${API_BASE}/sensor/doluluk-orani`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log('Doluluk oranı sorgulama komutu gönderildi (5s)');
+        } catch (error) {
+            console.error('Doluluk oranı sorgulama hatası:', error);
+        }
+    }, 10000); // 1 saniye
+    
+    console.log('Doluluk oranı güncellemeleri başlatıldı (5s aralık)');
+}
+
+function stopSdsUpdates() {
+    if (sdsInterval) {
+        clearInterval(sdsInterval);
+        sdsInterval = null;
+        console.log('SDS sensör güncellemeleri durduruldu');
+    }
+}
+
+function stopDolulukUpdates() {
+    if (dolulukInterval) {
+        clearInterval(dolulukInterval);
+        dolulukInterval = null;
+        console.log('Doluluk oranı güncellemeleri durduruldu');
+    }
+}
+
+function updateDolulukDataFromWebSocket(data) {
+    console.log('Doluluk verisi güncellendi:', data);
+    
+    // Plastik hazne doluluk
+    const plastikEl = document.getElementById('plastik-doluluk');
+    const plastikFill = document.getElementById('plastic-fill');
+    if (plastikEl) {
+        plastikEl.textContent = `${data.plastik}%`;
+    }
+    if (plastikFill) {
+        plastikFill.style.height = `${data.plastik}%`;
+    }
+    
+    // Metal hazne doluluk
+    const metalEl = document.getElementById('metal-doluluk');
+    const metalFill = document.getElementById('metal-fill');
+    if (metalEl) {
+        metalEl.textContent = `${data.metal}%`;
+    }
+    if (metalFill) {
+        metalFill.style.height = `${data.metal}%`;
+    }
+    
+    // Cam hazne doluluk
+    const camEl = document.getElementById('cam-doluluk');
+    const camFill = document.getElementById('glass-fill');
+    if (camEl) {
+        camEl.textContent = `${data.cam}%`;
+    }
+    if (camFill) {
+        camFill.style.height = `${data.cam}%`;
+    }
+}
+
+function updateDolulukHealthFromSDS(sdsData) {
+    console.log('Doluluk sağlık durumu güncellendi:', sdsData);
+    
+    // Plastik hazne sağlık durumu
+    if (sdsData.sds_plastik) {
+        updateSingleDolulukHealth('plastic', sdsData.sds_plastik);
+    }
+    
+    // Metal hazne sağlık durumu
+    if (sdsData.sds_metal) {
+        updateSingleDolulukHealth('metal', sdsData.sds_metal);
+    }
+    
+    // Cam hazne sağlık durumu
+    if (sdsData.sds_cam) {
+        updateSingleDolulukHealth('glass', sdsData.sds_cam);
+    }
+}
+
+function updateSingleDolulukHealth(hazneType, sensorData) {
+    const healthEl = document.getElementById(`${hazneType}-health`);
+    if (healthEl) {
+        healthEl.innerHTML = `${sensorData.saglik} <span class="w-2 h-2 rounded-full"></span>`;
+        const healthDot = healthEl.querySelector('.w-2.h-2.rounded-full');
+        
+        // Sağlık durumunu temizle ve küçük harfe çevir
+        const cleanSaglik = sensorData.saglik.trim().toLowerCase();
+        
+        // Sağlık durumuna göre renk ayarla
+        if (healthDot) {
+            healthDot.classList.remove('bg-gray-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500');
+            
+            if (cleanSaglik === 'normal') {
+                healthDot.classList.add('bg-green-500');
+            } else if (cleanSaglik.includes('bağlantı kopuk') || cleanSaglik.includes('kopuk') || cleanSaglik.includes('baglanti kopuk')) {
+                healthDot.classList.add('bg-red-500');
+            } else {
+                healthDot.classList.add('bg-yellow-500');
+            }
+        }
+    }
+}
+
+
 // Sadece durum güncellemelerini başlat (hafif işlemler)
 function startStatusUpdates() {
     // Eğer zaten çalışıyorsa durdur
     stopStatusUpdates();
     
-    // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
-    sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir
+    // Ping ile sağlık durumu kontrolü (15 saniyede bir - güvenli aralık)
+    sistemDurumInterval = setInterval(pingKartlar, 1000); // 15 saniyede bir - GÜVENLİ
 }
 
 // Durum güncellemelerini durdur
@@ -1615,6 +1828,10 @@ function stopStatusUpdates() {
         clearInterval(sistemDurumInterval);
         sistemDurumInterval = null;
     }
+    // SDS güncellemelerini de durdur
+    stopSdsUpdates();
+    // Doluluk oranı güncellemelerini de durdur
+    stopDolulukUpdates();
 }
 
 // Eski kuyruk sistemi kaldırıldı - yeni CardQueueManager kullanılıyor
@@ -1647,10 +1864,8 @@ async function pingKartlar() {
     console.log('📡 Ping işlemi başlatılıyor...');
     
     try {
-        // Sensör kartını ping et (timeout ile)
+        // Sadece mevcut bağlantıları ping et (port arama yapma)
         const sensorData = await pingSingleCard('sensor');
-        
-        // Motor kartını ping et (timeout ile)
         const motorData = await pingSingleCard('motor');
         
         // Ping sonuçlarına göre durum göstergelerini güncelle
@@ -1854,6 +2069,8 @@ function initializeBakim() {
     if (bakimModuAktif) {
         startStatusUpdates();
         startPeriodicUpdates();
+        startSdsUpdates();
+        startDolulukUpdates();
     } else {
         // Bakım modu pasifken durum göstergelerini gri yap
         setStatusIndicatorsGray();

@@ -96,11 +96,9 @@
                                         <button id="opt1009-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition text-sm">Test Et</button>
                     </div>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="opt1009-bus-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="opt1009-shunt-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="opt1009-current">None</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="opt1009-power">None</span></li>
-                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="opt1009-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                        <li class="flex justify-between"><span>Gerilim:</span> <span class="font-mono" id="opt1009-voltage">0.00 V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="opt1009-current">0.00 A</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="opt1009-health">Normal <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                 </div>
                                 <!-- Loadcell -->
@@ -141,11 +139,9 @@
                 </div>
                     </div>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="led-bus-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="led-shunt-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="led-current">None</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="led-power">None</span></li>
-                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="led-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                        <li class="flex justify-between"><span>Gerilim:</span> <span class="font-mono" id="led-voltage">0.00 V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="led-current">0.00 A</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="led-health">Normal <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                                 </div>
                                 <!-- Metal Hazne -->
@@ -154,13 +150,11 @@
                                     <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
                                         <div id="metal-fill" class="absolute bottom-0 w-full bg-gray-400 transition-all duration-500"></div>
                                     </div>
-                                    <p id="metal-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <p id="metal-doluluk" class="mt-1 text-lg font-mono text-center">0%</p>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="metal-bus-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="metal-shunt-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="metal-current">None</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="metal-power">None</span></li>
-                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="metal-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                        <li class="flex justify-between"><span>Gerilim:</span> <span class="font-mono" id="metal-voltage">0.00 V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="metal-current">0.00 A</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="metal-health">Normal <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                                 </div>
                                 <!-- Plastik Hazne -->
@@ -169,13 +163,11 @@
                                     <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
                                         <div id="plastic-fill" class="absolute bottom-0 w-full bg-blue-500 transition-all duration-500"></div>
                                     </div>
-                                    <p id="plastic-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <p id="plastik-doluluk" class="mt-1 text-lg font-mono text-center">0%</p>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="plastic-bus-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="plastic-shunt-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="plastic-current">None</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="plastic-power">None</span></li>
-                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="plastic-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                        <li class="flex justify-between"><span>Gerilim:</span> <span class="font-mono" id="plastic-voltage">0.00 V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="plastic-current">0.00 A</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="plastic-health">Normal <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                                 </div>
                                 <!-- Cam Hazne -->
@@ -184,13 +176,11 @@
                                     <div class="w-20 h-28 bg-gray-800 rounded-t-lg mx-auto relative overflow-hidden border-2 border-gray-600 mt-2">
                                         <div id="glass-fill" class="absolute bottom-0 w-full bg-green-500 transition-all duration-500"></div>
                                     </div>
-                                    <p id="glass-text" class="mt-1 text-lg font-mono text-center">None</p>
+                                    <p id="cam-doluluk" class="mt-1 text-lg font-mono text-center">0%</p>
                                     <ul class="mt-2 space-y-1 text-xs text-gray-300">
-                                        <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="glass-bus-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="glass-shunt-voltage">None</span></li>
-                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="glass-current">None</span></li>
-                                        <li class="flex justify-between"><span>Güç:</span> <span class="font-mono" id="glass-power">None</span></li>
-                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="glass-health">None <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
+                                        <li class="flex justify-between"><span>Gerilim:</span> <span class="font-mono" id="glass-voltage">0.00 V</span></li>
+                                        <li class="flex justify-between"><span>Akım:</span> <span class="font-mono" id="glass-current">0.00 A</span></li>
+                                        <li class="flex justify-between items-center"><span>Sağlık Durumu:</span> <span class="flex items-center gap-1" id="glass-health">Normal <span class="w-2 h-2 rounded-full bg-gray-500"></span></span></li>
                                     </ul>
                                 </div>
                                 <!-- AC Ezici Motor -->
@@ -246,7 +236,7 @@
                                         <li class="flex justify-between"><span>Hazır Mı:</span><span id="breaker-ready" class="text-gray-400">None</span></li>
                                         <li class="flex justify-between"><span>Arıza Var Mı:</span><span id="breaker-fault" class="text-gray-400">None</span></li>
                                     </ul>
-                    </div>
+                                </div>
                 </div>
                         </div>
                     </div>

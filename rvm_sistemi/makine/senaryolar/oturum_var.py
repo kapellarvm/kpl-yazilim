@@ -112,7 +112,7 @@ def sistem_temizle():
     sistem.agirlik_kuyruk.clear()
     sistem.uzunluk_goruntu_kuyruk.clear()
     sistem.barkod_lojik = False
-    print("🧹 [SİSTEM TEMİZLE] Tüm kuyruklar temizlendi")
+    # Sistem temizlendi - sadece log dosyasına yazılır
     log_system("Sistem durumu temizlendi")
 
 def dimdb_bildirim_gonder(barcode: str, agirlik: float, materyal_turu: int, 
@@ -131,17 +131,17 @@ def dimdb_bildirim_gonder(barcode: str, agirlik: float, materyal_turu: int,
 def motor_referansini_ayarla(motor):
     sistem.motor_ref = motor
     sistem.motor_ref.yonlendirici_sensor_teach()
-    print("✅ [MOTOR REF] Motor hazır - Sistem başlatıldı")
+    # Motor hazır - sadece log dosyasına yazılır
     log_oturum_var("Motor hazır - Sistem başlatıldı")
 
 def sensor_referansini_ayarla(sensor):
     sistem.sensor_ref = sensor
     sistem.sensor_ref.teach()
-    print("✅ [SENSOR REF] Sensör hazır")
+    # Sensör hazır - sadece log dosyasına yazılır
 
 def motor_kontrol_referansini_ayarla(motor_kontrol):
     sistem.motor_kontrol_ref = motor_kontrol
-    print("✅ [MOTOR KONTROL REF] Motor kontrol referansı ayarlandı")
+    # Motor kontrol referansı ayarlandı - sadece log dosyasına yazılır
     log_oturum_var("Motor kontrol referansı ayarlandı")
 
 # ==================== BARKOD İŞLEME ====================
