@@ -1,0 +1,865 @@
+2025-10-12 10:22:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 10:22:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:26:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:26:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:35:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:35:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:35:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 11:35:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: LOJİK - GSI lojik işlemleri başlatıldı
+2025-10-12 11:35:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GSO - Barkod okunmadı, ürünü iade et.
+2025-10-12 11:35:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: LOJİK - GSI lojik işlemleri başlatıldı
+2025-10-12 11:35:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GSO - Barkod okunmadı, ürünü iade et.
+2025-10-12 11:35:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: LOJİK - GSI lojik işlemleri başlatıldı
+2025-10-12 11:35:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GSO - Barkod okunmadı, ürünü iade et.
+2025-10-12 11:35:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: LOJİK - GSI lojik işlemleri başlatıldı
+2025-10-12 11:36:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GSO - Barkod okunmadı, ürünü iade et.
+2025-10-12 11:46:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:46:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:48:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:48:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:52:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:52:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:57:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:57:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 11:58:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 11:58:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:02:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:02:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:09:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:09:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:09:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.893, boyut=282.1x79.7mm, mesaj='nesne_var')
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=27.12, materyal türü=1, uzunluk=282.11, genişlik=79.72
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 27.12 gr
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:09:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.872, boyut=282.7x85.3mm, mesaj='nesne_var')
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=15.26, materyal türü=1, uzunluk=282.66, genişlik=85.34
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 15.26 gr
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:10:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.901, boyut=281.0x75.1mm, mesaj='nesne_var')
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=26.36, materyal türü=1, uzunluk=281.01, genişlik=75.12
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.36 gr
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:10:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.893, boyut=282.7x78.7mm, mesaj='nesne_var')
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=44.03, materyal türü=1, uzunluk=282.66, genişlik=78.69
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 44.03 gr
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:10:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:16:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:16:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:16:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.899, boyut=281.0x82.8mm, mesaj='nesne_var')
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=27.26, materyal türü=1, uzunluk=281.01, genişlik=82.78
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 27.26 gr
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:16:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.893, boyut=286.5x75.1mm, mesaj='nesne_var')
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=41.52, materyal türü=1, uzunluk=286.52, genişlik=75.12
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 41.52 gr
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:17:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:17:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:18:03 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.899, boyut=279.4x76.1mm, mesaj='nesne_var')
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=21.27, materyal türü=1, uzunluk=279.36, genişlik=76.14
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 21.27 gr
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:21:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:21:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:21:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.862, boyut=290.4x76.1mm, mesaj='nesne_var')
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=23.26, materyal türü=1, uzunluk=290.38, genişlik=76.14
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 23.26 gr
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:21:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.890, boyut=288.7x76.7mm, mesaj='nesne_var')
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.53, materyal türü=1, uzunluk=288.72, genişlik=76.65
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.53 gr
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:21:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.883, boyut=281.0x77.7mm, mesaj='nesne_var')
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=32.77, materyal türü=1, uzunluk=281.01, genişlik=77.67
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 32.77 gr
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:21:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.905, boyut=281.6x77.2mm, mesaj='nesne_var')
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=44.26, materyal türü=1, uzunluk=281.56, genişlik=77.16
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 44.26 gr
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:22:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:44:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:44:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:44:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.906, boyut=278.8x75.6mm, mesaj='nesne_var')
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=43.98, materyal türü=1, uzunluk=278.81, genişlik=75.63
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 43.98 gr
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:44:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:44:21 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 12:44:21 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=-2.88, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 12:44:21 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:21 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -2.88 gr
+2025-10-12 12:44:21 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.910, boyut=282.7x75.1mm, mesaj='nesne_var')
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=34.48, materyal türü=1, uzunluk=282.66, genişlik=75.12
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 34.48 gr
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:44:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:44:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 12:44:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=-4.62, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 12:44:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -4.62 gr
+2025-10-12 12:44:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 12:44:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.948, boyut=233.1x75.6mm, mesaj='nesne_var')
+2025-10-12 12:44:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=17.93, materyal türü=1, uzunluk=233.07, genişlik=75.63
+2025-10-12 12:44:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 17.93 gr
+2025-10-12 12:44:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.914, boyut=278.2x75.6mm, mesaj='nesne_var')
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=18.35, materyal türü=1, uzunluk=278.25, genişlik=75.63
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 18.35 gr
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:44:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:48:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:48:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:49:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.917, boyut=183.5x74.6mm, mesaj='nesne_var')
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1922348083450, ağırlık=20.56, materyal türü=1, uzunluk=183.48, genişlik=74.61
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.28, Max Agirlik: 10.12, Min Genişlik: 59.4, Max Genişlik: 72.6, Min Uzunluk: 171.45, Max Uzunluk: 209.55, Materyal_id: 1
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.56 gr
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:49:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.865, boyut=288.2x79.2mm, mesaj='nesne_var')
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=22.99, materyal türü=1, uzunluk=288.17, genişlik=79.2
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 22.99 gr
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:49:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=280.5x81.8mm, mesaj='nesne_var')
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=46.33, materyal türü=1, uzunluk=280.46, genişlik=81.76
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 46.33 gr
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:49:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:50:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 12:50:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 12:50:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.899, boyut=281.0x84.3mm, mesaj='nesne_var')
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=32.99, materyal türü=1, uzunluk=281.01, genişlik=84.31
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 32.99 gr
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:50:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.893, boyut=281.0x76.1mm, mesaj='nesne_var')
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=27.65, materyal türü=1, uzunluk=281.01, genişlik=76.14
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 27.65 gr
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:50:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.915, boyut=282.1x75.6mm, mesaj='nesne_var')
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.35, materyal türü=1, uzunluk=282.11, genişlik=75.63
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.35 gr
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:50:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.908, boyut=283.2x74.6mm, mesaj='nesne_var')
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=35.11, materyal türü=1, uzunluk=283.21, genişlik=74.61
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 35.11 gr
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 12:50:54 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:26:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:26:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:30:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:30:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:33:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:33:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:33:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:34:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:34:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:34:37 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:40:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:40:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:40:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:42:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:42:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:43:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:45:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:45:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:46:03 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:46:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.898, boyut=108.0x60.3mm, mesaj='nesne_var')
+2025-10-12 13:46:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=179.72, materyal türü=2, uzunluk=108.0, genişlik=60.3
+2025-10-12 13:46:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:46:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 179.72 gr
+2025-10-12 13:46:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:47:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:47:33 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:47:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:47:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.903, boyut=111.8x61.3mm, mesaj='nesne_var')
+2025-10-12 13:47:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=190.31, materyal türü=1, uzunluk=111.85, genişlik=61.32
+2025-10-12 13:47:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:47:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 190.31 gr
+2025-10-12 13:47:59 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:50:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 13:50:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 13:50:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 13:50:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.917, boyut=111.8x60.3mm, mesaj='nesne_var')
+2025-10-12 13:50:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=189.64, materyal türü=1, uzunluk=111.85, genişlik=60.3
+2025-10-12 13:50:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:50:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 189.64 gr
+2025-10-12 13:50:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:50:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.781, boyut=108.5x62.3mm, mesaj='nesne_var')
+2025-10-12 13:50:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=177.36, materyal türü=1, uzunluk=108.55, genişlik=62.34
+2025-10-12 13:50:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:50:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 177.36 gr
+2025-10-12 13:50:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:50:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.839, boyut=108.0x62.9mm, mesaj='nesne_var')
+2025-10-12 13:50:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=194.49, materyal türü=2, uzunluk=108.0, genişlik=62.85
+2025-10-12 13:50:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:50:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 194.49 gr
+2025-10-12 13:50:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:51:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.819, boyut=106.9x63.9mm, mesaj='nesne_var')
+2025-10-12 13:51:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=208.52, materyal türü=1, uzunluk=106.89, genişlik=63.88
+2025-10-12 13:51:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:51:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 208.52 gr
+2025-10-12 13:51:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.910, boyut=186.8x67.5mm, mesaj='nesne_var')
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=48333403, ağırlık=17.74, materyal türü=1, uzunluk=186.79, genişlik=67.45
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 16.65, Max Agirlik: 20.35, Min Genişlik: 55.35, Max Genişlik: 67.65, Min Uzunluk: 164.79, Max Uzunluk: 201.41, Materyal_id: 1
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 17.74 gr
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:51:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:51:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.912, boyut=113.0x64.4mm, mesaj='nesne_var')
+2025-10-12 13:51:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=167.8, materyal türü=1, uzunluk=112.96, genişlik=64.39
+2025-10-12 13:51:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:51:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 167.8 gr
+2025-10-12 13:51:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:51:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.914, boyut=142.2x51.1mm, mesaj='nesne_var')
+2025-10-12 13:51:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787092, ağırlık=3.63, materyal türü=3, uzunluk=142.16, genişlik=51.1
+2025-10-12 13:51:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 13:51:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 3.63 gr
+2025-10-12 13:51:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:51:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:51:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.921, boyut=110.8x63.4mm, mesaj='nesne_var')
+2025-10-12 13:51:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=170.53, materyal türü=2, uzunluk=110.75, genişlik=63.36
+2025-10-12 13:51:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:51:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 170.53 gr
+2025-10-12 13:51:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:51:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.919, boyut=110.8x61.8mm, mesaj='nesne_var')
+2025-10-12 13:51:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=185.24, materyal türü=1, uzunluk=110.75, genişlik=61.83
+2025-10-12 13:51:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 13:51:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 185.24 gr
+2025-10-12 13:51:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=280.5x75.6mm, mesaj='nesne_var')
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=20.84, materyal türü=1, uzunluk=280.46, genişlik=75.63
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.84 gr
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:51:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.858, boyut=293.1x77.7mm, mesaj='nesne_var')
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.75, materyal türü=1, uzunluk=293.13, genişlik=77.67
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.75 gr
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:51:58 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.888, boyut=277.1x75.6mm, mesaj='nesne_var')
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=18.93, materyal türü=1, uzunluk=277.15, genişlik=75.63
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 18.93 gr
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.906, boyut=284.3x76.1mm, mesaj='nesne_var')
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=36.71, materyal türü=1, uzunluk=284.32, genişlik=76.14
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 36.71 gr
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.908, boyut=282.1x75.1mm, mesaj='nesne_var')
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=22.47, materyal türü=1, uzunluk=282.11, genişlik=75.12
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 22.47 gr
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.900, boyut=284.9x77.2mm, mesaj='nesne_var')
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=30.72, materyal türü=1, uzunluk=284.87, genişlik=77.16
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 30.72 gr
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:29 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.908, boyut=286.0x75.1mm, mesaj='nesne_var')
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=45.96, materyal türü=1, uzunluk=285.97, genişlik=75.12
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 45.96 gr
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.930, boyut=287.6x83.8mm, mesaj='nesne_var')
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=39.73, materyal türü=1, uzunluk=287.62, genişlik=83.8
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 39.73 gr
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.879, boyut=290.4x75.1mm, mesaj='nesne_var')
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=43.97, materyal türü=1, uzunluk=290.38, genişlik=75.12
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 43.97 gr
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 13:52:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:09:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 14:09:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 14:12:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 14:12:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 14:14:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 14:14:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 14:15:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=283.8x75.6mm, mesaj='nesne_var')
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=36.23, materyal türü=1, uzunluk=283.77, genişlik=75.63
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 36.23 gr
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:15:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 14:15:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.92, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 14:15:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.92 gr
+2025-10-12 14:15:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.898, boyut=282.7x83.3mm, mesaj='nesne_var')
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=23.13, materyal türü=1, uzunluk=282.66, genişlik=83.29
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 23.13 gr
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.901, boyut=283.2x76.7mm, mesaj='nesne_var')
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.08, materyal türü=1, uzunluk=283.21, genişlik=76.65
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.08 gr
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.920, boyut=284.3x74.1mm, mesaj='nesne_var')
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=29.58, materyal türü=1, uzunluk=284.32, genişlik=74.09
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 29.58 gr
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.919, boyut=289.3x82.3mm, mesaj='nesne_var')
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=18.31, materyal türü=1, uzunluk=289.28, genişlik=82.27
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 18.31 gr
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.910, boyut=279.9x85.3mm, mesaj='nesne_var')
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=25.4, materyal türü=1, uzunluk=279.91, genişlik=85.34
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 25.4 gr
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.891, boyut=281.6x82.8mm, mesaj='nesne_var')
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=31.69, materyal türü=1, uzunluk=281.56, genişlik=82.78
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 31.69 gr
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.850, boyut=293.1x76.7mm, mesaj='nesne_var')
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=21.13, materyal türü=1, uzunluk=293.13, genişlik=76.65
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 21.13 gr
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:09 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.905, boyut=277.7x75.6mm, mesaj='nesne_var')
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=20.42, materyal türü=1, uzunluk=277.7, genişlik=75.63
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.42 gr
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.894, boyut=281.6x76.1mm, mesaj='nesne_var')
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=23.92, materyal türü=1, uzunluk=281.56, genişlik=76.14
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 23.92 gr
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.914, boyut=279.4x75.1mm, mesaj='nesne_var')
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=41.17, materyal türü=1, uzunluk=279.36, genişlik=75.12
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 41.17 gr
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.884, boyut=295.9x76.1mm, mesaj='nesne_var')
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=20.86, materyal türü=1, uzunluk=295.89, genişlik=76.14
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.86 gr
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.879, boyut=141.6x60.3mm, mesaj='nesne_var')
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923965095192, ağırlık=0.92, materyal türü=3, uzunluk=141.61, genişlik=60.3
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.45, Max Agirlik: 11.55, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 0.92 gr
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.922, boyut=282.7x75.1mm, mesaj='nesne_var')
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=26.99, materyal türü=1, uzunluk=282.66, genişlik=75.12
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.99 gr
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:16:57 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=287.1x76.1mm, mesaj='nesne_var')
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=41.33, materyal türü=1, uzunluk=287.07, genişlik=76.14
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 41.33 gr
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:14 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=279.9x76.1mm, mesaj='nesne_var')
+2025-10-12 14:17:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=18.22, materyal türü=1, uzunluk=279.91, genişlik=76.14
+2025-10-12 14:17:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 18.22 gr
+2025-10-12 14:17:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:15 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.912, boyut=317.9x76.1mm, mesaj='nesne_var')
+2025-10-12 14:17:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=26.47, materyal türü=1, uzunluk=317.93, genişlik=76.14
+2025-10-12 14:17:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.47 gr
+2025-10-12 14:17:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=281.0x75.1mm, mesaj='nesne_var')
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=33.11, materyal türü=1, uzunluk=281.01, genişlik=75.12
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 33.11 gr
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.913, boyut=293.1x82.8mm, mesaj='nesne_var')
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=34.69, materyal türü=1, uzunluk=293.13, genişlik=82.78
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 34.69 gr
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:28 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.913, boyut=292.6x74.6mm, mesaj='nesne_var')
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=40.74, materyal türü=1, uzunluk=292.58, genişlik=74.61
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 40.74 gr
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:34 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.926, boyut=283.2x81.8mm, mesaj='nesne_var')
+2025-10-12 14:17:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=20.72, materyal türü=1, uzunluk=283.21, genişlik=81.76
+2025-10-12 14:17:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.72 gr
+2025-10-12 14:17:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.915, boyut=284.9x85.3mm, mesaj='nesne_var')
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=40.7, materyal türü=1, uzunluk=284.87, genişlik=85.34
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 40.7 gr
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:17:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.908, boyut=282.7x76.1mm, mesaj='nesne_var')
+2025-10-12 14:18:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=35.21, materyal türü=1, uzunluk=282.66, genişlik=76.14
+2025-10-12 14:18:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 35.21 gr
+2025-10-12 14:18:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.900, boyut=282.1x76.7mm, mesaj='nesne_var')
+2025-10-12 14:18:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=43.06, materyal türü=1, uzunluk=282.11, genişlik=76.65
+2025-10-12 14:18:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 43.06 gr
+2025-10-12 14:18:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.916, boyut=283.2x74.6mm, mesaj='nesne_var')
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=34.45, materyal türü=1, uzunluk=283.21, genişlik=74.61
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 34.45 gr
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.896, boyut=285.4x75.6mm, mesaj='nesne_var')
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=24.72, materyal türü=1, uzunluk=285.42, genişlik=75.63
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 24.72 gr
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.921, boyut=281.0x81.8mm, mesaj='nesne_var')
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=42.79, materyal türü=1, uzunluk=281.01, genişlik=81.76
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 42.79 gr
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.843, boyut=285.4x83.8mm, mesaj='nesne_var')
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=24.83, materyal türü=1, uzunluk=285.42, genişlik=83.8
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 24.83 gr
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.905, boyut=290.4x75.6mm, mesaj='nesne_var')
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=21.02, materyal türü=1, uzunluk=290.38, genişlik=75.63
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 21.02 gr
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.927, boyut=282.1x82.3mm, mesaj='nesne_var')
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=14.24, materyal türü=1, uzunluk=282.11, genişlik=82.27
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 14.24 gr
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:45 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.893, boyut=282.7x85.8mm, mesaj='nesne_var')
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=28.88, materyal türü=1, uzunluk=282.66, genişlik=85.85
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.88 gr
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:18:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:42:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 14:42:19 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 14:52:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.921, boyut=175.2x67.5mm, mesaj='nesne_var')
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=26.75, materyal türü=3, uzunluk=175.22, genişlik=67.45
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.75 gr
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:52:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.903, boyut=142.2x57.2mm, mesaj='nesne_var')
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=-3.28, materyal türü=3, uzunluk=142.16, genişlik=57.23
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -3.28 gr
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:53:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.900, boyut=142.7x50.6mm, mesaj='nesne_var')
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=8333445997015, ağırlık=3.86, materyal türü=3, uzunluk=142.71, genişlik=50.59
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.73, Max Agirlik: 10.67, Min Genişlik: 49.23, Max Genişlik: 60.17, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 3.86 gr
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:53:50 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.909, boyut=141.6x54.2mm, mesaj='nesne_var')
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=8333445997015, ağırlık=-5.38, materyal türü=3, uzunluk=141.61, genişlik=54.17
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.73, Max Agirlik: 10.67, Min Genişlik: 49.23, Max Genişlik: 60.17, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -5.38 gr
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:54:02 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.895, boyut=140.5x54.7mm, mesaj='nesne_var')
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=8333445997015, ağırlık=17.73, materyal türü=3, uzunluk=140.51, genişlik=54.68
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.73, Max Agirlik: 10.67, Min Genişlik: 49.23, Max Genişlik: 60.17, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 17.73 gr
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:54:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.908, boyut=141.6x53.1mm, mesaj='nesne_var')
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=8333445997015, ağırlık=-2.61, materyal türü=3, uzunluk=141.61, genişlik=53.14
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.73, Max Agirlik: 10.67, Min Genişlik: 49.23, Max Genişlik: 60.17, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -2.61 gr
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:54:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.913, boyut=177.4x64.4mm, mesaj='nesne_var')
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=4.66, materyal türü=3, uzunluk=177.42, genişlik=64.39
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 4.66 gr
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:54:46 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 14:57:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 14:57:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 14:58:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 14:58:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 14:58:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923858393961, ağırlık=46.56, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 14:58:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 36.99, Max Agirlik: 45.21, Min Genişlik: 69.66, Max Genişlik: 85.14, Min Uzunluk: 237.6, Max Uzunluk: 290.4, Materyal_id: 1
+2025-10-12 14:58:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 46.56 gr
+2025-10-12 14:58:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:59:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.911, boyut=274.4x74.6mm, mesaj='nesne_var')
+2025-10-12 14:59:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923858393961, ağırlık=44.31, materyal türü=2, uzunluk=274.4, genişlik=74.61
+2025-10-12 14:59:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 36.99, Max Agirlik: 45.21, Min Genişlik: 69.66, Max Genişlik: 85.14, Min Uzunluk: 237.6, Max Uzunluk: 290.4, Materyal_id: 1
+2025-10-12 14:59:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 44.31 gr
+2025-10-12 14:59:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.911, boyut=276.1x81.8mm, mesaj='nesne_var')
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923858393961, ağırlık=48.21, materyal türü=1, uzunluk=276.05, genişlik=81.76
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 36.99, Max Agirlik: 45.21, Min Genişlik: 69.66, Max Genişlik: 85.14, Min Uzunluk: 237.6, Max Uzunluk: 290.4, Materyal_id: 1
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 48.21 gr
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 14:59:42 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:02:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:02:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:05:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 15:05:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:05:22 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:05:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 15:05:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.918, boyut=148.8x60.8mm, mesaj='nesne_var')
+2025-10-12 15:05:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=14.31, materyal türü=2, uzunluk=148.77, genişlik=60.81
+2025-10-12 15:05:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:05:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 14.31 gr
+2025-10-12 15:05:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:05:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.863, boyut=147.7x61.8mm, mesaj='nesne_var')
+2025-10-12 15:05:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=-4.71, materyal türü=2, uzunluk=147.67, genişlik=61.83
+2025-10-12 15:05:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:05:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -4.71 gr
+2025-10-12 15:05:41 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:05:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:05:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=-5.78, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:05:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:05:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -5.78 gr
+2025-10-12 15:05:53 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.785, boyut=151.0x58.8mm, mesaj='nesne_var')
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=9.43, materyal türü=3, uzunluk=150.97, genişlik=58.77
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 9.43 gr
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.921, boyut=175.8x64.9mm, mesaj='nesne_var')
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=-0.55, materyal türü=3, uzunluk=175.77, genişlik=64.9
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -0.55 gr
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:11 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.896, boyut=178.5x81.8mm, mesaj='nesne_var')
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=29.85, materyal türü=3, uzunluk=178.52, genişlik=81.76
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 29.85 gr
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.912, boyut=155.9x58.2mm, mesaj='nesne_var')
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012885846, ağırlık=0.39, materyal türü=3, uzunluk=155.93, genişlik=58.25
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.476, Max Agirlik: 12.804, Min Genişlik: 52.56, Max Genişlik: 64.24, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 0.39 gr
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:25 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 4
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.905, boyut=142.2x60.8mm, mesaj='nesne_var')
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=5.98, materyal türü=3, uzunluk=142.16, genişlik=60.81
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 5.98 gr
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:06:32 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 5
+2025-10-12 15:07:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.912, boyut=288.7x75.6mm, mesaj='nesne_var')
+2025-10-12 15:07:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447240, ağırlık=41.35, materyal türü=1, uzunluk=288.72, genişlik=75.63
+2025-10-12 15:07:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 33.57, Max Agirlik: 41.03, Min Genişlik: 72.0, Max Genişlik: 88.0, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:07:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 41.35 gr
+2025-10-12 15:07:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:07:08 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 6
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.888, boyut=283.2x81.8mm, mesaj='nesne_var')
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=21.61, materyal türü=1, uzunluk=283.21, genişlik=81.76
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 21.61 gr
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:07:10 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 7
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.901, boyut=292.6x89.9mm, mesaj='nesne_var')
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012887918, ağırlık=16.46, materyal türü=1, uzunluk=292.58, genişlik=89.94
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 26.55, Max Agirlik: 32.45, Min Genişlik: 76.5, Max Genişlik: 93.5, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 16.46 gr
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:07:13 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 8
+2025-10-12 15:07:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:07:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=173.62, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:07:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 15:07:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 173.62 gr
+2025-10-12 15:07:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 15:07:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.931, boyut=168.6x58.8mm, mesaj='nesne_var')
+2025-10-12 15:07:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=6.58, materyal türü=2, uzunluk=168.61, genişlik=58.77
+2025-10-12 15:07:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 15:07:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 6.58 gr
+2025-10-12 15:07:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.828, boyut=106.9x67.5mm, mesaj='nesne_var')
+2025-10-12 15:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=165.36, materyal türü=2, uzunluk=106.89, genişlik=67.45
+2025-10-12 15:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 15:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 165.36 gr
+2025-10-12 15:07:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 15:07:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.885, boyut=175.2x58.2mm, mesaj='nesne_var')
+2025-10-12 15:07:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=19270737, ağırlık=20.45, materyal türü=1, uzunluk=175.22, genişlik=58.25
+2025-10-12 15:07:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 6.75, Max Agirlik: 8.25, Min Genişlik: 57.6, Max Genişlik: 70.4, Min Uzunluk: 90.54, Max Uzunluk: 110.66, Materyal_id: 1
+2025-10-12 15:07:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.45 gr
+2025-10-12 15:07:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:12:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:12:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:12:39 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.909, boyut=154.3x61.8mm, mesaj='nesne_var')
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=20.72, materyal türü=3, uzunluk=154.28, genişlik=61.83
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 20.72 gr
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:12:44 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.935, boyut=176.3x64.4mm, mesaj='nesne_var')
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=21.46, materyal türü=3, uzunluk=176.32, genişlik=64.39
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 21.46 gr
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:12:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.832, boyut=282.1x86.9mm, mesaj='nesne_var')
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923858393961, ağırlık=31.85, materyal türü=1, uzunluk=282.11, genişlik=86.87
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 36.99, Max Agirlik: 45.21, Min Genişlik: 69.66, Max Genişlik: 85.14, Min Uzunluk: 237.6, Max Uzunluk: 290.4, Materyal_id: 1
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 31.85 gr
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:12:51 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.884, boyut=178.5x77.2mm, mesaj='nesne_var')
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=26.22, materyal türü=3, uzunluk=178.52, genişlik=77.16
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.22 gr
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:14:18 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 4
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.889, boyut=179.6x78.2mm, mesaj='nesne_var')
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=29.85, materyal türü=3, uzunluk=179.63, genişlik=78.18
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 29.85 gr
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:15:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.893, boyut=176.9x69.0mm, mesaj='nesne_var')
+2025-10-12 15:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=44.89, materyal türü=3, uzunluk=176.87, genişlik=68.98
+2025-10-12 15:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 44.89 gr
+2025-10-12 15:15:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 15:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=-6.41, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -6.41 gr
+2025-10-12 15:15:56 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 15:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=-11.97, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -11.97 gr
+2025-10-12 15:16:05 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: False
+2025-10-12 15:16:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:16:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=3.9, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:16:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:16:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 3.9 gr
+2025-10-12 15:16:23 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.766, boyut=175.8x65.9mm, mesaj='nesne_var')
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=18.37, materyal türü=3, uzunluk=175.77, genişlik=65.92
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 18.37 gr
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:16:36 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 15:16:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:16:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=9.41, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:16:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:16:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 9.41 gr
+2025-10-12 15:16:40 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.931, boyut=282.1x79.7mm, mesaj='nesne_var')
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=34.06, materyal türü=1, uzunluk=282.11, genişlik=79.72
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 34.06 gr
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:16:47 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.904, boyut=159.8x60.3mm, mesaj='nesne_var')
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012885846, ağırlık=23.93, materyal türü=3, uzunluk=159.79, genişlik=60.3
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.476, Max Agirlik: 12.804, Min Genişlik: 52.56, Max Genişlik: 64.24, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 23.93 gr
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:16:52 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 4
+2025-10-12 15:17:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=CAM, guven=0.896, boyut=160.3x57.7mm, mesaj='nesne_var')
+2025-10-12 15:17:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012885846, ağırlık=7.56, materyal türü=2, uzunluk=160.34, genişlik=57.74
+2025-10-12 15:17:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.476, Max Agirlik: 12.804, Min Genişlik: 52.56, Max Genişlik: 64.24, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:17:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 7.56 gr
+2025-10-12 15:17:01 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.915, boyut=163.7x58.2mm, mesaj='nesne_var')
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012885846, ağırlık=25.17, materyal türü=3, uzunluk=163.65, genişlik=58.25
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.476, Max Agirlik: 12.804, Min Genişlik: 52.56, Max Genişlik: 64.24, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 25.17 gr
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.883, boyut=298.6x78.7mm, mesaj='nesne_var')
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447240, ağırlık=53.34, materyal türü=1, uzunluk=298.64, genişlik=78.69
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 33.57, Max Agirlik: 41.03, Min Genişlik: 72.0, Max Genişlik: 88.0, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 53.34 gr
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:16 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 15:17:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:17:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=10.83, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:17:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:17:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 10.83 gr
+2025-10-12 15:17:20 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.924, boyut=141.6x51.1mm, mesaj='nesne_var')
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=-1.12, materyal türü=3, uzunluk=141.61, genişlik=51.1
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -1.12 gr
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:26 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.888, boyut=289.3x90.5mm, mesaj='nesne_var')
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012887918, ağırlık=49.56, materyal türü=1, uzunluk=289.28, genişlik=90.45
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 26.55, Max Agirlik: 32.45, Min Genişlik: 76.5, Max Genişlik: 93.5, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 49.56 gr
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:17:31 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 4
+2025-10-12 15:18:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:18:06 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:19:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:19:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:20:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor hazır - Sistem başlatıldı
+2025-10-12 15:20:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: Motor kontrol referansı ayarlandı - Otomatik ezici kontrolü aktif
+2025-10-12 15:20:12 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: OTURUM - Aktif oturum başlatıldı
+2025-10-12 15:20:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=BILINMEYEN, guven=0.000, boyut=0.0x0.0mm, mesaj='nesne_yok')
+2025-10-12 15:20:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=3.5, materyal türü=0, uzunluk=0.0, genişlik=0.0
+2025-10-12 15:20:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:20:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 3.5 gr
+2025-10-12 15:20:17 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.825, boyut=176.9x65.9mm, mesaj='nesne_var')
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=2.32, materyal türü=3, uzunluk=176.87, genişlik=65.92
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 2.32 gr
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:24 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 1
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.908, boyut=173.6x64.4mm, mesaj='nesne_var')
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923438347865, ağırlık=28.4, materyal türü=3, uzunluk=173.57, genişlik=64.39
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.95, Max Agirlik: 17.05, Min Genişlik: 58.5, Max Genişlik: 71.5, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 28.4 gr
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:27 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 2
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.885, boyut=157.0x65.9mm, mesaj='nesne_var')
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012885846, ağırlık=6.69, materyal türü=3, uzunluk=157.04, genişlik=65.92
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.476, Max Agirlik: 12.804, Min Genişlik: 52.56, Max Genişlik: 64.24, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 6.69 gr
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:30 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 3
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.836, boyut=178.5x71.5mm, mesaj='nesne_var')
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923815405737, ağırlık=24.55, materyal türü=3, uzunluk=178.52, genişlik=71.54
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 13.5, Max Agirlik: 16.5, Min Genişlik: 59.85, Max Genişlik: 73.15, Min Uzunluk: 151.2, Max Uzunluk: 184.8, Materyal_id: 3
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 24.55 gr
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:35 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 4
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.854, boyut=137.8x53.1mm, mesaj='nesne_var')
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=8333445997015, ağırlık=-6.8, materyal türü=3, uzunluk=137.75, genişlik=53.14
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 8.73, Max Agirlik: 10.67, Min Genişlik: 49.23, Max Genişlik: 60.17, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -6.8 gr
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:38 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 5
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.904, boyut=275.5x83.8mm, mesaj='nesne_var')
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923858393961, ağırlık=26.47, materyal türü=1, uzunluk=275.5, genişlik=83.8
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 36.99, Max Agirlik: 45.21, Min Genişlik: 69.66, Max Genişlik: 85.14, Min Uzunluk: 237.6, Max Uzunluk: 290.4, Materyal_id: 1
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 26.47 gr
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:43 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 6
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.934, boyut=285.4x85.8mm, mesaj='nesne_var')
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447028, ağırlık=33.3, materyal türü=1, uzunluk=285.42, genişlik=85.85
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 27.9, Max Agirlik: 34.1, Min Genişlik: 73.233, Max Genişlik: 89.507, Min Uzunluk: 244.8, Max Uzunluk: 299.2, Materyal_id: 1
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 33.3 gr
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:48 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 7
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.851, boyut=155.9x57.2mm, mesaj='nesne_var')
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447974, ağırlık=-5.84, materyal türü=3, uzunluk=155.93, genişlik=57.23
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 10.71, Max Agirlik: 13.09, Min Genişlik: 52.2, Max Genişlik: 63.8, Min Uzunluk: 130.86, Max Uzunluk: 159.94, Materyal_id: 3
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: -5.84 gr
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:20:55 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 8
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=ALUMINYUM, guven=0.905, boyut=139.9x55.7mm, mesaj='nesne_var')
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=23787085, ağırlık=12.59, materyal türü=3, uzunluk=139.95, genişlik=55.7
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 9.63, Max Agirlik: 11.77, Min Genişlik: 47.7, Max Genişlik: 58.3, Min Uzunluk: 120.6, Max Uzunluk: 147.4, Materyal_id: 3
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 12.59 gr
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:21:00 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 9
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.894, boyut=283.8x81.8mm, mesaj='nesne_var')
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1923807447240, ağırlık=24.84, materyal türü=1, uzunluk=283.77, genişlik=81.76
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 33.57, Max Agirlik: 41.03, Min Genişlik: 72.0, Max Genişlik: 88.0, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 24.84 gr
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:21:04 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 10
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: GÖRÜNTÜ İŞLEME - Sonuç: GoruntuSonuc(tur=PET, guven=0.917, boyut=303.1x84.8mm, mesaj='nesne_var')
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Mevcut durum: barkod=1916012887918, ağırlık=42.33, materyal türü=1, uzunluk=303.05, genişlik=84.83
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Min Agirlik: 26.55, Max Agirlik: 32.45, Min Genişlik: 76.5, Max Genişlik: 93.5, Min Uzunluk: 250.2, Max Uzunluk: 305.8, Materyal_id: 1
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ölçülen ağırlık: 42.33 gr
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: DOĞRULAMA - Ağırlık kontrol sonucu: True
+2025-10-12 15:21:07 | INFO     | rvm_sistemi_oturum_var | OTURUM_VAR: KUYRUK - Toplam kabul edilen ürün sayısı: 11

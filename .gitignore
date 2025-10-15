@@ -8,7 +8,7 @@ __pycache__/
 *.pyo
 
 # Log ve veritabanı
-*.log
+
 *.db
 
 # IDE dosyaları

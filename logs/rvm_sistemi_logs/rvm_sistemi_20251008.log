@@ -1,0 +1,810 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2025-10-08 20:55:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #2
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #2
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 20:55:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #3
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #3
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 20:56:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 20:57:34 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #4
+2025-10-08 20:57:34 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 20:57:34 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 20:57:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 20:57:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.07s, Döngü: #4
+2025-10-08 20:57:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.066s, Başarı oranı: 100.0%
+2025-10-08 20:57:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #5
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #5
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 20:58:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #6
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #6
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 20:59:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #7
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #7
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:00:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #8
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #8
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:01:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #9
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.07s, Döngü: #9
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.069s, Başarı oranı: 100.0%
+2025-10-08 21:02:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #10
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #10
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #10, Uptime: 541s, Toplam: 10, Başarılı: 10 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #10, Uptime: 541s, Toplam: 10, Başarılı: 10 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:03:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #11
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #11
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:04:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #12
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #12
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:05:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #13
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #13
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 21:06:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #14
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #14
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 21:07:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #15
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #15
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.061s, Başarı oranı: 100.0%
+2025-10-08 21:08:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #16
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #16
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 21:09:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #17
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #17
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:10:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #18
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #18
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:11:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #19
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #19
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:12:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #20
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.07s, Döngü: #20
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.075s, Başarı oranı: 100.0%
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #20, Uptime: 1141s, Toplam: 20, Başarılı: 20 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #20, Uptime: 1141s, Toplam: 20, Başarılı: 20 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:13:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:14:35 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #21
+2025-10-08 21:14:35 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:14:35 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:14:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:14:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #21
+2025-10-08 21:14:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:14:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #22
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.09s, Döngü: #22
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.094s, Başarı oranı: 100.0%
+2025-10-08 21:15:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #23
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #23
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:16:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #24
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #24
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 21:17:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #25
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #25
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:18:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #26
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #26
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:19:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #27
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #27
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:20:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #28
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #28
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 21:21:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #29
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #29
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:22:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #30
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #30
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #30, Uptime: 1742s, Toplam: 30, Başarılı: 30 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #30, Uptime: 1742s, Toplam: 30, Başarılı: 30 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:23:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #31
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #31
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 21:24:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #32
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #32
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 21:25:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #33
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #33
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:26:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #34
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.10s, Döngü: #34
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.104s, Başarı oranı: 100.0%
+2025-10-08 21:27:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #35
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #35
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:28:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #36
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.10s, Döngü: #36
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.100s, Başarı oranı: 100.0%
+2025-10-08 21:29:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:30:36 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #37
+2025-10-08 21:30:36 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:30:36 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:30:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:30:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #37
+2025-10-08 21:30:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:30:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #38
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #38
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:31:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #39
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #39
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 21:32:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #40
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #40
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #40, Uptime: 2343s, Toplam: 40, Başarılı: 40 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #40, Uptime: 2343s, Toplam: 40, Başarılı: 40 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:33:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #41
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #41
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 21:34:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #42
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #42
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 21:35:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #43
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #43
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:36:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #44
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #44
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:37:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #45
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #45
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:38:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #46
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #46
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:39:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #47
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #47
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.049s, Başarı oranı: 100.0%
+2025-10-08 21:40:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #48
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #48
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 21:41:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #49
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #49
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:42:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #50
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #50
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.048s, Başarı oranı: 100.0%
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #50, Uptime: 2943s, Toplam: 50, Başarılı: 50 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #50, Uptime: 2943s, Toplam: 50, Başarılı: 50 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:43:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #51
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #51
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 21:44:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #52
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #52
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 21:45:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #53
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #53
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 21:46:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #54
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #54
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 21:47:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:48:37 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #55
+2025-10-08 21:48:37 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:48:37 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:48:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:48:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #55
+2025-10-08 21:48:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 21:48:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #56
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #56
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:49:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #57
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #57
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 21:50:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #58
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #58
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:51:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #59
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #59
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:52:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #60
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #60
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #60, Uptime: 3544s, Toplam: 60, Başarılı: 60 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #60, Uptime: 3544s, Toplam: 60, Başarılı: 60 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 21:53:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #61
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #61
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 21:54:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:54:41 | INFO     | rvm_sistemi | SYSTEM: Periyodik ürün güncelleme zamanı geldi...
+2025-10-08 21:54:41 | INFO     | rvm_sistemi | SYSTEM: Ürün güncellemesi başlatılıyor... (2025-10-08 18:54:41 UTC)
+2025-10-08 21:54:41 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/getAllProducts
+2025-10-08 21:54:52 | INFO     | rvm_sistemi | SUCCESS: İstek (getAllProducts) başarıyla gönderildi. Kod: 200
+2025-10-08 21:54:52 | INFO     | rvm_sistemi | SUCCESS: Ürün güncellemesi tamamlandı (2025-10-08 18:54:52 UTC)
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #62
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #62
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 21:55:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #63
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #63
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.059s, Başarı oranı: 100.0%
+2025-10-08 21:56:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #64
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.07s, Döngü: #64
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.067s, Başarı oranı: 100.0%
+2025-10-08 21:57:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #65
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #65
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 21:58:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #66
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #66
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.049s, Başarı oranı: 100.0%
+2025-10-08 21:59:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #67
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #67
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 22:00:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #68
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #68
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:01:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:02:08 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
+2025-10-08 22:02:08 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: yso
+2025-10-08 22:02:09 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
+2025-10-08 22:02:09 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: yso
+2025-10-08 22:02:09 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
+2025-10-08 22:02:09 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: yso
+2025-10-08 22:02:18 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
+2025-10-08 22:02:18 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: yso
+2025-10-08 22:02:18 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmh
+2025-10-08 22:02:19 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmh
+2025-10-08 22:02:20 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmh
+2025-10-08 22:02:20 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
+2025-10-08 22:02:20 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: yso
+2025-10-08 22:02:21 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmh
+2025-10-08 22:02:22 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmh
+2025-10-08 22:02:23 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: kmk
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #69
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #69
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.048s, Başarı oranı: 100.0%
+2025-10-08 22:02:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #70
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #70
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #70, Uptime: 4144s, Toplam: 70, Başarılı: 70 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #70, Uptime: 4144s, Toplam: 70, Başarılı: 70 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:03:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #71
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #71
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:04:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #72
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #72
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:05:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:06:38 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #73
+2025-10-08 22:06:38 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:06:38 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:06:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:06:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #73
+2025-10-08 22:06:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 22:06:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #74
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #74
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 22:07:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #75
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.08s, Döngü: #75
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.076s, Başarı oranı: 100.0%
+2025-10-08 22:08:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #76
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #76
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:09:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #77
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #77
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 22:10:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #78
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #78
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 22:11:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #79
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.07s, Döngü: #79
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.068s, Başarı oranı: 100.0%
+2025-10-08 22:12:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #80
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #80
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.055s, Başarı oranı: 100.0%
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #80, Uptime: 4745s, Toplam: 80, Başarılı: 80 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #80, Uptime: 4745s, Toplam: 80, Başarılı: 80 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:13:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #81
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #81
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.049s, Başarı oranı: 100.0%
+2025-10-08 22:14:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #82
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #82
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 22:15:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #83
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.09s, Döngü: #83
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.088s, Başarı oranı: 100.0%
+2025-10-08 22:16:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #84
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #84
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.051s, Başarı oranı: 100.0%
+2025-10-08 22:17:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #85
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #85
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:18:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #86
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #86
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:19:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #87
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #87
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.056s, Başarı oranı: 100.0%
+2025-10-08 22:20:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #88
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.08s, Döngü: #88
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.076s, Başarı oranı: 100.0%
+2025-10-08 22:21:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:22:39 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #89
+2025-10-08 22:22:39 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:22:39 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:22:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:22:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #89
+2025-10-08 22:22:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 22:22:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #90
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #90
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.060s, Başarı oranı: 100.0%
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #90, Uptime: 5345s, Toplam: 90, Başarılı: 90 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #90, Uptime: 5345s, Toplam: 90, Başarılı: 90 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:23:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #91
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #91
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:24:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #92
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #92
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 22:25:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #93
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #93
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.049s, Başarı oranı: 100.0%
+2025-10-08 22:26:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #94
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #94
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 22:27:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #95
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #95
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 22:28:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #96
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #96
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 22:29:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #97
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #97
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.062s, Başarı oranı: 100.0%
+2025-10-08 22:30:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #98
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #98
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.053s, Başarı oranı: 100.0%
+2025-10-08 22:31:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #99
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #99
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 22:32:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #100
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #100
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.052s, Başarı oranı: 100.0%
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #100, Uptime: 5946s, Toplam: 100, Başarılı: 100 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #100, Uptime: 5946s, Toplam: 100, Başarılı: 100 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:33:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #101
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #101
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 22:34:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #102
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #102
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.057s, Başarı oranı: 100.0%
+2025-10-08 22:35:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #103
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #103
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:36:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #104
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #104
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 22:37:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #105
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #105
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 22:38:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #106
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #106
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 22:39:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:40:40 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #107
+2025-10-08 22:40:40 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:40:40 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:40:41 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:40:41 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.06s, Döngü: #107
+2025-10-08 22:40:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.058s, Başarı oranı: 100.0%
+2025-10-08 22:40:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #108
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #108
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.050s, Başarı oranı: 100.0%
+2025-10-08 22:41:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #109
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.05s, Döngü: #109
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.054s, Başarı oranı: 100.0%
+2025-10-08 22:42:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #110
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | SUCCESS: İstek (heartbeat) başarıyla gönderildi. Kod: 200
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | SUCCESS: Heartbeat başarıyla gönderildi - Süre: 0.08s, Döngü: #110
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Performans - Gönderim süresi: 0.076s, Başarı oranı: 100.0%
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | SYSTEM: Heartbeat İstatistikleri - Döngü: #110, Uptime: 6547s, Toplam: 110, Başarılı: 110 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: Detaylı istatistik - Heartbeat İstatistikleri - Döngü: #110, Uptime: 6547s, Toplam: 110, Başarılı: 110 (100.0%), Başarısız: 0 (0.0%), Ardışık Hata: 0
+2025-10-08 22:43:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Sonraki heartbeat için 60 saniye bekleniyor...
+2025-10-08 22:44:41 | INFO     | rvm_sistemi | DIMDB: [HEARTBEAT] Gönderim başlatılıyor - Döngü #111
+2025-10-08 22:44:41 | INFO     | rvm_sistemi | DIMDB: Heartbeat gönderiliyor...
+2025-10-08 22:44:41 | INFO     | rvm_sistemi | DIMDB: İstek gönderiliyor: http://192.168.53.1:5432/heartbeat
+2025-10-08 23:29:56 | INFO     | rvm_sistemi | MOTOR: HAM MESAJ: ysi
