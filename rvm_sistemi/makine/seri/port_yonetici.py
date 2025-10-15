@@ -20,6 +20,7 @@ class KartHaberlesmeServis:
         for p in ports:
             # Sadece USB portlarını (Arduino'lar gibi) dene
             if "USB" not in p.device and "acm" not in p.device.lower():
+                print(f"[LOG] {p.device} USB port değil, atlanıyor...")
                 continue
 
             ser = None
@@ -62,23 +63,40 @@ class KartHaberlesmeServis:
                     
                     bulunan_kartlar[cevap] = p.device
                     
+                    # Eğer tek bir cihaz aranıyorsa ve bulunduysa
                     if cihaz_adi and cihaz_adi == cevap:
-                         # Portu kapatmadan önce döngüden çık
-                        break 
+                        # Portu kapat ve döngüden çık
+                        ser.close()
+                        print(f"[LOG] Aranan cihaz '{cihaz_adi}' bulundu, arama sonlandırılıyor.")
+                        log_success(f"Aranan cihaz '{cihaz_adi}' bulundu.")
+                        return True, "Cihaz başarıyla bulundu.", {cihaz_adi: bulunan_kartlar[cihaz_adi]}
                 else:
                     print(f"    -> Bu porttan geçerli bir kimlik alınamadı. Cevap: '{cevap}'")
+                    log_warning(f"{p.device} portunda geçerli kimlik alınamadı: '{cevap}'")
                 
+            except serial.SerialException as e:
+                print(f"❌ {p.device} portunda seri port hatası: {e}")
+                log_error(f"{p.device} portunda seri port hatası: {e}")
             except Exception as e:
-                print(f"❌ {p.device} portunda hata: {e}")
+                print(f"❌ {p.device} portunda beklenmeyen hata: {e}")
+                log_error(f"{p.device} portunda beklenmeyen hata: {e}")
             finally:
+                # Portu sadece hala açıksa kapat
                 if ser and ser.is_open:
-                    ser.close()
+                    try:
+                        ser.close()
+                        print(f"[LOG] {p.device} portu kapatıldı.")
+                    except:
+                        pass  # Port zaten kapalıysa veya hata varsa sessizce devam et
 
-            # Eğer tek bir cihaz aranıyorsa ve bulunduysa, diğer portlara bakmaya gerek yok.
-            if cihaz_adi and cihaz_adi in bulunan_kartlar:
-                return True, "Cihaz başarıyla bulundu.", {cihaz_adi: bulunan_kartlar[cihaz_adi]}
-
+        # Döngü tamamlandıktan sonra sonuçları değerlendir
         if bulunan_kartlar:
-            return True, "Kartlar başarıyla bulundu.", bulunan_kartlar
+            if cihaz_adi and cihaz_adi not in bulunan_kartlar:
+                log_warning(f"'{cihaz_adi}' kartı bulunamadı. Bulunan kartlar: {list(bulunan_kartlar.keys())}")
+                return False, f"'{cihaz_adi}' kartı bulunamadı.", bulunan_kartlar
+            else:
+                log_success(f"Toplam {len(bulunan_kartlar)} kart bulundu: {list(bulunan_kartlar.keys())}")
+                return True, "Kartlar başarıyla bulundu.", bulunan_kartlar
         else:
+            log_error("Tanımlı hiçbir kart bulunamadı!")
             return False, "Tanımlı hiçbir kart bulunamadı!", {}

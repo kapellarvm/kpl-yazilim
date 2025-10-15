@@ -1,8 +1,28 @@
 from fastapi import APIRouter, HTTPException
 from rvm_sistemi.api.modeller.schemas import SuccessResponse, ErrorResponse
-from rvm_sistemi.utils.logger import log_system, log_error, log_success
+from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
+from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 
 router = APIRouter()
+
+# Sensor kartı referansı (ana.py'dan alınacak)
+sensor_kart = None
+
+def get_sensor_kart():
+    """Sensor kartı referansını alır"""
+    global sensor_kart
+    if sensor_kart is None:
+        # Ana sistemden sensor kartını al
+        try:
+            from rvm_sistemi.makine.kart_referanslari import sensor_al
+            sensor_kart = sensor_al()
+            if sensor_kart:
+                log_success("Sensor kartı referansı alındı")
+            else:
+                log_warning("Sensor kartı referansı bulunamadı")
+        except Exception as e:
+            log_error(f"Sensor kartı alınamadı: {e}")
+    return sensor_kart
 
 # Güvenlik kartı durumu (şimdilik mock data)
 guvenlik_durumu = {
@@ -60,11 +80,17 @@ async def guvenlik_durum():
 async def ust_kilit_ac():
     """Üst kiliti açar"""
     try:
-        guvenlik_durumu["ust_kilit"]["acik"] = True
-        guvenlik_durumu["ust_kilit"]["dil_var"] = False
-        guvenlik_durumu["ust_sensor"]["aktif"] = False
+        # Sensor kartından üst kilit açma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.ust_kilit_ac()
+            log_success("Üst kilit açma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+            guvenlik_durumu["ust_kilit"]["acik"] = True
+            guvenlik_durumu["ust_kilit"]["dil_var"] = False
+            guvenlik_durumu["ust_sensor"]["aktif"] = False
         
-        log_success("Üst kilit açıldı")
         return SuccessResponse(
             status="success",
             message="Üst kilit başarıyla açıldı"
@@ -77,11 +103,17 @@ async def ust_kilit_ac():
 async def ust_kilit_kapat():
     """Üst kiliti kapatır"""
     try:
-        guvenlik_durumu["ust_kilit"]["acik"] = False
-        guvenlik_durumu["ust_kilit"]["dil_var"] = True
-        guvenlik_durumu["ust_sensor"]["aktif"] = True
+        # Sensor kartından üst kilit kapatma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.ust_kilit_kapat()
+            log_success("Üst kilit kapatma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+            guvenlik_durumu["ust_kilit"]["acik"] = False
+            guvenlik_durumu["ust_kilit"]["dil_var"] = True
+            guvenlik_durumu["ust_sensor"]["aktif"] = True
         
-        log_success("Üst kilit kapatıldı")
         return SuccessResponse(
             status="success",
             message="Üst kilit başarıyla kapatıldı"
@@ -94,11 +126,17 @@ async def ust_kilit_kapat():
 async def alt_kilit_ac():
     """Alt kiliti açar"""
     try:
-        guvenlik_durumu["alt_kilit"]["acik"] = True
-        guvenlik_durumu["alt_kilit"]["dil_var"] = False
-        guvenlik_durumu["alt_sensor"]["aktif"] = False
+        # Sensor kartından alt kilit açma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.alt_kilit_ac()
+            log_success("Alt kilit açma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+            guvenlik_durumu["alt_kilit"]["acik"] = True
+            guvenlik_durumu["alt_kilit"]["dil_var"] = False
+            guvenlik_durumu["alt_sensor"]["aktif"] = False
         
-        log_success("Alt kilit açıldı")
         return SuccessResponse(
             status="success",
             message="Alt kilit başarıyla açıldı"
@@ -111,11 +149,17 @@ async def alt_kilit_ac():
 async def alt_kilit_kapat():
     """Alt kiliti kapatır"""
     try:
-        guvenlik_durumu["alt_kilit"]["acik"] = False
-        guvenlik_durumu["alt_kilit"]["dil_var"] = True
-        guvenlik_durumu["alt_sensor"]["aktif"] = True
+        # Sensor kartından alt kilit kapatma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.alt_kilit_kapat()
+            log_success("Alt kilit kapatma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+            guvenlik_durumu["alt_kilit"]["acik"] = False
+            guvenlik_durumu["alt_kilit"]["dil_var"] = True
+            guvenlik_durumu["alt_sensor"]["aktif"] = True
         
-        log_success("Alt kilit kapatıldı")
         return SuccessResponse(
             status="success",
             message="Alt kilit başarıyla kapatıldı"

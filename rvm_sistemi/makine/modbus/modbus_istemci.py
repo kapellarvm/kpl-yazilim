@@ -442,9 +442,14 @@ class GA500ModbusClient:
         
         # Durum analizi - GUI kodundaki mantık
         is_running = (drive_status & 0x0001) != 0
-        direction = "GERİ" if (drive_status & 0x0002) else "İLERİ"
         is_ready = (drive_status & 0x0004) != 0
         has_fault = (drive_status & 0x0008) != 0
+        
+        # Yön bilgisi sadece motor çalışırken gösterilir
+        if is_running:
+            direction = "İLERİ" if (drive_status & 0x0002) else "GERİ"
+        else:
+            direction = "DURUYOR"
         
         status_text = "ÇALIŞIYOR" if is_running else "DURUYOR"
         ready_text = "EVET" if is_ready else "HAYIR"

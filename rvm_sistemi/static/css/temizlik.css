@@ -65,14 +65,209 @@ body {
     background-clip: text;
 }
 
+/* Kilit Animasyonları */
 .lock-icon {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
+
+/* Kilit Kapalı Durumu */
+.lock-icon .lock-body {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+}
+
+.lock-icon .lock-shackle {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0) rotate(0deg);
+}
+
+/* Kilit Açık Durumu */
 .lock-icon.unlocked .lock-body {
-     transform: translateY(2px);
+    transform: translateY(3px) scale(0.95);
+    opacity: 0.8;
 }
+
 .lock-icon.unlocked .lock-shackle {
-    transform: translateY(-8px) rotate(-15deg);
+    transform: translateY(-12px) rotate(-25deg);
+    stroke-dasharray: 20;
+    stroke-dashoffset: 0;
+    animation: shackleOpen 0.6s ease-out;
+}
+
+/* Kilit Kapatma Animasyonu */
+.lock-icon.locking .lock-shackle {
+    animation: shackleClose 0.5s ease-in-out;
+}
+
+/* Kilit Açma Animasyonu */
+.lock-icon.opening .lock-body {
+    animation: lockBodyOpen 0.4s ease-out;
+}
+
+/* Kilit Durumu Değişim Animasyonu */
+.lock-icon.status-changing {
+    animation: lockPulse 0.8s ease-in-out;
+}
+
+/* Shackle Açılma Animasyonu */
+@keyframes shackleOpen {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        stroke-dasharray: 20;
+        stroke-dashoffset: 20;
+    }
+    50% {
+        transform: translateY(-6px) rotate(-12deg);
+    }
+    100% {
+        transform: translateY(-12px) rotate(-25deg);
+        stroke-dasharray: 20;
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Shackle Kapanma Animasyonu */
+@keyframes shackleClose {
+    0% {
+        transform: translateY(-12px) rotate(-25deg);
+    }
+    50% {
+        transform: translateY(-6px) rotate(-12deg);
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+}
+
+/* Lock Body Açılma Animasyonu */
+@keyframes lockBodyOpen {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(1px) scale(0.98);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(3px) scale(0.95);
+        opacity: 0.8;
+    }
+}
+
+/* Kilit Pulse Animasyonu */
+@keyframes lockPulse {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px currentColor);
+    }
+    50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 15px currentColor);
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px currentColor);
+    }
+}
+
+/* Kilit Durumu Renkleri */
+.lock-icon.locked {
+    color: #6b7280; /* gray-500 */
+    filter: drop-shadow(0 0 8px rgba(107, 114, 128, 0.3));
+}
+
+.lock-icon.unlocked {
+    color: #10b981; /* emerald-500 */
+    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
+}
+
+.lock-icon.status-changing {
+    color: #f59e0b; /* amber-500 */
+    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.5));
+}
+
+/* Hover Efektleri */
+.lock-icon:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px currentColor);
+}
+
+.lock-icon.unlocked:hover {
+    animation: lockBounce 0.6s ease-in-out;
+}
+
+@keyframes lockBounce {
+    0%, 100% {
+        transform: scale(1.05);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* Kilit Buton Animasyonları */
+.lock-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.lock-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.lock-button:hover::before {
+    left: 100%;
+}
+
+.lock-button:active {
+    transform: scale(0.95);
+}
+
+/* Başarılı İşlem Animasyonu */
+.lock-success {
+    animation: lockSuccess 1s ease-in-out;
+}
+
+@keyframes lockSuccess {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px #10b981);
+    }
+    50% {
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 20px #10b981);
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px #10b981);
+    }
+}
+
+/* Hata Animasyonu */
+.lock-error {
+    animation: lockError 0.8s ease-in-out;
+}
+
+@keyframes lockError {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
 }
 
 /* Çeviri aracını devre dışı bırak */

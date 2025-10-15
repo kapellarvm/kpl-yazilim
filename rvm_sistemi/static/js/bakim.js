@@ -1606,7 +1606,7 @@ function startStatusUpdates() {
     stopStatusUpdates();
     
     // Ping ile sağlık durumu kontrolü (15 saniyede bir - çok daha az sıklık)
-    sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir
+    // sistemDurumInterval = setInterval(pingKartlar, 10000); // 10 saniyede bir - DEAKTIF
 }
 
 // Durum güncellemelerini durdur
