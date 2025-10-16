@@ -23,3 +23,4 @@ dist/
 # Konfigürasyon dosyaları
 .env
 config_local.py
+# .env.example dosyası şablon olduğu için Git'e commit edilir
