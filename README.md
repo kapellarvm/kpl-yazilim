@@ -1,15 +1,16 @@
-# GA500 Motor Kontrol Sistemi
+# RVM (Reverse Vending Machine) Sistemi
 
 ## 📌 Proje Özeti
 
-GA500 motor sürücülerini Modbus RTU protokolü ile kontrol eden Ubuntu tabanlı Python sistemi. CE alarmları çözülmüş, sürekli 50 Hz çalışma sağlanmıştır.
+Geri dönüşüm makineleri için geliştirilmiş kapsamlı Python sistemi. Kamera tabanlı görüntü işleme, motor kontrolü, sensör yönetimi ve DİM-DB entegrasyonu içerir.
 
 ## 🚀 Hızlı Başlangıç
 
 ```bash
-# Test çalıştır
+# Sistemi başlat
 cd /home/sshuser/projects/kpl-yazilim
-python3.9 test.py
+source .venv/bin/activate
+python ana.py
 ```
 
 ## 📁 Dosya Yapısı
@@ -17,75 +18,84 @@ python3.9 test.py
 ```
 kpl-yazilim/
 ├── 📄 README.md                    # Bu dosya
-├── 📄 GA500_DOKUMANTASYON.md       # Detaylı dokümantasyon
-├── 📄 HIZLI_BASLANGIC.md           # Hızlı başlangıç kılavuzu
-├── 📄 API_DOKUMANTASYONU.md        # API referansı
+├── 📄 KONFIGURASYON.md             # Konfigürasyon kılavuzu
 ├── 📄 requirements.txt             # Python bağımlılıkları
-├── 📄 test.py                      # Basit test scripti
+├── 📄 ana.py                       # Ana sistem dosyası
+├── 📄 .env                         # RVM konfigürasyonu (otomatik oluşturulur)
+├── 📄 .env.example                 # Konfigürasyon şablonu
 └── rvm_sistemi/
-    └── makine/
-        └── modbus/
-            ├── __init__.py
-            └── modbus_istemci.py   # Ana Modbus istemci sınıfı
+    ├── dimdb/                      # DİM-DB entegrasyonu
+    │   ├── config.py               # Konfigürasyon yönetimi
+    │   └── dimdb_istemcisi.py      # DİM-DB API istemcisi
+    ├── makine/                     # Donanım kontrolü
+    │   ├── goruntu/                # Kamera ve görüntü işleme
+    │   ├── seri/                   # Seri port haberleşmesi
+    │   └── modbus/                 # Modbus motor kontrolü
+    ├── utils/                      # Yardımcı araçlar
+    └── static/                     # Web arayüzü dosyaları
 ```
 
 ## 💻 Kullanım
 
-### Basit Kullanım
-```python
-from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
+### İlk Kurulum
+Sistem ilk çalıştırıldığında otomatik kurulum başlar:
 
-client = GA500ModbusClient()
-client.connect()
-client.run_forward(1)  # Motor 1 - 50 Hz çalıştır
-client.stop(1)         # Motor 1 durdur
-client.disconnect()
+```bash
+python ana.py
+# Sistem otomatik olarak RVM ID girişi ister
+# Konfigürasyon dosyası (.env) otomatik oluşturulur
 ```
+
+### Temel Özellikler
+- **Otomatik Konfigürasyon**: İlk çalıştırmada RVM ID girişi
+- **Kamera Sistemi**: Görüntü işleme ve ürün tanıma
+- **Motor Kontrolü**: Modbus RTU ile motor yönetimi
+- **Sensör Entegrasyonu**: Ağırlık ve diğer sensör verileri
+- **DİM-DB Bağlantısı**: Merkezi veritabanı entegrasyonu
 
 ## ✅ Sistem Durumu
 
-- **Bağlantı**: ✅ Çalışıyor
-- **CE Alarmı**: ✅ Çözüldü  
-- **50 Hz Çalışma**: ✅ Sürekli
-- **Çift Motor**: ✅ Destekleniyor
-- **Thread Safety**: ✅ Güvenli
+- **Konfigürasyon**: ✅ Otomatik kurulum
+- **Kamera Sistemi**: ✅ Çalışıyor
+- **Motor Kontrolü**: ✅ Modbus RTU
+- **Sensör Entegrasyonu**: ✅ Seri port
+- **DİM-DB Bağlantısı**: ✅ HTTP API
 
 ## 📚 Dokümantasyon
 
 | Dosya | Açıklama |
 |-------|----------|
-| [GA500_DOKUMANTASYON.md](GA500_DOKUMANTASYON.md) | Kapsamlı sistem dokümantasyonu |
-| [HIZLI_BASLANGIC.md](HIZLI_BASLANGIC.md) | 5 dakikalık başlangıç kılavuzu |
-| [API_DOKUMANTASYONU.md](API_DOKUMANTASYONU.md) | Detaylı API referansı |
+| [KONFIGURASYON.md](KONFIGURASYON.md) | RVM konfigürasyon kılavuzu |
+| [README.md](README.md) | Ana sistem dokümantasyonu |
 
 ## 🔧 Teknik Özellikler
 
 - **Platform**: Ubuntu Linux
 - **Python**: 3.9+
-- **Protokol**: Modbus RTU
-- **Port**: /dev/ttyS0 (varsayılan)
-- **Baudrate**: 9600
-- **Motorlar**: 2x GA500 (Adres 1, 2)
+- **Kamera**: USB kamera (MV-CS040-10UC)
+- **Motor Kontrolü**: Modbus RTU
+- **Sensör**: Seri port haberleşmesi
+- **Veritabanı**: SQLite (yerel) + DİM-DB (merkezi)
 
 ## 📞 Destek
 
 ```bash
 # Sistem kontrolü
-python3.9 --version
+python --version
 
-# Test çalıştır
-python3.9 test.py
+# Sistemi başlat
+python ana.py
 
-# Manuel test
-python3.9 -c "from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient; print('✅ Sistem hazır')"
+# Konfigürasyon kontrolü
+python -c "from rvm_sistemi.dimdb.config import config; print(f'RVM ID: {config.RVM_ID}')"
 ```
 
 ---
 
-**Proje**: kpl-yazilim  
+**Proje**: RVM Sistemi  
 **Durum**: ✅ Production Ready  
-**Versiyon**: 1.0.0  
-**Tarih**: 5 Ekim 2025
+**Versiyon**: 2.0.0  
+**Tarih**: Ocak 2025
 
 ---
 

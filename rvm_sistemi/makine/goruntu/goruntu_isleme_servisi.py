@@ -33,7 +33,7 @@ class GoruntuIslemeServisi:
     
     def __init__(self):
         """Servisi başlatır ve kaynakları (kamera, model, thread) hazırlar."""
-        print("🔄 [GÖRÜNTÜİŞ] Görüntü işleme servisi başlatılıyor...")
+        #print("🔄 [GÖRÜNTÜİŞ] Görüntü işleme servisi başlatılıyor...")
         
         # Özelliklere başlangıç değeri atayarak güvenliği artırıyoruz
         self.kamera = None
@@ -165,11 +165,11 @@ class GoruntuIslemeServisi:
             name="GoruntuIslemeThread"
         )
         self.islem_thread.start()
-        print("🚀 [GÖRÜNTÜİŞ] Asenkron işleme thread'i başlatıldı.")
+        #print("🚀 [GÖRÜNTÜİŞ] Asenkron işleme thread'i başlatıldı.")
 
     def _asenkron_isleme_worker(self):
         """Kuyruktan görüntüleri alıp YOLO ile işleyen worker döngüsü."""
-        print("👷 [WORKER] Görüntü işleme worker'ı başladı.")
+        #print("👷 [WORKER] Görüntü işleme worker'ı başladı.")
         
         while self.islem_thread_aktif:
             try:

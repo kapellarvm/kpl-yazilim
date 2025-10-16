@@ -9,13 +9,11 @@ from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 from rvm_sistemi.makine.seri.motor_karti import MotorKart
 from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
 from rvm_sistemi.makine.durum_degistirici import durum_makinesi
-from rvm_sistemi.makine.dogrulama import DogrulamaServisi
 from rvm_sistemi.makine import kart_referanslari
 from rvm_sistemi.zamanli_gorevler import urun_guncelleyici
 from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
 from rvm_sistemi.makine.modbus.modbus_kontrol import init_motor_kontrol
 
-dogrulama_servisi = DogrulamaServisi()
 
 motor = None
 sensor = None
@@ -71,7 +69,7 @@ async def main():
         log_system(f"Bulunan portlar: {portlar}")
 
         if "sensor" not in portlar:
-            print("❌ Sensör kartı bulunamadı.")
+            #print("❌ Sensör kartı bulunamadı.")
             log_error("Sensör kartı bulunamadı.")
             return
 

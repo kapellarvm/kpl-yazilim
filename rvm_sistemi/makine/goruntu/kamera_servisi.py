@@ -25,7 +25,7 @@ class KameraServisi:
     def baslat(self):
         """Kamerayı başlat ve ayarla"""
         try:
-            print("🔄 [KAMERA] SDK başlatılıyor...")
+            #print("🔄 [KAMERA] SDK başlatılıyor...")
             
             # SDK'yı başlat
             ret_init = MvCamera.MV_CC_Initialize()
@@ -38,7 +38,7 @@ class KameraServisi:
                                MV_GENTL_CAMERALINK_DEVICE | MV_GENTL_CXP_DEVICE | 
                                MV_GENTL_XOF_DEVICE)
             
-            print("🔍 [KAMERA] Cihazlar aranıyor...")
+            #print("🔍 [KAMERA] Cihazlar aranıyor...")
             ret = MvCamera.MV_CC_EnumDevices(transport_katmani, self.cihaz_listesi)
             
             if ret != 0:
@@ -96,7 +96,7 @@ class KameraServisi:
                     self.cam.MV_CC_SetIntValue("PayloadSize", 720*540*3)  # RGB için
                     # Burst frame count minimize
                     self.cam.MV_CC_SetIntValue("AcquisitionBurstFrameCount", 1)
-                    print("🎯 [KAMERA] MV-CS040-10UC buffer optimizasyonu yapıldı")
+                    #print("🎯 [KAMERA] MV-CS040-10UC buffer optimizasyonu yapıldı")
                 except:
                     print("⚠️ [KAMERA] Buffer optimizasyonu atlandı, devam ediliyor")
                 
@@ -104,7 +104,7 @@ class KameraServisi:
                 if ret != 0:
                     raise Exception(f"Sürekli yakalama başlatma hatası! ret[0x{ret:x}]")
                 self.surekli_yakalama_aktif = True
-                print("🚀 [KAMERA] MV-CS040-10UC sürekli yakalama başlatıldı (manuel FPS korundu)")
+                #print("🚀 [KAMERA] MV-CS040-10UC sürekli yakalama başlatıldı (manuel FPS korundu)")
         except Exception as e:
             print(f"❌ [KAMERA] Sürekli yakalama hatası: {e}")
             raise
