@@ -8,7 +8,7 @@ __pycache__/
 *.pyo
 
 # Log ve veritabanı
-
+*.log
 *.db
 
 # IDE dosyaları
@@ -19,3 +19,8 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# Konfigürasyon dosyaları
+.env
+config_local.py
+# .env.example dosyası şablon olduğu için Git'e commit edilir
