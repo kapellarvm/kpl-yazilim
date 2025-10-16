@@ -10,11 +10,13 @@ import uuid
 # göreceli (relative) yoldan erişiyoruz.
 from ..veri_tabani import veritabani_yoneticisi
 from ..utils.logger import log_dimdb, log_error, log_success, log_warning, log_system
+from .config import config
 
 # --- GÜVENLİK VE AYARLAR ---
-SECRET_KEY = "testkpl"
-RVM_ID = "KRVM00010925"
-BASE_URL = "http://192.168.53.1:5432"
+# Konfigürasyon değerleri artık config.py dosyasından alınıyor
+SECRET_KEY = config.SECRET_KEY
+RVM_ID = config.RVM_ID
+BASE_URL = config.BASE_URL
 
 def _generate_signature_headers(payload_body_str):
     """Verilen bir payload için imza ve timestamp header'larını oluşturur."""
