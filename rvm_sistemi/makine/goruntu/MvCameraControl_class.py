@@ -16,7 +16,7 @@ from .PixelType_header import *
 # SDK'yı direk proje içinden yükle - environment variable gerekmez
 project_root = pathlib.Path(__file__).parent
 sdk_path = project_root / "sdk" / "libMvCameraControl.so"
-print(f"Loading SDK from: {sdk_path}")
+#print(f"Loading SDK from: {sdk_path}")
 
 # LD_LIBRARY_PATH'e SDK dizinini ekle
 import os
@@ -24,7 +24,7 @@ sdk_dir = str(project_root / "sdk")
 current_ld_path = os.environ.get('LD_LIBRARY_PATH', '')
 if sdk_dir not in current_ld_path:
     os.environ['LD_LIBRARY_PATH'] = f"{sdk_dir}:{current_ld_path}" if current_ld_path else sdk_dir
-    print(f"LD_LIBRARY_PATH updated: {os.environ['LD_LIBRARY_PATH']}")
+    #print(f"LD_LIBRARY_PATH updated: {os.environ['LD_LIBRARY_PATH']}")
 
 MvCamCtrldll = ctypes.cdll.LoadLibrary(str(sdk_path))
 

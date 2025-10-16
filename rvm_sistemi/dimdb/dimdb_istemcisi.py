@@ -18,6 +18,13 @@ SECRET_KEY = config.SECRET_KEY
 RVM_ID = config.RVM_ID
 BASE_URL = config.BASE_URL
 
+# Konfigürasyon değerlerini yazdır
+print("\n" + "="*40)
+print(f"SECRET_KEY: {SECRET_KEY}")
+print(f"RVM_ID: {RVM_ID}")
+print(f"BASE_URL: {BASE_URL}")
+print("="*40 + "\n")
+
 def _generate_signature_headers(payload_body_str):
     """Verilen bir payload için imza ve timestamp header'larını oluşturur."""
     headers = {}
