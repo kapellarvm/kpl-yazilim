@@ -259,6 +259,42 @@ def mesaj_isle(mesaj):
         bakim_durumu.seperator_kalibrasyon = True
         print("[Bakım Modu] Klape kalibrasyon")
     
+    # Sensör mesajları (kapak durumları)
+    elif mesaj == "g/msup":
+        print("[Bakım Modu] Üst kapak açık")
+        _send_sensor_message_to_websocket("g/msup")
+    elif mesaj == "g/msua":
+        print("[Bakım Modu] Üst kapak kapalı")
+        _send_sensor_message_to_websocket("g/msua")
+    elif mesaj == "g/msap":
+        print("[Bakım Modu] Alt kapak açık")
+        _send_sensor_message_to_websocket("g/msap")
+    elif mesaj == "g/msaa":
+        print("[Bakım Modu] Alt kapak kapalı")
+        _send_sensor_message_to_websocket("g/msaa")
+    
+
+def _send_sensor_message_to_websocket(message):
+    """Sensör mesajlarını WebSocket ile bakım ekranına gönderir"""
+    try:
+        from ...api.endpoints.websocket import send_sensor_message_to_bakim
+        import asyncio
+        
+        # Asyncio event loop'u al veya oluştur
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        # WebSocket mesajını gönder
+        if loop.is_running():
+            asyncio.create_task(send_sensor_message_to_bakim(message))
+        else:
+            loop.run_until_complete(send_sensor_message_to_bakim(message))
+            
+    except Exception as e:
+        print(f"[Bakım Modu] WebSocket sensör mesajı gönderim hatası: {e}")
 
 def _send_alarm_to_websocket():
     """Alarm durumlarını WebSocket ile bakım ekranına gönderir"""

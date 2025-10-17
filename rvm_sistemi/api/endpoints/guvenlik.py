@@ -172,6 +172,14 @@ async def alt_kilit_kapat():
 async def fan_ac():
     """Soğutma fanını açar"""
     try:
+        # Sensor kartından fan açma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.fan_pwm(50)  # Varsayılan hız %50
+            log_success("Fan açma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
         guvenlik_durumu["fan"]["calisiyor"] = True
         guvenlik_durumu["fan"]["hiz"] = 50  # Varsayılan hız
         
@@ -188,6 +196,14 @@ async def fan_ac():
 async def fan_kapat():
     """Soğutma fanını kapatır"""
     try:
+        # Sensor kartından fan kapatma komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.fan_pwm(0)  # Hızı 0'a ayarla
+            log_success("Fan kapatma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
         guvenlik_durumu["fan"]["calisiyor"] = False
         guvenlik_durumu["fan"]["hiz"] = 0
         
@@ -207,6 +223,14 @@ async def fan_hiz_ayarla(hiz: int):
         if hiz < 0 or hiz > 100:
             raise HTTPException(status_code=400, detail="Hız 0-100 arasında olmalıdır")
         
+        # Sensor kartından fan hız ayarlama komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.fan_pwm(hiz)
+            log_success(f"Fan hız ayarlama komutu gönderildi: {hiz}%")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
         guvenlik_durumu["fan"]["hiz"] = hiz
         guvenlik_durumu["fan"]["calisiyor"] = hiz > 0
         
@@ -225,6 +249,15 @@ async def fan_hiz_ayarla(hiz: int):
 async def guvenlik_role_reset():
     """Güvenlik rölesini resetler"""
     try:
+        # Sensor kartından güvenlik rölesi reset komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.guvenlik_role_reset()
+            log_success("Güvenlik rölesi reset komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
+        # Durumu güncelle
         guvenlik_durumu["guvenlik_role"]["aktif"] = True
         guvenlik_durumu["guvenlik_role"]["bypass"] = False
         
@@ -241,6 +274,20 @@ async def guvenlik_role_reset():
 async def guvenlik_role_bypass():
     """Güvenlik rölesi bypass'ını aç/kapat"""
     try:
+        # Sensor kartından bypass komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            # Mevcut bypass durumuna göre komut gönder
+            if guvenlik_durumu["guvenlik_role"]["bypass"]:
+                sensor.bypass_modu_kapat()
+                log_success("Bypass kapatma komutu gönderildi")
+            else:
+                sensor.bypass_modu_ac()
+                log_success("Bypass açma komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
+        # Durumu güncelle
         guvenlik_durumu["guvenlik_role"]["bypass"] = not guvenlik_durumu["guvenlik_role"]["bypass"]
         
         durum = "açıldı" if guvenlik_durumu["guvenlik_role"]["bypass"] else "kapatıldı"
@@ -260,10 +307,14 @@ async def sensor_test(sensor_tipi: str):
         if sensor_tipi not in ["ust", "alt"]:
             raise HTTPException(status_code=400, detail="Sensör tipi 'ust' veya 'alt' olmalıdır")
         
+        # Sensor kartından manyetik sensör sağlık kontrolü yap
+        sensor = get_sensor_kart()
         # Sensör durumunu geçici olarak değiştir (test için)
         if sensor_tipi == "ust":
+            sensor.ust_kilit_durum_sorgula()
             guvenlik_durumu["ust_sensor"]["aktif"] = not guvenlik_durumu["ust_sensor"]["aktif"]
         else:
+            sensor.alt_kilit_durum_sorgula()
             guvenlik_durumu["alt_sensor"]["aktif"] = not guvenlik_durumu["alt_sensor"]["aktif"]
         
         log_success(f"{sensor_tipi} sensör testi yapıldı")
@@ -276,3 +327,36 @@ async def sensor_test(sensor_tipi: str):
     except Exception as e:
         log_error(f"Sensör test hatası: {e}")
         raise HTTPException(status_code=500, detail="Sensör testi yapılamadı")
+
+@router.post("/guvenlik/guvenlik-kart-reset")
+async def guvenlik_kart_reset():
+    """Güvenlik kartını resetler"""
+    try:
+        # Sensor kartından güvenlik kartı reset komutunu gönder
+        sensor = get_sensor_kart()
+        if sensor:
+            sensor.guvenlik_kart_reset()
+            log_success("Güvenlik kartı reset komutu gönderildi")
+        else:
+            log_warning("Sensor kartı bulunamadı, mock data kullanılıyor")
+        
+        # Tüm güvenlik durumlarını sıfırla
+        guvenlik_durumu["ust_kilit"]["acik"] = False
+        guvenlik_durumu["ust_kilit"]["dil_var"] = True
+        guvenlik_durumu["alt_kilit"]["acik"] = False
+        guvenlik_durumu["alt_kilit"]["dil_var"] = True
+        guvenlik_durumu["ust_sensor"]["aktif"] = True
+        guvenlik_durumu["alt_sensor"]["aktif"] = True
+        guvenlik_durumu["fan"]["calisiyor"] = False
+        guvenlik_durumu["fan"]["hiz"] = 0
+        guvenlik_durumu["guvenlik_role"]["aktif"] = True
+        guvenlik_durumu["guvenlik_role"]["bypass"] = False
+        
+        log_success("Güvenlik kartı resetlendi")
+        return SuccessResponse(
+            status="success",
+            message="Güvenlik kartı başarıyla resetlendi"
+        )
+    except Exception as e:
+        log_error(f"Güvenlik kartı reset hatası: {e}")
+        raise HTTPException(status_code=500, detail="Güvenlik kartı resetlenemedi")

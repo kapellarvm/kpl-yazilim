@@ -367,3 +367,26 @@ async def send_measurement_status_to_bakim(is_measuring: bool):
         
     except Exception as e:
         print(f"[WebSocket] Ölçüm durumu gönderim hatası: {e}")
+
+async def send_sensor_message_to_bakim(message: str):
+    """Sensör mesajlarını bakım ekranına gönderir"""
+    try:
+        message_data = {
+            "type": "sensor_message",
+            "message": message,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        # Tüm bakım bağlantılarına gönder
+        for connection in manager.bakim_connections:
+            try:
+                await connection.send_text(json.dumps(message_data))
+            except Exception as e:
+                print(f"[WebSocket] Sensör mesajı gönderim hatası: {e}")
+                # Bağlantıyı listeden çıkar
+                manager.bakim_connections.remove(connection)
+        
+        print(f"[WebSocket] Sensör mesajı gönderildi: {message}")
+        
+    except Exception as e:
+        print(f"[WebSocket] Sensör mesajı gönderim hatası: {e}")
