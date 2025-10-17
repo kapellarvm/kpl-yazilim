@@ -50,7 +50,7 @@ class GoruntuIslemeServisi:
 
         try:
             # YOLO modelini yükle
-            model_yolu = os.path.join(os.path.dirname(__file__), "b_s_y.pt")
+            model_yolu = os.path.join(os.path.dirname(__file__), "kpl04.pt")
             if not os.path.exists(model_yolu):
                 raise FileNotFoundError(f"YOLO model dosyası bulunamadı: {model_yolu}")
             

@@ -160,15 +160,44 @@ class SerialConnection:
                     
             except serial.SerialException as e:
                 error_str = str(e).lower()
-                if any(keyword in error_str for keyword in ["permission", "denied", "busy", "in use"]):
+                error_message = str(e)
+                
+                # Input/output error - genellikle fiziksel bağlantı sorunu
+                if "input/output" in error_str or "errno 5" in error_str:
+                    log_error(f"{port_device} I/O hatası - cihaz fiziksel olarak kopmuş olabilir: {error_message}")
+                    break  # I/O hatası için tekrar deneme
+                
+                # Permission/busy errors - tekrar denenebilir
+                elif any(keyword in error_str for keyword in ["permission", "denied", "busy", "in use"]):
                     if attempt < max_attempts - 1:
-                        log_warning(f"{port_device} meşgul, {attempt + 1}/{max_attempts} deneme")
+                        log_warning(f"{port_device} meşgul, {attempt + 1}/{max_attempts} deneme: {error_message}")
                         time.sleep(Constants.RETRY_DELAY)
                         continue
                     else:
-                        log_error(f"{port_device} sürekli meşgul")
+                        log_error(f"{port_device} sürekli meşgul: {error_message}")
+                
+                # Device not found
+                elif "no such file" in error_str or "device not found" in error_str:
+                    log_warning(f"{port_device} cihaz bulunamadı: {error_message}")
+                    break
+                
+                # Diğer hatalar
                 else:
-                    log_error(f"{port_device} açılamadı: {e}")
+                    log_error(f"{port_device} açılamadı: {error_message}")
+                    if attempt < max_attempts - 1:
+                        time.sleep(Constants.RETRY_DELAY)
+                        continue
+                
+                break
+            
+            except OSError as e:
+                # OSError - genellikle sistem seviyesi hatalar
+                log_error(f"{port_device} sistem hatası: {e}")
+                break
+                
+            except Exception as e:
+                # Beklenmeyen hatalar
+                log_error(f"{port_device} beklenmeyen hata: {e}")
                 break
         
         return None
@@ -193,7 +222,6 @@ class DeviceCommunicator:
         ser.write(Commands.RESET.value)
         ser.flush()
         time.sleep(Constants.RESET_WAIT_TIME)
-        
         # Buffer'ları tekrar temizle
         ser.reset_input_buffer()
     
@@ -285,6 +313,41 @@ class KartHaberlesmeServis:
         
         log_system(f"Kart Haberleşme Servisi başlatıldı - Sistem: {self.system}")
     
+    def _close_all_ports(self) -> None:
+        """
+        Tüm seri portları kapat
+        """
+        try:
+            log_system("Tüm açık portlar kapatılıyor...")
+            ports = self.scanner.get_available_ports()
+            
+            for port_info in ports:
+                if self.scanner.is_compatible_port(port_info.device):
+                    try:
+                        # Portu açmayı dene ve hemen kapat
+                        test_ser = serial.Serial(port_info.device, timeout=0.1)
+                        test_ser.close()
+                        log_system(f"{port_info.device} portu kapatıldı")
+                    except serial.SerialException as e:
+                        # Port zaten kapalı, meşgul veya I/O hatası
+                        error_str = str(e).lower()
+                        if "input/output" in error_str or "errno 5" in error_str:
+                            log_warning(f"{port_info.device} I/O hatası - fiziksel bağlantı kopmuş: {e}")
+                        elif any(keyword in error_str for keyword in ["permission", "busy", "in use"]):
+                            log_warning(f"{port_info.device} port meşgul: {e}")
+                        # Diğer SerialException'lar için sessiz geç
+                    except OSError as e:
+                        log_warning(f"{port_info.device} sistem hatası: {e}")
+                    except Exception as e:
+                        log_warning(f"{port_info.device} kapatma hatası: {e}")
+            
+            # Kısa bir bekleme ile portların tamamen serbest bırakılmasını sağla
+            time.sleep(0.5)
+            log_system("Port temizleme işlemi tamamlandı")
+            
+        except Exception as e:
+            log_error(f"Port temizleme hatası: {e}")
+    
     def baglan(self, cihaz_adi: Optional[str] = None) -> Tuple[bool, str, Dict[str, str]]:
         """
         Kartları bul ve bağlan
@@ -298,6 +361,9 @@ class KartHaberlesmeServis:
                 - Mesaj
                 - Bulunan kartlar (cihaz_adi: port)
         """
+        # İlk olarak tüm portları kapat
+        self._close_all_ports()
+        
         start_time = time.time()
         log_system(f"Kart arama başlatıldı - Hedef: {cihaz_adi or 'Tümü'}")
         
@@ -383,12 +449,30 @@ class KartHaberlesmeServis:
         
         log_system(f"{port_device} taranıyor...")
         
+        # Port'un fiziksel olarak mevcut olup olmadığını kontrol et
+        try:
+            # Port dosyasının varlığını kontrol et (Linux için)
+            import os
+            if not os.path.exists(port_device):
+                log_warning(f"{port_device} fiziksel olarak mevcut değil")
+                return None
+        except:
+            pass  # Windows'ta bu kontrol çalışmayabilir
+        
         with self.connection.open_port(port_device) as ser:
             if not ser:
                 log_warning(f"{port_device} açılamadı")
                 return None
             
             try:
+                # Port açıldıktan sonra tekrar erişilebilirlik kontrolü
+                try:
+                    ser.is_open  # Port durumunu kontrol et
+                    ser.reset_input_buffer()  # Buffer'a erişimi test et
+                except (OSError, serial.SerialException) as e:
+                    log_warning(f"{port_device} erişim testi başarısız: {e}")
+                    return None
+                
                 # Hardware başlatma beklemesi
                 time.sleep(Constants.HARDWARE_INIT_TIME)
                 
@@ -410,8 +494,14 @@ class KartHaberlesmeServis:
                 else:
                     log_warning(f"{port_device} - Tanımlanamayan cihaz")
                     
+            except (serial.SerialException, OSError) as e:
+                error_str = str(e).lower()
+                if "input/output" in error_str or "errno 5" in error_str:
+                    log_error(f"{port_device} I/O hatası - cihaz fiziksel olarak kopmuş: {e}")
+                else:
+                    log_error(f"{port_device} iletişim hatası: {e}")
             except Exception as e:
-                log_error(f"{port_device} iletişim hatası: {e}")
+                log_error(f"{port_device} beklenmeyen hata: {e}")
         
         return None
     

@@ -81,7 +81,6 @@ class HeartbeatServis:
     async def heartbeat_loop(self) -> None:
         """Optimized heartbeat döngüsü - 60 saniyede bir heartbeat gönderir"""
         loop_count = 0
-        log_heartbeat("Döngü başlatıldı")
         
         while self.is_running:
             loop_count += 1

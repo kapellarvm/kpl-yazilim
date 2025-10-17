@@ -61,6 +61,7 @@ async def main():
             "sensor": ELLE_SENSOR_PORT,
             "motor": ELLE_MOTOR_PORT
         }
+        print(f"🔧 Elle tanımlanan portlar: sensor={ELLE_SENSOR_PORT}, motor={ELLE_MOTOR_PORT}")
     else:
         basarili, mesaj, portlar = yonetici.baglan()
         print("🛈", mesaj)
@@ -68,16 +69,35 @@ async def main():
         log_system(f"Port arama sonucu: {mesaj}")
         log_system(f"Bulunan portlar: {portlar}")
 
+        # Kritik kartların varlığını kontrol et
+        eksik_kartlar = []
         if "sensor" not in portlar:
-            #print("❌ Sensör kartı bulunamadı.")
-            log_error("Sensör kartı bulunamadı.")
+            eksik_kartlar.append("sensor")
+        if "motor" not in portlar:
+            eksik_kartlar.append("motor")
+        
+        if eksik_kartlar:
+            eksik_liste = ", ".join(eksik_kartlar)
+            print(f"❌ Kritik kartlar bulunamadı: {eksik_liste}")
+            print(f"🔍 Bulunan kartlar: {list(portlar.keys()) if portlar else 'Hiçbiri'}")
+            log_error(f"Kritik kartlar bulunamadı: {eksik_liste}")
+            log_error(f"Bulunan kartlar: {list(portlar.keys()) if portlar else 'Hiçbiri'}")
+            
+            # Kullanıcıya yardımcı bilgi ver
+            print("\n📋 Sorun giderme önerileri:")
+            print("   1. USB kablolarını kontrol edin")
+            print("   2. Kartların güç bağlantılarını kontrol edin")
+            print("   3. Port izinlerini kontrol edin (sudo usermod -a -G dialout $USER)")
+            print("   4. Kartları resetleyip tekrar deneyin")
             return
 
     # Sensör ve motoru başlat
+    print(f"🔧 Sensör kartı başlatılıyor: {portlar['sensor']}")
     sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
     sensor.dinlemeyi_baslat()
     log_sensor(f"Sensör kartı başlatıldı: {portlar['sensor']}")
 
+    print(f"🔧 Motor kartı başlatılıyor: {portlar['motor']}")
     motor = MotorKart(portlar["motor"], callback=motor_callback, cihaz_adi="motor")
     motor.dinlemeyi_baslat()
     log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
@@ -144,15 +164,11 @@ async def main():
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
-
-    print("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
-    print("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
-    print("🔄 Ürün güncelleme zamanlayıcısı başlatıldı")
-    
+    '''
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     log_system("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
     log_system("Ürün güncelleme: Her 6 saatte bir otomatik")
-    log_system("Ürün güncelleme zamanlayıcısı başlatıldı")
+    log_system("Ürün güncelleme zamanlayıcısı başlatıldı") '''
 
     await server.serve()
 

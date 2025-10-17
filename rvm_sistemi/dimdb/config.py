@@ -18,7 +18,7 @@ class RVMConfig:
         else:
             # .env dosyası varsa yükle
             load_dotenv()
-            self.SECRET_KEY = os.getenv('RVM_SECRET_KEY', 'testkpl')
+            self.SECRET_KEY = os.getenv('RVM_SECRET_KEY', 'null')
             self.RVM_ID = os.getenv('RVM_ID', '')
             self.BASE_URL = os.getenv('RVM_BASE_URL', 'http://192.168.53.1:5432')
             
@@ -87,7 +87,7 @@ class RVMConfig:
         print("\n📋 KURULUM ÖZETİ")
         print("─" * 20)
         print(f"\n🏷️  RVM ID: {self.RVM_ID}")
-        print("🔐 SECRET KEY: testkpl")
+        print("🔐 SECRET KEY: null")
         print("🌐 BASE URL: http://192.168.53.1:5432")
         print("\n─" * 3)
         
@@ -136,7 +136,7 @@ class RVMConfig:
         env_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
         
         # Varsayılan değerler
-        self.SECRET_KEY = 'testkpl'
+        self.SECRET_KEY = 'null'
         self.BASE_URL = 'http://192.168.53.1:5432'
         
         # .env dosyasını oluştur
