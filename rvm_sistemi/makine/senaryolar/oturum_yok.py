@@ -18,6 +18,10 @@ def olayi_isle(olay):
     if olay.strip().lower() == "oturum_yok":
         sensor_ref.led_kapat()
         sensor_ref.makine_oturum_yok()
+        sensor_ref.bypass_modu_ac()
+        sensor_ref.bypass_modu_ac()
+        time.sleep(1)
+        sensor_ref.guvenlik_role_reset()
         
     #elif olay.strip().lower() == "gsi":
       #  if motor_ref:

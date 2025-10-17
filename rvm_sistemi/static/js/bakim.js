@@ -1694,7 +1694,7 @@ function startSdsUpdates() {
         } catch (error) {
             console.error('SDS sensör sorgulama hatası:', error);
         }
-    }, 500); // 0.5 saniye
+    }, 3000); // 0.5 saniye
     
     console.log('SDS sensör güncellemeleri başlatıldı (1s aralık)');
 }
@@ -1714,7 +1714,7 @@ function startDolulukUpdates() {
         } catch (error) {
             console.error('Doluluk oranı sorgulama hatası:', error);
         }
-    }, 10000); // 1 saniye
+    }, 5000); // 1 saniye
     
     console.log('Doluluk oranı güncellemeleri başlatıldı (5s aralık)');
 }
@@ -1739,33 +1739,57 @@ function updateDolulukDataFromWebSocket(data) {
     console.log('Doluluk verisi güncellendi:', data);
     
     // Plastik hazne doluluk
-    const plastikEl = document.getElementById('plastik-doluluk');
-    const plastikFill = document.getElementById('plastic-fill');
-    if (plastikEl) {
-        plastikEl.textContent = `${data.plastik}%`;
-    }
-    if (plastikFill) {
-        plastikFill.style.height = `${data.plastik}%`;
-    }
+    updateSingleDolulukBar('plastik-doluluk', 'plastic-fill', data.plastik, '#3b82f6');
     
-    // Metal hazne doluluk
-    const metalEl = document.getElementById('metal-doluluk');
-    const metalFill = document.getElementById('metal-fill');
-    if (metalEl) {
-        metalEl.textContent = `${data.metal}%`;
-    }
-    if (metalFill) {
-        metalFill.style.height = `${data.metal}%`;
-    }
+    // Metal hazne doluluk  
+    updateSingleDolulukBar('metal-doluluk', 'metal-fill', data.metal, '#9ca3af');
     
     // Cam hazne doluluk
-    const camEl = document.getElementById('cam-doluluk');
-    const camFill = document.getElementById('glass-fill');
-    if (camEl) {
-        camEl.textContent = `${data.cam}%`;
+    updateSingleDolulukBar('cam-doluluk', 'glass-fill', data.cam, '#10b981');
+}
+
+function updateSingleDolulukBar(textId, fillId, percentage, defaultColor) {
+    const textEl = document.getElementById(textId);
+    const fillEl = document.getElementById(fillId);
+    
+    if (textEl) {
+        textEl.textContent = `${percentage}%`;
     }
-    if (camFill) {
-        camFill.style.height = `${data.cam}%`;
+    
+    if (fillEl) {
+        // Mevcut height değerini computed style'dan al
+        const computedStyle = window.getComputedStyle(fillEl);
+        const currentHeight = computedStyle.height;
+        const currentHeightValue = parseFloat(currentHeight) || 0;
+        
+        // Container'ın yüksekliğini al
+        const containerHeight = fillEl.parentElement.offsetHeight;
+        const currentPercentage = (currentHeightValue / containerHeight) * 100;
+        
+        // Eğer değer aynıysa güncelleme yapma (tolerance: 1%)
+        if (Math.abs(currentPercentage - percentage) < 1) {
+            return;
+        }
+        
+        // Transition'ı kapat
+        fillEl.style.transition = 'none';
+        
+        // Değeri ayarla
+        fillEl.style.height = `${percentage}%`;
+        
+        // Doluluk seviyesine göre renk değiştir
+        if (percentage >= 80) {
+            fillEl.style.backgroundColor = '#ef4444'; // Kırmızı - Dolu
+        } else if (percentage >= 50) {
+            fillEl.style.backgroundColor = '#f59e0b'; // Sarı - Orta
+        } else {
+            fillEl.style.backgroundColor = defaultColor; // Varsayılan renk
+        }
+        
+        // Kısa bir gecikme sonra transition'ı tekrar aç
+        requestAnimationFrame(() => {
+            fillEl.style.transition = 'height 0.3s ease-out, background-color 0.2s ease-out';
+        });
     }
 }
 
@@ -1819,7 +1843,7 @@ function startStatusUpdates() {
     stopStatusUpdates();
     
     // Ping ile sağlık durumu kontrolü (15 saniyede bir - güvenli aralık)
-    sistemDurumInterval = setInterval(pingKartlar, 1000); // 15 saniyede bir - GÜVENLİ
+    //sistemDurumInterval = setInterval(pingKartlar, 1000); // 15 saniyede bir - GÜVENLİ
 }
 
 // Durum güncellemelerini durdur
@@ -2028,11 +2052,12 @@ function startPeriodicUpdates() {
     // Ağır periyodik güncellemeleri başlat
     sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
     genelDurumInterval = setInterval(updateGeneralStatus, 5000); // 5 saniyede bir
+
     
-    // Hazne doluluk güncelleme
+    // Hazne doluluk güncelleme (5 saniyede bir - WebSocket zaten var)
     setInterval(async () => {
         await loadHazneDoluluk();
-    }, 10000);
+    }, 5000);
 }
 
 // Periyodik güncellemeleri durdur (ağır işlemler)
@@ -2286,18 +2311,7 @@ function setupAcMotor(prefix) {
     updateMotorDisplay(false);
 }
 
-// Hazne doluluk güncelleme
-async function updateFillLevel(material, percentage) {
-    const fillElement = document.getElementById(`${material}-fill`);
-    const textElement = document.getElementById(`${material}-text`);
-    
-    if (fillElement) {
-        fillElement.style.height = `${percentage}%`;
-    }
-    if (textElement) {
-        textElement.innerText = `${percentage}% Dolu`;
-    }
-}
+// Hazne doluluk güncelleme - KALDIRILDI: updateSingleDolulukBar kullanılıyor
 
 // Hazne doluluk verilerini API'den al
 async function loadHazneDoluluk() {
@@ -2311,9 +2325,8 @@ async function loadHazneDoluluk() {
         
         const data = await response.json();
         if (data.status === 'success') {
-            updateFillLevel('plastic', data.data.plastik);
-            updateFillLevel('metal', data.data.metal);
-            updateFillLevel('glass', data.data.cam);
+            // WebSocket fonksiyonunu kullan ki aynı mantık olsun
+            updateDolulukDataFromWebSocket(data.data);
         } else {
             console.error('Hazne doluluk verisi alınamadı:', data.message);
         }
