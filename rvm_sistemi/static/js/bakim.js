@@ -12,6 +12,49 @@ let cardConnectionTimeouts = {};
 let websocket = null;
 let isCalibrating = false;
 
+// ⏰ ZAMAN AYARLARI SABİTLERİ
+const TIMING_CONFIG = {
+    // Kuyruk işleme gecikmeleri (ms)
+    QUEUE_DELAYS: {
+        SENSOR: 800,      // Sensör kuyruğu gecikmesi
+        MOTOR: 600,       // Motor kuyruğu gecikmesi
+        SYSTEM: 400       // Sistem kuyruğu gecikmesi
+    },
+    
+    // Gömülü sisteme komut gönderme aralıkları (ms)
+    EMBEDDED_COMMANDS: {
+        SDS_SENSOR_INTERVAL: 302200,        // SDS sensör sorgulama (3 saniye)
+        DOLULUK_INTERVAL: 322000,           // Doluluk oranı sorgulama (5 saniye)
+        PING_INTERVAL: 3000,              // Ping işlemi (3 saniye)
+        WEIGHT_MEASUREMENT_INTERVAL: 500, // Ağırlık ölçümü (500ms)
+        SENSOR_UPDATE_INTERVAL: 102020,     // Sensör değer güncelleme (1 saniye)
+        GENERAL_STATUS_INTERVAL: 5000     // Genel durum güncelleme (5 saniye)
+    },
+    
+    // API timeout süreleri (ms)
+    API_TIMEOUTS: {
+        PING_TIMEOUT: 3000,               // Ping timeout (3 saniye)
+        DEFAULT_TIMEOUT: 10000,           // Varsayılan API timeout (10 saniye)
+        QUICK_TIMEOUT: 5000               // Hızlı işlemler için timeout (5 saniye)
+    },
+    
+    // UI güncelleme aralıkları (ms)
+    UI_UPDATES: {
+        FILL_LEVEL_TRANSITION: 300,       // Doluluk bar geçiş süresi (300ms)
+        COLOR_TRANSITION: 200,            // Renk geçiş süresi (200ms)
+        ANIMATION_DURATION: 2000,         // Genel animasyon süresi (2 saniye)
+        MESSAGE_DISPLAY_TIME: 3000        // Mesaj gösterim süresi (3 saniye)
+    },
+    
+    // Retry ve güvenlik ayarları
+    SAFETY: {
+        MAX_RETRIES: 3,                   // Maksimum deneme sayısı
+        RETRY_DELAY: 1000,                // Retry gecikmesi (1 saniye)
+        TARE_WAIT_TIME: 3000,             // Tare bekleme süresi (3 saniye)
+        CALIBRATION_TIMEOUT: 10000        // Kalibrasyon timeout (10 saniye)
+    }
+};
+
 // Yeni temiz kuyruk sistemi
 let sensorQueue = [];
 let motorQueue = [];
@@ -24,8 +67,10 @@ class CardQueueManager {
         this.cardType = cardType;
         this.queue = [];
         this.isProcessing = false;
-        this.delay = cardType === 'sensor' ? 800 : cardType === 'motor' ? 600 : 400; // ms - daha güvenli
-        this.maxRetries = 3;
+        this.delay = cardType === 'sensor' ? TIMING_CONFIG.QUEUE_DELAYS.SENSOR : 
+                    cardType === 'motor' ? TIMING_CONFIG.QUEUE_DELAYS.MOTOR : 
+                    TIMING_CONFIG.QUEUE_DELAYS.SYSTEM;
+        this.maxRetries = TIMING_CONFIG.SAFETY.MAX_RETRIES;
     }
     
     async addOperation(operation, priority = false) {
@@ -70,7 +115,7 @@ class CardQueueManager {
                     operationData.retries++;
                     console.log(`🔄 ${this.cardType.toUpperCase()} işlemi tekrar deneniyor (${operationData.retries}/${this.maxRetries})`);
                     this.queue.unshift(operationData);
-                    await this.sleep(1000); // Retry için bekle
+                    await this.sleep(TIMING_CONFIG.SAFETY.RETRY_DELAY); // Retry için bekle
                 } else {
                     console.error(`💥 ${this.cardType.toUpperCase()} işlemi başarısız, atlanıyor`);
                 }
@@ -151,6 +196,8 @@ async function bakimModuToggle() {
                 btn.textContent = '⚙ Bakım Modu: Aktif';
                 btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                 showMessage('✓ ' + data.message);
+                // Bakım modu aktifken motorları iptal et (güvenlik için)
+                motorlariIptalEt();
                 // Bakım modu aktifken periyodik güncellemeleri başlat
                 startPeriodicUpdates();
             } else {
@@ -650,7 +697,7 @@ function setupSensorControls() {
                     measureBtn.textContent = 'Durdur';
                     measureBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
                     measureBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-                    if (loadcellMessage) loadcellMessage.innerText = 'Sürekli ölçüm aktif (500ms)';
+                    if (loadcellMessage) loadcellMessage.innerText = `Sürekli ölçüm aktif (${TIMING_CONFIG.EMBEDDED_COMMANDS.WEIGHT_MEASUREMENT_INTERVAL}ms)`;
                     showMessage('✓ Sürekli ağırlık ölçümü başlatıldı', true);
                 } else {
                     if (loadcellMessage) loadcellMessage.innerText = 'Ölçüm hatası';
@@ -676,11 +723,11 @@ function setupSensorControls() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                console.log('Ağırlık ölçüm komutu gönderildi (500ms)');
+                console.log(`Ağırlık ölçüm komutu gönderildi (${TIMING_CONFIG.EMBEDDED_COMMANDS.WEIGHT_MEASUREMENT_INTERVAL}ms)`);
             } catch (error) {
                 console.error('Ağırlık ölçüm hatası:', error);
             }
-        }, 500); // 500ms aralıklarla
+        }, TIMING_CONFIG.EMBEDDED_COMMANDS.WEIGHT_MEASUREMENT_INTERVAL); // Ağırlık ölçümü aralığı
     }
 
     // Sürekli ağırlık ölçümü durdur
@@ -741,8 +788,8 @@ function setupSensorControls() {
             if (loadcellMessage) loadcellMessage.innerText = 'Konveyörü boşaltın...';
             
             try {
-                // 3 saniye bekle
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                // Tare bekleme süresi
+                await new Promise(resolve => setTimeout(resolve, TIMING_CONFIG.SAFETY.TARE_WAIT_TIME));
                 
                 if (loadcellMessage) loadcellMessage.innerText = 'Tare alınıyor...';
                 if (loadcellVisual) loadcellVisual.classList.add('measuring');
@@ -1494,9 +1541,70 @@ function handleWebSocketMessage(data) {
             console.log('Alarm güncelleme alındı:', data.data);
             updateAlarmDisplayFromWebSocket(data.data);
             break;
+        case 'sensor_message':
+            console.log('Sensör mesajı alındı:', data.message);
+            handleSensorMessage(data.message);
+            break;
         // measurement_status case kaldırıldı
         default:
             console.log('Bilinmeyen WebSocket mesaj tipi:', data.type);
+    }
+}
+
+// Sensör mesajlarını işle
+function handleSensorMessage(message) {
+    console.log('Sensör mesajı işleniyor:', message);
+    
+    switch (message) {
+        case 'g/msup':
+            // Üst kapak açık
+            updateLidStatus('top-sensor', false);
+            showMessage('🔓 Üst kapak açık', true);
+            break;
+        case 'g/msua':
+            // Üst kapak kapalı
+            updateLidStatus('top-sensor', true);
+            showMessage('🔒 Üst kapak kapalı', true);
+            break;
+        case 'g/msap':
+            // Alt kapak açık
+            updateLidStatus('bottom-sensor', false);
+            showMessage('🔓 Alt kapak açık', true);
+            break;
+        case 'g/msaa':
+            // Alt kapak kapalı
+            updateLidStatus('bottom-sensor', true);
+            showMessage('🔒 Alt kapak kapalı', true);
+            break;
+        default:
+            console.log('Bilinmeyen sensör mesajı:', message);
+    }
+}
+
+// Kapak durumunu güncelle
+function updateLidStatus(sensorPrefix, isClosed) {
+    const visual = document.getElementById(`${sensorPrefix}-visual`);
+    const statusLed = document.getElementById(`${sensorPrefix}-status-led`);
+    const statusText = document.getElementById(`${sensorPrefix}-status-text`);
+    
+    if (!visual || !statusLed || !statusText) return;
+    
+    if (isClosed) {
+        // Kapak kapalı - sensör aktif
+        visual.classList.remove('inactive');
+        statusLed.classList.remove('bg-red-500');
+        statusLed.classList.add('bg-green-500');
+        statusText.textContent = 'Aktif (Kapak Kapalı)';
+        statusText.classList.remove('text-red-400');
+        statusText.classList.add('text-green-400');
+    } else {
+        // Kapak açık - sensör pasif
+        visual.classList.add('inactive');
+        statusLed.classList.remove('bg-green-500');
+        statusLed.classList.add('bg-red-500');
+        statusText.textContent = 'Pasif (Kapak Açık)';
+        statusText.classList.remove('text-green-400');
+        statusText.classList.add('text-red-400');
     }
 }
 
@@ -1690,13 +1798,13 @@ function startSdsUpdates() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            console.log('SDS sensör sorgulama komutu gönderildi (1s)');
+            console.log(`SDS sensör sorgulama komutu gönderildi (${TIMING_CONFIG.EMBEDDED_COMMANDS.SDS_SENSOR_INTERVAL}ms)`);
         } catch (error) {
             console.error('SDS sensör sorgulama hatası:', error);
         }
-    }, 3000); // 0.5 saniye
+    }, TIMING_CONFIG.EMBEDDED_COMMANDS.SDS_SENSOR_INTERVAL); // SDS sensör sorgulama aralığı
     
-    console.log('SDS sensör güncellemeleri başlatıldı (1s aralık)');
+    console.log(`SDS sensör güncellemeleri başlatıldı (${TIMING_CONFIG.EMBEDDED_COMMANDS.SDS_SENSOR_INTERVAL}ms aralık)`);
 }
 
 function startDolulukUpdates() {
@@ -1710,13 +1818,13 @@ function startDolulukUpdates() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            console.log('Doluluk oranı sorgulama komutu gönderildi (5s)');
+            console.log(`Doluluk oranı sorgulama komutu gönderildi (${TIMING_CONFIG.EMBEDDED_COMMANDS.DOLULUK_INTERVAL}ms)`);
         } catch (error) {
             console.error('Doluluk oranı sorgulama hatası:', error);
         }
-    }, 5000); // 1 saniye
+    }, TIMING_CONFIG.EMBEDDED_COMMANDS.DOLULUK_INTERVAL); // Doluluk oranı sorgulama aralığı
     
-    console.log('Doluluk oranı güncellemeleri başlatıldı (5s aralık)');
+    console.log(`Doluluk oranı güncellemeleri başlatıldı (${TIMING_CONFIG.EMBEDDED_COMMANDS.DOLULUK_INTERVAL}ms aralık)`);
 }
 
 function stopSdsUpdates() {
@@ -1788,7 +1896,7 @@ function updateSingleDolulukBar(textId, fillId, percentage, defaultColor) {
         
         // Kısa bir gecikme sonra transition'ı tekrar aç
         requestAnimationFrame(() => {
-            fillEl.style.transition = 'height 0.3s ease-out, background-color 0.2s ease-out';
+            fillEl.style.transition = `height ${TIMING_CONFIG.UI_UPDATES.FILL_LEVEL_TRANSITION}ms ease-out, background-color ${TIMING_CONFIG.UI_UPDATES.COLOR_TRANSITION}ms ease-out`;
         });
     }
 }
@@ -1910,7 +2018,7 @@ async function pingSingleCard(cardType) {
     const controller = new AbortController();
     const timeout = setTimeout(() => {
         controller.abort();
-    }, 3000); // 3 saniye timeout - daha uzun
+    }, TIMING_CONFIG.API_TIMEOUTS.PING_TIMEOUT); // Ping timeout
     
     try {
         const response = await fetch(`${API_BASE}/${cardType}/ping`, {
@@ -2050,14 +2158,11 @@ function startPeriodicUpdates() {
     stopPeriodicUpdates();
     
     // Ağır periyodik güncellemeleri başlat
-    sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, 1000);
-    genelDurumInterval = setInterval(updateGeneralStatus, 5000); // 5 saniyede bir
+    sensorDegerInterval = setInterval(sensorDegerleriniGuncelle, TIMING_CONFIG.EMBEDDED_COMMANDS.SENSOR_UPDATE_INTERVAL);
+    genelDurumInterval = setInterval(updateGeneralStatus, TIMING_CONFIG.EMBEDDED_COMMANDS.GENERAL_STATUS_INTERVAL);
 
     
-    // Hazne doluluk güncelleme (5 saniyede bir - WebSocket zaten var)
-    setInterval(async () => {
-        await loadHazneDoluluk();
-    }, 5000);
+    // Hazne doluluk güncelleme - KALDIRILDI: WebSocket'ten geliyor
 }
 
 // Periyodik güncellemeleri durdur (ağır işlemler)
@@ -2313,27 +2418,7 @@ function setupAcMotor(prefix) {
 
 // Hazne doluluk güncelleme - KALDIRILDI: updateSingleDolulukBar kullanılıyor
 
-// Hazne doluluk verilerini API'den al
-async function loadHazneDoluluk() {
-    try {
-        const response = await fetch(`${API_BASE}/hazne/doluluk`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        if (data.status === 'success') {
-            // WebSocket fonksiyonunu kullan ki aynı mantık olsun
-            updateDolulukDataFromWebSocket(data.data);
-        } else {
-            console.error('Hazne doluluk verisi alınamadı:', data.message);
-        }
-    } catch (error) {
-        console.error('Hazne doluluk hatası:', error);
-    }
-}
+// Hazne doluluk verilerini API'den al - KALDIRILDI: WebSocket kullanılıyor
 
 // Kalibrasyon fonksiyonları
 function showCalibrationStatus(message) {
@@ -2342,7 +2427,7 @@ function showCalibrationStatus(message) {
         statusElement.textContent = message;
         setTimeout(() => {
             statusElement.textContent = '';
-        }, 3000);
+        }, TIMING_CONFIG.UI_UPDATES.MESSAGE_DISPLAY_TIME);
     }
 }
 
@@ -2981,12 +3066,6 @@ function setupMagneticSensor(prefix) {
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    // Sensör durumunu geçici olarak değiştir (test için)
-                    if (statusText.textContent.includes('Aktif')) {
-                        setPassive();
-                    } else {
-                        setActive();
-                    }
                     showMessage(data.message);
                 } else {
                     showMessage(data.message, true);
@@ -3080,21 +3159,24 @@ function setupLockControl(prefix, sensorControls) {
 
 function setupSafetyRelay() {
     const resetBtn = document.getElementById('safety-relay-reset-btn');
-    const bypassBtn = document.getElementById('safety-relay-bypass-btn');
+    const bypassAktifBtn = document.getElementById('bypass-aktif-btn');
+    const bypassPasifBtn = document.getElementById('bypass-pasif-btn');
+    const guvenlikKartResetBtn = document.getElementById('guvenlik-kart-reset-btn');
     
     const relayLed = document.getElementById('safety-relay-led');
     const relayText = document.getElementById('safety-relay-text');
     const bypassLed = document.getElementById('bypass-led');
     const bypassText = document.getElementById('bypass-text');
 
-    if (!resetBtn || !bypassBtn || !relayLed || !relayText || !bypassLed || !bypassText) return;
+    if (!resetBtn || !bypassAktifBtn || !bypassPasifBtn || !relayLed || !relayText || !bypassLed || !bypassText) return;
 
     let isBypassActive = false;
 
     resetBtn.addEventListener('click', async () => {
         // Butonları devre dışı bırak
         resetBtn.disabled = true;
-        bypassBtn.disabled = true;
+        bypassAktifBtn.disabled = true;
+        bypassPasifBtn.disabled = true;
 
         // "Resetleniyor" durumuna ayarla
         relayLed.classList.remove('bg-red-500', 'bg-green-500');
@@ -3126,11 +3208,15 @@ function setupSafetyRelay() {
         } finally {
             // Butonları tekrar aktif et
             resetBtn.disabled = false;
-            bypassBtn.disabled = false;
+            bypassAktifBtn.disabled = false;
+            bypassPasifBtn.disabled = false;
         }
     });
 
-    bypassBtn.addEventListener('click', async () => {
+    // Bypass Aktif butonu
+    bypassAktifBtn.addEventListener('click', async () => {
+        if (bypassAktifBtn.disabled) return;
+        
         try {
             const response = await fetch(`${API_BASE}/guvenlik/role-bypass`, {
                 method: 'POST',
@@ -3139,28 +3225,326 @@ function setupSafetyRelay() {
             const data = await response.json();
             
             if (data.status === 'success') {
-                isBypassActive = !isBypassActive;
-                if (isBypassActive) {
-                    bypassLed.classList.remove('bg-green-500');
-                    bypassLed.classList.add('bg-red-500');
-                    bypassText.textContent = 'Kilitler Pasif';
-                    bypassText.classList.remove('text-green-400');
-                    bypassText.classList.add('text-red-400');
-                } else {
-                    bypassLed.classList.remove('bg-red-500');
-                    bypassLed.classList.add('bg-green-500');
-                    bypassText.textContent = 'Kilitler Aktif';
-                    bypassText.classList.remove('text-red-400');
-                    bypassText.classList.add('text-green-400');
-                }
-                showMessage(data.message);
+                isBypassActive = true;
+                updateBypassUI(true);
+                showMessage('✓ Bypass aktif edildi - Kilitler devre dışı', true);
+                // Bypass aktif edildiğinde motorları aktif et
+                motorlariAktifEt();
             } else {
-                showMessage(data.message, true);
+                showMessage('✗ Bypass aktif edilemedi: ' + data.message, true);
             }
         } catch (error) {
-            showMessage(`Röle bypass hatası: ${error.message}`, true);
+            showMessage('✗ Bypass aktif etme hatası: ' + error.message, true);
         }
     });
+
+    // Bypass Pasif butonu
+    bypassPasifBtn.addEventListener('click', async () => {
+        if (bypassPasifBtn.disabled) return;
+        
+        try {
+            const response = await fetch(`${API_BASE}/guvenlik/role-bypass`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                isBypassActive = false;
+                updateBypassUI(false);
+                showMessage('✓ Bypass pasif edildi - Kilitler aktif', true);
+                // Bypass pasif edildiğinde motorları iptal et
+                motorlariIptalEt();
+            } else {
+                showMessage('✗ Bypass pasif edilemedi: ' + data.message, true);
+            }
+        } catch (error) {
+            showMessage('✗ Bypass pasif etme hatası: ' + error.message, true);
+        }
+    });
+
+    // Güvenlik kartı reset butonu
+    if (guvenlikKartResetBtn) {
+        guvenlikKartResetBtn.addEventListener('click', async () => {
+            if (guvenlikKartResetBtn.disabled) return;
+            
+            // Onay iste
+            if (!confirm('Güvenlik kartını resetlemek istediğinizden emin misiniz? Tüm güvenlik ayarları sıfırlanacak.')) {
+                return;
+            }
+            
+            guvenlikKartResetBtn.disabled = true;
+            guvenlikKartResetBtn.textContent = 'Resetting...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/guvenlik/guvenlik-kart-reset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Tüm güvenlik durumlarını sıfırla
+                    resetAllSafetyStates();
+                    showMessage('✓ Güvenlik kartı başarıyla resetlendi', true);
+                } else {
+                    showMessage('✗ Güvenlik kartı reset hatası: ' + data.message, true);
+                }
+            } catch (error) {
+                showMessage('✗ Güvenlik kartı reset hatası: ' + error.message, true);
+            } finally {
+                guvenlikKartResetBtn.disabled = false;
+                guvenlikKartResetBtn.textContent = 'Kartı Resetle';
+            }
+        });
+    }
+    
+    // Başlangıçta bypass durumunu ayarla (varsayılan: pasif)
+    updateBypassUI(false);
+}
+
+// Bypass UI durumunu güncelle
+function updateBypassUI(isActive) {
+    const bypassLed = document.getElementById('bypass-led');
+    const bypassText = document.getElementById('bypass-text');
+    const bypassAktifBtn = document.getElementById('bypass-aktif-btn');
+    const bypassPasifBtn = document.getElementById('bypass-pasif-btn');
+    
+    if (isActive) {
+        // Bypass aktif - kilitler devre dışı
+        if (bypassLed) {
+            bypassLed.classList.remove('bg-green-500');
+            bypassLed.classList.add('bg-red-500');
+        }
+        if (bypassText) {
+            bypassText.textContent = 'Kilitler Pasif';
+            bypassText.classList.remove('text-green-400');
+            bypassText.classList.add('text-red-400');
+        }
+        if (bypassAktifBtn) {
+            bypassAktifBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            bypassAktifBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            bypassAktifBtn.disabled = true;
+        }
+        if (bypassPasifBtn) {
+            bypassPasifBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            bypassPasifBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            bypassPasifBtn.disabled = false;
+        }
+    } else {
+        // Bypass pasif - kilitler aktif
+        if (bypassLed) {
+            bypassLed.classList.remove('bg-red-500');
+            bypassLed.classList.add('bg-green-500');
+        }
+        if (bypassText) {
+            bypassText.textContent = 'Kilitler Aktif';
+            bypassText.classList.remove('text-red-400');
+            bypassText.classList.add('text-green-400');
+        }
+        if (bypassAktifBtn) {
+            bypassAktifBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            bypassAktifBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            bypassAktifBtn.disabled = false;
+        }
+        if (bypassPasifBtn) {
+            bypassPasifBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            bypassPasifBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            bypassPasifBtn.disabled = true;
+        }
+    }
+}
+
+// Motorları iptal et (güvenlik için)
+async function motorlariIptalEt() {
+    try {
+        console.log('Motorlar iptal ediliyor (bakım modu güvenliği)');
+        const response = await fetch(`${API_BASE}/motor/motorlari-iptal`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            console.log('✓ Motorlar başarıyla iptal edildi');
+            showMessage('🔒 Motorlar güvenlik için iptal edildi', true);
+        } else {
+            console.warn('⚠ Motor iptal etme başarısız:', data.message);
+            showMessage('⚠ Motor iptal etme başarısız: ' + data.message, true);
+        }
+    } catch (error) {
+        console.error('✗ Motor iptal etme hatası:', error);
+        showMessage('✗ Motor iptal etme hatası: ' + error.message, true);
+    }
+}
+
+// Motorları aktif et (bypass için)
+async function motorlariAktifEt() {
+    try {
+        console.log('Motorlar aktif ediliyor (bypass)');
+        const response = await fetch(`${API_BASE}/motor/motorlari-aktif`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            console.log('✓ Motorlar başarıyla aktif edildi');
+            showMessage('🔓 Motorlar bypass ile aktif edildi', true);
+        } else {
+            console.warn('⚠ Motor aktif etme başarısız:', data.message);
+            showMessage('⚠ Motor aktif etme başarısız: ' + data.message, true);
+        }
+    } catch (error) {
+        console.error('✗ Motor aktif etme hatası:', error);
+        showMessage('✗ Motor aktif etme hatası: ' + error.message, true);
+    }
+}
+
+// Tüm güvenlik durumlarını sıfırla
+function resetAllSafetyStates() {
+    // Üst kilit durumunu sıfırla
+    const topLockVisual = document.getElementById('top-lock-visual');
+    const topLockStatusLed = document.getElementById('top-lock-status-led');
+    const topLockStatusText = document.getElementById('top-lock-status-text');
+    const topLockTongueLed = document.getElementById('top-lock-tongue-led');
+    const topLockTongueText = document.getElementById('top-lock-tongue-text');
+    
+    if (topLockVisual) topLockVisual.classList.remove('unlocked');
+    if (topLockStatusLed) {
+        topLockStatusLed.classList.remove('bg-green-500');
+        topLockStatusLed.classList.add('bg-red-500');
+    }
+    if (topLockStatusText) {
+        topLockStatusText.textContent = 'Kilit Kapalı';
+        topLockStatusText.classList.remove('text-green-400');
+        topLockStatusText.classList.add('text-red-400');
+    }
+    if (topLockTongueLed) {
+        topLockTongueLed.classList.remove('bg-red-500');
+        topLockTongueLed.classList.add('bg-green-500');
+    }
+    if (topLockTongueText) {
+        topLockTongueText.textContent = 'Dil Var';
+        topLockTongueText.classList.remove('text-red-400');
+        topLockTongueText.classList.add('text-green-400');
+    }
+    
+    // Alt kilit durumunu sıfırla
+    const bottomLockVisual = document.getElementById('bottom-lock-visual');
+    const bottomLockStatusLed = document.getElementById('bottom-lock-status-led');
+    const bottomLockStatusText = document.getElementById('bottom-lock-status-text');
+    const bottomLockTongueLed = document.getElementById('bottom-lock-tongue-led');
+    const bottomLockTongueText = document.getElementById('bottom-lock-tongue-text');
+    
+    if (bottomLockVisual) bottomLockVisual.classList.remove('unlocked');
+    if (bottomLockStatusLed) {
+        bottomLockStatusLed.classList.remove('bg-green-500');
+        bottomLockStatusLed.classList.add('bg-red-500');
+    }
+    if (bottomLockStatusText) {
+        bottomLockStatusText.textContent = 'Kilit Kapalı';
+        bottomLockStatusText.classList.remove('text-green-400');
+        bottomLockStatusText.classList.add('text-red-400');
+    }
+    if (bottomLockTongueLed) {
+        bottomLockTongueLed.classList.remove('bg-red-500');
+        bottomLockTongueLed.classList.add('bg-green-500');
+    }
+    if (bottomLockTongueText) {
+        bottomLockTongueText.textContent = 'Dil Var';
+        bottomLockTongueText.classList.remove('text-red-400');
+        bottomLockTongueText.classList.add('text-green-400');
+    }
+    
+    // Sensör durumlarını sıfırla
+    const topSensorVisual = document.getElementById('top-sensor-visual');
+    const topSensorStatusLed = document.getElementById('top-sensor-status-led');
+    const topSensorStatusText = document.getElementById('top-sensor-status-text');
+    
+    if (topSensorVisual) topSensorVisual.classList.remove('inactive');
+    if (topSensorStatusLed) {
+        topSensorStatusLed.classList.remove('bg-red-500');
+        topSensorStatusLed.classList.add('bg-green-500');
+    }
+    if (topSensorStatusText) {
+        topSensorStatusText.textContent = 'Aktif (Kapak Kapalı)';
+        topSensorStatusText.classList.remove('text-red-400');
+        topSensorStatusText.classList.add('text-green-400');
+    }
+    
+    const bottomSensorVisual = document.getElementById('bottom-sensor-visual');
+    const bottomSensorStatusLed = document.getElementById('bottom-sensor-status-led');
+    const bottomSensorStatusText = document.getElementById('bottom-sensor-status-text');
+    
+    if (bottomSensorVisual) bottomSensorVisual.classList.remove('inactive');
+    if (bottomSensorStatusLed) {
+        bottomSensorStatusLed.classList.remove('bg-red-500');
+        bottomSensorStatusLed.classList.add('bg-green-500');
+    }
+    if (bottomSensorStatusText) {
+        bottomSensorStatusText.textContent = 'Aktif (Kapak Kapalı)';
+        bottomSensorStatusText.classList.remove('text-red-400');
+        bottomSensorStatusText.classList.add('text-green-400');
+    }
+    
+    // Fan durumunu sıfırla
+    const fanSvg = document.getElementById('fan-svg');
+    const fanSpeedSlider = document.getElementById('fan-speed-slider');
+    const fanSpeedInput = document.getElementById('fan-speed-input');
+    
+    if (fanSvg) {
+        fanSvg.classList.remove('fan-active', 'text-blue-400');
+        fanSvg.classList.add('text-gray-500');
+        fanSvg.style.removeProperty('--fan-duration');
+    }
+    if (fanSpeedSlider) fanSpeedSlider.value = 0;
+    if (fanSpeedInput) fanSpeedInput.value = 0;
+    
+    // Güvenlik rölesi durumunu sıfırla
+    const relayLed = document.getElementById('safety-relay-led');
+    const relayText = document.getElementById('safety-relay-text');
+    const bypassLed = document.getElementById('bypass-led');
+    const bypassText = document.getElementById('bypass-text');
+    
+    if (relayLed) {
+        relayLed.classList.remove('bg-red-500', 'bg-yellow-500');
+        relayLed.classList.add('bg-green-500');
+    }
+    if (relayText) {
+        relayText.textContent = 'Röle Aktif';
+        relayText.classList.remove('text-red-400', 'text-yellow-400');
+        relayText.classList.add('text-green-400');
+    }
+    if (bypassLed) {
+        bypassLed.classList.remove('bg-red-500');
+        bypassLed.classList.add('bg-green-500');
+    }
+    if (bypassText) {
+        bypassText.textContent = 'Kilitler Aktif';
+        bypassText.classList.remove('text-red-400');
+        bypassText.classList.add('text-green-400');
+    }
+    
+    // Bypass butonlarını sıfırla
+    const bypassAktifBtn = document.getElementById('bypass-aktif-btn');
+    const bypassPasifBtn = document.getElementById('bypass-pasif-btn');
+    
+    if (bypassAktifBtn) {
+        bypassAktifBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+        bypassAktifBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+        bypassAktifBtn.disabled = false;
+    }
+    if (bypassPasifBtn) {
+        bypassPasifBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        bypassPasifBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        bypassPasifBtn.disabled = true;
+    }
+    
+    // Motorları da iptal et (güvenlik reset)
+    motorlariIptalEt();
+    
+    console.log('Tüm güvenlik durumları sıfırlandı');
 }
 
 // Güvenlik kartı kontrollerini başlat

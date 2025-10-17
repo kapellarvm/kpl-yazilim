@@ -37,17 +37,15 @@ async def hazne_doluluk():
                 }
             }
         
-        # Doluluk oranlarını al
-        #sensor.doluluk_oranı()
+        # Bakım durumundan doluluk verilerini al
+        from ...makine.senaryolar.bakim import bakim_durumu
         
-        # Şimdilik simüle edilmiş değerler döndür
-        # Gerçek implementasyonda sensör kartından alınacak
         return {
             "status": "success",
             "data": {
-                "plastik": 11,  # Gerçek değer sensor kartından alınacak
-                "metal": 4,
-                "cam": 16
+                "plastik": bakim_durumu.doluluk_plastik,
+                "metal": bakim_durumu.doluluk_metal,
+                "cam": bakim_durumu.doluluk_cam
             }
         }
     except Exception as e:
@@ -69,12 +67,12 @@ async def plastik_doluluk():
         if not sensor:
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
-        # Plastik hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        # Bakım durumundan plastik doluluk verisini al
+        from ...makine.senaryolar.bakim import bakim_durumu
         
         return {
             "status": "success",
-            "doluluk": 65  # Gerçek değer sensor kartından alınacak
+            "doluluk": bakim_durumu.doluluk_plastik
         }
     except Exception as e:
         return {"status": "error", "message": f"Plastik hazne hatası: {str(e)}", "doluluk": 0}
@@ -87,12 +85,12 @@ async def metal_doluluk():
         if not sensor:
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
-        # Metal hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        # Bakım durumundan metal doluluk verisini al
+        from ...makine.senaryolar.bakim import bakim_durumu
         
         return {
             "status": "success",
-            "doluluk": 80  # Gerçek değer sensor kartından alınacak
+            "doluluk": bakim_durumu.doluluk_metal
         }
     except Exception as e:
         return {"status": "error", "message": f"Metal hazne hatası: {str(e)}", "doluluk": 0}
@@ -105,12 +103,12 @@ async def cam_doluluk():
         if not sensor:
             return {"status": "error", "message": "Sensör kartı bağlantısı yok", "doluluk": 0}
         
-        # Cam hazne doluluk oranını al
-        sensor.doluluk_oranı()
+        # Bakım durumundan cam doluluk verisini al
+        from ...makine.senaryolar.bakim import bakim_durumu
         
         return {
             "status": "success",
-            "doluluk": 45  # Gerçek değer sensor kartından alınacak
+            "doluluk": bakim_durumu.doluluk_cam
         }
     except Exception as e:
         return {"status": "error", "message": f"Cam hazne hatası: {str(e)}", "doluluk": 0}
