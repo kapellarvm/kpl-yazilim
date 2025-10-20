@@ -102,9 +102,7 @@ class DurumMakinesi:
             print("🔐 [GÜVENLİK] yono moduna geçiliyor...")
             uyari.uyari_kapat() 
             
-            
-
-
+        
 
         if self.durum == "oturum_yok":
             oturum_yok.olayi_isle(olay) 

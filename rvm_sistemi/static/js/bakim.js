@@ -23,11 +23,11 @@ const TIMING_CONFIG = {
     
     // Gömülü sisteme komut gönderme aralıkları (ms)
     EMBEDDED_COMMANDS: {
-        SDS_SENSOR_INTERVAL: 302200,        // SDS sensör sorgulama (3 saniye)
-        DOLULUK_INTERVAL: 322000,           // Doluluk oranı sorgulama (5 saniye)
+        SDS_SENSOR_INTERVAL: 3200,        // SDS sensör sorgulama (3 saniye)
+        DOLULUK_INTERVAL: 3000,           // Doluluk oranı sorgulama (5 saniye)
         PING_INTERVAL: 3000,              // Ping işlemi (3 saniye)
         WEIGHT_MEASUREMENT_INTERVAL: 500, // Ağırlık ölçümü (500ms)
-        SENSOR_UPDATE_INTERVAL: 102020,     // Sensör değer güncelleme (1 saniye)
+        SENSOR_UPDATE_INTERVAL: 1000,     // Sensör değer güncelleme (1 saniye)
         GENERAL_STATUS_INTERVAL: 5000     // Genel durum güncelleme (5 saniye)
     },
     
@@ -1638,13 +1638,21 @@ function updateMotorDisplayFromWebSocket(motorType, data) {
     
     // Ready durumu
     if (readyEl) {
+        const previousReady = readyEl.textContent;
         readyEl.textContent = data.ready || 'HAYIR';
+        
         if (data.ready === 'EVET') {
             readyEl.classList.add('text-green-400');
             readyEl.classList.remove('text-red-400');
         } else {
             readyEl.classList.remove('text-green-400');
             readyEl.classList.add('text-red-400');
+            
+            // Ready durumu "HAYIR" olduğunda motorları durdur
+            if (previousReady === 'EVET' && data.ready === 'HAYIR') {
+                console.warn('⚠️ Modbus ready durumu HAYIR oldu - Motorlar durduruluyor');
+                tumMotorlarDur();
+            }
         }
     }
     
@@ -2228,6 +2236,31 @@ async function diagnosticBaslat() {
         }
     } catch (error) {
         showMessage('Diagnostik hatası: ' + error.message, true);
+    }
+}
+
+// Tüm motorları durdur fonksiyonu
+async function tumMotorlarDur() {
+    try {
+        console.log('🛑 Tüm motorlar durduruluyor (Modbus ready HAYIR)');
+        const response = await fetch(`${API_BASE}/motor/motorlari-iptal`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            console.log('✅ Tüm motorlar başarıyla durduruldu');
+            showMessage('🛑 Modbus ready HAYIR - Tüm motorlar durduruldu', true);
+        } else {
+            console.warn('⚠️ Motor durdurma başarısız:', data.message);
+            showMessage('⚠️ Motor durdurma başarısız: ' + data.message, true);
+        }
+    } catch (error) {
+        console.error('❌ Motor durdurma hatası:', error);
+        showMessage('❌ Motor durdurma hatası: ' + error.message, true);
     }
 }
 

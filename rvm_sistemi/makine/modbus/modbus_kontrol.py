@@ -30,39 +30,26 @@ class MotorKontrol:
         else:
             self.logger = logger
         
-        # Zamanlı çalıştırma için thread'ler ve timer'lar
+        # Zamanlı çalıştırma için thread'ler ve timer'lar - Sadece ezici motor
         self.ezici_timer = None
-        self.kirici_timer = None
         self.ezici_lock = threading.Lock()
-        self.kirici_lock = threading.Lock()
         
-        # Motor ID'leri
+        # Motor ID'si - Sadece ezici motor
         self.EZICI_ID = 1
-        self.KIRICI_ID = 2
         
-        # Sıkışma koruması parametreleri - Motor tipine göre farklı limitler
+        # Sıkışma koruması parametreleri - Sadece ezici motor
         self.EZICI_SIKISMA_AKIM_LIMITI = 5.0   # Amper - Ezici için sıkışma tespit eşiği
-        self.KIRICI_SIKISMA_AKIM_LIMITI = 7.0  # Amper - Kırıcı için sıkışma tespit eşiği
         self.SIKISMA_SURE_LIMITI = 2.0         # Saniye - bu süre boyunca yüksek akım
         self.KURTARMA_DENEY_SAYISI = 3         # Kaç defa kurtarma denemesi
         self.KURTARMA_GERI_SURE = 5.0          # Saniye - geri çalıştırma süresi
         self.KURTARMA_ILERI_SURE = 5.0         # Saniye - ileri çalıştırma süresi
         
-        # Sıkışma izleme thread'leri
+        # Sıkışma izleme thread'i - Sadece ezici motor
         self.ezici_sikisma_thread = None
-        self.kirici_sikisma_thread = None
         self.sikisma_monitoring_active = False
         
-        # Sıkışma durumu tracking
+        # Sıkışma durumu tracking - Sadece ezici motor
         self.ezici_sikisma_durumu = {
-            'aktif': False,
-            'basla_zamani': None,
-            'son_akim': 0.0,
-            'kurtarma_denemesi': 0,
-            'kurtarma_asamasi': None  # None, 'geri', 'ileri'
-        }
-        
-        self.kirici_sikisma_durumu = {
             'aktif': False,
             'basla_zamani': None,
             'son_akim': 0.0,
@@ -109,27 +96,27 @@ class MotorKontrol:
             return
         
         if not self._check_client():
-            # Modbus client yok - sadece log dosyasına yazılır
+            # Modbus client yok - sıkışma izleme başlatılmaz
+            self.logger.warning("⚠️ Modbus client yok - sıkışma izleme başlatılamadı")
+            return
+        
+        # Modbus bağlantısı var mı kontrol et
+        if not self.client.is_connected:
+            self.logger.warning("⚠️ Modbus bağlantısı yok - sıkışma izleme başlatılamadı")
             return
         
         self.sikisma_monitoring_active = True
         
-        # Her iki motor için izleme thread'i başlat
+        # Sadece ezici motor için izleme thread'i başlat
         self.ezici_sikisma_thread = threading.Thread(
             target=self._sikisma_izleme_worker, 
             args=(self.EZICI_ID, "Ezici"),
             daemon=True
         )
-        self.kirici_sikisma_thread = threading.Thread(
-            target=self._sikisma_izleme_worker, 
-            args=(self.KIRICI_ID, "Kırıcı"),
-            daemon=True
-        )
         
         self.ezici_sikisma_thread.start()
-        self.kirici_sikisma_thread.start()
         
-        # Sıkışma koruması başlatıldı - sadece log dosyasına yazılır
+        self.logger.info("🛡️ Sıkışma koruması başlatıldı - Ezici motor")
     
     def stop_sikisma_monitoring(self):
         """Sıkışma izleme sistemini durdur"""
@@ -138,20 +125,22 @@ class MotorKontrol:
         if self.ezici_sikisma_thread and self.ezici_sikisma_thread.is_alive():
             self.ezici_sikisma_thread.join(timeout=2)
         
-        if self.kirici_sikisma_thread and self.kirici_sikisma_thread.is_alive():
-            self.kirici_sikisma_thread.join(timeout=2)
-        
         self.logger.info("🛡️ Sıkışma koruması durduruldu")
     
     def _sikisma_izleme_worker(self, motor_id, motor_adi):
-        """Sıkışma izleme worker thread'i"""
-        sikisma_durumu = self.ezici_sikisma_durumu if motor_id == self.EZICI_ID else self.kirici_sikisma_durumu
+        """Sıkışma izleme worker thread'i - Sadece ezici motor"""
+        sikisma_durumu = self.ezici_sikisma_durumu
         
-        # Motor tipine göre akım limitini belirle
-        akim_limiti = self.EZICI_SIKISMA_AKIM_LIMITI if motor_id == self.EZICI_ID else self.KIRICI_SIKISMA_AKIM_LIMITI
+        # Ezici motor için akım limiti
+        akim_limiti = self.EZICI_SIKISMA_AKIM_LIMITI
         
         while self.sikisma_monitoring_active:
             try:
+                # Modbus bağlantısı kontrol et
+                if not self.client or not self.client.is_connected:
+                    self.logger.warning("⚠️ Modbus bağlantısı yok - sıkışma izleme durduruluyor")
+                    break
+                
                 # Motor durumunu oku
                 status = self.client.status_data.get(motor_id, {})
                 if not status:
@@ -198,8 +187,8 @@ class MotorKontrol:
                 time.sleep(1)
     
     def _sikisma_kurtarma_baslat(self, motor_id, motor_adi):
-        """Sıkışma kurtarma senaryosunu başlat"""
-        sikisma_durumu = self.ezici_sikisma_durumu if motor_id == self.EZICI_ID else self.kirici_sikisma_durumu
+        """Sıkışma kurtarma senaryosunu başlat - Sadece ezici motor"""
+        sikisma_durumu = self.ezici_sikisma_durumu
         
         if sikisma_durumu['kurtarma_denemesi'] >= self.KURTARMA_DENEY_SAYISI:
             self.logger.error(f"❌ {motor_adi}: SIKIŞMA GİDERİLEMEDİ - TEKNİK MÜDAHALE GEREKLİ!")
@@ -220,8 +209,8 @@ class MotorKontrol:
         return True
     
     def _sikisma_kurtarma_worker(self, motor_id, motor_adi):
-        """Sıkışma kurtarma senaryosu worker"""
-        sikisma_durumu = self.ezici_sikisma_durumu if motor_id == self.EZICI_ID else self.kirici_sikisma_durumu
+        """Sıkışma kurtarma senaryosu worker - Sadece ezici motor"""
+        sikisma_durumu = self.ezici_sikisma_durumu
         
         try:
             self.logger.info(f"🔧 {motor_adi}: Kurtarma senaryosu başlıyor...")
@@ -276,28 +265,19 @@ class MotorKontrol:
             sikisma_durumu['kurtarma_asamasi'] = None
     
     def _motor_dur(self, motor_id, motor_adi):
-        """Motor durdur - iç fonksiyon"""
-        if motor_id == self.EZICI_ID:
-            self.ezici_dur()
-        else:
-            self.kirici_dur()
+        """Motor durdur - iç fonksiyon - Sadece ezici motor"""
+        self.ezici_dur()
     
     def _motor_ileri(self, motor_id, motor_adi):
-        """Motor ileri - iç fonksiyon"""
-        if motor_id == self.EZICI_ID:
-            self.ezici_ileri()
-        else:
-            self.kirici_ileri()
+        """Motor ileri - iç fonksiyon - Sadece ezici motor"""
+        self.ezici_ileri()
     
     def _motor_geri(self, motor_id, motor_adi):
-        """Motor geri - iç fonksiyon"""
-        if motor_id == self.EZICI_ID:
-            self.ezici_geri()
-        else:
-            self.kirici_geri()
+        """Motor geri - iç fonksiyon - Sadece ezici motor"""
+        self.ezici_geri()
     
     def get_sikisma_durumu(self):
-        """Sıkışma durumlarını raporla"""
+        """Sıkışma durumlarını raporla - Sadece ezici motor"""
         return {
             'ezici': {
                 'id': self.EZICI_ID,
@@ -306,14 +286,6 @@ class MotorKontrol:
                 'son_akim': self.ezici_sikisma_durumu['son_akim'],
                 'kurtarma_denemesi': self.ezici_sikisma_durumu['kurtarma_denemesi'],
                 'kurtarma_asamasi': self.ezici_sikisma_durumu['kurtarma_asamasi']
-            },
-            'kirici': {
-                'id': self.KIRICI_ID,
-                'akim_limiti': self.KIRICI_SIKISMA_AKIM_LIMITI,
-                'sikisma_aktif': self.kirici_sikisma_durumu['aktif'],
-                'son_akim': self.kirici_sikisma_durumu['son_akim'],
-                'kurtarma_denemesi': self.kirici_sikisma_durumu['kurtarma_denemesi'],
-                'kurtarma_asamasi': self.kirici_sikisma_durumu['kurtarma_asamasi']
             },
             'monitoring_aktif': self.sikisma_monitoring_active
         }
@@ -426,136 +398,23 @@ class MotorKontrol:
         with self.ezici_lock:
             self.ezici_timer = None
     
-    # ===========================================
-    # KIRICI MOTOR KONTROL FONKSİYONLARI
-    # ===========================================
-    
-    def kirici_reset(self):
-        """Kırıcı motoru resetle - Modbus üzerinden"""
-        if not self._check_client():
-            return False
-        
-        self.logger.info("🔄 Kırıcı Reset (Modbus)")
-        return self.client.clear_fault(self.KIRICI_ID)
-    
-    def kirici_ileri(self):
-        """Kırıcı motoru ileri çalıştır - Dijital kontrol"""
-        if not self._check_sensor_kart():
-            return False
-        
-        self.logger.info("▶️ Kırıcı İleri (Dijital)")
-        try:
-            self.sensor_kart.kirici_ileri()
-            return True
-        except Exception as e:
-            self.logger.error(f"❌ Kırıcı ileri hatası: {e}")
-            return False
-    
-    def kirici_geri(self):
-        """Kırıcı motoru geri çalıştır - Dijital kontrol"""
-        if not self._check_sensor_kart():
-            return False
-        
-        self.logger.info("◀️ Kırıcı Geri (Dijital)")
-        try:
-            self.sensor_kart.kirici_geri()
-            return True
-        except Exception as e:
-            self.logger.error(f"❌ Kırıcı geri hatası: {e}")
-            return False
-    
-    def kirici_dur(self):
-        """Kırıcı motoru durdur - Dijital kontrol"""
-        if not self._check_sensor_kart():
-            return False
-        
-        self.logger.info("⏹️ Kırıcı Dur (Dijital)")
-        
-        # Zamanlı çalıştırma varsa iptal et
-        with self.kirici_lock:
-            if self.kirici_timer:
-                self.kirici_timer.cancel()
-                self.kirici_timer = None
-        
-        try:
-            self.sensor_kart.kirici_dur()
-            return True
-        except Exception as e:
-            self.logger.error(f"❌ Kırıcı dur hatası: {e}")
-            return False
-    
-    def kirici_ileri_10sn(self):
-        """Kırıcı motoru 10 saniye ileri çalıştır (yenilenebilir)"""
-        if not self._check_client():
-            return False
-        
-        with self.kirici_lock:
-            # Önceki timer'ı iptal et
-            if self.kirici_timer:
-                self.kirici_timer.cancel()
-                self.logger.info("⏱️ Kırıcı İleri timer yenilendi")
-            
-            # Motoru başlat
-            if self.kirici_ileri():
-                # 10 saniye sonra durdur
-                self.kirici_timer = threading.Timer(10.0, self._kirici_otomatik_dur)
-                self.kirici_timer.start()
-                self.logger.info("⏱️ Kırıcı İleri 10 saniye timer başlatıldı")
-                return True
-            else:
-                return False
-    
-    def kirici_geri_10sn(self):
-        """Kırıcı motoru 10 saniye geri çalıştır (yenilenebilir)"""
-        if not self._check_client():
-            return False
-        
-        with self.kirici_lock:
-            # Önceki timer'ı iptal et
-            if self.kirici_timer:
-                self.kirici_timer.cancel()
-                self.logger.info("⏱️ Kırıcı Geri timer yenilendi")
-            
-            # Motoru başlat
-            if self.kirici_geri():
-                # 10 saniye sonra durdur
-                self.kirici_timer = threading.Timer(10.0, self._kirici_otomatik_dur)
-                self.kirici_timer.start()
-                self.logger.info("⏱️ Kırıcı Geri 10 saniye timer başlatıldı")
-                return True
-            else:
-                return False
-    
-    def _kirici_otomatik_dur(self):
-        """Kırıcı için otomatik durdurma (internal) - Dijital kontrol"""
-        self.logger.info("⏰ Kırıcı 10 saniye timer doldu - otomatik durdurma (Dijital)")
-        if self.sensor_kart:
-            self.sensor_kart.kirici_dur()
-        with self.kirici_lock:
-            self.kirici_timer = None
     
     # ===========================================
     # GENEL KONTROL FONKSİYONLARI
     # ===========================================
     
     def tum_motorlar_dur(self):
-        """Tüm motorları durdur - Dijital kontrol"""
-        self.logger.info("🛑 Tüm Motorlar Dur (Dijital)")
+        """Tüm motorları durdur - Dijital kontrol - Sadece ezici motor"""
+        self.logger.info("🛑 Ezici Motor Dur (Dijital)")
         
-        # Timer'ları iptal et
+        # Timer'ı iptal et
         with self.ezici_lock:
             if self.ezici_timer:
                 self.ezici_timer.cancel()
                 self.ezici_timer = None
         
-        with self.kirici_lock:
-            if self.kirici_timer:
-                self.kirici_timer.cancel()
-                self.kirici_timer = None
-        
-        # Motorları durdur - Dijital kontrol
+        # Ezici motoru durdur - Dijital kontrol
         ezici_result = False
-        kirici_result = False
         
         if self._check_sensor_kart():
             try:
@@ -563,71 +422,86 @@ class MotorKontrol:
                 ezici_result = True
             except Exception as e:
                 self.logger.error(f"❌ Ezici dur hatası: {e}")
-            
-            try:
-                self.sensor_kart.kirici_dur()
-                kirici_result = True
-            except Exception as e:
-                self.logger.error(f"❌ Kırıcı dur hatası: {e}")
         
-        return ezici_result and kirici_result
+        return ezici_result
     
     def tum_motorlar_reset(self):
-        """Tüm motorları resetle - Modbus üzerinden"""
-        self.logger.info("🔄 Tüm Motorlar Reset (Modbus)")
+        """Tüm motorları resetle - Modbus üzerinden - Sadece ezici motor"""
+        self.logger.info("🔄 Ezici Motor Reset (Modbus)")
         
         ezici_result = False
-        kirici_result = False
         
         if self._check_client():
             ezici_result = self.client.clear_fault(self.EZICI_ID)
-            kirici_result = self.client.clear_fault(self.KIRICI_ID)
         
-        return ezici_result and kirici_result
+        return ezici_result
     
     def durum_raporu(self):
-        """Motor durumlarını raporla"""
+        """Motor durumlarını raporla - Sadece ezici motor"""
         if not self._check_client():
             return None
         
         ezici_status = self.client.status_data.get(self.EZICI_ID, {})
-        kirici_status = self.client.status_data.get(self.KIRICI_ID, {})
         
         rapor = {
             'ezici': {
                 'id': self.EZICI_ID,
                 'timer_aktif': self.ezici_timer is not None,
                 'status': ezici_status
-            },
-            'kirici': {
-                'id': self.KIRICI_ID,
-                'timer_aktif': self.kirici_timer is not None,
-                'status': kirici_status
             }
         }
         
         return rapor
     
     def cleanup(self):
-        """Temizlik işlemleri"""
+        """Temizlik işlemleri - Sadece ezici motor"""
         self.logger.info("🧹 Motor kontrol temizlik")
         
         # Sıkışma monitoring'i durdur
         self.stop_sikisma_monitoring()
         
-        # Tüm timer'ları iptal et
+        # Timer'ı iptal et
         with self.ezici_lock:
             if self.ezici_timer:
                 self.ezici_timer.cancel()
                 self.ezici_timer = None
         
-        with self.kirici_lock:
-            if self.kirici_timer:
-                self.kirici_timer.cancel()
-                self.kirici_timer = None
-        
-        # Motorları durdur
+        # Ezici motoru durdur
         self.tum_motorlar_dur()
+    
+    # ===========================================
+    # KIRICI MOTOR FONKSİYONLARI (PRINT-ONLY)
+    # ===========================================
+    
+    def kirici_reset(self):
+        """Kırıcı motoru resetle - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("🔄 Kırıcı Reset - Print only (başka yerde yönetiliyor)")
+        return True
+    
+    def kirici_ileri(self):
+        """Kırıcı motoru ileri çalıştır - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("▶️ Kırıcı İleri - Print only (başka yerde yönetiliyor)")
+        return True
+    
+    def kirici_geri(self):
+        """Kırıcı motoru geri çalıştır - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("◀️ Kırıcı Geri - Print only (başka yerde yönetiliyor)")
+        return True
+    
+    def kirici_dur(self):
+        """Kırıcı motoru durdur - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("⏹️ Kırıcı Dur - Print only (başka yerde yönetiliyor)")
+        return True
+    
+    def kirici_ileri_10sn(self):
+        """Kırıcı motoru 10 saniye ileri çalıştır - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("⏱️ Kırıcı İleri 10sn - Print only (başka yerde yönetiliyor)")
+        return True
+    
+    def kirici_geri_10sn(self):
+        """Kırıcı motoru 10 saniye geri çalıştır - Print only (başka yerde yönetiliyor)"""
+        self.logger.info("⏱️ Kırıcı Geri 10sn - Print only (başka yerde yönetiliyor)")
+        return True
 
 
 # ===========================================
@@ -666,7 +540,7 @@ def ezici_ileri_10sn():
 def ezici_geri_10sn():
     return _motor_kontrol.ezici_geri_10sn() if _motor_kontrol else False
 
-# Kırıcı fonksiyonları
+# Kırıcı fonksiyonları (Print-only)
 def kirici_reset():
     return _motor_kontrol.kirici_reset() if _motor_kontrol else False
 

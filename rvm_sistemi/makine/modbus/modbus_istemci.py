@@ -21,8 +21,15 @@ class GA500ModbusClient:
                  stopbits=1, parity='N', bytesize=8, timeout=1,
                  logger=None, callback=None, cihaz_adi="modbus"):
         
-        # Port otomatik tespit edilecek (ttyS0 önce, sonra ttyS1)
-        self.port_list = ["/dev/ttyS0", "/dev/ttyS1"] if port is None else [port]
+        # Port otomatik tespit edilecek - genişletilmiş port listesi
+        if port is None:
+            self.port_list = [
+                "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
+                "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3",
+                "/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2"
+            ]
+        else:
+            self.port_list = [port]
         self.port = None  # Başarılı port burada saklanacak
         self.baudrate = baudrate
         self.stopbits = stopbits
@@ -47,7 +54,7 @@ class GA500ModbusClient:
         # Thread-based sürekli okuma için
         self.reading_thread = None
         self.stop_reading = False
-        self.status_data = {1: {}, 2: {}}
+        self.status_data = {1: {}}  # Sadece ezici motor (slave 1)
         
         # GA500 registerleri - GUI kodundan
         self.CONTROL_REGISTER = 0x0001  # RUN_REG = 1 
@@ -88,10 +95,9 @@ class GA500ModbusClient:
                         self.is_connected = True
                         # Modbus bağlantısı başarılı - sadece log dosyasına yazılır
                         
-                        # SÜRÜCÜLERE RESET GÖNDER - Sürekli haberleşme için gerekli
+                        # SÜRÜCÜYE RESET GÖNDER - Sürekli haberleşme için gerekli
                         # Reset işlemi - sadece log dosyasına yazılır
-                        self.reset(1)  # Sürücü 1'i resetle
-                        self.reset(2)  # Sürücü 2'yi resetle
+                        self.reset(1)  # Ezici sürücüsünü resetle
                         
                         # Reset tamamlandı - sadece log dosyasına yazılır
                         return True
@@ -114,6 +120,9 @@ class GA500ModbusClient:
         """Bağlantı hatası durumunda yeniden bağlantı dene"""
         try:
             self.logger.warning("🔄 Bağlantı hatası tespit edildi, yeniden bağlanıyor...")
+            
+            # UPS kesintisi tespit edildi - hemen işlemleri başlat
+            self._trigger_ups_power_failure()
             
             # Mevcut bağlantıyı kapat
             if self.client and self.is_connected:
@@ -145,6 +154,27 @@ class GA500ModbusClient:
         except Exception as e:
             self.logger.error(f"❌ Yeniden bağlantı hatası: {e}")
             return False
+    
+    def _trigger_ups_power_failure(self):
+        """UPS kesintisi tespit edildiğinde işlemleri başlat"""
+        try:
+            import asyncio
+            from ...api.servisler.ups_power_handlers import handle_power_failure
+            
+            print(f"\n{'='*60}")
+            print(f"⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!")
+            print(f"🔌 UPS çalışıyor - Acil işlemler başlatılıyor")
+            print(f"{'='*60}")
+            
+            # Asenkron fonksiyonu çalıştır
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(handle_power_failure())
+            loop.close()
+            
+        except Exception as e:
+            print(f"❌ [UPS KESİNTİSİ] İşlem hatası: {e}")
+            self.logger.error(f"UPS kesintisi işleme hatası: {e}")
     
     def disconnect(self):
         """Modbus bağlantısını kapat"""
@@ -363,18 +393,18 @@ class GA500ModbusClient:
         while not self.stop_reading and self.is_connected:
             try:
                 success = True
-                for slave_id in [1, 2]:
-                    if self.stop_reading:
-                        break
-                        
-                    # Status registerlerini oku
-                    status = self.read_status_registers(slave_id)
+                # Sadece ezici motor (slave 1) için okuma
+                slave_id = 1
+                if self.stop_reading:
+                    break
                     
-                    # Eğer boş data dönerse (hata durumu)
-                    if not status:
-                        success = False
-                        break
-                    
+                # Status registerlerini oku
+                status = self.read_status_registers(slave_id)
+                
+                # Eğer boş data dönerse (hata durumu)
+                if not status:
+                    success = False
+                else:
                     # Thread-safe veri güncelleme
                     with self.lock:
                         self.status_data[slave_id] = status

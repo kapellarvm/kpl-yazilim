@@ -95,6 +95,11 @@ class SistemDurumu:
         "paket_uuid_map": {}
     })
     
+    # UPS Durumu
+    ups_kesintisi: bool = False
+    ups_kesinti_zamani: Optional[float] = None
+    gsi_bekleme_durumu: bool = False
+    
     son_islenen_urun: Optional[Dict] = None
     sistem_calisma_durumu: bool = True
 
@@ -636,6 +641,12 @@ def lojik_yoneticisi():
             # GSI - Giriş Sensörü İçeri
             if sistem.gsi_lojik:
                 sistem.gsi_lojik = False
+                
+                # UPS kesintisi sonrası GSI kontrolü
+                from ...api.servisler.ups_power_handlers import check_gsi_after_power_restore
+                if check_gsi_after_power_restore():
+                    continue  # UPS kesintisi sonrası GSI işlendi, döngüye devam et
+                
                 sistem.giris_sensor_durum = True
                 sistem.gsi_gecis_lojik = True
                 
