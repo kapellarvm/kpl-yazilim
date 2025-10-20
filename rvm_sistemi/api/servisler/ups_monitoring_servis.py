@@ -10,6 +10,7 @@ import time
 import threading
 from typing import Optional, Callable
 from ...utils.logger import log_system, log_error, log_warning
+from ...utils.terminal import status, warn, ok
 from ...makine.senaryolar import oturum_var
 from ...api.servisler.dimdb_servis import DimdbServis
 
@@ -85,7 +86,7 @@ class UPSMonitoringServis:
                 if not self.modbus_client or not self.modbus_client.is_connected:
                     # Test modunda - her 3 saniyede bir kesinti simüle et
                     consecutive_timeouts += 1
-                    print(f"⚠️  [UPS İZLEME] Test modu - Timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
+                    warn("UPS İZLEME", f"Test modu - Timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
                     log_warning(f"UPS test modu timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
                     
                     if consecutive_timeouts >= max_consecutive_timeouts:
@@ -94,7 +95,7 @@ class UPSMonitoringServis:
                             if not self.power_failure_detected:
                                 self.power_failure_detected = True
                                 self.ups_connected = False
-                                print(f"⚡ [UPS İZLEME] TEST GÜÇ KESİNTİSİ TESPİT EDİLDİ!")
+                                status("UPS İZLEME", "TEST GÜÇ KESİNTİSİ TESPİT EDİLDİ!", level="err")
                                 log_error("⚡ UPS TEST GÜÇ KESİNTİSİ TESPİT EDİLDİ!")
                                 
                                 if self.power_failure_callback:
@@ -118,7 +119,7 @@ class UPSMonitoringServis:
                             self.ups_connected = True
                             self.power_failure_detected = False
                             self.session_ended_due_to_power_failure = False
-                            print(f"🔌 [UPS İZLEME] Güç geri geldi - UPS normal çalışıyor")
+                            ok("UPS İZLEME", "Güç geri geldi - UPS normal çalışıyor")
                             log_system("🔌 UPS güç geri geldi")
                             
                             if self.power_restored_callback:
@@ -133,7 +134,7 @@ class UPSMonitoringServis:
                 else:
                     # Timestamp alınamadı, timeout
                     consecutive_timeouts += 1
-                    print(f"⚠️  [UPS İZLEME] Timestamp timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
+                    warn("UPS İZLEME", f"Timestamp timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
                     log_warning(f"UPS timestamp timeout ({consecutive_timeouts}/{max_consecutive_timeouts})")
                     
                     if consecutive_timeouts >= max_consecutive_timeouts:
@@ -142,7 +143,7 @@ class UPSMonitoringServis:
                             if not self.power_failure_detected:
                                 self.power_failure_detected = True
                                 self.ups_connected = False
-                                print(f"⚡ [UPS İZLEME] GÜÇ KESİNTİSİ TESPİT EDİLDİ!")
+                                status("UPS İZLEME", "GÜÇ KESİNTİSİ TESPİT EDİLDİ!", level="err")
                                 log_error("⚡ UPS GÜÇ KESİNTİSİ TESPİT EDİLDİ!")
                                 
                                 if self.power_failure_callback:

@@ -14,6 +14,8 @@ except ImportError:
     except ImportError:
         from pymodbus.client import ModbusSerialClient
 
+from ...utils.terminal import section, status, ok, warn, err, step
+
 class GA500ModbusClient:
     """GA500 Modbus RTU Client - GUI kodundaki frekans mantığı ile"""
     
@@ -161,10 +163,7 @@ class GA500ModbusClient:
             import asyncio
             from ...api.servisler.ups_power_handlers import handle_power_failure
             
-            print(f"\n{'='*60}")
-            print(f"⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!")
-            print(f"🔌 UPS çalışıyor - Acil işlemler başlatılıyor")
-            print(f"{'='*60}")
+            section("⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!", "UPS çalışıyor - Acil işlemler başlatılıyor")
             
             # Asenkron fonksiyonu çalıştır
             loop = asyncio.new_event_loop()
@@ -173,7 +172,7 @@ class GA500ModbusClient:
             loop.close()
             
         except Exception as e:
-            print(f"❌ [UPS KESİNTİSİ] İşlem hatası: {e}")
+            err("UPS KESİNTİSİ", f"İşlem hatası: {e}")
             self.logger.error(f"UPS kesintisi işleme hatası: {e}")
     
     def disconnect(self):

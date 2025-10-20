@@ -5,6 +5,7 @@ Oturum başlatma, sonlandırma ve yönetim işlemleri
 
 from ...makine.senaryolar import oturum_var
 from ...utils.logger import log_oturum, log_warning, log_system
+from ...utils.terminal import ok, warn, step
 
 
 class OturumServis:
@@ -20,7 +21,7 @@ class OturumServis:
             "paket_uuid_map": {}
         }
         
-        print(f"✅ [OTURUM] DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
+        ok("OTURUM", f"DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
         log_oturum(f"DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
 
     @staticmethod
@@ -31,11 +32,11 @@ class OturumServis:
         uyari_yoneticisi.uyari_kapat()
         
         if not oturum_var.sistem.aktif_oturum["aktif"]:
-            print("⚠️ [OTURUM] Aktif oturum yok, sonlandırma yapılmadı")
+            warn("OTURUM", "Aktif oturum yok, sonlandırma yapılmadı")
             log_warning("Aktif oturum yok, sonlandırma yapılmadı")
             return
 
-        print(f"🔚 [OTURUM] Oturum sonlandırılıyor: {oturum_var.sistem.aktif_oturum['sessionId']}")
+        step("OTURUM", f"Oturum sonlandırılıyor: {oturum_var.sistem.aktif_oturum['sessionId']}")
         log_oturum(f"Oturum sonlandırılıyor: {oturum_var.sistem.aktif_oturum['sessionId']}")
         
         # Oturumu temizle
@@ -47,5 +48,5 @@ class OturumServis:
         }
         
         oturum_var.sistem.onaylanan_urunler.clear()
-        print(f"🧹 [OTURUM] Yerel oturum temizlendi")
+        ok("OTURUM", "Yerel oturum temizlendi")
         log_system("Yerel oturum temizlendi")

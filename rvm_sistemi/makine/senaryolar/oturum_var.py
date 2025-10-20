@@ -48,6 +48,8 @@ class SistemDurumu:
     iade_etildi: bool = False
     lojik_thread_basladi: bool = False
     konveyor_durum_kontrol: bool = False
+    
+
     yonlendirici_iade: bool = False
     yonlendirici_calisiyor: bool = False
     iade_lojik: bool = False

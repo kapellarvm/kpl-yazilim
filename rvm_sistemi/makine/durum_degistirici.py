@@ -12,12 +12,23 @@ class DurumMakinesi:
         self.durum = "oturum_yok"  # Başlangıç durumu
         self.onceki_durum = None  # Önceki durumu takip et
         self.bakim_url = "http://192.168.53.2:4321/bakim"  # Varsayılan bakım URL'i
+        self._current_state = None
         
     def durum_degistir(self, yeni_durum):
         print(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
         log_system(f"Durum değiştiriliyor: {self.durum} -> {yeni_durum}")
         self.onceki_durum = self.durum
         self.durum = yeni_durum
+        
+    def get_current_state(self):
+        """Mevcut durum nesnesini döndür"""
+        if self.durum == "oturum_var":
+            if not self._current_state or not isinstance(self._current_state, oturum_var.OturumVarState):
+                self._current_state = oturum_var.OturumVarState()
+        elif self.durum == "oturum_yok":
+            if not self._current_state or not isinstance(self._current_state, oturum_yok.OturumYokState):
+                self._current_state = oturum_yok.OturumYokState()
+        return self._current_state
         
         
         # Bakım moduna giriliyorsa, otomatik ekran değişimi
