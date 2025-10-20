@@ -266,12 +266,62 @@ input[type="range"]::-moz-range-thumb {
 .tab-btn.active-tab {
     border-color: #3b82f6; /* blue-500 */
     color: #60a5fa; /* blue-400 */
+    background-color: rgba(59, 130, 246, 0.1);
 }
 .tab-btn.inactive-tab {
     border-color: transparent;
     color: #9ca3af; /* gray-400 */
+    transition: all 0.3s ease;
 }
 .tab-btn.inactive-tab:hover {
     border-color: #4b5563; /* gray-600 */
     color: #d1d5db; /* gray-300 */
+    background-color: rgba(75, 85, 99, 0.1);
+}
+
+/* Layout Improvements */
+.tab-content {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card Improvements */
+.sensor-card, .motor-card, .safety-card {
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.sensor-card:hover, .motor-card:hover, .safety-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Grid Improvements */
+@media (max-width: 768px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    .details-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* Footer Sticky */
+footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
 }

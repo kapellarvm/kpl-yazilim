@@ -170,6 +170,7 @@ class SerialConnection:
                 # Permission/busy errors - tekrar denenebilir
                 elif any(keyword in error_str for keyword in ["permission", "denied", "busy", "in use"]):
                     if attempt < max_attempts - 1:
+                        
                         log_warning(f"{port_device} meşgul, {attempt + 1}/{max_attempts} deneme: {error_message}")
                         time.sleep(Constants.RETRY_DELAY)
                         continue

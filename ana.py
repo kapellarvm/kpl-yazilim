@@ -113,21 +113,19 @@ async def main():
         motor_kontrol = init_motor_kontrol(client, sensor)
         print("🔧 Motor kontrol sistemi başlatıldı (Hibrit: Modbus okuma + Dijital sürme)")
         
-        # Sıkışma korumasını başlat
-        motor_kontrol.start_sikisma_monitoring()
-        print("🛡️ Sıkışma koruması başlatıldı (Ezici: 5A, Kırıcı: 7A, 2s süre, 3 deneme)")
-        
         # Sürekli okuma thread'ini başlat
         client.start_continuous_reading()
         
-        # Reset sonrası frekansları ayarla
+        # Reset sonrası frekansları ayarla - Sadece ezici motor (slave 1)
         print("\n🔧 Reset sonrası frekans ayarları:")
-        print("  └─ Sürücü 1: 50 Hz ayarlanıyor...")
+        print("  └─ Ezici Sürücü (Slave 1): 50 Hz ayarlanıyor...")
         client.set_frequency(1, 50.0)
-        print("  └─ Sürücü 2: 50 Hz ayarlanıyor...")
-        client.set_frequency(2, 50.0)
-        print("  ✅ Her iki sürücü de 50 Hz'e ayarlandı")
+        print("  ✅ Ezici sürücü 50 Hz'e ayarlandı")
         time.sleep(2)  # Ayarların oturması için bekle
+        
+        # Sıkışma korumasını başlat (Modbus bağlantısı başarılı olduktan sonra)
+        motor_kontrol.start_sikisma_monitoring()
+        print("🛡️ Sıkışma koruması başlatıldı (Ezici: 5A, 2s süre, 3 deneme)")
         
     else:
         print("❌ GA500 Modbus bağlantı hatası - sadece dijital kontrol modu")
@@ -162,6 +160,14 @@ async def main():
     from rvm_sistemi.api.servisler.heartbeat_servis import heartbeat_servis
     await heartbeat_servis.start_heartbeat()
     
+    # UPS izleme sistemi artık modbus bağlantı hatası ile otomatik çalışıyor
+    if client and client.is_connected:
+        print("🔌 UPS izleme sistemi aktif (Modbus bağlantı hatası ile tespit)")
+        log_system("UPS izleme sistemi aktif (Modbus bağlantı hatası ile tespit)")
+    else:
+        print("⚠️ UPS izleme sistemi pasif (Modbus bağlantısı yok)")
+        log_system("UPS izleme sistemi pasif (Modbus bağlantısı yok)")
+    
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
     '''
@@ -174,6 +180,7 @@ async def main():
 
     # Sunucu kapandığında her şeyi durdur
     await heartbeat_servis.stop_heartbeat()
+    await ups_monitoring_servis.stop_monitoring()
     product_update_task.cancel()
     urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()
@@ -183,8 +190,7 @@ async def main():
     if motor_kontrol:
         motor_kontrol.cleanup()
         if client and client.is_connected:
-            client.stop(1)
-            client.stop(2)
+            client.stop(1)  # Sadece ezici motor (slave 1)
             client.disconnect()
 
 

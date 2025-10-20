@@ -203,7 +203,7 @@ class GoruntuIslemeServisi:
         """YOLO modelini kullanarak görüntüdeki nesneleri tespit eder."""
         try:
             sonuclar = self.model.predict(
-                source=kare, device=self.cihaz, save=False, conf=0.75,
+                source=kare, device=self.cihaz, save=True, conf=0.75,
                 iou=0.5, verbose=False, stream=False
             )
             
