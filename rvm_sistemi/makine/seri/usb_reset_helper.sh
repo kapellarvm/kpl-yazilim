@@ -1,79 +1,88 @@
 #!/bin/bash
-# USB Port Reset Helper Script
-# Kullanım: sudo ./usb_reset_helper.sh /dev/ttyUSB0
 
-PORT=$1
+# USB reset yardımcı script
+# Kullanım: ./usb_reset_helper.sh /dev/ttyUSB0
 
-if [ -z "$PORT" ]; then
-    echo "Kullanım: $0 <port_adi>"
-    echo "Örnek: $0 /dev/ttyUSB0"
+if [ "$#" -ne 1 ]; then
+    echo "Kullanım: $0 /dev/ttyUSBx"
     exit 1
 fi
 
-echo "USB Port Reset: $PORT"
+PORT=$1
 
-# Method 1: Using usbreset if available
-if command -v usbreset &> /dev/null; then
-    echo "Method 1: usbreset kullanılıyor..."
-    usbreset "$PORT"
-    if [ $? -eq 0 ]; then
-        echo "✓ usbreset başarılı"
-        exit 0
+# Port varlığını kontrol et
+if [ ! -e "$PORT" ]; then
+    echo "❌ Port bulunamadı: $PORT"
+    exit 1
+fi
+
+# USB bilgilerini al
+USB_PATH=$(readlink -f "$PORT")
+if [[ ! "$USB_PATH" =~ /sys/devices/pci.* ]]; then
+    echo "❌ USB yolu bulunamadı: $PORT"
+    exit 1
+fi
+
+# USB bus ve device numaralarını al
+BUS_DEVICE=$(echo "$USB_PATH" | grep -o 'usb[0-9]*/[0-9]*/[0-9]*-[0-9]*' | head -n1)
+if [ -z "$BUS_DEVICE" ]; then
+    echo "❌ USB bus/device bilgisi bulunamadı"
+    exit 1
+fi
+
+# Bus ve device numaralarını ayır
+BUS=$(echo "$BUS_DEVICE" | cut -d'/' -f1 | grep -o '[0-9]*')
+DEVICE=$(echo "$BUS_DEVICE" | cut -d'/' -f3 | cut -d'-' -f1)
+
+if [ -z "$BUS" ] || [ -z "$DEVICE" ]; then
+    echo "❌ Bus/Device numaraları alınamadı"
+    exit 1
+fi
+
+# USB device yolunu oluştur
+USB_DEV="/dev/bus/usb/$BUS/$DEVICE"
+
+if [ ! -e "$USB_DEV" ]; then
+    echo "❌ USB device bulunamadı: $USB_DEV"
+    exit 1
+fi
+
+# USB reset programını derle (eğer yoksa)
+if [ ! -e "./usbreset" ]; then
+    echo "🔧 USB reset programı derleniyor..."
+    gcc usb_reset.c -o usbreset
+    if [ $? -ne 0 ]; then
+        echo "❌ Derleme hatası!"
+        exit 1
     fi
 fi
 
-# Method 2: Find USB device path and reset via sysfs
-echo "Method 2: sysfs üzerinden reset..."
+# Reset işlemini gerçekleştir
+echo "🔄 USB reset başlatılıyor: $PORT"
+echo "    └─ USB Device: $USB_DEV"
 
-# Get the USB device path
-USB_PATH=$(readlink -f /sys/class/tty/$(basename $PORT)/device/../..)
-if [ -n "$USB_PATH" ]; then
-    BUSNUM=$(cat $USB_PATH/busnum 2>/dev/null)
-    DEVNUM=$(cat $USB_PATH/devnum 2>/dev/null)
-    
-    if [ -n "$BUSNUM" ] && [ -n "$DEVNUM" ]; then
-        echo "USB Device: Bus $BUSNUM Device $DEVNUM"
-        
-        # Reset using authorize
-        echo "USB cihazı devre dışı bırakılıyor..."
-        echo 0 > $USB_PATH/authorized
-        sleep 1
-        echo "USB cihazı etkinleştiriliyor..."
-        echo 1 > $USB_PATH/authorized
-        sleep 1
-        
-        echo "✓ USB reset tamamlandı"
-        exit 0
-    fi
-fi
+sudo ./usbreset "$USB_DEV"
+RESULT=$?
 
-# Method 3: Driver unbind/bind
-echo "Method 3: Driver unbind/bind..."
-
-DRIVERS=("ftdi_sio" "ch341" "cp210x" "cdc_acm")
-PORT_NAME=$(basename $PORT)
-
-for DRIVER in "${DRIVERS[@]}"; do
-    DRIVER_PATH="/sys/bus/usb-serial/drivers/$DRIVER"
-    if [ -d "$DRIVER_PATH" ]; then
-        echo "Driver bulundu: $DRIVER"
-        
-        # Unbind
-        if [ -e "$DRIVER_PATH/$PORT_NAME" ]; then
-            echo "Unbinding $PORT_NAME from $DRIVER..."
-            echo -n "$PORT_NAME" > "$DRIVER_PATH/unbind"
-            sleep 1
-            
-            # Bind
-            echo "Binding $PORT_NAME to $DRIVER..."
-            echo -n "$PORT_NAME" > "$DRIVER_PATH/bind"
-            sleep 1
-            
-            echo "✓ Driver reset tamamlandı"
-            exit 0
+if [ $RESULT -eq 0 ]; then
+    echo "✅ USB reset başarılı: $PORT"
+    # Portun yeniden oluşmasını bekle
+    sleep 2
+    if [ -e "$PORT" ]; then
+        echo "✅ Port yeniden hazır: $PORT"
+    else
+        echo "⚠️ Port henüz hazır değil, biraz daha bekleyin..."
+        sleep 3
+        if [ -e "$PORT" ]; then
+            echo "✅ Port yeniden hazır: $PORT"
+        else
+            echo "❌ Port oluşturulamadı: $PORT"
+            exit 1
         fi
     fi
-done
+else
+    echo "❌ USB reset başarısız: $PORT"
+    exit 1
+fi
 
-echo "⚠ USB reset başarısız oldu"
-exit 1
+exit 0

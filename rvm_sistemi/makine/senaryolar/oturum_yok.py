@@ -23,6 +23,13 @@ def olayi_isle(olay):
         time.sleep(1)
         sensor_ref.guvenlik_role_reset()
         
+        # Port sağlık servisine oturum durumunu bildir
+        from ..seri.port_saglik_servisi import port_saglik_servisi
+        if port_saglik_servisi:
+            port_saglik_servisi.oturum_durumu_guncelle(False)
+            from ...utils.logger import log_system
+            log_system("Port sağlık servisi devam ediyor - Oturum pasif")
+        
     #elif olay.strip().lower() == "gsi":
       #  if motor_ref:
             

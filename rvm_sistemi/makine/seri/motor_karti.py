@@ -45,6 +45,10 @@ class MotorKart:
         self.cihaz_adi = cihaz_adi
         self.port_yoneticisi = KartHaberlesmeServis()
         
+        # Reset bypass için ping zamanı takibi
+        self._last_ping_time = time.time()  # Başlangıç zamanı
+        self._first_connection = True  # İlk bağlantı takibi
+        
         # Motor parametreleri (MEVCUT DEĞİŞKENLER KORUNDU)
         self.konveyor_hizi = 35
         self.yonlendirici_hizi = 100
@@ -256,6 +260,11 @@ class MotorKart:
         # Mevcut bağlantıyı test et
         self.saglikli = False
         self._safe_queue_put("ping", None)
+        
+        # Ping zamanını hemen kaydet (reset bypass için)
+        self._last_ping_time = time.time()
+        log_system(f"{self.cihaz_adi} ping gönderildi - zaman: {self._last_ping_time:.1f}")
+        
         time.sleep(self.PING_TIMEOUT)
         
         if not self.saglikli:
@@ -263,6 +272,7 @@ class MotorKart:
             # PORT ARAMA YAPMA! Sadece sağlık durumunu false yap
             return False
         
+        log_system(f"{self.cihaz_adi} ping başarılı")
         return True
 
     def getir_saglik_durumu(self):
@@ -487,9 +497,28 @@ class MotorKart:
             self.saglikli = True
         elif message_lower == "resetlendi":
             log_warning(f"{self.cihaz_adi} kart resetlendi")
-            self.saglikli = False
-            time.sleep(2)
-            self._handle_connection_error()
+            
+            # İlk bağlantıda gelen reset mesajını bypass et
+            if self._first_connection:
+                log_system(f"{self.cihaz_adi} - İlk bağlantı reset mesajı, bypass ediliyor")
+                self._first_connection = False
+                self.saglikli = True
+                return
+            
+            # Seçici bypass: Sadece gömülü sistemin otomatik resetini bypass et
+            # Fiziksel bağlantı sorunlarında hala reset yap
+            current_time = time.time()
+            time_since_ping = current_time - self._last_ping_time
+            
+            if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
+                # Gömülü sistem reseti - bypass et
+                log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
+            else:
+                # Ping alınmamışsa, fiziksel bağlantı sorunu
+                log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
+                self.saglikli = False
+                time.sleep(2)
+                self._handle_connection_error()
         elif self.callback:
             try:
                 self.callback(message)

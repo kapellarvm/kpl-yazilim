@@ -880,6 +880,12 @@ def mesaj_isle(mesaj: str):
     
     # Oturum başlatma
     if mesaj == "oturum_var":
+        # Port sağlık servisini durdur
+        from ..seri.port_saglik_servisi import port_saglik_servisi
+        if port_saglik_servisi:
+            port_saglik_servisi.servisi_durdur()
+            log_system("Port sağlık servisi durduruldu - Oturum başlıyor")
+        
         if not sistem.lojik_thread_basladi:
             print(f"\n{'*'*60}")
             print(f"🟢 OTURUM BAŞLATILIYOR")
@@ -982,5 +988,12 @@ def sistem_kapat():
     log_system("Sistem kapatılıyor...")
     sistem.sistem_calisma_durumu = False
     time.sleep(0.1)
+    
+    # Port sağlık servisini başlat
+    from ..seri.port_saglik_servisi import port_saglik_servisi
+    if port_saglik_servisi:
+        port_saglik_servisi.servisi_baslat()
+        log_system("Port sağlık servisi başlatıldı - Oturum kapandı")
+    
     print(f"✅ Sistem güvenli bir şekilde kapatıldı\n")
     log_success("Sistem güvenli bir şekilde kapatıldı")
