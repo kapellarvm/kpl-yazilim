@@ -6,6 +6,7 @@ Oturum başlatma, sonlandırma ve yönetim işlemleri
 from ...makine.senaryolar import oturum_var
 from ...utils.logger import log_oturum, log_warning, log_system
 from ...utils.terminal import ok, warn, step
+from .uyku_modu_servisi import uyku_modu_servisi
 
 
 class OturumServis:
@@ -20,6 +21,9 @@ class OturumServis:
             "userId": user_id,
             "paket_uuid_map": {}
         }
+        
+        # Uyku modu aktivitesini kaydet
+        uyku_modu_servisi.aktivite_kaydet()
         
         ok("OTURUM", f"DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")
         log_oturum(f"DİM-DB oturumu başlatıldı: {session_id}, Kullanıcı: {user_id}")

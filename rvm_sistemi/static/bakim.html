@@ -44,18 +44,21 @@
             <div class="w-full">
                 <!-- Sekme Butonları -->
                 <div class="border-b border-gray-700 bg-gray-800/20 p-4 rounded-t-2xl">
-                    <nav class="-mb-px flex space-x-2 sm:space-x-8" aria-label="Tabs">
-                        <button id="tab-btn-sensors" class="tab-btn active-tab whitespace-nowrap py-3 px-2 sm:py-4 sm:px-1 border-b-2 font-medium text-base sm:text-lg">
-                            Sensör Kartı
+                    <nav class="-mb-px flex flex-wrap justify-center gap-2 sm:gap-4 lg:gap-8" aria-label="Tabs">
+                        <button id="tab-btn-sensors" class="tab-btn active-tab whitespace-nowrap py-3 px-4 sm:py-4 sm:px-6 border-b-2 font-medium text-sm sm:text-base lg:text-lg">
+                            📊 Sensör Kartı
                         </button>
-                        <button id="tab-btn-motors" class="tab-btn inactive-tab whitespace-nowrap py-3 px-2 sm:py-4 sm:px-1 border-b-2 font-medium text-base sm:text-lg">
-                            Motor Kartı
+                        <button id="tab-btn-motors" class="tab-btn inactive-tab whitespace-nowrap py-3 px-4 sm:py-4 sm:px-6 border-b-2 font-medium text-sm sm:text-base lg:text-lg">
+                            ⚙️ Motor Kartı
                         </button>
-                        <button id="tab-btn-safety" class="tab-btn inactive-tab whitespace-nowrap py-3 px-2 sm:py-4 sm:px-1 border-b-2 font-medium text-base sm:text-lg">
-                            Güvenlik Kartı
+                        <button id="tab-btn-safety" class="tab-btn inactive-tab whitespace-nowrap py-3 px-4 sm:py-4 sm:px-6 border-b-2 font-medium text-sm sm:text-base lg:text-lg">
+                            🛡️ Güvenlik Kartı
+                        </button>
+                        <button id="tab-btn-tolerans" class="tab-btn inactive-tab whitespace-nowrap py-3 px-4 sm:py-4 sm:px-6 border-b-2 font-medium text-sm sm:text-base lg:text-lg">
+                            ⚖️ Tolerans Ayarları
                         </button>
                     </nav>
-        </div>
+                </div>
 
                 <!-- Sekme İçerikleri -->
                 <div class="mt-6 flex-1">
@@ -596,9 +599,6 @@
                                         <div id="top-sensor-status-led" class="w-3 h-3 rounded-full bg-green-500"></div>
                                         <span id="top-sensor-status-text" class="font-semibold text-green-400">Aktif (Kapak Kapalı)</span>
                                     </div>
-                                    <div class="flex mt-auto">
-                                        <button id="top-sensor-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 p-2 rounded-lg text-sm font-semibold">🔍 Test Et</button>
-                                    </div>
                                     <ul class="mt-auto space-y-1 text-xs text-gray-300">
                                         <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="top-sensor-bus-voltage">-- V</span></li>
                                         <li class="flex justify-between"><span>Şönt Voltajı:</span> <span class="font-mono" id="top-sensor-shunt-voltage">-- mV</span></li>
@@ -634,9 +634,6 @@
                                     <div class="flex items-center justify-center space-x-2 mb-3">
                                         <div id="bottom-sensor-status-led" class="w-3 h-3 rounded-full bg-green-500"></div>
                                         <span id="bottom-sensor-status-text" class="font-semibold text-green-400">Aktif (Kapak Kapalı)</span>
-                                    </div>
-                                    <div class="flex mt-auto">
-                                        <button id="bottom-sensor-test-btn" class="w-full bg-gray-600 hover:bg-gray-500 p-2 rounded-lg text-sm font-semibold">🔍 Test Et</button>
                                     </div>
                                     <ul class="mt-auto space-y-1 text-xs text-gray-300">
                                         <li class="flex justify-between"><span>Bus Voltajı:</span> <span class="font-mono" id="bottom-sensor-bus-voltage">-- V</span></li>
@@ -715,6 +712,73 @@
                                     </div>
                                     <div class="mt-2">
                                         <button id="guvenlik-kart-reset-btn" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded-lg text-sm font-semibold">🔧 Kartı Resetle</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tolerans Ayarları Sekmesi -->
+                    <div id="tab-content-tolerans" class="tab-content hidden">
+                        <div class="bg-gray-800/50 p-4 sm:p-6 rounded-b-2xl shadow-lg border border-gray-700">
+                            <div class="flex flex-wrap justify-between items-center gap-4 mb-4 border-b border-gray-700 pb-2">
+                                <div class="flex items-center space-x-4">
+                                    <h2 class="text-xl font-semibold">Tolerans Ayarları</h2>
+                                    <div id="tolerans-card-status" class="flex items-center space-x-2"></div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button id="toggle-tolerans-btn" class="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Paneli Daralt/Genişlet"></button>
+                                    <button id="tolerans-kaydet-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Ayarları Kaydet</button>
+                                </div>
+                            </div>
+                            <div id="tolerans-details-grid" class="details-grid mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+                                <!-- Uzunluk Toleransı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Uzunluk Toleransı</h3>
+                                    <div class="flex-grow flex flex-col items-center justify-center my-2">
+                                        <div class="text-2xl mb-2">📏</div>
+                                        <input type="number" id="uzunluk-toleransi" class="w-full px-3 py-2 bg-gray-600/50 border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-center" value="100" min="0" max="500">
+                                        <p class="text-xs text-gray-400 mt-1" id="uzunluk-toleransi-mevcut">Şu anki: 100 mm</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Genişlik Toleransı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Genişlik Toleransı</h3>
+                                    <div class="flex-grow flex flex-col items-center justify-center my-2">
+                                        <div class="text-2xl mb-2">📐</div>
+                                        <input type="number" id="genislik-toleransi" class="w-full px-3 py-2 bg-gray-600/50 border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-center" value="100" min="0" max="500">
+                                        <p class="text-xs text-gray-400 mt-1" id="genislik-toleransi-mevcut">Şu anki: 100 mm</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Metal Ağırlık Toleransı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Metal Ağırlık Toleransı</h3>
+                                    <div class="flex-grow flex flex-col items-center justify-center my-2">
+                                        <div class="text-2xl mb-2">🥫</div>
+                                        <input type="number" id="metal-agirlik-toleransi" class="w-full px-3 py-2 bg-gray-600/50 border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 text-center" value="300" min="0" max="1000">
+                                        <p class="text-xs text-gray-400 mt-1" id="metal-agirlik-toleransi-mevcut">Şu anki: 300 gr</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Plastik Ağırlık Toleransı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Plastik Ağırlık Toleransı</h3>
+                                    <div class="flex-grow flex flex-col items-center justify-center my-2">
+                                        <div class="text-2xl mb-2">🧴</div>
+                                        <input type="number" id="plastik-agirlik-toleransi" class="w-full px-3 py-2 bg-gray-600/50 border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 text-center" value="100" min="0" max="1000">
+                                        <p class="text-xs text-gray-400 mt-1" id="plastik-agirlik-toleransi-mevcut">Şu anki: 100 gr</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cam Ağırlık Toleransı -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex flex-col">
+                                    <h3 class="font-semibold text-md mb-1 text-center">Cam Ağırlık Toleransı</h3>
+                                    <div class="flex-grow flex flex-col items-center justify-center my-2">
+                                        <div class="text-2xl mb-2">🍾</div>
+                                        <input type="number" id="cam-agirlik-toleransi" class="w-full px-3 py-2 bg-gray-600/50 border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 text-center" value="150" min="0" max="1000">
+                                        <p class="text-xs text-gray-400 mt-1" id="cam-agirlik-toleransi-mevcut">Şu anki: 150 gr</p>
                                     </div>
                                 </div>
                             </div>

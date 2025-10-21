@@ -13,6 +13,7 @@ from rvm_sistemi.makine import kart_referanslari
 from rvm_sistemi.zamanli_gorevler import urun_guncelleyici
 from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
 from rvm_sistemi.makine.modbus.modbus_kontrol import init_motor_kontrol
+from rvm_sistemi.api.servisler.uyku_modu_servisi import uyku_modu_servisi
 
 
 motor = None
@@ -160,16 +161,36 @@ async def main():
     from rvm_sistemi.api.servisler.heartbeat_servis import heartbeat_servis
     await heartbeat_servis.start_heartbeat()
     
-    # UPS izleme sistemi artık modbus bağlantı hatası ile otomatik çalışıyor
+    # Voltage Power Monitoring sistemini başlat
+    from rvm_sistemi.api.servisler.voltage_power_monitoring import voltage_power_monitoring_servis
+    from rvm_sistemi.api.servisler.ups_power_handlers import handle_power_failure, handle_power_restored
+    
+    # Modbus client referansını voltage monitoring'e geçir
+    voltage_power_monitoring_servis.set_modbus_client(client)
+    
+    # Callback'leri ayarla
+    voltage_power_monitoring_servis.set_callbacks(
+        power_failure_callback=handle_power_failure,
+        power_restored_callback=handle_power_restored
+    )
+    
+    # Voltage monitoring'i başlat
+    await voltage_power_monitoring_servis.start_monitoring()
+    
     if client and client.is_connected:
-        print("🔌 UPS izleme sistemi aktif (Modbus bağlantı hatası ile tespit)")
-        log_system("UPS izleme sistemi aktif (Modbus bağlantı hatası ile tespit)")
+        print("🔌 Voltage Power Monitoring sistemi aktif (Bus voltage izleme)")
+        log_system("Voltage Power Monitoring sistemi aktif (Bus voltage izleme)")
     else:
-        print("⚠️ UPS izleme sistemi pasif (Modbus bağlantısı yok)")
-        log_system("UPS izleme sistemi pasif (Modbus bağlantısı yok)")
+        print("⚠️ Voltage Power Monitoring sistemi test modunda (Modbus bağlantısı yok)")
+        log_system("Voltage Power Monitoring sistemi test modunda (Modbus bağlantısı yok)")
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
+    
+    # Uyku modu servisini başlat
+    uyku_modu_servisi.sistem_referans_ayarla(oturum_var.sistem)
+    uyku_modu_servisi.uyku_kontrol_baslat()
+    log_system("Uyku modu servisi başlatıldı - 15 dakika sonra otomatik uyku modu")
     '''
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     log_system("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
@@ -180,7 +201,9 @@ async def main():
 
     # Sunucu kapandığında her şeyi durdur
     await heartbeat_servis.stop_heartbeat()
-    await ups_monitoring_servis.stop_monitoring()
+    await voltage_power_monitoring_servis.stop_monitoring()
+    uyku_modu_servisi.uyku_kontrol_durdur()
+    log_system("Tüm servisler durduruldu")
     product_update_task.cancel()
     urun_guncelleyici.durdur()
     sensor.dinlemeyi_durdur()

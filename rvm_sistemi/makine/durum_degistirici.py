@@ -20,17 +20,6 @@ class DurumMakinesi:
         self.onceki_durum = self.durum
         self.durum = yeni_durum
         
-    def get_current_state(self):
-        """Mevcut durum nesnesini döndür"""
-        if self.durum == "oturum_var":
-            if not self._current_state or not isinstance(self._current_state, oturum_var.OturumVarState):
-                self._current_state = oturum_var.OturumVarState()
-        elif self.durum == "oturum_yok":
-            if not self._current_state or not isinstance(self._current_state, oturum_yok.OturumYokState):
-                self._current_state = oturum_yok.OturumYokState()
-        return self._current_state
-        
-        
         # Bakım moduna giriliyorsa, otomatik ekran değişimi
         if yeni_durum == "bakim" and self.onceki_durum != "bakim":
             bakim.bakim_moduna_gir(self.bakim_url)
@@ -54,6 +43,16 @@ class DurumMakinesi:
             uyari.uyari_kapat()
         
         self.olayi_isle(self.durum)
+        
+    def get_current_state(self):
+        """Mevcut durum nesnesini döndür"""
+        if self.durum == "oturum_var":
+            if not self._current_state or not isinstance(self._current_state, oturum_var.OturumVarState):
+                self._current_state = oturum_var.OturumVarState()
+        elif self.durum == "oturum_yok":
+            if not self._current_state or not isinstance(self._current_state, oturum_yok.OturumYokState):
+                self._current_state = oturum_yok.OturumYokState()
+        return self._current_state
 
     def olayi_isle(self, olay):
 

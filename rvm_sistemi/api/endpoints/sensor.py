@@ -17,6 +17,9 @@ router = APIRouter(prefix="/sensor", tags=["Sensör"])
 class LedPwmRequest(BaseModel):
     deger: int
 
+class KomutGonderRequest(BaseModel):
+    komut: str
+
 # Sensör kartı referansı (ana.py'dan alınacak)
 sensor_kart = None
 
@@ -185,6 +188,36 @@ async def doluluk_orani():
             raise HTTPException(status_code=500, detail="Doluluk oranı sorgulama komutu gönderilemedi")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Doluluk oranı sorgulama hatası: {str(e)}")
+
+@router.post("/komut-gonder")
+async def komut_gonder(request: KomutGonderRequest):
+    """Sensör kartına özel komut gönderir (msud, msad vb.)"""
+    try:
+        sensor = get_sensor_kart()
+        if not sensor:
+            raise HTTPException(status_code=500, detail="Sensör kartı bağlantısı yok")
+        
+        komut = request.komut.strip().lower()
+        log_sensor(f"Komut gönderiliyor: {komut}")
+        
+        # Komuta göre ilgili metodu çağır
+        if komut == "msud":
+            sensor.ust_kilit_durum_sorgula()
+            log_success("Üst kapak durum sorgusu gönderildi")
+            return SuccessResponse(message="Üst kapak durum sorgusu gönderildi, sonuç callback ile gelecek")
+        elif komut == "msad":
+            sensor.alt_kilit_durum_sorgula()
+            log_success("Alt kapak durum sorgusu gönderildi")
+            return SuccessResponse(message="Alt kapak durum sorgusu gönderildi, sonuç callback ile gelecek")
+        else:
+            log_warning(f"Bilinmeyen komut: {komut}")
+            raise HTTPException(status_code=400, detail=f"Bilinmeyen komut: {komut}")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log_error(f"Komut gönderme hatası: {e}")
+        raise HTTPException(status_code=500, detail=f"Komut gönderme hatası: {str(e)}")
 
 @router.get("/son-deger")
 async def sensor_son_deger():

@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
-from .endpoints import dimdb, bakim, uyari, motor, sensor, sistem, guvenlik, temizlik
+from .endpoints import dimdb, bakim, uyari, motor, sensor, sistem, guvenlik, temizlik, uyku_modu, tolerans
 from .middleware.log_filter import log_filter_middleware
 
 
@@ -53,6 +53,8 @@ app.include_router(sensor.router, prefix="/api/v1")
 app.include_router(sistem.router, prefix="/api/v1")
 app.include_router(guvenlik.router, prefix="/api/v1")
 app.include_router(temizlik.router, prefix="/api/v1")
+app.include_router(uyku_modu.router)
+app.include_router(tolerans.router, prefix="/api/v1")
 
 # Yeni router'ları ekle
 from .endpoints import ac_motor, hazne, kalibrasyon, test, websocket

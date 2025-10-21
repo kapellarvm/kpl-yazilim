@@ -61,3 +61,7 @@ def wait(context: str, message: str) -> None:
     status(context, message, level="wait")
 
 
+def info(context: str, message: str) -> None:
+    status(context, message, level="info")
+
+

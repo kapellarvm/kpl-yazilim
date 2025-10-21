@@ -163,7 +163,7 @@ def bakim_modundan_cik():
 def mesaj_isle(mesaj):
     """Bakım modunda gelen mesajları işler"""
     mesaj = mesaj.strip().lower()
-    print(f"[Bakım Modu] Mesaj işleniyor: '{mesaj}' (uzunluk: {len(mesaj)})")
+    #print(f"[Bakım Modu] Mesaj işleniyor: '{mesaj}' (uzunluk: {len(mesaj)})")
     
     # Ağırlık verisi
     if mesaj.startswith("a:"):
@@ -461,7 +461,7 @@ def _parse_doluluk_data(mesaj):
     try:
         # Mesajı temizle: "do#c:100.00#p:100.00#m:100.00"
         mesaj = mesaj.strip().upper()
-        print(f"[Bakım Modu] Doluluk verisi parse ediliyor: {mesaj}")
+        #print(f"[Bakım Modu] Doluluk verisi parse ediliyor: {mesaj}")
         
         # Cam doluluk (c:)
         if "#C:" in mesaj:
@@ -472,7 +472,7 @@ def _parse_doluluk_data(mesaj):
             try:
                 cam_value = mesaj[cam_start:cam_end]
                 bakim_durumu.doluluk_cam = int(float(cam_value))
-                print(f"[Bakım Modu] Cam doluluk: {bakim_durumu.doluluk_cam}% (ham: {cam_value})")
+                #print(f"[Bakım Modu] Cam doluluk: {bakim_durumu.doluluk_cam}% (ham: {cam_value})")
             except Exception as e:
                 print(f"[Bakım Modu] Cam parse hatası: {e}")
                 bakim_durumu.doluluk_cam = 0
@@ -488,7 +488,7 @@ def _parse_doluluk_data(mesaj):
             try:
                 plastik_value = mesaj[plastik_start:plastik_end]
                 bakim_durumu.doluluk_plastik = int(float(plastik_value))
-                print(f"[Bakım Modu] Plastik doluluk: {bakim_durumu.doluluk_plastik}% (ham: {plastik_value})")
+                #print(f"[Bakım Modu] Plastik doluluk: {bakim_durumu.doluluk_plastik}% (ham: {plastik_value})")
             except Exception as e:
                 print(f"[Bakım Modu] Plastik parse hatası: {e}")
                 bakim_durumu.doluluk_plastik = 0
@@ -504,14 +504,14 @@ def _parse_doluluk_data(mesaj):
             try:
                 metal_value = mesaj[metal_start:metal_end]
                 bakim_durumu.doluluk_metal = int(float(metal_value))
-                print(f"[Bakım Modu] Metal doluluk: {bakim_durumu.doluluk_metal}% (ham: {metal_value})")
+                #print(f"[Bakım Modu] Metal doluluk: {bakim_durumu.doluluk_metal}% (ham: {metal_value})")
             except Exception as e:
                 print(f"[Bakım Modu] Metal parse hatası: {e}")
                 bakim_durumu.doluluk_metal = 0
         else:
             print(f"[Bakım Modu] Metal verisi bulunamadı")
         
-        print(f"[Bakım Modu] Parse sonucu - Cam: {bakim_durumu.doluluk_cam}%, Plastik: {bakim_durumu.doluluk_plastik}%, Metal: {bakim_durumu.doluluk_metal}%")
+        #print(f"[Bakım Modu] Parse sonucu - Cam: {bakim_durumu.doluluk_cam}%, Plastik: {bakim_durumu.doluluk_plastik}%, Metal: {bakim_durumu.doluluk_metal}%")
         
         # WebSocket'e gönder
         _send_doluluk_data_to_websocket()

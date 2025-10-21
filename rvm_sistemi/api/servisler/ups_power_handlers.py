@@ -14,15 +14,15 @@ from ...api.servisler.dimdb_servis import DimdbServis
 
 
 async def handle_power_failure():
-    """UPS güç kesintisi durumunda yapılacak işlemler"""
-    section("⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!", "UPS çalışıyor - Acil işlemler başlatılıyor")
-    log_error("⚡ UPS GÜÇ KESİNTİSİ - Acil işlemler başlatılıyor")
+    """Voltage tabanlı güç kesintisi durumunda yapılacak işlemler"""
+    section("⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!", "Bus voltage düşük - Acil işlemler başlatılıyor")
+    log_error("⚡ VOLTAGE GÜÇ KESİNTİSİ - Acil işlemler başlatılıyor")
     
     try:
         # 1. Uyarı göster
         try:
             from ...makine.senaryolar.uyari import uyari_goster
-            uyari_goster(mesaj="Makinenin Elektiriği Kesildi !", sure=20)
+            uyari_goster(mesaj="Makinenin Elektiriği Kesildi !", sure=60)
             warn("ELEKTRİK KESİNTİSİ", "Uyarı gösterildi")
         except Exception as e:
             err("ELEKTRİK KESİNTİSİ", f"Uyarı gösterilemedi: {e}")
@@ -124,9 +124,9 @@ async def handle_power_failure():
 
 
 async def handle_power_restored():
-    """UPS güç geri geldiğinde yapılacak işlemler"""
-    section("🔌 ELEKTRİK GERİ GELDİ!", "UPS normal çalışmaya döndü - Sistem normalleştiriliyor")
-    log_system("🔌 UPS GÜÇ GERİ GELDİ - Sistem normalleştiriliyor")
+    """Voltage tabanlı güç geri geldiğinde yapılacak işlemler"""
+    section("🔌 ELEKTRİK GERİ GELDİ!", "Bus voltage normal - Sistem normalleştiriliyor")
+    log_system("🔌 VOLTAGE GÜÇ GERİ GELDİ - Sistem normalleştiriliyor")
     
     try:
         # 1. UPS kesintisi durumunu temizle

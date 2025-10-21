@@ -500,6 +500,26 @@ class GA500ModbusClient:
         
         return modbus_data
     
+    def get_bus_voltage(self, slave_id=1):
+        """Bus voltage değerini döndürür - Voltage monitoring için"""
+        try:
+            if not self.is_connected:
+                return None
+                
+            # Status register'larını oku
+            status_data = self.read_status_registers(slave_id)
+            
+            if status_data and 'dc_bus_voltage' in status_data:
+                voltage_data = status_data['dc_bus_voltage']
+                voltage_value = voltage_data.get('value', None)
+                return voltage_value
+            else:
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"Bus voltage okuma hatası: {e}")
+            return None
+    
     def start_continuous_reading(self):
         """Sürekli okuma thread'ini başlat"""
         if self.reading_thread is not None and self.reading_thread.is_alive():
