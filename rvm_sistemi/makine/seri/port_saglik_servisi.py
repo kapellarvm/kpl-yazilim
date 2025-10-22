@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.makine.seri.system_state_manager import system_state, SystemState, CardState
 from rvm_sistemi.utils.logger import (
     log_system, log_error, log_success, log_warning
 )
@@ -123,6 +124,12 @@ class PortSaglikServisi:
                     time.sleep(1)
                     continue
                 
+                # System state kontrolü - reconnection sırasında ping atma
+                from .system_state_manager import system_state
+                if system_state.is_system_busy():
+                    time.sleep(1)
+                    continue
+                
                 # Kartları kontrol et
                 self._kartlari_kontrol_et()
                 
@@ -197,35 +204,103 @@ class PortSaglikServisi:
         # Kritik durum varsa müdahale et
         if kritik_kartlar:
             self._kartlari_resetle(kritik_kartlar)
+        
+        # EK: Motor kartı yazma hatası kontrolü
+        if hasattr(self, 'motor_karti') and self.motor_karti:
+            # Motor kartı yazma hatası varsa ve sistem meşgul değilse reset yap
+            if (hasattr(self.motor_karti, 'port_adi') and 
+                self.motor_karti.port_adi and 
+                not self.motor_karti.saglikli and
+                not system_state.is_system_busy()):
+                
+                print(f"🔧 [PORT-SAĞLIK] Motor kartı yazma hatası tespit edildi - reset yapılıyor")
+                log_system("Motor kartı yazma hatası tespit edildi - reset yapılıyor")
+                self._kartlari_resetle(["motor"])
+        
+        # EK: Motor kartı için özel kontrol - port bulunmuş ama bağlantı kurulamıyorsa
+        if hasattr(self, 'motor_karti') and self.motor_karti:
+            # Motor kartı port bulunmuş ama bağlantı kurulamıyorsa
+            if (hasattr(self.motor_karti, 'port_adi') and 
+                self.motor_karti.port_adi and 
+                not self.motor_karti.saglikli):
+                
+                # Status test ile motor kartının gerçekten çalışıp çalışmadığını kontrol et
+                print(f"🔧 [PORT-SAĞLIK] Motor kartı port bulunmuş ama bağlantı kurulamıyor - status test yapılıyor")
+                log_system("Motor kartı port bulunmuş ama bağlantı kurulamıyor - status test yapılıyor")
+                
+                if hasattr(self.motor_karti, 'status_test'):
+                    status_ok = self.motor_karti.status_test()
+                    if status_ok:
+                        print(f"✅ [PORT-SAĞLIK] Motor kartı status test başarılı - yeniden başlatma gerekmiyor")
+                        log_system("Motor kartı status test başarılı - yeniden başlatma gerekmiyor")
+                        return
+                    else:
+                        print(f"❌ [PORT-SAĞLIK] Motor kartı status test başarısız - yeniden başlatılıyor")
+                        log_system("Motor kartı status test başarısız - yeniden başlatılıyor")
+                        self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
+                else:
+                    print(f"⚠️  [PORT-SAĞLIK] Motor kartı status test fonksiyonu yok - yeniden başlatılıyor")
+                    log_system("Motor kartı status test fonksiyonu yok - yeniden başlatılıyor")
+                    self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
     
     def _kartlari_resetle(self, kritik_kartlar: list):
         """
-        Kartları resetle
+        Kartları resetle - System State Manager ile
         
         Args:
             kritik_kartlar: Resetlenecek kart listesi
         """
+        # System state manager ile reset kontrolü
+        if not system_state.can_start_reset():
+            # Eğer sistem RECONNECTING durumundaysa ve uzun süredir devam ediyorsa force reset yap
+            current_state = system_state.get_system_state()
+            if current_state.value == "reconnecting":
+                # RECONNECTING durumunda 30 saniyeden fazla devam ediyorsa force reset
+                if system_state.is_reconnection_timeout():
+                    print(f"⚠️  [PORT-SAĞLIK] RECONNECTING timeout - Force reset yapılıyor!")
+                    log_warning("RECONNECTING timeout - Force reset yapılıyor")
+                else:
+                    print(f"❌ [PORT-SAĞLIK] Reset zaten devam ediyor veya çok erken!")
+                    log_warning("Reset zaten devam ediyor veya minimum süre geçmedi")
+                    return
+            else:
+                print(f"❌ [PORT-SAĞLIK] Reset zaten devam ediyor veya çok erken!")
+                log_warning("Reset zaten devam ediyor veya minimum süre geçmedi")
+                return
+        
+        # Reset operasyonu başlat
+        operation_id = system_state.start_reset_operation(
+            cards=set(kritik_kartlar), 
+            initiated_by="port_health_service"
+        )
+        
+        if not operation_id:
+            print(f"❌ [PORT-SAĞLIK] Reset operasyonu başlatılamadı!")
+            log_error("Reset operasyonu başlatılamadı")
+            return
+        
         print(f"\n{'='*60}")
         print(f"🔄 [PORT-SAĞLIK] KRİTİK KARTLAR RESETLENİYOR: {kritik_kartlar}")
+        print(f"🆔 Reset ID: {operation_id}")
         print(f"{'='*60}\n")
-        log_warning(f"Kartlar resetleniyor: {kritik_kartlar}")
+        log_warning(f"Kartlar resetleniyor: {kritik_kartlar} (ID: {operation_id})")
         
-        # Önce tüm portları kapat
-        print("🔌 [PORT-SAĞLIK] Tüm portlar kapatılıyor...")
-        self._tum_portlari_kapat()
-        
-        # Reset sayacını kontrol et
-        for kart_adi in kritik_kartlar:
-            durum = self.kart_durumlari[kart_adi]
-            durum.reset_deneme += 1
-            
-            if durum.reset_deneme > self.MAX_RESET_DENEME:
-                print(f"❌ [PORT-SAĞLIK] {kart_adi.upper()} maksimum reset sayısına ulaştı!")
-                log_error(f"{kart_adi.upper()} kartı maksimum reset sayısına ulaştı!")
-                continue
-        
-        # Agresif USB reset uygula (TÜM USB portları)
         try:
+            # Önce tüm portları kapat
+            print("🔌 [PORT-SAĞLIK] Tüm portlar kapatılıyor...")
+            self._tum_portlari_kapat()
+            
+            # Reset sayacını kontrol et
+            for kart_adi in kritik_kartlar:
+                durum = self.kart_durumlari[kart_adi]
+                durum.reset_deneme += 1
+                
+                if durum.reset_deneme > self.MAX_RESET_DENEME:
+                    print(f"❌ [PORT-SAĞLIK] {kart_adi.upper()} maksimum reset sayısına ulaştı!")
+                    log_error(f"{kart_adi.upper()} kartı maksimum reset sayısına ulaştı!")
+                    continue
+            
+            # Agresif USB reset uygula (TÜM USB portları)
             import os
             import subprocess
             script_path = os.path.join(os.path.dirname(__file__), "usb_reset_all.sh")
@@ -234,44 +309,61 @@ class PortSaglikServisi:
                 print(f"🔧 [PORT-SAĞLIK] Agresif USB reset başlatılıyor...")
                 log_system("Agresif USB reset başlatılıyor...")
                 result = subprocess.run(['sudo', script_path], 
-                                     capture_output=True, text=True, timeout=30)
+                                     capture_output=True, text=True, timeout=60)
                 
                 if result.returncode == 0:
                     print(f"✅ [PORT-SAĞLIK] USB reset başarılı!")
                     log_success("USB reset başarılı")
+                    reset_success = True
                 else:
                     print(f"❌ [PORT-SAĞLIK] USB reset hatası: {result.stderr}")
                     log_error(f"USB reset hatası: {result.stderr}")
+                    reset_success = False
             else:
                 print(f"❌ [PORT-SAĞLIK] USB reset script bulunamadı: {script_path}")
                 log_error(f"USB reset script bulunamadı: {script_path}")
-                
-        except Exception as e:
-            print(f"❌ [PORT-SAĞLIK] USB reset hatası: {e}")
-            log_error(f"USB reset hatası: {e}")
-        
-        # Bekleme süresi
-        print(f"⏳ [PORT-SAĞLIK] {self.RESET_BEKLEME} saniye bekleniyor...")
-        time.sleep(self.RESET_BEKLEME)
-        
-        # Portları yeniden bağla
-        print(f"🔍 [PORT-SAĞLIK] Portlar yeniden aranıyor...")
-        basarili, mesaj, portlar = self.port_yonetici.baglan(
-            try_usb_reset=False,  # Zaten reset yaptık
-            max_retries=1,
-            kritik_kartlar=["motor", "sensor"]
-        )
-        
-        if basarili:
-            print(f"✅ [PORT-SAĞLIK] Portlar başarıyla yeniden bağlandı: {portlar}")
-            log_success(f"Portlar yeniden bağlandı: {portlar}")
-            self._durumlari_sifirla()
+                reset_success = False
             
-            # Kartları yeniden başlat
-            self._kartlari_yeniden_baslat(portlar)
-        else:
-            print(f"❌ [PORT-SAĞLIK] Port yeniden bağlantı hatası: {mesaj}")
-            log_error(f"Port yeniden bağlantı hatası: {mesaj}")
+            # Reset operasyonunu bitir
+            system_state.finish_reset_operation(operation_id, reset_success)
+            
+            if reset_success:
+                # Sistem durumu RECONNECTING oldu, şimdi portları yeniden bağla
+                print(f"⏳ [PORT-SAĞLIK] USB reset sonrası stabilizasyon bekleniyor...")
+                time.sleep(8)  # Embedded sistemlerin tamamen hazır olması için
+                
+                # Portları yeniden bağla
+                print(f"🔍 [PORT-SAĞLIK] Portlar yeniden aranıyor...")
+                basarili, mesaj, portlar = self.port_yonetici.baglan(
+                    try_usb_reset=False,  # Zaten reset yaptık
+                    max_retries=2,  # Daha fazla deneme
+                    kritik_kartlar=["motor", "sensor"]
+                )
+                
+                if basarili:
+                    print(f"✅ [PORT-SAĞLIK] Portlar başarıyla yeniden bağlandı: {portlar}")
+                    log_success(f"Portlar yeniden bağlandı: {portlar}")
+                    self._durumlari_sifirla()
+                    
+                    # Kartları yeniden başlat
+                    self._kartlari_yeniden_baslat(portlar)
+                    
+                    # Sistem durumunu NORMAL'e döndür
+                    system_state.set_system_state(SystemState.NORMAL, "Port sağlık servisi reset tamamlandı")
+                else:
+                    print(f"❌ [PORT-SAĞLIK] Port yeniden bağlantı hatası: {mesaj}")
+                    log_error(f"Port yeniden bağlantı hatası: {mesaj}")
+                    
+                    # Kartları error durumuna al
+                    for card in kritik_kartlar:
+                        system_state.set_card_state(card, CardState.ERROR, "Reset sonrası port bulunamadı")
+            
+        except Exception as e:
+            print(f"❌ [PORT-SAĞLIK] Reset işlemi hatası: {e}")
+            log_error(f"Reset işlemi hatası: {e}")
+            
+            # Reset operasyonunu başarısız olarak bitir
+            system_state.finish_reset_operation(operation_id, False)
         
         print(f"\n{'='*60}\n")
     
@@ -308,6 +400,9 @@ class PortSaglikServisi:
         try:
             print("🔄 [PORT-SAĞLIK] Kartlar yeniden başlatılıyor...")
             
+            # ÖNEMLİ: Kartların otomatik port arama yapmasını engelle
+            # Çünkü bu fonksiyon çağrıldığında portlar ZATENbulunmuş durumda
+            
             # Motor kartı
             if "motor" in portlar:
                 print(f"  🔧 Motor kartı: {portlar['motor']}")
@@ -315,16 +410,45 @@ class PortSaglikServisi:
                 time.sleep(0.5)  # Thread'lerin tamamen durması için bekle
                 self.motor_karti.port_adi = portlar["motor"]
                 self.motor_karti._first_connection = True  # İlk bağlantı flag'ini resetle
+                self.motor_karti._is_reconnecting = False  # Reconnect flag'ini sıfırla
                 
                 # ÖNCE PORTU AÇ
                 if self.motor_karti.portu_ac():
                     print(f"  ✓ Motor port açıldı: {portlar['motor']}")
                     # Sonra thread'leri başlat
                     self.motor_karti.dinlemeyi_baslat()
-                    # Motor parametrelerini gönder
+                    
+                    # Thread'lerin başlamasını bekle
+                    time.sleep(1)  # Thread'lerin başlaması için bekle
+                    
+                    # Thread'lerin düzgün başladığından emin ol
+                    if not self.motor_karti._is_port_ready():
+                        print(f"  ⚠️  Motor thread'leri düzgün başlamamış, yeniden başlatılıyor")
+                        # Thread durumunu kontrol et
+                        self.motor_karti.thread_durumu_kontrol()
+                        self.motor_karti.dinlemeyi_durdur()
+                        time.sleep(0.5)
+                        self.motor_karti.dinlemeyi_baslat()
+                        time.sleep(1)  # Tekrar bekle
+                        # Tekrar kontrol et
+                        self.motor_karti.thread_durumu_kontrol()
+                    
+                    # Reset komutu _try_connect_to_port'ta gönderiliyor
+                    
+                    # Sonra parametreleri gönder
                     time.sleep(0.5)
                     self.motor_karti.parametre_gonder()
-                    print(f"  ✅ Motor kartı başlatıldı")
+                    
+                    # Thread'lerin düzgün başladığından emin ol
+                    time.sleep(0.5)
+                    if not self.motor_karti._is_port_ready():
+                        print(f"  ⚠️  Motor thread'leri düzgün başlamamış, yeniden başlatılıyor")
+                        self.motor_karti.dinlemeyi_durdur()
+                        time.sleep(0.5)
+                        self.motor_karti.dinlemeyi_baslat()
+                        time.sleep(0.5)
+                    
+                    print(f"  ✅ Motor kartı başlatıldı ve resetlendi")
                 else:
                     print(f"  ❌ Motor portu açılamadı!")
             
@@ -335,6 +459,7 @@ class PortSaglikServisi:
                 time.sleep(0.5)  # Thread'lerin tamamen durması için bekle
                 self.sensor_karti.port_adi = portlar["sensor"]
                 self.sensor_karti._first_connection = True  # İlk bağlantı flag'ini resetle
+                self.sensor_karti._is_reconnecting = False  # Reconnect flag'ini sıfırla
                 
                 # ÖNCE PORTU AÇ
                 if self.sensor_karti.portu_ac():
@@ -345,10 +470,11 @@ class PortSaglikServisi:
                 else:
                     print(f"  ❌ Sensor portu açılamadı!")
             
-            # Kartların tamamen hazır olması için bekle
-            print(f"⏳ [PORT-SAĞLIK] Kartların hazır olması için 5 saniye bekleniyor...")
-            time.sleep(5)  # Daha uzun bekleme - kartların resetlendi mesajı göndermesi için
-            print(f"✅ [PORT-SAĞLIK] Kartlar hazır - ping/pong testi başlayabilir!")
+            # Embedded sistemler USB reset script'inde zaten 5 saniye boot bekledi
+            # Sadece kısa bir stabilizasyon beklemesi yeterli
+            print(f"⏳ [PORT-SAĞLIK] Kartların stabilizasyonu için 2 saniye bekleniyor...")
+            time.sleep(2)
+            print(f"✅ [PORT-SAĞLIK] Kartlar hazır - ping/pong testi başlayacak!")
                     
         except Exception as e:
             print(f"❌ [PORT-SAĞLIK] Kart yeniden başlatma hatası: {e}")

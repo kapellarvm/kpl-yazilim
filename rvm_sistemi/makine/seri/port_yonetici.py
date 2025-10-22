@@ -15,6 +15,7 @@ from contextlib import contextmanager
 from serial.tools import list_ports
 
 from rvm_sistemi.utils.logger import log_system, log_error, log_success, log_warning
+from rvm_sistemi.makine.seri.system_state_manager import system_state, SystemState
 import subprocess
 import os
 import glob
@@ -26,7 +27,7 @@ class Constants:
     DEFAULT_BAUDRATE = 115200
     PORT_TIMEOUT = 2
     RESET_WAIT_TIME = 2.5
-    HARDWARE_INIT_TIME = 2.0
+    HARDWARE_INIT_TIME = 5.0  # ESP32 boot süresi için artırıldı
     COMMAND_DELAY = 0.3
     MAX_RETRY_ATTEMPTS = 3
     RETRY_DELAY = 1.0
@@ -692,29 +693,59 @@ class KartHaberlesmeServis:
                 log_warning(f"Kritik kartlar eksik: {eksik_kartlar}")
         
         # Başarısızsa VEYA kritik kart eksikse, USB reset dene
+        # ANCAK sadece sistem durumu NORMAL ise ve reset devam etmiyorsa
         if (not basarili or kritik_eksik) and try_usb_reset and max_retries > 0:
+            # System state kontrolü - çoklu reset'i engelle
+            if system_state.is_system_busy():
+                log_warning("Sistem meşgul (reset/reconnection devam ediyor), USB reset atlanıyor")
+                return basarili, mesaj, bulunan_kartlar
+            
+            if not system_state.can_start_reset():
+                log_warning("USB reset çok erken veya zaten devam ediyor, atlanıyor")
+                return basarili, mesaj, bulunan_kartlar
+            
             log_warning(f"İlk denemede başarısız (basarili={basarili}, kritik_eksik={kritik_eksik})")
             log_warning(f"USB reset ile tekrar deneniyor ({max_retries} deneme kaldı)")
             
-            # Direkt agresif reset dene (daha güvenilir)
-            log_warning("Direkt agresif USB reset deneniyor...")
-            if self._reset_all_usb_ports():
-                log_success("Agresif USB reset başarılı, portlar yeniden taranacak...")
-                time.sleep(5)  # USB hub reset sonrası daha uzun bekleme
+            # Reset operasyonu başlat
+            reset_cards = set(kritik_kartlar) if kritik_kartlar else {"motor", "sensor"}
+            operation_id = system_state.start_reset_operation(
+                cards=reset_cards,
+                initiated_by="port_manager"
+            )
+            
+            if operation_id:
+                # Direkt agresif reset dene (daha güvenilir)
+                log_warning("Direkt agresif USB reset deneniyor...")
+                reset_success = self._reset_all_usb_ports()
                 
-                # Tekrar dene (max_retries-1 ile)
-                return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
-            else:
-                # Agresif reset başarısız, yumuşak reset dene
-                log_warning("Agresif reset başarısız, yumuşak reset deneniyor...")
-                if self._soft_usb_reset():
-                    log_success("Yumuşak USB reset başarılı, portlar yeniden taranacak...")
-                    time.sleep(3)  # Portların oluşması için bekle
+                if reset_success:
+                    log_success("Agresif USB reset başarılı, portlar yeniden taranacak...")
+                    time.sleep(5)  # USB hub reset sonrası daha uzun bekleme
+                    
+                    # Reset operasyonunu başarılı olarak bitir
+                    system_state.finish_reset_operation(operation_id, True)
                     
                     # Tekrar dene (max_retries-1 ile)
                     return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
                 else:
-                    log_error("Her iki USB reset yöntemi de başarısız oldu")
+                    # Agresif reset başarısız, yumuşak reset dene
+                    log_warning("Agresif reset başarısız, yumuşak reset deneniyor...")
+                    if self._soft_usb_reset():
+                        log_success("Yumuşak USB reset başarılı, portlar yeniden taranacak...")
+                        time.sleep(3)  # Portların oluşması için bekle
+                        
+                        # Reset operasyonunu başarılı olarak bitir
+                        system_state.finish_reset_operation(operation_id, True)
+                        
+                        # Tekrar dene (max_retries-1 ile)
+                        return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
+                    else:
+                        log_error("Her iki USB reset yöntemi de başarısız oldu")
+                        # Reset operasyonunu başarısız olarak bitir
+                        system_state.finish_reset_operation(operation_id, False)
+            else:
+                log_warning("Reset operasyonu başlatılamadı")
         
         return basarili, mesaj, bulunan_kartlar
     

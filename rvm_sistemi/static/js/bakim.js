@@ -1219,6 +1219,50 @@ function setupMotorControls() {
             motorKontrol('motorlari-iptal');
         });
     }
+    
+    // Konveyör Test Butonu
+    const conveyorTestBtn = document.getElementById('conveyor-test-btn');
+    if (conveyorTestBtn) {
+        conveyorTestBtn.addEventListener('click', () => {
+            if (conveyorTestBtn.disabled) return;
+            
+            // Test butonunu geçici olarak devre dışı bırak
+            conveyorTestBtn.disabled = true;
+            conveyorTestBtn.textContent = '🔄 Test Çalışıyor...';
+            
+            // Animasyonu başlat
+            if (conveyorAnimation) {
+                conveyorAnimation.classList.add('conveyor-running-forward');
+                conveyorAnimation.classList.remove('conveyor-running-backward');
+            }
+            
+            // Motor kontrolü çağır
+            motorKontrol('konveyor-ileri').then(() => {
+                // 3 saniye sonra butonu tekrar aktif et
+                setTimeout(() => {
+                    conveyorTestBtn.disabled = false;
+                    conveyorTestBtn.textContent = '🧪 Test - Konveyör İleri';
+                    
+                    // Animasyonu durdur
+                    if (conveyorAnimation) {
+                        conveyorAnimation.classList.remove('conveyor-running-forward', 'conveyor-running-backward');
+                    }
+                    
+                    // Motoru durdur
+                    motorKontrol('konveyor-dur');
+                }, 3000);
+            }).catch((error) => {
+                console.error('Test butonu hatası:', error);
+                conveyorTestBtn.disabled = false;
+                conveyorTestBtn.textContent = '🧪 Test - Konveyör İleri';
+                
+                // Animasyonu durdur
+                if (conveyorAnimation) {
+                    conveyorAnimation.classList.remove('conveyor-running-forward', 'conveyor-running-backward');
+                }
+            });
+        });
+    }
 }
 
 // Henüz aktif olmayan özellikler için placeholder fonksiyonlar

@@ -11,6 +11,7 @@ from typing import Optional, Callable
 from contextlib import contextmanager
 
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.makine.seri.system_state_manager import system_state, CardState, SystemState
 from rvm_sistemi.utils.logger import (
     log_sensor, log_error, log_success, log_warning, 
     log_system, log_exception, log_thread_error
@@ -61,13 +62,14 @@ class SensorKart:
         
         # Thread safety için lock'lar
         self._port_lock = threading.RLock()
-        self._reconnect_lock = threading.Lock()
-        self._is_reconnecting = False
         
         # Hata takibi
         self._connection_attempts = 0
         self._consecutive_errors = 0
         self._last_error_time = 0
+        
+        # System state manager'a kaydol
+        system_state.set_card_state(self.cihaz_adi, CardState.DISCONNECTED, "Başlatıldı")
         
         # İlk bağlantıyı başlat
         self._ilk_baglanti()
@@ -93,10 +95,12 @@ class SensorKart:
         """Belirtilen porta bağlanmayı dene"""
         if self.portu_ac():
             log_success(f"{self.cihaz_adi} porta bağlandı: {self.port_adi}")
+            system_state.set_card_state(self.cihaz_adi, CardState.CONNECTED, f"Port açıldı: {self.port_adi}")
             self.dinlemeyi_baslat()
             return True
         else:
             log_warning(f"{self.cihaz_adi} porta bağlanamadı: {self.port_adi}")
+            system_state.set_card_state(self.cihaz_adi, CardState.ERROR, f"Port açılamadı: {self.port_adi}")
             return False
 
     def _auto_find_port(self) -> bool:
@@ -251,23 +255,26 @@ class SensorKart:
             log_warning(f"{self.cihaz_adi} port hazır değil - ping atlanıyor")
             return False
         
-        # Mevcut bağlantıyı test et
-        self.saglikli = False
-        self._safe_queue_put("ping", None)
-        
         # Ping zamanını hemen kaydet (reset bypass için)
         self._last_ping_time = time.time()
-        log_system(f"{self.cihaz_adi} ping gönderildi - zaman: {self._last_ping_time:.1f}")
         
-        time.sleep(self.PING_TIMEOUT)
+        # Mevcut sağlık durumunu kaydet
+        previous_health = self.saglikli
         
-        if not self.saglikli:
-            log_warning(f"{self.cihaz_adi} ping başarısız - port arama yapılmıyor")
-            # PORT ARAMA YAPMA! Sadece sağlık durumunu false yap
-            return False
+        # Ping gönder
+        self._safe_queue_put("ping", None)
         
-        log_system(f"{self.cihaz_adi} ping başarılı")
-        return True
+        # PONG cevabını bekle (daha uzun süre)
+        time.sleep(self.PING_TIMEOUT * 2)  # 0.6 saniye bekle
+        
+        # Eğer sağlık durumu değiştiyse (PONG geldi), başarılı
+        if self.saglikli:
+            log_system(f"{self.cihaz_adi} ping başarılı")
+            return True
+        
+        # PONG gelmedi, başarısız
+        log_warning(f"{self.cihaz_adi} ping başarısız - port arama yapılmıyor")
+        return False
 
     def getir_saglik_durumu(self):
         """Sağlık durumu"""
@@ -482,6 +489,19 @@ class SensorKart:
         
         message_lower = message.lower()
         
+        # ESP32 boot mesajlarını bypass et
+        if (message.startswith("ets") or 
+            message.startswith("rst:") or 
+            message.startswith("configsip:") or 
+            message.startswith("clk_drv:") or 
+            message.startswith("mode:") or 
+            message.startswith("load:") or 
+            message.startswith("entry") or
+            message.startswith("E (") and "gpio:" in message):
+            # ESP32 boot mesajları - bypass et
+            log_system(f"{self.cihaz_adi} ESP32 boot mesajı bypass edildi: {message[:50]}...")
+            return
+        
         if message_lower == "pong":
             self.saglikli = True
         elif message_lower == "resetlendi":
@@ -503,6 +523,7 @@ class SensorKart:
             if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
                 log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
+                self.saglikli = True  # Sağlıklı olarak işaretle
             else:
                 # Ping alınmamışsa, fiziksel bağlantı sorunu
                 log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
@@ -516,15 +537,16 @@ class SensorKart:
                 log_error(f"{self.cihaz_adi} callback hatası: {e}")
 
     def _handle_connection_error(self):
-        """Bağlantı hatası yönetimi - duplicate önleme"""
-        # Double-check locking pattern
-        if self._is_reconnecting:
+        """Bağlantı hatası yönetimi - System State Manager ile"""
+        # System state manager ile reconnection kontrolü
+        if not system_state.can_start_reconnection(self.cihaz_adi):
+            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul")
             return
         
-        with self._reconnect_lock:
-            if self._is_reconnecting:
-                return
-            self._is_reconnecting = True
+        # Reconnection başlat
+        if not system_state.start_reconnection(self.cihaz_adi, "I/O Error"):
+            log_warning(f"{self.cihaz_adi} reconnection başlatılamadı")
+            return
         
         try:
             log_system(f"{self.cihaz_adi} bağlantı hatası yönetimi")
@@ -550,25 +572,38 @@ class SensorKart:
                 self.seri_nesnesi = None
                 self.saglikli = False
             
-            # Yeniden bağlanma thread'i başlat
-            threading.Thread(
+            # Reconnection thread başlat (tek seferlik)
+            thread_name = f"{self.cihaz_adi}_reconnect"
+            reconnect_thread = threading.Thread(
                 target=self._reconnect_worker, 
                 daemon=True,
-                name=f"{self.cihaz_adi}_reconnect"
-            ).start()
+                name=thread_name
+            )
+            
+            # Thread'i system state manager'a kaydet
+            if system_state.register_thread(thread_name, reconnect_thread):
+                reconnect_thread.start()
+            else:
+                # Thread kaydedilemedi, reconnection'ı bitir
+                system_state.finish_reconnection(self.cihaz_adi, False)
             
         except Exception as e:
             log_exception(f"{self.cihaz_adi} hata yönetimi başarısız", exc_info=(type(e), e, e.__traceback__))
-        finally:
-            pass
+            system_state.finish_reconnection(self.cihaz_adi, False)
 
     def _reconnect_worker(self):
-        """Yeniden bağlanma worker'ı - exponential backoff"""
+        """Yeniden bağlanma worker'ı - System State Manager ile"""
+        thread_name = f"{self.cihaz_adi}_reconnect"
         attempts = 0
         base_delay = self.RETRY_BASE_DELAY
         
         try:
             while attempts < self.MAX_RETRY:
+                # Sistem durumu kontrolü
+                if system_state.get_system_state() == SystemState.EMERGENCY:
+                    log_warning(f"{self.cihaz_adi} reconnection iptal edildi - Emergency mode")
+                    break
+                
                 attempts += 1
                 delay = min(base_delay * (2 ** (attempts - 1)), self.MAX_RETRY_DELAY)
                 
@@ -577,15 +612,23 @@ class SensorKart:
                 if self._auto_find_port():
                     self._connection_attempts = 0
                     log_success(f"{self.cihaz_adi} yeniden bağlandı")
+                    
+                    # Başarılı reconnection
+                    system_state.finish_reconnection(self.cihaz_adi, True)
                     return
 
                 time.sleep(delay)
             
             log_error(f"{self.cihaz_adi} yeniden bağlanamadı")
+            # Başarısız reconnection
+            system_state.finish_reconnection(self.cihaz_adi, False)
             
+        except Exception as e:
+            log_exception(f"{self.cihaz_adi} reconnection worker hatası", exc_info=(type(e), e, e.__traceback__))
+            system_state.finish_reconnection(self.cihaz_adi, False)
         finally:
-            with self._reconnect_lock:
-                self._is_reconnecting = False
+            # Thread kaydını sil
+            system_state.unregister_thread(thread_name)
 
     def _get_komut_sozlugu(self):
         """Komut sözlüğü - MEVCUT KOMUTLAR KORUNDU"""
