@@ -190,6 +190,12 @@ class PortSaglikServisi:
         elif gecen_sure > self.PING_ARASI_SURE * 2:
             durum.durum = SaglikDurumu.UYARI
             print(f"⚠️  [PORT-SAĞLIK] {kart_adi.upper()} → UYARI! Son pong: {gecen_sure:.1f}s önce")
+        
+        # EK: Motor kartı için özel kontrol - ping başarısızsa yeniden başlat
+        if kart_adi == "motor" and durum.basarisiz_ping >= 3:
+            print(f"🔧 [PORT-SAĞLIK] Motor kartı ping başarısız - yeniden başlatılıyor")
+            log_system("Motor kartı ping başarısız - yeniden başlatılıyor")
+            self._kartlari_yeniden_baslat({"motor": kart.port_adi})
     
     def _durumlari_degerlendir(self):
         """Kart durumlarını değerlendir ve gerekirse müdahale et"""
@@ -205,43 +211,15 @@ class PortSaglikServisi:
         if kritik_kartlar:
             self._kartlari_resetle(kritik_kartlar)
         
-        # EK: Motor kartı yazma hatası kontrolü
-        if hasattr(self, 'motor_karti') and self.motor_karti:
-            # Motor kartı yazma hatası varsa ve sistem meşgul değilse reset yap
-            if (hasattr(self.motor_karti, 'port_adi') and 
-                self.motor_karti.port_adi and 
-                not self.motor_karti.saglikli and
-                not system_state.is_system_busy()):
-                
-                print(f"🔧 [PORT-SAĞLIK] Motor kartı yazma hatası tespit edildi - reset yapılıyor")
-                log_system("Motor kartı yazma hatası tespit edildi - reset yapılıyor")
-                self._kartlari_resetle(["motor"])
-        
         # EK: Motor kartı için özel kontrol - port bulunmuş ama bağlantı kurulamıyorsa
         if hasattr(self, 'motor_karti') and self.motor_karti:
             # Motor kartı port bulunmuş ama bağlantı kurulamıyorsa
             if (hasattr(self.motor_karti, 'port_adi') and 
                 self.motor_karti.port_adi and 
                 not self.motor_karti.saglikli):
-                
-                # Status test ile motor kartının gerçekten çalışıp çalışmadığını kontrol et
-                print(f"🔧 [PORT-SAĞLIK] Motor kartı port bulunmuş ama bağlantı kurulamıyor - status test yapılıyor")
-                log_system("Motor kartı port bulunmuş ama bağlantı kurulamıyor - status test yapılıyor")
-                
-                if hasattr(self.motor_karti, 'status_test'):
-                    status_ok = self.motor_karti.status_test()
-                    if status_ok:
-                        print(f"✅ [PORT-SAĞLIK] Motor kartı status test başarılı - yeniden başlatma gerekmiyor")
-                        log_system("Motor kartı status test başarılı - yeniden başlatma gerekmiyor")
-                        return
-                    else:
-                        print(f"❌ [PORT-SAĞLIK] Motor kartı status test başarısız - yeniden başlatılıyor")
-                        log_system("Motor kartı status test başarısız - yeniden başlatılıyor")
-                        self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
-                else:
-                    print(f"⚠️  [PORT-SAĞLIK] Motor kartı status test fonksiyonu yok - yeniden başlatılıyor")
-                    log_system("Motor kartı status test fonksiyonu yok - yeniden başlatılıyor")
-                    self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
+                print(f"🔧 [PORT-SAĞLIK] Motor kartı port bulunmuş ama bağlantı kurulamıyor - yeniden başlatılıyor")
+                log_system("Motor kartı port bulunmuş ama bağlantı kurulamıyor - yeniden başlatılıyor")
+                self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
     
     def _kartlari_resetle(self, kritik_kartlar: list):
         """
@@ -421,34 +399,35 @@ class PortSaglikServisi:
                     # Thread'lerin başlamasını bekle
                     time.sleep(1)  # Thread'lerin başlaması için bekle
                     
-                    # Thread'lerin düzgün başladığından emin ol
-                    if not self.motor_karti._is_port_ready():
+                    # Thread durumunu kontrol et
+                    if not self.motor_karti.thread_durumu_kontrol():
                         print(f"  ⚠️  Motor thread'leri düzgün başlamamış, yeniden başlatılıyor")
-                        # Thread durumunu kontrol et
-                        self.motor_karti.thread_durumu_kontrol()
                         self.motor_karti.dinlemeyi_durdur()
                         time.sleep(0.5)
                         self.motor_karti.dinlemeyi_baslat()
-                        time.sleep(1)  # Tekrar bekle
-                        # Tekrar kontrol et
+                        time.sleep(1)
                         self.motor_karti.thread_durumu_kontrol()
                     
-                    # Reset komutu _try_connect_to_port'ta gönderiliyor
-                    
-                    # Sonra parametreleri gönder
-                    time.sleep(0.5)
+                    # Motor parametrelerini gönder
+                    print(f"  🔄 Motor parametreleri gönderiliyor...")
                     self.motor_karti.parametre_gonder()
+                    time.sleep(1)  # Parametrelerin işlenmesi için bekle
                     
-                    # Thread'lerin düzgün başladığından emin ol
-                    time.sleep(0.5)
-                    if not self.motor_karti._is_port_ready():
-                        print(f"  ⚠️  Motor thread'leri düzgün başlamamış, yeniden başlatılıyor")
-                        self.motor_karti.dinlemeyi_durdur()
-                        time.sleep(0.5)
-                        self.motor_karti.dinlemeyi_baslat()
-                        time.sleep(0.5)
+                    # Motorları aktif et
+                    print(f"  🔄 Motorlar aktif ediliyor...")
+                    self.motor_karti._safe_queue_put("motorlari_aktif_et", None)
+                    time.sleep(1)  # Motorların aktif olması için bekle
                     
-                    print(f"  ✅ Motor kartı başlatıldı ve resetlendi")
+                    # Status test yap
+                    print(f"  🔄 Motor status test yapılıyor...")
+                    if hasattr(self.motor_karti, 'status_test'):
+                        status_ok = self.motor_karti.status_test()
+                        if status_ok:
+                            print(f"  ✅ Motor status test başarılı")
+                        else:
+                            print(f"  ⚠️  Motor status test başarısız")
+                    
+                    print(f"  ✅ Motor kartı başlatıldı ve komutlar gönderildi")
                 else:
                     print(f"  ❌ Motor portu açılamadı!")
             

@@ -11,7 +11,6 @@ from typing import Optional, Callable
 
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
 from rvm_sistemi.makine.seri.system_state_manager import system_state, CardState, SystemState
-from rvm_sistemi.makine.seri.port_saglik_servisi import SaglikDurumu
 from rvm_sistemi.utils.logger import (
     log_motor, log_error, log_success, log_warning, 
     log_system, log_exception, log_thread_error
@@ -107,30 +106,6 @@ class MotorKart:
             log_success(f"{self.cihaz_adi} porta bağlandı: {self.port_adi}")
             system_state.set_card_state(self.cihaz_adi, CardState.CONNECTED, f"Port açıldı: {self.port_adi}")
             self.dinlemeyi_baslat()
-            
-            # Thread'lerin başlamasını bekle
-            time.sleep(1)  # Thread'lerin başlaması için bekle
-            
-            # Thread'lerin düzgün başladığından emin ol
-            if not self._is_port_ready():
-                log_warning(f"{self.cihaz_adi} thread'ler düzgün başlamamış, yeniden başlatılıyor")
-                self.dinlemeyi_durdur()
-                time.sleep(0.5)
-                self.dinlemeyi_baslat()
-                time.sleep(1)  # Tekrar bekle
-            
-            # İlk bağlantıda reset komutu gönder
-            print("OOOOOOOOOOOOOOOO-MOTOR RESET GİTTİ-OOOOOOOOOOOOO")
-            log_system(f"{self.cihaz_adi} ilk bağlantı - reset komutu gönderiliyor")
-            self._safe_queue_put("reset", None)
-            time.sleep(2)  # Reset komutunun işlenmesi için bekle
-            
-            # RESET SONRASI STATUS TEST
-            print("OOOOOOOOOOOOOOOO-MOTOR STATUS TEST GİTTİ-OOOOOOOOOOOOO")
-            log_system(f"{self.cihaz_adi} reset sonrası status test gönderiliyor")
-            self._safe_queue_put("status", None)
-            time.sleep(1)  # Status test cevabı için bekle
-            
             return True
         else:
             log_warning(f"{self.cihaz_adi} porta bağlanamadı: {self.port_adi}")
@@ -149,18 +124,6 @@ class MotorKart:
                 # Port bulundu, bağlantı kurmayı dene
                 if self._try_connect_to_port():
                     log_success(f"{self.cihaz_adi} bağlantı kuruldu: {self.port_adi}")
-                    
-                    # Bağlantı kurulduktan sonra thread'lerin düzgün çalıştığından emin ol
-                    time.sleep(0.5)  # Thread'lerin başlaması için bekle
-                    if not self._is_port_ready():
-                        log_warning(f"{self.cihaz_adi} thread'ler düzgün başlamamış, yeniden başlatılıyor")
-                        self.dinlemeyi_durdur()
-                        time.sleep(0.5)
-                        self.dinlemeyi_baslat()
-                        time.sleep(0.5)
-                    
-                    # Reset komutu _try_connect_to_port'ta gönderiliyor
-                    
                     return True
                 else:
                     log_warning(f"{self.cihaz_adi} port bulundu ama bağlantı kurulamadı: {self.port_adi}")
@@ -238,10 +201,7 @@ class MotorKart:
 
     # Motor kontrol
     def motorlari_aktif_et(self):
-        """Motorları aktif et - detaylı log ile"""
-        log_system(f"{self.cihaz_adi} motorları aktif etme komutu gönderiliyor...")
         self._safe_queue_put("motorlari_aktif_et", None)
-        log_system(f"{self.cihaz_adi} motorları aktif etme komutu queue'ya eklendi")
 
     def motorlari_iptal_et(self):
         self._safe_queue_put("motorlari_iptal_et", None)
@@ -322,89 +282,16 @@ class MotorKart:
         
         # Eğer sağlık durumu değiştiyse (PONG geldi), başarılı
         if self.saglikli:
-            log_system(f"{self.cihaz_adi} ping başarılı")
+            #log_system(f"{self.cihaz_adi} ping başarılı")
             return True
         
         # PONG gelmedi, başarısız
         log_warning(f"{self.cihaz_adi} ping başarısız - port arama yapılmıyor")
         return False
 
-    def status_test(self):
-        """Status test - 's' komutu ile motor kartının çalışır durumda olup olmadığını test et"""
-        if not self._is_port_ready():
-            log_warning(f"{self.cihaz_adi} port hazır değil - status test atlanıyor")
-            return False
-        
-        # Status test için özel flag
-        self._status_test_pending = True
-        self._status_test_result = False
-        
-        # 's' komutu gönder
-        self._safe_queue_put("status", None)
-        
-        # 'motor' cevabını bekle
-        time.sleep(1.0)  # 1 saniye bekle
-        
-        # Sonucu kontrol et
-        if hasattr(self, '_status_test_result') and self._status_test_result:
-            log_system(f"{self.cihaz_adi} status test başarılı - motor cevabı alındı")
-            return True
-        else:
-            log_warning(f"{self.cihaz_adi} status test başarısız - motor cevabı alınamadı")
-            return False
-
     def getir_saglik_durumu(self):
         """Sağlık durumu"""
         return self.saglikli
-    
-    def thread_durumu_kontrol(self):
-        """Thread durumunu kontrol et ve logla"""
-        log_system(f"{self.cihaz_adi} thread durumu:")
-        log_system(f"  - running: {self.running}")
-        log_system(f"  - listen_thread: {self.listen_thread.is_alive() if self.listen_thread else 'None'}")
-        log_system(f"  - write_thread: {self.write_thread.is_alive() if self.write_thread else 'None'}")
-        log_system(f"  - port açık: {self.seri_nesnesi.is_open if self.seri_nesnesi else False}")
-        log_system(f"  - port hazır: {self._is_port_ready()}")
-        log_system(f"  - queue boyutu: {self.write_queue.qsize()}")
-        return {
-            'running': self.running,
-            'listen_thread': self.listen_thread.is_alive() if self.listen_thread else False,
-            'write_thread': self.write_thread.is_alive() if self.write_thread else False,
-            'port_open': self.seri_nesnesi.is_open if self.seri_nesnesi else False,
-            'port_ready': self._is_port_ready(),
-            'queue_size': self.write_queue.qsize()
-        }
-    
-    def motor_durumu_test(self):
-        """Motor durumunu test et"""
-        log_system(f"{self.cihaz_adi} motor durumu testi başlatılıyor...")
-        
-        # 1. Thread durumu
-        thread_durum = self.thread_durumu_kontrol()
-        
-        # 2. Motor aktif etme komutu gönder
-        log_system(f"{self.cihaz_adi} motorları aktif etme komutu gönderiliyor...")
-        self.motorlari_aktif_et()
-        time.sleep(2)  # Komutun işlenmesi için bekle
-        
-        # 3. Ping test
-        log_system(f"{self.cihaz_adi} ping testi yapılıyor...")
-        ping_sonuc = self.ping()
-        
-        # 4. Status test
-        log_system(f"{self.cihaz_adi} status testi yapılıyor...")
-        status_sonuc = self.status_test()
-        
-        log_system(f"{self.cihaz_adi} motor durumu testi tamamlandı:")
-        log_system(f"  - Thread durumu: {thread_durum}")
-        log_system(f"  - Ping sonucu: {ping_sonuc}")
-        log_system(f"  - Status sonucu: {status_sonuc}")
-        
-        return {
-            'thread_durum': thread_durum,
-            'ping_sonuc': ping_sonuc,
-            'status_sonuc': status_sonuc
-        }
 
     def portu_ac(self):
         """Port açma - thread-safe"""
@@ -467,6 +354,12 @@ class MotorKart:
             self.write_thread.start()
             
             log_system(f"{self.cihaz_adi} thread'leri başlatıldı")
+            
+            # Thread'lerin başlamasını bekle
+            time.sleep(0.5)  # Thread'lerin başlaması için bekle
+            
+            # Thread durumunu kontrol et
+            self.thread_durumu_kontrol()
 
     def dinlemeyi_durdur(self):
         """Thread durdurma - güvenli"""
@@ -495,27 +388,13 @@ class MotorKart:
     def _safe_queue_put(self, command, data=None):
         """Queue'ya güvenli yazma"""
         try:
-            # Kritik komutlar için özel işlem
-            critical_commands = ["reset", "parametre_gonder", "motorlari_aktif_et", "motorlari_iptal_et"]
-            
-            if command in critical_commands:
-                # Kritik komutlar için queue'yu temizle
-                if self.write_queue.full():
-                    # Queue'yu tamamen temizle
-                    while not self.write_queue.empty():
-                        try:
-                            self.write_queue.get_nowait()
-                        except queue.Empty:
-                            break
-                    log_warning(f"{self.cihaz_adi} kritik komut için queue temizlendi: {command}")
-            else:
-                # Normal komutlar için eski komutları at
-                if self.write_queue.full():
-                    try:
-                        self.write_queue.get_nowait()
-                        log_warning(f"{self.cihaz_adi} queue dolu, eski komut atıldı")
-                    except queue.Empty:
-                        pass
+            # Queue doluysa eski komutları temizle
+            if self.write_queue.full():
+                try:
+                    self.write_queue.get_nowait()
+                    log_warning(f"{self.cihaz_adi} queue dolu, eski komut atıldı")
+                except queue.Empty:
+                    pass
             
             self.write_queue.put((command, data), timeout=0.1)
             
@@ -527,6 +406,19 @@ class MotorKart:
         for thread in [self.listen_thread, self.write_thread]:
             if thread and thread.is_alive():
                 thread.join(timeout=0.1)
+    
+    def thread_durumu_kontrol(self):
+        """Thread durumunu kontrol et"""
+        with self._port_lock:
+            listen_ok = self.listen_thread and self.listen_thread.is_alive()
+            write_ok = self.write_thread and self.write_thread.is_alive()
+            
+            if listen_ok and write_ok:
+                log_system(f"{self.cihaz_adi} thread'leri çalışıyor")
+                return True
+            else:
+                log_warning(f"{self.cihaz_adi} thread durumu - Listen: {listen_ok}, Write: {write_ok}")
+                return False
 
     def _is_port_ready(self) -> bool:
         """Port hazır mı?"""
@@ -540,9 +432,6 @@ class MotorKart:
     def _yaz(self):
         """Yazma thread'i - optimized"""
         komutlar = self._get_komut_sozlugu()
-        consecutive_write_errors = 0
-        
-        log_system(f"{self.cihaz_adi} yazma thread'i başlatıldı")
         
         while self.running:
             try:
@@ -555,49 +444,22 @@ class MotorKart:
                 if command == "exit":
                     break
                 
-                # Port kontrolü - detaylı log
+                # Port kontrolü
                 if not self._is_port_ready():
-                    log_warning(f"{self.cihaz_adi} port hazır değil - komut bekleniyor: {command}")
-                    log_warning(f"  - seri_nesnesi: {self.seri_nesnesi is not None}")
-                    log_warning(f"  - port açık: {self.seri_nesnesi.is_open if self.seri_nesnesi else False}")
-                    log_warning(f"  - running: {self.running}")
                     time.sleep(0.1)
                     continue
                 
                 # Özel parametre gönderme
                 if command == "parametre_gonder":
-                    log_system(f"{self.cihaz_adi} parametre gönderiliyor...")
                     self._send_parameters()
                 elif command in komutlar:
-                    log_system(f"{self.cihaz_adi} komut gönderiliyor: {command}")
                     self.seri_nesnesi.write(komutlar[command])
                     self.seri_nesnesi.flush()
-                    log_success(f"{self.cihaz_adi} komut başarıyla gönderildi: {command}")
-                    consecutive_write_errors = 0  # Başarılı yazma
-                else:
-                    log_warning(f"{self.cihaz_adi} bilinmeyen komut: {command}")
                 
             except (serial.SerialException, OSError) as e:
-                consecutive_write_errors += 1
-                log_error(f"{self.cihaz_adi} yazma hatası ({consecutive_write_errors}): {e}")
-                
-                # Çok fazla ardışık yazma hatası varsa reconnection başlat
-                if consecutive_write_errors >= 3:
-                    log_warning(f"{self.cihaz_adi} çok fazla yazma hatası - reconnection başlatılıyor")
-                    
-                    # System state kontrolü - eğer sistem meşgulse port sağlık servisine bildir
-                    if system_state.is_system_busy():
-                        log_warning(f"{self.cihaz_adi} sistem meşgul - port sağlık servisine bildiriliyor")
-                        # Port sağlık servisine motor kartı sorunu bildir
-                        self._notify_port_health_service()
-                        break
-                    else:
-                        # Sistem meşgul değilse normal reconnection
-                        self._handle_connection_error()
-                        break
-                else:
-                    # Kısa süre bekle ve tekrar dene
-                    time.sleep(0.5)
+                log_error(f"{self.cihaz_adi} yazma hatası: {e}")
+                self._handle_connection_error()
+                break
             except Exception as e:
                 log_exception(f"{self.cihaz_adi} yazma thread hatası", exc_info=(type(e), e, e.__traceback__))
 
@@ -645,6 +507,8 @@ class MotorKart:
                     if data:
                         self._consecutive_errors = 0  # Başarılı okuma
                         self._process_message(data)
+                        # Mesaj alındığında log yaz
+                        log_system(f"{self.cihaz_adi} mesaj alındı: {data}")
                 else:
                     time.sleep(0.05)
                 
@@ -669,43 +533,8 @@ class MotorKart:
         
         message_lower = message.lower()
         
-        # ESP32 boot mesajlarını bypass et
-        if (message.startswith("ets") or 
-            message.startswith("rst:") or 
-            message.startswith("configsip:") or 
-            message.startswith("clk_drv:") or 
-            message.startswith("mode:") or 
-            message.startswith("load:") or 
-            message.startswith("entry") or
-            message.startswith("E (") and "gpio:" in message):
-            # ESP32 boot mesajları - bypass et
-            log_system(f"{self.cihaz_adi} ESP32 boot mesajı bypass edildi: {message[:50]}...")
-            return
-        
         if message_lower == "pong":
             self.saglikli = True
-        elif message_lower == "motor":
-            # Status test sonucunu güncelle
-            if hasattr(self, '_status_test_pending') and self._status_test_pending:
-                self._status_test_result = True
-                self._status_test_pending = False
-                print("OOOOOOOOOOOOOOOO-MOTOR STATUS TEST BAŞARILI-OOOOOOOOOOOOO")
-                log_system(f"{self.cihaz_adi} status test cevabı alındı: motor")
-            else:
-                print("OOOOOOOOOOOOOOOO-MOTOR STATUS TEST BAŞARILI-OOOOOOOOOOOOO")
-                log_system(f"{self.cihaz_adi} status test cevabı alındı: motor")
-        elif message_lower == "ykt":
-            # Yönlendirici motor durumu
-            log_system(f"{self.cihaz_adi} yönlendirici motor durumu: {message}")
-        elif message_lower == "skt":
-            # Sensör kartı durumu
-            log_system(f"{self.cihaz_adi} sensör kartı durumu: {message}")
-        elif message_lower == "ymk":
-            # Yönlendirici motor konumu
-            log_system(f"{self.cihaz_adi} yönlendirici motor konumu: {message}")
-        elif message_lower in ["ykt", "skt", "ymk", "kmt", "smt"]:
-            # Diğer motor durum mesajları
-            log_system(f"{self.cihaz_adi} motor durum mesajı: {message}")
         elif message_lower == "resetlendi":
             log_warning(f"{self.cihaz_adi} kart resetlendi")
             
@@ -724,7 +553,6 @@ class MotorKart:
             if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
                 log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
-                self.saglikli = True  # Sağlıklı olarak işaretle
             else:
                 # Ping alınmamışsa, fiziksel bağlantı sorunu
                 log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
@@ -784,26 +612,6 @@ class MotorKart:
             log_exception(f"{self.cihaz_adi} hata yönetimi başarısız", exc_info=(type(e), e, e.__traceback__))
             system_state.finish_reconnection(self.cihaz_adi, False)
 
-    def _notify_port_health_service(self):
-        """Port sağlık servisine motor kartı sorunu bildir"""
-        try:
-            # Kart referanslarından port sağlık servisini al
-            from .. import kart_referanslari
-            port_saglik = kart_referanslari.port_saglik_servisi_al()
-            
-            if port_saglik:
-                # Motor kartı için kritik durum oluştur
-                port_saglik.kart_durumlari["motor"].durum = SaglikDurumu.KRITIK
-                port_saglik.kart_durumlari["motor"].basarisiz_ping = port_saglik.MAX_PING_HATA
-                
-                log_system(f"{self.cihaz_adi} port sağlık servisine yazma hatası bildirildi")
-                print(f"🔔 [MOTOR] Port sağlık servisine yazma hatası bildirildi")
-            else:
-                log_warning(f"{self.cihaz_adi} port sağlık servisi bulunamadı")
-                
-        except Exception as e:
-            log_error(f"{self.cihaz_adi} port sağlık servisi bildirimi hatası: {e}")
-
     def _reconnect_worker(self):
         """Yeniden bağlanma worker'ı - System State Manager ile"""
         thread_name = f"{self.cihaz_adi}_reconnect"
@@ -824,21 +632,9 @@ class MotorKart:
                 
                 if self._auto_find_port():
                     time.sleep(1)
-                    
-                    # Reset komutu _try_connect_to_port'ta gönderiliyor
-                    # Sonra parametreleri gönder
                     self.parametre_gonder()  # Motor parametrelerini tekrar gönder
                     self._connection_attempts = 0
-                    log_success(f"{self.cihaz_adi} yeniden bağlandı ve resetlendi")
-                    
-                    # Bağlantı kurulduktan sonra thread'lerin düzgün çalıştığından emin ol
-                    time.sleep(0.5)
-                    if not self._is_port_ready():
-                        log_warning(f"{self.cihaz_adi} reconnection sonrası thread'ler düzgün başlamamış, yeniden başlatılıyor")
-                        self.dinlemeyi_durdur()
-                        time.sleep(0.5)
-                        self.dinlemeyi_baslat()
-                        time.sleep(0.5)
+                    log_success(f"{self.cihaz_adi} yeniden bağlandı")
                     
                     # Başarılı reconnection
                     system_state.finish_reconnection(self.cihaz_adi, True)
@@ -892,6 +688,5 @@ class MotorKart:
             
             # Sistem
             "ping": b"ping\n",
-            "reset": b"reset\n",
-            "status": b"s\n"
+            "reset": b"reset\n"
         }

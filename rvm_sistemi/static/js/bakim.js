@@ -171,7 +171,7 @@ async function uyariEkraniGoster() {
     try {
         console.log('⚠️ Modbus Ready uyarı ekranı gösteriliyor...');
         
-        const uyariMesaji = "⚠️ ACİL DURUM BUTONU AKTİF<br>Güvenlik nedeniyle tüm motorlar durduruldu.";
+        //const uyariMesaji = "⚠️ ACİL DURUM BUTONU AKTİF<br>Güvenlik nedeniyle tüm motorlar durduruldu.";
         
         const response = await fetch(`${API_BASE}/uyari/goster`, {
             method: 'POST',
@@ -1261,6 +1261,56 @@ function setupMotorControls() {
                     conveyorAnimation.classList.remove('conveyor-running-forward', 'conveyor-running-backward');
                 }
             });
+        });
+    }
+    
+    // Status Test Butonu
+    const statusTestBtn = document.getElementById('status-test-btn');
+    if (statusTestBtn) {
+        statusTestBtn.addEventListener('click', async () => {
+            if (statusTestBtn.disabled) return;
+            
+            // Test butonunu geçici olarak devre dışı bırak
+            statusTestBtn.disabled = true;
+            statusTestBtn.textContent = '🔄 Test Çalışıyor...';
+            
+            try {
+                // Status test API'sini çağır
+                const response = await fetch(`${API_BASE}/motor/status-test`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage('✅ Status test başarılı - Motor cevabı alındı', false);
+                    statusTestBtn.textContent = '✅ Test Başarılı';
+                    statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    statusTestBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                } else {
+                    showMessage('❌ Status test başarısız: ' + data.message, true);
+                    statusTestBtn.textContent = '❌ Test Başarısız';
+                    statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    statusTestBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                }
+            } catch (error) {
+                console.error('Status test hatası:', error);
+                showMessage('❌ Status test hatası: ' + error.message, true);
+                statusTestBtn.textContent = '❌ Test Hatası';
+                statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                statusTestBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            }
+            
+            // 3 saniye sonra butonu tekrar aktif et
+            setTimeout(() => {
+                statusTestBtn.disabled = false;
+                statusTestBtn.textContent = '🔍 Status Test (s)';
+                statusTestBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'bg-red-600', 'hover:bg-red-700');
+                statusTestBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+            }, 3000);
         });
     }
 }

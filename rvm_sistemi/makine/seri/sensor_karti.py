@@ -269,7 +269,7 @@ class SensorKart:
         
         # Eğer sağlık durumu değiştiyse (PONG geldi), başarılı
         if self.saglikli:
-            log_system(f"{self.cihaz_adi} ping başarılı")
+            #log_system(f"{self.cihaz_adi} ping başarılı")
             return True
         
         # PONG gelmedi, başarısız
@@ -489,19 +489,6 @@ class SensorKart:
         
         message_lower = message.lower()
         
-        # ESP32 boot mesajlarını bypass et
-        if (message.startswith("ets") or 
-            message.startswith("rst:") or 
-            message.startswith("configsip:") or 
-            message.startswith("clk_drv:") or 
-            message.startswith("mode:") or 
-            message.startswith("load:") or 
-            message.startswith("entry") or
-            message.startswith("E (") and "gpio:" in message):
-            # ESP32 boot mesajları - bypass et
-            log_system(f"{self.cihaz_adi} ESP32 boot mesajı bypass edildi: {message[:50]}...")
-            return
-        
         if message_lower == "pong":
             self.saglikli = True
         elif message_lower == "resetlendi":
@@ -523,7 +510,6 @@ class SensorKart:
             if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
                 log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
-                self.saglikli = True  # Sağlıklı olarak işaretle
             else:
                 # Ping alınmamışsa, fiziksel bağlantı sorunu
                 log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
