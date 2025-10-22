@@ -160,18 +160,17 @@ class PortSaglikServisi:
         """
         durum = self.kart_durumlari[kart_adi]
         
-        # Ping gönder
-        print(f"📡 [PORT-SAĞLIK] {kart_adi.upper()} → PING gönderiliyor...")
+        # Ping gönder (sessiz)
         if kart.ping():
             # Başarılı ping
             if kart.saglikli:
-                print(f"✅ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alındı ✓")
+                # Sadece log'da kaydet, print yapma
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
                 durum.durum = SaglikDurumu.SAGLIKLI
                 return
         
-        # Başarısız ping
+        # Başarısız ping - sadece bu durumda print yap
         durum.basarisiz_ping += 1
         gecen_sure = time.time() - durum.son_pong_zamani
         

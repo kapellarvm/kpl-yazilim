@@ -881,10 +881,11 @@ def mesaj_isle(mesaj: str):
     # Oturum başlatma
     if mesaj == "oturum_var":
         # Port sağlık servisini durdur
-        from ..seri.port_saglik_servisi import port_saglik_servisi
-        if port_saglik_servisi:
-            port_saglik_servisi.servisi_durdur()
-            log_system("Port sağlık servisi durduruldu - Oturum başlıyor")
+        from .. import kart_referanslari
+        port_saglik = kart_referanslari.port_saglik_servisi_al()
+        if port_saglik:
+            port_saglik.oturum_durumu_guncelle(oturum_var=True)
+            log_system("Port sağlık servisi duraklatıldı - Oturum aktif")
         
         if not sistem.lojik_thread_basladi:
             print(f"\n{'*'*60}")
@@ -990,10 +991,11 @@ def sistem_kapat():
     time.sleep(0.1)
     
     # Port sağlık servisini başlat
-    from ..seri.port_saglik_servisi import port_saglik_servisi
-    if port_saglik_servisi:
-        port_saglik_servisi.servisi_baslat()
-        log_system("Port sağlık servisi başlatıldı - Oturum kapandı")
+    from .. import kart_referanslari
+    port_saglik = kart_referanslari.port_saglik_servisi_al()
+    if port_saglik:
+        port_saglik.oturum_durumu_guncelle(oturum_var=False)
+        log_system("Port sağlık servisi devam ediyor - Oturum kapandı")
     
     print(f"✅ Sistem güvenli bir şekilde kapatıldı\n")
     log_success("Sistem güvenli bir şekilde kapatıldı")

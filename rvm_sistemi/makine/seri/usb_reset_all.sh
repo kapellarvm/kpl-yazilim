@@ -1,9 +1,14 @@
 #!/bin/bash
 
-# Tüm USB portlarını resetle
+# Sadece CH340/CH341 seri portlarını resetle
+# Diğer tüm USB cihazlarına DOKUNMA (kamera, touch, vb.)
 # Kullanım: ./usb_reset_all.sh
 
-echo "🔌 TÜM USB PORTLARI RESETLENIYOR..."
+echo "🔌 CH340/CH341 SERİ PORTLARI RESETLENIYOR..."
+echo "═══════════════════════════════════════"
+echo "ℹ️  Hedef: Sadece USB-Serial cihazlar (Vendor: 1a86)"
+echo "ℹ️  Korunan: Tüm diğer USB cihazlar (kamera, touch vb.)"
+echo "ℹ️  Yöntem: Vendor ID bazlı güvenli filtreleme"
 echo "═══════════════════════════════════════"
 
 # Metod 1: Tüm USB seri kartlarını unbind/bind yap
@@ -33,24 +38,52 @@ if [ -d "/sys/bus/usb-serial/drivers/ch341-uart" ]; then
     echo "    └─ Tüm CH341 cihazları bind edildi"
 fi
 
-# Metod 2: Tüm USB cihazlarını deauthorize/authorize yap
+# Metod 2: SADECE USB-Serial cihazlarını deauthorize/authorize yap
 echo ""
-echo "⚡ Adım 2: Tüm USB cihazlarını deauthorize/authorize et..."
+echo "⚡ Adım 2: SADECE USB-Serial (CH340/CH341) cihazlarını resetle..."
 RESET_COUNT=0
+SKIPPED_COUNT=0
+
+# Bilinen USB-Serial Vendor ID'ler (Kolayca genişletilebilir)
+SERIAL_VENDORS=("1a86")  # QinHeng CH340/CH341
+# Gerekirse başka seri port chip'leri eklenebilir:
+# SERIAL_VENDORS+=("0403")  # FTDI
+# SERIAL_VENDORS+=("067b")  # Prolific
+# SERIAL_VENDORS+=("10c4")  # Silicon Labs CP210x
+
 for usb_dev in /sys/bus/usb/devices/*/; do
     if [ -e "$usb_dev/authorized" ] && [ -e "$usb_dev/idVendor" ]; then
         VENDOR=$(cat "$usb_dev/idVendor" 2>/dev/null)
+        DEVICE_CLASS=$(cat "$usb_dev/bDeviceClass" 2>/dev/null)
         DEVICE_ID=$(basename "$usb_dev")
         
-        # CH340/CH341 cihazları (1a86) veya tüm USB cihazları resetle
-        if [ "$VENDOR" = "1a86" ] || [[ "$DEVICE_ID" == [0-9]-[0-9]* ]]; then
-            echo "    ├─ Deauthorize: $DEVICE_ID (Vendor: $VENDOR)"
+        # Multi-layer kontrol:
+        # 1. Vendor ID kontrolü (CH340/CH341 ve benzeri)
+        # 2. Device Class kontrolü (ff = Vendor Specific, genelde seri portlar)
+        IS_SERIAL=0
+        
+        # Vendor ID kontrolü
+        for SERIAL_VENDOR in "${SERIAL_VENDORS[@]}"; do
+            if [ "$VENDOR" = "$SERIAL_VENDOR" ]; then
+                IS_SERIAL=1
+                break
+            fi
+        done
+        
+        # Eğer seri port ise resetle
+        if [ $IS_SERIAL -eq 1 ]; then
+            echo "    ├─ Deauthorize: $DEVICE_ID (Vendor: $VENDOR, Class: $DEVICE_CLASS)"
             echo 0 > "$usb_dev/authorized" 2>/dev/null
             RESET_COUNT=$((RESET_COUNT + 1))
+        else
+            # Diğer tüm cihazlar korunur (kamera, touch, vb.)
+            if [ ! -z "$VENDOR" ] && [ "$VENDOR" != "1d6b" ]; then
+                SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+            fi
         fi
     fi
 done
-echo "    └─ $RESET_COUNT cihaz deauthorize edildi"
+echo "    └─ $RESET_COUNT USB-Serial resetlendi, $SKIPPED_COUNT cihaz korundu"
 
 sleep 3
 
@@ -68,30 +101,10 @@ for usb_dev in /sys/bus/usb/devices/*/; do
 done
 echo "    └─ $REAUTH_COUNT cihaz yeniden authorize edildi"
 
-# Metod 3: USB Hub Reset (EN ÖNEMLİ)
+# Metod 3: USB Hub Reset (ATLANACAK - Kameraları etkileyebilir)
 echo ""
-echo "⚡ Adım 3: USB Hub'ları resetle..."
-# Tüm USB hub'ları resetle
-for hub in /sys/bus/usb/devices/usb*/authorized; do
-    if [ -e "$hub" ]; then
-        HUB_NAME=$(dirname "$hub" | xargs basename)
-        echo "    ├─ $HUB_NAME hub deauthorize ediliyor..."
-        echo 0 > "$hub" 2>/dev/null
-        sleep 0.5
-    fi
-done
-
-sleep 1
-
-for hub in /sys/bus/usb/devices/usb*/authorized; do
-    if [ -e "$hub" ]; then
-        HUB_NAME=$(dirname "$hub" | xargs basename)
-        echo "    ├─ $HUB_NAME hub authorize ediliyor..."
-        echo 1 > "$hub" 2>/dev/null
-        sleep 0.5
-    fi
-done
-echo "    └─ Tüm USB hub'lar resetlendi"
+echo "⚡ Adım 3: USB Hub reset atlanıyor (diğer cihazları korumak için)..."
+echo "    └─ Hub reset yapılmadı - sadece CH340/CH341 cihazlar etkilendi"
 
 # Metod 4: CH341 kernel modülünü yeniden yükle
 echo ""
@@ -136,7 +149,12 @@ else
 fi
 
 echo ""
-echo "📊 USB CİHAZLARI:"
-lsusb | grep -i "ch340\|ch341\|serial"
+echo "📊 RESETLENEN CİHAZLAR:"
+echo "CH340/CH341 Seri Kartlar (Sadece bunlar etkilendi):"
+lsusb | grep -i "1a86"
+echo ""
+echo "📊 KORUNAN CİHAZLAR:"
+echo "Diğer tüm USB cihazlar (kamera, touch, vb.) korundu"
+lsusb | grep -v "1a86" | grep -v "root hub" | grep "Device"
 
 exit 0

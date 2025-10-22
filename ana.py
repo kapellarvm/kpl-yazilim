@@ -197,6 +197,10 @@ async def main():
     # Port sağlık servisini başlat (AKTİF)
     port_saglik_servisi = PortSaglikServisi(motor, sensor)
     port_saglik_servisi.servisi_baslat()
+    
+    # Merkezi referans sistemine kaydet
+    kart_referanslari.port_saglik_servisi_referansini_ayarla(port_saglik_servisi)
+    
     log_system("Port sağlık servisi başlatıldı - Arka planda ping/pong kontrolü aktif")
     '''
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
