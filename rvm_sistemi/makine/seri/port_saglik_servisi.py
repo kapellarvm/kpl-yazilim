@@ -197,16 +197,17 @@ class PortSaglikServisi:
         
         print(f"❌ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alınamadı! (Başarısız: {durum.basarisiz_ping}/{self.MAX_PING_HATA})")
         
-        # Durum güncelle
-        if durum.basarisiz_ping >= self.MAX_PING_HATA:
-            durum.durum = SaglikDurumu.KRITIK
-            print(f"🚨 [PORT-SAĞLIK] {kart_adi.upper()} → KRİTİK DURUM! USB reset gerekiyor...")
-        elif gecen_sure > self.PING_ARASI_SURE * 2:
-            durum.durum = SaglikDurumu.UYARI
-            print(f"⚠️  [PORT-SAĞLIK] {kart_adi.upper()} → UYARI! Son pong: {gecen_sure:.1f}s önce")
-        
         # ✅ 5 ping başarısızlığında reconnection mekanizmasını tetikle
         if durum.basarisiz_ping >= self.MAX_PING_HATA:
+            # ✅ Önce kart zaten reconnecting mi kontrol et
+            if system_state.is_card_reconnecting(kart_adi):
+                log_warning(f"⚠️ [PORT-SAĞLIK] {kart_adi.upper()} zaten reconnection yapıyor, duplicate reconnection atlanıyor")
+                # Başarısızlık sayacını sıfırla (reconnection zaten devam ediyor)
+                durum.basarisiz_ping = 0
+                # Durum UYARI olarak set et (KRITIK değil, çünkü reconnection devam ediyor)
+                durum.durum = SaglikDurumu.UYARI
+                return
+
             print(f"🚨 [PORT-SAĞLIK] {kart_adi.upper()} kartı {self.MAX_PING_HATA} kere ping başarısız - RECONNECTION başlatılıyor!")
             log_system(f"{kart_adi.upper()} kartı ping başarısız - yeniden başlatılıyor")
 
@@ -220,6 +221,16 @@ class PortSaglikServisi:
 
             # Başarısızlık sayacını sıfırla (reconnection başlatıldı)
             durum.basarisiz_ping = 0
+            # ✅ Durum UYARI olarak set et (KRITIK değil, reconnection başlatıldı)
+            durum.durum = SaglikDurumu.UYARI
+            return
+
+        # Durum güncelle (sadece reconnection başlatılmadıysa)
+        if gecen_sure > self.PING_ARASI_SURE * 2:
+            durum.durum = SaglikDurumu.UYARI
+            print(f"⚠️  [PORT-SAĞLIK] {kart_adi.upper()} → UYARI! Son pong: {gecen_sure:.1f}s önce")
+        else:
+            durum.durum = SaglikDurumu.SAGLIKLI
     
     def _durumlari_degerlendir(self):
         """Kart durumlarını değerlendir ve gerekirse müdahale et"""
