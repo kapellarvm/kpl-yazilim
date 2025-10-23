@@ -724,6 +724,13 @@ class SensorKart:
 
     def _handle_connection_error(self):
         """Bağlantı hatası yönetimi - System State Manager ile - İYİLEŞTİRİLMİŞ"""
+
+        # ✅ ÖNCELİKLE reconnection durumu kontrol et - race condition önlemi
+        # Eğer başka bir thread zaten reconnection başlattıysa, bu thread sessizce çıkar
+        if not system_state.can_start_reconnection(self.cihaz_adi):
+            log_debug(f"{self.cihaz_adi} reconnection başka bir thread tarafından yönetiliyor, bu thread sonlandırılıyor")
+            return
+
         # ✅ USB reset devam ediyorsa bekle (diğer kartın reset'i bitsin)
         if system_state.get_system_state() == SystemState.USB_RESETTING:
             log_system(f"{self.cihaz_adi} USB reset devam ediyor, bekleniyor...")
@@ -738,16 +745,9 @@ class SensorKart:
             log_system(f"{self.cihaz_adi} USB reset bitti, reconnection başlatılıyor...")
             time.sleep(1)  # Reset sonrası stabilizasyon
 
-        # System state manager ile reconnection kontrolü
-        if not system_state.can_start_reconnection(self.cihaz_adi):
-            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul")
-            # ✅ Mevcut reconnection'ı zorla bitir ve yeniden başlat
-            log_warning(f"{self.cihaz_adi} mevcut reconnection zorla bitiriliyor")
-            system_state.finish_reconnection(self.cihaz_adi, False)
-        
-        # Reconnection başlat
+        # ✅ Reconnection başlat (TEKRAR KONTROL ET - wait sırasında başka thread başlatmış olabilir)
         if not system_state.start_reconnection(self.cihaz_adi, "I/O Error"):
-            log_warning(f"{self.cihaz_adi} reconnection başlatılamadı")
+            log_debug(f"{self.cihaz_adi} reconnection başlatılamadı (başka thread zaten başlattı)")
             return
         
         try:
@@ -897,11 +897,28 @@ class SensorKart:
                 time.sleep(delay)
             
             log_error(f"{self.cihaz_adi} yeniden bağlanamadı ({self.MAX_RETRY} deneme)")
+
+            # ✅ Zombie port claim'i temizle - başarısız reconnection'dan sonra
+            if self.port_adi:
+                log_system(f"{self.cihaz_adi} reconnection başarısız - zombie port claim temizleniyor: {self.port_adi}")
+                self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                self.port_adi = None
+
             # Başarısız reconnection
             system_state.finish_reconnection(self.cihaz_adi, False)
-            
+
         except Exception as e:
             log_exception(f"{self.cihaz_adi} reconnection worker hatası", exc_info=(type(e), e, e.__traceback__))
+
+            # ✅ Exception durumunda da zombie port claim'i temizle
+            if self.port_adi:
+                log_system(f"{self.cihaz_adi} exception sonrası zombie port claim temizleniyor: {self.port_adi}")
+                try:
+                    self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                    self.port_adi = None
+                except Exception:
+                    pass  # En azından finish_reconnection çağrılsın
+
             system_state.finish_reconnection(self.cihaz_adi, False)
         finally:
             # Thread kaydını sil
