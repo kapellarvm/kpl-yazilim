@@ -31,6 +31,7 @@ class KartDurumu:
     basarisiz_ping: int = 0
     durum: SaglikDurumu = SaglikDurumu.BAGLANTI_YOK
     reset_deneme: int = 0
+    son_reconnection_zamani: float = 0  # Son başarılı reconnection zamanı
 
 
 class PortSaglikServisi:
@@ -181,15 +182,32 @@ class PortSaglikServisi:
             # Başarılı ping
             if kart.saglikli:
                 print(f"✅ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alındı ✓")
+
+                # ✅ Recovery detection: UYARI/KRITIK'ten SAGLIKLI'ya geçiş = reconnection başarılı
+                if durum.durum != SaglikDurumu.SAGLIKLI:
+                    durum.son_reconnection_zamani = time.time()
+                    log_system(f"[PORT-SAĞLIK] {kart_adi.upper()} recovery başarılı - cooldown periyodu başladı")
+
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
                 durum.durum = SaglikDurumu.SAGLIKLI
                 return
         
         # Başarısız ping
+
+        # ✅ COOLDOWN KONTROLÜ: Son reconnection'dan sonra 10 saniye geçmediyse ping timeout ignore et
+        # ESP32 boot süreci 3-5 saniye sürdüğü için ilk ping'ler timeout alabilir
+        reconnection_cooldown = 10  # saniye
+        if durum.son_reconnection_zamani > 0:
+            cooldown_suresi = time.time() - durum.son_reconnection_zamani
+            if cooldown_suresi < reconnection_cooldown:
+                print(f"⏸️  [PORT-SAĞLIK] {kart_adi.upper()} → PONG timeout (cooldown: {cooldown_suresi:.1f}s/{reconnection_cooldown}s) - ignore ediliyor")
+                # Başarısızlık sayısını ARTIRMA - ESP32 boot süreci devam ediyor
+                return
+
         durum.basarisiz_ping += 1
         gecen_sure = time.time() - durum.son_pong_zamani
-        
+
         print(f"❌ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alınamadı! (Başarısız: {durum.basarisiz_ping}/{self.MAX_PING_HATA})")
         
         # ✅ 5 ping başarısızlığında reconnection mekanizmasını tetikle

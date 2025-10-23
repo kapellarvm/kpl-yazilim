@@ -813,7 +813,7 @@ class MotorKart:
         # ✅ ÖNCELİKLE reconnection durumu kontrol et - race condition önlemi
         # Eğer başka bir thread zaten reconnection başlattıysa, bu thread sessizce çıkar
         if not system_state.can_start_reconnection(self.cihaz_adi):
-            log_debug(f"{self.cihaz_adi} reconnection başka bir thread tarafından yönetiliyor, bu thread sonlandırılıyor")
+            log_system(f"{self.cihaz_adi} reconnection başka bir thread tarafından yönetiliyor, bu thread sonlandırılıyor")
             return
 
         # ✅ USB reset devam ediyorsa bekle (diğer kartın reset'i bitsin)
@@ -832,7 +832,7 @@ class MotorKart:
 
         # ✅ Reconnection başlat (TEKRAR KONTROL ET - wait sırasında başka thread başlatmış olabilir)
         if not system_state.start_reconnection(self.cihaz_adi, "I/O Error"):
-            log_debug(f"{self.cihaz_adi} reconnection başlatılamadı (başka thread zaten başlattı)")
+            log_system(f"{self.cihaz_adi} reconnection başlatılamadı (başka thread zaten başlattı)")
             return
         
         try:
