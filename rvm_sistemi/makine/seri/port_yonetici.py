@@ -633,8 +633,8 @@ class KartHaberlesmeServis:
 
     def _close_all_ports(self, try_usb_reset: bool = False) -> None:
         """
-        Tüm seri portları kapat
-        
+        Tüm seri portları kapat - ANCAK zaten kullanımda olanları koru
+
         Args:
             try_usb_reset: I/O hatası durumunda USB reset denensin mi?
         """
@@ -642,12 +642,12 @@ class KartHaberlesmeServis:
             log_system("Tüm açık portlar kapatılıyor...")
             ports = self.scanner.get_available_ports()
             has_io_error = False
-            
+
             for port_info in ports:
                 if self.scanner.is_compatible_port(port_info.device):
                     try:
                         # Portu açmayı dene ve hemen kapat
-                        test_ser = serial.Serial(port_info.device, timeout=0.1)
+                        test_ser = serial.Serial(port_info.device, timeout=0.1, exclusive=True)
                         test_ser.close()
                         log_system(f"{port_info.device} portu kapatıldı")
                     except serial.SerialException as e:
@@ -656,11 +656,17 @@ class KartHaberlesmeServis:
                         if "input/output" in error_str or "errno 5" in error_str:
                             log_warning(f"{port_info.device} I/O hatası - fiziksel bağlantı kopmuş: {e}")
                             has_io_error = True
-                        elif any(keyword in error_str for keyword in ["permission", "busy", "in use"]):
-                            log_warning(f"{port_info.device} port meşgul: {e}")
+                        elif any(keyword in error_str for keyword in ["permission", "busy", "in use", "resource busy"]):
+                            # ✅ Port başka bir thread tarafından kullanılıyor - KORU!
+                            log_system(f"{port_info.device} port kullanımda, korunuyor")
                         # Diğer SerialException'lar için sessiz geç
                     except OSError as e:
-                        log_warning(f"{port_info.device} sistem hatası: {e}")
+                        error_str = str(e).lower()
+                        if "resource busy" in error_str or "device or resource busy" in error_str:
+                            # ✅ Port kullanımda - KORU!
+                            log_system(f"{port_info.device} port kullanımda, korunuyor")
+                        else:
+                            log_warning(f"{port_info.device} sistem hatası: {e}")
                     except Exception as e:
                         log_warning(f"{port_info.device} kapatma hatası: {e}")
             
@@ -882,19 +888,19 @@ class KartHaberlesmeServis:
     
     def _scan_single_port(self, port_info, target_device: Optional[str] = None) -> Optional[Tuple[str, str]]:
         """
-        Tek bir portu tara
-        
+        Tek bir portu tara - Zaten kullanımda olanları skip et
+
         Args:
             port_info: Port bilgisi
             target_device: Hedef cihaz
-            
+
         Returns:
             Optional[Tuple[str, str]]: (cihaz_tipi, port_adı) veya None
         """
         port_device = port_info.device
-        
+
         log_system(f"{port_device} taranıyor...")
-        
+
         # Port'un fiziksel olarak mevcut olup olmadığını kontrol et
         try:
             # Port dosyasının varlığını kontrol et (Linux için)
@@ -904,7 +910,17 @@ class KartHaberlesmeServis:
                 return None
         except:
             pass  # Windows'ta bu kontrol çalışmayabilir
-        
+
+        # ✅ Port kullanımda mı kontrol et (başka bir thread tarafından)
+        try:
+            test_ser = serial.Serial(port_device, timeout=0.05, exclusive=True)
+            test_ser.close()
+        except (serial.SerialException, OSError) as e:
+            error_str = str(e).lower()
+            if any(keyword in error_str for keyword in ["busy", "in use", "resource busy"]):
+                log_system(f"{port_device} port kullanımda, tarama atlanıyor")
+                return None
+
         with self.connection.open_port(port_device) as ser:
             if not ser:
                 log_warning(f"{port_device} açılamadı")
