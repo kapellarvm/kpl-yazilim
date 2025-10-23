@@ -133,12 +133,11 @@ class MotorKart:
                         log_system(f"{self.cihaz_adi} _auto_find_port - thread'ler başarıyla başlatıldı")
                     else:
                         log_warning(f"{self.cihaz_adi} _auto_find_port - thread'ler başlatılamadı")
-                    
-                    # İlk bağlantı sonrası reset komutu gönder
-                    log_system(f"{self.cihaz_adi} ilk bağlantı sonrası reset komutu gönderiliyor...")
-                    self.reset()
-                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
-                    
+
+                    # ✅ RESET KALDIRILDI - İlk bağlantı gibi davran
+                    # İlk bağlantıda reset atmıyoruz ve her şey çalışıyor
+                    # Reconnection'da da reset atmaya gerek yok!
+
                     return True
                 else:
                     log_warning(f"{self.cihaz_adi} port bulundu ama bağlantı kurulamadı: {self.port_adi}")
@@ -173,12 +172,9 @@ class MotorKart:
                 if self._auto_find_port():
                     time.sleep(1)
                     self.parametre_gonder()
-                    
-                    # Arka plan arama sonrası reset komutu gönder
-                    log_system(f"{self.cihaz_adi} arka plan arama sonrası reset komutu gönderiliyor...")
-                    self.reset()
-                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
-                    
+
+                    # ✅ RESET KALDIRILDI - İlk bağlantı gibi davran
+
                     self._connection_attempts = 0
                     # Thread durumunu kontrol et
                     if self.thread_durumu_kontrol():
@@ -575,9 +571,25 @@ class MotorKart:
         """Yazma thread'i - optimized"""
         komutlar = self._get_komut_sozlugu()
         log_system(f"{self.cihaz_adi} write thread başlatıldı")
-        
+
+        # ✅ DEBUG: Her 5 saniyede bir 's' komutu göndermek için timer
+        last_debug_time = time.time()
+        DEBUG_INTERVAL = 5  # saniye
+
         while self.running:
             try:
+                # ✅ DEBUG: Her 5 saniyede bir 's' komutu gönder
+                if time.time() - last_debug_time >= DEBUG_INTERVAL:
+                    if self._is_port_ready():
+                        try:
+                            log_system(f"🔵 [DEBUG-{self.cihaz_adi}] 5 saniye geçti, 's' komutu gönderiliyor...")
+                            self.seri_nesnesi.write(b's\n')
+                            self.seri_nesnesi.flush()
+                            log_success(f"🔵 [DEBUG-{self.cihaz_adi}] 's' komutu gönderildi")
+                        except Exception as e:
+                            log_warning(f"🔵 [DEBUG-{self.cihaz_adi}] 's' komutu gönderilemedi: {e}")
+                    last_debug_time = time.time()
+
                 # Komut al
                 try:
                     command, data = self.write_queue.get(timeout=1)
