@@ -343,15 +343,20 @@ class MotorKart:
         """Port açma - thread-safe"""
         if not self.port_adi:
             return False
-        
+
         try:
             with self._port_lock:
-                # Eski portu kapat
+                # ✅ Eski port adını sakla - self.port_adi zaten yeni port olabilir!
+                old_port_path = None
                 if self.seri_nesnesi and self.seri_nesnesi.is_open:
-                    # ✅ Port sahipliğini release et
-                    if self.port_adi:
-                        system_state.release_port(self.port_adi, self.cihaz_adi)
+                    old_port_path = self.seri_nesnesi.port  # Gerçek eski port path
+
+                # Eski portu kapat ve release et
+                if old_port_path:
+                    system_state.release_port(old_port_path, self.cihaz_adi)
+                    log_system(f"{self.cihaz_adi} eski port release edildi: {old_port_path}")
                     self.seri_nesnesi.close()
+                    self.seri_nesnesi = None
                     time.sleep(0.5)
                 
                 # Yeni port aç
@@ -888,15 +893,11 @@ class MotorKart:
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
                 
                 if self._auto_find_port():
-                    # ✅ Başarılı, parametre ve reset komutlarını gönder
+                    # ✅ Başarılı, parametre gönder (reset zaten _auto_find_port içinde atıldı)
                     time.sleep(1)
                     self.parametre_gonder()  # Motor parametrelerini tekrar gönder
-                    
-                    # Bağlantı sonrası reset komutu gönder
-                    log_system(f"{self.cihaz_adi} bağlantı sonrası reset komutu gönderiliyor...")
-                    self.reset()
-                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
-                    
+                    time.sleep(1)  # Parametrelerin işlenmesi için bekle
+
                     self._connection_attempts = 0
                     log_success(f"{self.cihaz_adi} yeniden bağlandı")
                     
