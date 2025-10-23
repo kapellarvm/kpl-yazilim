@@ -572,24 +572,8 @@ class MotorKart:
         komutlar = self._get_komut_sozlugu()
         log_system(f"{self.cihaz_adi} write thread başlatıldı")
 
-        # ✅ DEBUG: Her 5 saniyede bir 's' komutu göndermek için timer
-        last_debug_time = time.time()
-        DEBUG_INTERVAL = 5  # saniye
-
         while self.running:
             try:
-                # ✅ DEBUG: Her 5 saniyede bir 's' komutu gönder
-                if time.time() - last_debug_time >= DEBUG_INTERVAL:
-                    if self._is_port_ready():
-                        try:
-                            log_system(f"🔵 [DEBUG-{self.cihaz_adi}] 5 saniye geçti, 's' komutu gönderiliyor...")
-                            self.seri_nesnesi.write(b's\n')
-                            self.seri_nesnesi.flush()
-                            log_success(f"🔵 [DEBUG-{self.cihaz_adi}] 's' komutu gönderildi")
-                        except Exception as e:
-                            log_warning(f"🔵 [DEBUG-{self.cihaz_adi}] 's' komutu gönderilemedi: {e}")
-                    last_debug_time = time.time()
-
                 # Komut al
                 try:
                     command, data = self.write_queue.get(timeout=1)
@@ -929,45 +913,29 @@ class MotorKart:
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
                 
                 if self._auto_find_port():
-                    # ✅ Port bulundu ve bağlandı
-                    time.sleep(0.5)
+                    # ✅ Port bulundu, thread'ler başladı
+                    time.sleep(1.0)  # Thread'lerin tam başlaması için bekle
 
-                    # ✅ Motor kartının sağlığını doğrula - 's' komutu gönder
-                    log_system(f"{self.cihaz_adi} reconnection doğrulaması - 's' komutu gönderiliyor...")
+                    # ✅ Ping/Pong ile motor kartını doğrula
+                    log_system(f"{self.cihaz_adi} reconnection doğrulaması - ping/pong testi...")
                     motor_saglikli = False
+
                     for dogrulama_denemesi in range(3):
-                        try:
-                            if self.seri_nesnesi and self.seri_nesnesi.is_open:
-                                self.seri_nesnesi.write(b's\n')
-                                self.seri_nesnesi.flush()
-                                time.sleep(0.5)
-
-                                # 'motor' yanıtını bekle
-                                basla = time.time()
-                                while time.time() - basla < 1.0:
-                                    if self.seri_nesnesi.in_waiting:
-                                        yanit = self.seri_nesnesi.readline().decode('utf-8', errors='ignore').strip()
-                                        if yanit == 'motor':
-                                            log_success(f"{self.cihaz_adi} doğrulama başarılı - 'motor' yanıtı alındı")
-                                            motor_saglikli = True
-                                            break
-                                    time.sleep(0.05)
-
-                                if motor_saglikli:
-                                    break
-                                else:
-                                    log_warning(f"{self.cihaz_adi} doğrulama denemesi {dogrulama_denemesi + 1}/3 başarısız")
-                        except Exception as e:
-                            log_warning(f"{self.cihaz_adi} doğrulama hatası: {e}")
-                        time.sleep(0.5)
+                        if self.ping():  # Mevcut ping() fonksiyonunu kullan
+                            log_success(f"{self.cihaz_adi} doğrulama başarılı - PONG alındı")
+                            motor_saglikli = True
+                            break
+                        else:
+                            log_warning(f"{self.cihaz_adi} doğrulama denemesi {dogrulama_denemesi + 1}/3 - PONG alınamadı")
+                            time.sleep(0.5)
 
                     if not motor_saglikli:
-                        log_warning(f"{self.cihaz_adi} doğrulama başarısız - bağlantı güvenilir değil")
+                        log_error(f"{self.cihaz_adi} doğrulama başarısız - ping/pong çalışmıyor")
                         continue  # Reconnection'ı tekrar dene
 
                     # ✅ Motor kartı sağlıklı, parametre gönder
                     time.sleep(0.5)
-                    self.parametre_gonder()  # Motor parametrelerini tekrar gönder
+                    self.parametre_gonder()
                     time.sleep(0.5)
 
                     self._connection_attempts = 0
