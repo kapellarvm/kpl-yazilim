@@ -4,7 +4,8 @@ import time
 
 from rvm_sistemi.dimdb import dimdb_istemcisi
 from rvm_sistemi.utils.logger import rvm_logger, log_system, log_dimdb, log_motor, log_sensor, log_oturum, log_error, setup_exception_handler
-from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
+from rvm_sistemi.makine.seri.simple_port_manager import SimplePortManager
+from rvm_sistemi.makine.seri.simple_health_monitor import SimpleHealthMonitor
 from rvm_sistemi.makine.seri.sensor_karti import SensorKart
 from rvm_sistemi.makine.seri.motor_karti import MotorKart
 from rvm_sistemi.makine.senaryolar import oturum_yok, oturum_var
@@ -14,7 +15,6 @@ from rvm_sistemi.zamanli_gorevler import urun_guncelleyici
 from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
 from rvm_sistemi.makine.modbus.modbus_kontrol import init_motor_kontrol
 from rvm_sistemi.api.servisler.uyku_modu_servisi import uyku_modu_servisi
-from rvm_sistemi.makine.seri.port_saglik_servisi import PortSaglikServisi
 
 
 motor = None
@@ -49,7 +49,7 @@ def modbus_callback(mesaj):
 async def main():
     global motor, sensor   # ✅ Sadece 1 tane global burada olmalı
 
-    yonetici = KartHaberlesmeServis()
+    port_manager = SimplePortManager()
     motor_kontrol = None  # Motor kontrol referansı
 
     # Elle port girildiyse buraya yaz
@@ -65,12 +65,8 @@ async def main():
         }
         print(f"🔧 Elle tanımlanan portlar: sensor={ELLE_SENSOR_PORT}, motor={ELLE_MOTOR_PORT}")
     else:
-        # İlk port arama - USB reset aktif ve max 2 deneme, kritik kartlar: motor ve sensor
-        basarili, mesaj, portlar = yonetici.baglan(
-            try_usb_reset=True, 
-            max_retries=2, 
-            kritik_kartlar=["motor", "sensor"]
-        )
+        # Yeni basitleştirilmiş port arama
+        basarili, mesaj, portlar = port_manager.find_cards()
         print("🛈", mesaj)
         print("🛈 Bulunan portlar:", portlar)
         log_system(f"Port arama sonucu: {mesaj}")
@@ -82,28 +78,41 @@ async def main():
             eksik_kartlar.append("sensor")
         if "motor" not in portlar:
             eksik_kartlar.append("motor")
-        
+
         if eksik_kartlar:
             eksik_liste = ", ".join(eksik_kartlar)
             print(f"❌ Kritik kartlar bulunamadı: {eksik_liste}")
             print(f"🔍 Bulunan kartlar: {list(portlar.keys()) if portlar else 'Hiçbiri'}")
             log_error(f"Kritik kartlar bulunamadı: {eksik_liste}")
             log_error(f"Bulunan kartlar: {list(portlar.keys()) if portlar else 'Hiçbiri'}")
-            
 
-            print("\n⚠️  Not: USB reset otomatik olarak denendi ancak başarısız oldu.")
+            print("\n⚠️  Not: Lütfen USB bağlantılarını kontrol edin.")
             return
 
-    # Sensör ve motoru başlat
+    # Sensör ve motoru başlat (YENİ: .start() metodu)
     print(f"🔧 Sensör kartı başlatılıyor: {portlar['sensor']}")
-    sensor = SensorKart(portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
-    sensor.dinlemeyi_baslat()
+    sensor = SensorKart(port_adi=portlar["sensor"], callback=sensor_callback, cihaz_adi="sensor")
+    sensor.start()
     log_sensor(f"Sensör kartı başlatıldı: {portlar['sensor']}")
 
     print(f"🔧 Motor kartı başlatılıyor: {portlar['motor']}")
-    motor = MotorKart(portlar["motor"], callback=motor_callback, cihaz_adi="motor")
-    motor.dinlemeyi_baslat()
+    motor = MotorKart(port_adi=portlar["motor"], callback=motor_callback, cihaz_adi="motor")
+    motor.start()
     log_motor(f"Motor kartı başlatıldı: {portlar['motor']}")
+
+    # Kartların hazır olmasını bekle (YENİ: state-based)
+    print("⏳ Kartların hazır olması bekleniyor...")
+    max_wait = 15
+    start_time = time.time()
+
+    while time.time() - start_time < max_wait:
+        if motor.is_ready() and sensor.is_ready():
+            print("✅ Tüm kartlar hazır!")
+            break
+        await asyncio.sleep(0.5)
+    else:
+        print("⚠️ Timeout - Kartlar hazır olmadı")
+        log_error("Kartlar başlatılamadı - timeout")
 
     # GA500 Modbus Client ve Motor Kontrol Sistemini Başlat
     client = GA500ModbusClient(callback=modbus_callback, cihaz_adi="ga500")
@@ -188,20 +197,20 @@ async def main():
     
     # Ürün güncelleme görevini başlat (zamanli_gorevler modülünden)
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
-    
+
     # Uyku modu servisini başlat
     #uyku_modu_servisi.sistem_referans_ayarla(oturum_var.sistem)
     #uyku_modu_servisi.uyku_kontrol_baslat()
     #log_system("Uyku modu servisi başlatıldı - 15 dakika sonra otomatik uyku modu")
-    
-    # Port sağlık servisini başlat (AKTİF)
-    port_saglik_servisi = PortSaglikServisi(motor, sensor)
-    port_saglik_servisi.servisi_baslat()
-    
+
+    # Yeni basitleştirilmiş health monitor
+    health_monitor = SimpleHealthMonitor(cards={"motor": motor, "sensor": sensor})
+    health_monitor.start()
+
     # Merkezi referans sistemine kaydet
-    kart_referanslari.port_saglik_servisi_referansini_ayarla(port_saglik_servisi)
-    
-    log_system("Port sağlık servisi başlatıldı - Arka planda ping/pong kontrolü aktif")
+    kart_referanslari.port_saglik_servisi_referansini_ayarla(health_monitor)
+
+    log_system("Health monitor başlatıldı - 5 saniyede bir ping kontrolü")
     '''
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     log_system("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
@@ -214,13 +223,13 @@ async def main():
     await heartbeat_servis.stop_heartbeat()
     await voltage_power_monitoring_servis.stop_monitoring()
     #uyku_modu_servisi.uyku_kontrol_durdur()
-    if port_saglik_servisi:
-        port_saglik_servisi.servisi_durdur()
+    if health_monitor:
+        health_monitor.stop()
     log_system("Tüm servisler durduruldu")
     product_update_task.cancel()
     urun_guncelleyici.durdur()
-    sensor.dinlemeyi_durdur()
-    motor.dinlemeyi_durdur()
+    sensor.stop()
+    motor.stop()
     
     # Motor kontrol sistemini temizle
     if motor_kontrol:

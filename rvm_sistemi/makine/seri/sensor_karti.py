@@ -89,7 +89,9 @@ class SensorKart(BaseCard):
 
     def _on_boot_message(self) -> None:
         """Override: Sensor kartı boot sequence'ı daha basit"""
-        if self._state.value != "connecting":
+        from rvm_sistemi.makine.seri.base_card import CardState
+
+        if self._state != CardState.CONNECTING:
             return
 
         # Sensor kartı için boot'u hemen tamamla
@@ -102,7 +104,7 @@ class SensorKart(BaseCard):
         self._write_queue.put(b'b\n')
 
         # Boot tamamlandı (kalibrasyon bekleme yok)
-        self._transition_to(BaseCard.CardState.CONNECTED)
+        self._transition_to(CardState.CONNECTED)
 
         # İlk ping gönder
         self._write_queue.put(b'ping\n')
