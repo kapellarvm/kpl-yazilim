@@ -689,13 +689,23 @@ class SensorKart:
 
     def _handle_connection_error(self):
         """Bağlantı hatası yönetimi - System State Manager ile - İYİLEŞTİRİLMİŞ"""
+        # ✅ USB reset devam ediyorsa bekle (diğer kartın reset'i bitsin)
+        if system_state.get_system_state() == SystemState.USB_RESETTING:
+            log_system(f"{self.cihaz_adi} USB reset devam ediyor, bekleniyor...")
+            # USB reset bitene kadar bekle (max 90 saniye)
+            wait_start = time.time()
+            while system_state.get_system_state() == SystemState.USB_RESETTING:
+                if time.time() - wait_start > 90:
+                    log_error(f"{self.cihaz_adi} USB reset timeout (90s), reconnection iptal ediliyor")
+                    return
+                time.sleep(0.5)
+
+            log_system(f"{self.cihaz_adi} USB reset bitti, reconnection başlatılıyor...")
+            time.sleep(1)  # Reset sonrası stabilizasyon
+
         # System state manager ile reconnection kontrolü
         if not system_state.can_start_reconnection(self.cihaz_adi):
             log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul")
-            # ✅ Eğer sistem USB reset yapıyorsa, bekle
-            if system_state.get_system_state() == SystemState.USB_RESETTING:
-                log_system(f"{self.cihaz_adi} USB reset devam ediyor, reconnection atlanıyor")
-                return
             # ✅ Mevcut reconnection'ı zorla bitir ve yeniden başlat
             log_warning(f"{self.cihaz_adi} mevcut reconnection zorla bitiriliyor")
             system_state.finish_reconnection(self.cihaz_adi, False)
