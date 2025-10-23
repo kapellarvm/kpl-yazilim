@@ -123,19 +123,14 @@ class PortSaglikServisi:
                 if self.oturum_var:
                     time.sleep(1)
                     continue
-                
-                # System state kontrolü - reconnection sırasında ping atma
-                from .system_state_manager import system_state
-                if system_state.is_system_busy():
-                    time.sleep(1)
-                    continue
-                
-                # Kartları kontrol et
+
+                # ✅ Global busy check kaldırıldı - her kartın kendi reconnection kontrolü var
+                # Kartları kontrol et (her kart kendi reconnection durumunu kontrol eder)
                 self._kartlari_kontrol_et()
-                
+
                 # Bekleme
                 time.sleep(self.PING_ARASI_SURE)
-                
+
             except Exception as e:
                 log_error(f"Port sağlık izleme hatası: {e}")
                 time.sleep(1)
