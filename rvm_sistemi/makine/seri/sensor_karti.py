@@ -269,10 +269,10 @@ class SensorKart:
     def guvenlik_kart_reset(self): 
         self._safe_queue_put("guvenlik_kart_reset", None)
 
-    def ping(self):
+    def ping(self, bypass_reconnection_check=False):
         """Ping - sadece mevcut bağlantıyı test et, port arama yapma - İYİLEŞTİRİLMİŞ V2"""
-        # ✅ Reconnect devam ediyorsa ping atma
-        if system_state.is_card_reconnecting(self.cihaz_adi):
+        # ✅ Reconnect devam ediyorsa ping atma (bypass_reconnection_check=True ile geçilebilir)
+        if not bypass_reconnection_check and system_state.is_card_reconnecting(self.cihaz_adi):
             log_warning(f"⚠️ [SENSOR-PING] Reconnect devam ediyor - ping atlanıyor")
             return False
         
@@ -850,17 +850,37 @@ class SensorKart:
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
                 
                 if self._auto_find_port():
+                    # ✅ Port bulundu, thread'ler başladı
+                    time.sleep(1.0)  # Thread'lerin tam başlaması için bekle
+
+                    # ✅ Ping/Pong ile sensor kartını doğrula
+                    log_system(f"{self.cihaz_adi} reconnection doğrulaması - ping/pong testi...")
+                    sensor_saglikli = False
+
+                    for dogrulama_denemesi in range(3):
+                        if self.ping(bypass_reconnection_check=True):  # ✅ Reconnection check bypass ile ping gönder
+                            log_success(f"{self.cihaz_adi} doğrulama başarılı - PONG alındı")
+                            sensor_saglikli = True
+                            break
+                        else:
+                            log_warning(f"{self.cihaz_adi} doğrulama denemesi {dogrulama_denemesi + 1}/3 - PONG alınamadı")
+                            time.sleep(0.5)
+
+                    if not sensor_saglikli:
+                        log_error(f"{self.cihaz_adi} doğrulama başarısız - ping/pong çalışmıyor")
+                        continue  # Reconnection'ı tekrar dene
+
                     # ✅ Başarılı, bağlantı kuruldu
                     self._connection_attempts = 0
-                    
+
                     log_success(f"{self.cihaz_adi} yeniden bağlandı")
-                    
+
                     # Thread durumunu kontrol et ve logla
                     if self.thread_durumu_kontrol():
                         log_system(f"{self.cihaz_adi} reconnection tamamlandı - thread'ler çalışıyor")
                     else:
                         log_warning(f"{self.cihaz_adi} reconnection tamamlandı ama thread'ler çalışmıyor")
-                    
+
                     # Başarılı reconnection
                     system_state.finish_reconnection(self.cihaz_adi, True)
                     return

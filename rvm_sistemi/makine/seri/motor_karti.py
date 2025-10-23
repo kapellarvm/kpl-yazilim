@@ -292,10 +292,10 @@ class MotorKart:
     def atik_uzunluk(self):
         self._safe_queue_put("atik_uzunluk", None)
 
-    def ping(self):
+    def ping(self, bypass_reconnection_check=False):
         """Ping - sadece mevcut bağlantıyı test et, port arama yapma - İYİLEŞTİRİLMİŞ V2"""
-        # ✅ Reconnect devam ediyorsa ping atma
-        if system_state.is_card_reconnecting(self.cihaz_adi):
+        # ✅ Reconnect devam ediyorsa ping atma (bypass_reconnection_check=True ile geçilebilir)
+        if not bypass_reconnection_check and system_state.is_card_reconnecting(self.cihaz_adi):
             log_warning(f"⚠️ [MOTOR-PING] Reconnect devam ediyor - ping atlanıyor")
             return False
         
@@ -921,7 +921,7 @@ class MotorKart:
                     motor_saglikli = False
 
                     for dogrulama_denemesi in range(3):
-                        if self.ping():  # Mevcut ping() fonksiyonunu kullan
+                        if self.ping(bypass_reconnection_check=True):  # ✅ Reconnection check bypass ile ping gönder
                             log_success(f"{self.cihaz_adi} doğrulama başarılı - PONG alındı")
                             motor_saglikli = True
                             break
