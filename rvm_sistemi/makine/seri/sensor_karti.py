@@ -853,7 +853,7 @@ class SensorKart:
                         self.dinlemeyi_durdur()
                         if self.seri_nesnesi and self.seri_nesnesi.is_open:
                             self.seri_nesnesi.close()
-                        self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                        system_state.release_port(self.port_adi, self.cihaz_adi)
                         continue  # Reconnection'ı tekrar dene
 
                     # ✅ Başarılı, bağlantı kuruldu
@@ -879,7 +879,7 @@ class SensorKart:
             # ✅ Zombie port claim'i temizle - başarısız reconnection'dan sonra
             if self.port_adi:
                 log_system(f"{self.cihaz_adi} reconnection başarısız - zombie port claim temizleniyor: {self.port_adi}")
-                self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                system_state.release_port(self.port_adi, self.cihaz_adi)
                 self.port_adi = None
 
             # Başarısız reconnection
@@ -892,7 +892,7 @@ class SensorKart:
             if self.port_adi:
                 log_system(f"{self.cihaz_adi} exception sonrası zombie port claim temizleniyor: {self.port_adi}")
                 try:
-                    self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                    system_state.release_port(self.port_adi, self.cihaz_adi)
                     self.port_adi = None
                 except Exception:
                     pass  # En azından finish_reconnection çağrılsın

@@ -68,10 +68,13 @@ class PortSaglikServisi:
         self.oturum_var = False
         self._monitor_thread = None
         self._thread_lock = threading.Lock()
-        
+
+        # Durum değişikliği takibi (görsel mesaj için)
+        self._last_health_status = None  # "healthy", "warning", "critical"
+
         # İlk durumları ayarla
         self._durumlari_sifirla()
-        
+
         log_system("Port Sağlık Servisi başlatıldı")
     
     def servisi_baslat(self):
@@ -245,13 +248,46 @@ class PortSaglikServisi:
     def _durumlari_degerlendir(self):
         """Kart durumlarını değerlendir ve gerekirse müdahale et"""
         kritik_kartlar = []
-        
-        # Kritik durumları tespit et
+        uyari_kartlar = []
+        saglikli_kartlar = []
+
+        # Kart durumlarını topla
         for kart_adi, durum in self.kart_durumlari.items():
             if durum.durum == SaglikDurumu.KRITIK:
                 kritik_kartlar.append(kart_adi)
                 log_error(f"{kart_adi.upper()} kartı kritik durumda!")
-        
+            elif durum.durum == SaglikDurumu.UYARI:
+                uyari_kartlar.append(kart_adi)
+            elif durum.durum == SaglikDurumu.SAGLIKLI:
+                saglikli_kartlar.append(kart_adi)
+
+        # Genel sağlık durumunu belirle
+        if kritik_kartlar:
+            current_status = "critical"
+        elif uyari_kartlar:
+            current_status = "warning"
+        elif len(saglikli_kartlar) == 2:  # Her iki kart da sağlıklı
+            current_status = "healthy"
+        else:
+            current_status = "partial"  # Bazı kartlar henüz bağlı değil
+
+        # Durum değişmişse görsel mesaj göster
+        if current_status != self._last_health_status:
+            if current_status == "healthy":
+                print("\n" + "="*70)
+                print("✅ SİSTEM SAĞLIKLI - TÜM KARTLAR BAĞLI VE ÇALIŞIYOR")
+                print("="*70)
+                print(f"  🟢 MOTOR KARTI  : Bağlı ve sağlıklı")
+                print(f"  🟢 SENSOR KARTI : Bağlı ve sağlıklı")
+                print("="*70 + "\n")
+                log_success("Sistem tamamen sağlıklı - Tüm kartlar çalışıyor")
+            elif current_status == "warning":
+                print(f"\n⚠️  UYARI: {', '.join([k.upper() for k in uyari_kartlar])} - Bağlantı sorunları tespit edildi\n")
+            elif current_status == "critical":
+                print(f"\n🚨 KRİTİK: {', '.join([k.upper() for k in kritik_kartlar])} - Acil müdahale gerekli!\n")
+
+            self._last_health_status = current_status
+
         # Kritik durum varsa müdahale et
         if kritik_kartlar:
             self._kartlari_resetle(kritik_kartlar)

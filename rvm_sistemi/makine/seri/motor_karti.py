@@ -358,19 +358,13 @@ class MotorKart:
 
                 log_success(f"{self.cihaz_adi} port açıldı: {self.port_adi}")
 
-                # ✅ DEBUG: Port gerçekten açık mı kontrol et
-                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port AÇILDI - is_open={self.seri_nesnesi.is_open}, port={self.seri_nesnesi.port}")
-
-                # ✅ Port sahipliğini claim et - TEMİZ MİMARİ ÇÖZÜM
+                # Port sahipliğini claim et
                 if not system_state.claim_port(self.port_adi, self.cihaz_adi):
                     log_error(f"{self.cihaz_adi} port sahipliği alınamadı: {self.port_adi}")
                     self.seri_nesnesi.close()
                     self.seri_nesnesi = None
                     self.saglikli = False
                     return False
-
-                # ✅ DEBUG: Claim sonrası port hala açık mı?
-                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port CLAIM sonrası - is_open={self.seri_nesnesi.is_open}")
 
                 # ✅ ESP32 BOOT HANDSHAKE - Firmware'in başlatma protokolünü tamamla
                 # ESP32 firmware setup() içinde 'b' komutu bekliyor
@@ -562,25 +556,13 @@ class MotorKart:
                 return False
 
     def _is_port_ready(self) -> bool:
-        """Port hazır mı? - DEBUG ENHANCED"""
+        """Port hazır mı?"""
         with self._port_lock:
-            is_ready = (
+            return (
                 self.seri_nesnesi is not None
                 and self.seri_nesnesi.is_open
                 and self.running
             )
-
-            # ✅ DEBUG: Port durumu detaylı log
-            if not is_ready:
-                serial_ok = self.seri_nesnesi is not None
-                open_ok = self.seri_nesnesi.is_open if serial_ok else False
-                running_ok = self.running
-                log_warning(
-                    f"🔴 [DEBUG-{self.cihaz_adi}] Port NOT ready! "
-                    f"serial={serial_ok}, is_open={open_ok}, running={running_ok}"
-                )
-
-            return is_ready
 
     def _yaz(self):
         """Yazma thread'i - optimized"""
@@ -660,9 +642,8 @@ class MotorKart:
             log_error(f"Parametre gönderme hatası: {e}")
 
     def _dinle(self):
-        """Dinleme thread'i - consecutive error tracking - DEBUG ENHANCED"""
+        """Dinleme thread'i - consecutive error tracking"""
         self._consecutive_errors = 0
-        log_system(f"🟢 [DEBUG-{self.cihaz_adi}] Listen thread BAŞLATILDI")
 
         loop_count = 0
         while self.running:
@@ -949,7 +930,7 @@ class MotorKart:
                         self.dinlemeyi_durdur()
                         if self.seri_nesnesi and self.seri_nesnesi.is_open:
                             self.seri_nesnesi.close()
-                        self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
+                        system_state.release_port(self.port_adi, self.cihaz_adi)
                         continue  # Reconnection'ı tekrar dene
 
                     # ✅ Motor kartı sağlıklı, parametre gönder
