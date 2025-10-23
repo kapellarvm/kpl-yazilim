@@ -337,18 +337,30 @@ class SensorKart:
             with self._port_lock:
                 # Eski portu kapat
                 if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                    # ✅ Port sahipliğini release et
+                    if self.port_adi:
+                        system_state.release_port(self.port_adi, self.cihaz_adi)
                     self.seri_nesnesi.close()
                     time.sleep(0.5)
                 
                 # Yeni port aç
                 self.seri_nesnesi = serial.Serial(
-                    self.port_adi, 
-                    baudrate=115200, 
+                    self.port_adi,
+                    baudrate=115200,
                     timeout=1,
                     write_timeout=1
                 )
-                
+
                 log_success(f"{self.cihaz_adi} port açıldı: {self.port_adi}")
+
+                # ✅ Port sahipliğini claim et - TEMİZ MİMARİ ÇÖZÜM
+                if not system_state.claim_port(self.port_adi, self.cihaz_adi):
+                    log_error(f"{self.cihaz_adi} port sahipliği alınamadı: {self.port_adi}")
+                    self.seri_nesnesi.close()
+                    self.seri_nesnesi = None
+                    self.saglikli = False
+                    return False
+
                 self.saglikli = True
                 self._consecutive_errors = 0
             return True
@@ -744,6 +756,10 @@ class SensorKart:
                 if self.seri_nesnesi:
                     try:
                         if self.seri_nesnesi.is_open:
+                            # ✅ Port sahipliğini release et ÖNCE
+                            if self.port_adi:
+                                system_state.release_port(self.port_adi, self.cihaz_adi)
+
                             # ✅ Bekleyen okuma/yazmayı iptal et
                             try:
                                 self.seri_nesnesi.cancel_read()

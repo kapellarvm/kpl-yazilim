@@ -84,7 +84,11 @@ class SystemStateManager:
         # Thread takibi
         self._active_threads: Dict[str, threading.Thread] = {}
         self._thread_lock = threading.RLock()
-        
+
+        # ✅ PORT SAHİPLİĞİ TAKİBİ - Temel mimari çözüm
+        self._owned_ports: Dict[str, tuple[str, float]] = {}  # port -> (card_name, claim_timestamp)
+        self._port_lock = threading.RLock()
+
         self._initialized = True
         log_system("System State Manager başlatıldı")
     
@@ -508,6 +512,134 @@ class SystemStateManager:
                 "reset_cooldown": self._reset_cooldown,
                 "system_busy": self.is_system_busy()
             }
+
+    # ============ PORT SAHİPLİĞİ YÖNETİMİ ============
+
+    def claim_port(self, port: str, card_name: str) -> bool:
+        """
+        Port sahipliğini talep et
+
+        Args:
+            port: Port path (örn. /dev/ttyUSB0)
+            card_name: Kart adı (motor, sensor)
+
+        Returns:
+            bool: Başarılı mı?
+        """
+        with self._port_lock:
+            # Port zaten sahipli mi?
+            if port in self._owned_ports:
+                owner, timestamp = self._owned_ports[port]
+                # Aynı kart tekrar claim ediyorsa izin ver
+                if owner == card_name:
+                    log_system(f"Port zaten sahipli [{card_name}]: {port}")
+                    return True
+                else:
+                    log_warning(f"Port başka kart tarafından kullanılıyor [{owner}]: {port} (talep: {card_name})")
+                    return False
+
+            # Port'u claim et
+            self._owned_ports[port] = (card_name, time.time())
+            log_system(f"✅ Port claim edildi [{card_name}]: {port}")
+            return True
+
+    def release_port(self, port: str, card_name: str) -> bool:
+        """
+        Port sahipliğini bırak
+
+        Args:
+            port: Port path
+            card_name: Kart adı
+
+        Returns:
+            bool: Başarılı mı?
+        """
+        with self._port_lock:
+            if port not in self._owned_ports:
+                log_system(f"Port zaten serbest: {port}")
+                return True
+
+            owner, _ = self._owned_ports[port]
+            if owner != card_name:
+                log_warning(f"Port başka kart tarafından sahiplenmiş [{owner}]: {port} (release isteği: {card_name})")
+                return False
+
+            del self._owned_ports[port]
+            log_system(f"✅ Port release edildi [{card_name}]: {port}")
+            return True
+
+    def get_port_owner(self, port: str) -> Optional[str]:
+        """
+        Port sahibini döndür
+
+        Args:
+            port: Port path
+
+        Returns:
+            Optional[str]: Sahip kart adı veya None
+        """
+        with self._port_lock:
+            if port in self._owned_ports:
+                return self._owned_ports[port][0]
+            return None
+
+    def is_port_owned(self, port: str) -> bool:
+        """
+        Port sahipli mi?
+
+        Args:
+            port: Port path
+
+        Returns:
+            bool: Sahipli mi?
+        """
+        with self._port_lock:
+            return port in self._owned_ports
+
+    def get_owned_port(self, card_name: str) -> Optional[str]:
+        """
+        Kartın sahip olduğu portu döndür
+
+        Args:
+            card_name: Kart adı
+
+        Returns:
+            Optional[str]: Port path veya None
+        """
+        with self._port_lock:
+            for port, (owner, _) in self._owned_ports.items():
+                if owner == card_name:
+                    return port
+            return None
+
+    def force_release_port(self, port: str, reason: str = "") -> bool:
+        """
+        Port sahipliğini ZORLA bırak (acil durum için)
+
+        Args:
+            port: Port path
+            reason: Release nedeni
+
+        Returns:
+            bool: Başarılı mı?
+        """
+        with self._port_lock:
+            if port in self._owned_ports:
+                owner, _ = self._owned_ports[port]
+                del self._owned_ports[port]
+                log_warning(f"⚠️ Port ZORLA release edildi [{owner}]: {port} ({reason})")
+                return True
+            return False
+
+    def get_all_owned_ports(self) -> Dict[str, str]:
+        """
+        Tüm sahiplenmiş portları döndür
+
+        Returns:
+            Dict[str, str]: {port: card_name}
+        """
+        with self._port_lock:
+            return {port: owner for port, (owner, _) in self._owned_ports.items()}
 
 
 # Global instance

@@ -634,6 +634,7 @@ class KartHaberlesmeServis:
     def _close_all_ports(self, try_usb_reset: bool = False) -> None:
         """
         Tüm seri portları kapat - ANCAK zaten kullanımda olanları koru
+        ✅ Port Ownership sistemini kullanarak merkezi kontrol
 
         Args:
             try_usb_reset: I/O hatası durumunda USB reset denensin mi?
@@ -645,26 +646,29 @@ class KartHaberlesmeServis:
 
             for port_info in ports:
                 if self.scanner.is_compatible_port(port_info.device):
+                    # ✅ Port Ownership kontrolü - TEMİZ MİMARİ ÇÖZÜM
+                    port_owner = system_state.get_port_owner(port_info.device)
+                    if port_owner:
+                        log_system(f"{port_info.device} port kullanımda [{port_owner}], KORUNUYOR")
+                        continue
+
                     try:
-                        # Portu açmayı dene ve hemen kapat
-                        test_ser = serial.Serial(port_info.device, timeout=0.1, exclusive=True)
+                        # Port sahipsiz - kapatmayı dene
+                        test_ser = serial.Serial(port_info.device, timeout=0.1)
                         test_ser.close()
                         log_system(f"{port_info.device} portu kapatıldı")
                     except serial.SerialException as e:
-                        # Port zaten kapalı, meşgul veya I/O hatası
+                        # Port zaten kapalı veya I/O hatası
                         error_str = str(e).lower()
                         if "input/output" in error_str or "errno 5" in error_str:
                             log_warning(f"{port_info.device} I/O hatası - fiziksel bağlantı kopmuş: {e}")
                             has_io_error = True
-                        elif any(keyword in error_str for keyword in ["permission", "busy", "in use", "resource busy"]):
-                            # ✅ Port başka bir thread tarafından kullanılıyor - KORU!
-                            log_system(f"{port_info.device} port kullanımda, korunuyor")
                         # Diğer SerialException'lar için sessiz geç
                     except OSError as e:
                         error_str = str(e).lower()
-                        if "resource busy" in error_str or "device or resource busy" in error_str:
-                            # ✅ Port kullanımda - KORU!
-                            log_system(f"{port_info.device} port kullanımda, korunuyor")
+                        if "input/output" in error_str or "errno 5" in error_str:
+                            log_warning(f"{port_info.device} I/O hatası: {e}")
+                            has_io_error = True
                         else:
                             log_warning(f"{port_info.device} sistem hatası: {e}")
                     except Exception as e:
@@ -889,6 +893,7 @@ class KartHaberlesmeServis:
     def _scan_single_port(self, port_info, target_device: Optional[str] = None) -> Optional[Tuple[str, str]]:
         """
         Tek bir portu tara - Zaten kullanımda olanları skip et
+        ✅ Port Ownership sistemini kullanarak merkezi kontrol
 
         Args:
             port_info: Port bilgisi
@@ -911,15 +916,11 @@ class KartHaberlesmeServis:
         except:
             pass  # Windows'ta bu kontrol çalışmayabilir
 
-        # ✅ Port kullanımda mı kontrol et (başka bir thread tarafından)
-        try:
-            test_ser = serial.Serial(port_device, timeout=0.05, exclusive=True)
-            test_ser.close()
-        except (serial.SerialException, OSError) as e:
-            error_str = str(e).lower()
-            if any(keyword in error_str for keyword in ["busy", "in use", "resource busy"]):
-                log_system(f"{port_device} port kullanımda, tarama atlanıyor")
-                return None
+        # ✅ Port Ownership kontrolü - TEMİZ MİMARİ ÇÖZÜM
+        port_owner = system_state.get_port_owner(port_device)
+        if port_owner:
+            log_system(f"{port_device} port kullanımda [{port_owner}], tarama atlanıyor")
+            return None
 
         with self.connection.open_port(port_device) as ser:
             if not ser:
