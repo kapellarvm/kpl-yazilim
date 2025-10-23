@@ -929,13 +929,49 @@ class MotorKart:
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
                 
                 if self._auto_find_port():
-                    # ✅ Başarılı, parametre gönder (reset zaten _auto_find_port içinde atıldı)
-                    time.sleep(1)
+                    # ✅ Port bulundu ve bağlandı
+                    time.sleep(0.5)
+
+                    # ✅ Motor kartının sağlığını doğrula - 's' komutu gönder
+                    log_system(f"{self.cihaz_adi} reconnection doğrulaması - 's' komutu gönderiliyor...")
+                    motor_saglikli = False
+                    for dogrulama_denemesi in range(3):
+                        try:
+                            if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                                self.seri_nesnesi.write(b's\n')
+                                self.seri_nesnesi.flush()
+                                time.sleep(0.5)
+
+                                # 'motor' yanıtını bekle
+                                basla = time.time()
+                                while time.time() - basla < 1.0:
+                                    if self.seri_nesnesi.in_waiting:
+                                        yanit = self.seri_nesnesi.readline().decode('utf-8', errors='ignore').strip()
+                                        if yanit == 'motor':
+                                            log_success(f"{self.cihaz_adi} doğrulama başarılı - 'motor' yanıtı alındı")
+                                            motor_saglikli = True
+                                            break
+                                    time.sleep(0.05)
+
+                                if motor_saglikli:
+                                    break
+                                else:
+                                    log_warning(f"{self.cihaz_adi} doğrulama denemesi {dogrulama_denemesi + 1}/3 başarısız")
+                        except Exception as e:
+                            log_warning(f"{self.cihaz_adi} doğrulama hatası: {e}")
+                        time.sleep(0.5)
+
+                    if not motor_saglikli:
+                        log_warning(f"{self.cihaz_adi} doğrulama başarısız - bağlantı güvenilir değil")
+                        continue  # Reconnection'ı tekrar dene
+
+                    # ✅ Motor kartı sağlıklı, parametre gönder
+                    time.sleep(0.5)
                     self.parametre_gonder()  # Motor parametrelerini tekrar gönder
-                    time.sleep(1)  # Parametrelerin işlenmesi için bekle
+                    time.sleep(0.5)
 
                     self._connection_attempts = 0
-                    log_success(f"{self.cihaz_adi} yeniden bağlandı")
+                    log_success(f"{self.cihaz_adi} yeniden bağlandı ve doğrulandı")
                     
                     # Thread durumunu kontrol et ve logla
                     if self.thread_durumu_kontrol():
