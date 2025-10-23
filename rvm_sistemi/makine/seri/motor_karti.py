@@ -369,6 +369,9 @@ class MotorKart:
 
                 log_success(f"{self.cihaz_adi} port açıldı: {self.port_adi}")
 
+                # ✅ DEBUG: Port gerçekten açık mı kontrol et
+                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port AÇILDI - is_open={self.seri_nesnesi.is_open}, port={self.seri_nesnesi.port}")
+
                 # ✅ Port sahipliğini claim et - TEMİZ MİMARİ ÇÖZÜM
                 if not system_state.claim_port(self.port_adi, self.cihaz_adi):
                     log_error(f"{self.cihaz_adi} port sahipliği alınamadı: {self.port_adi}")
@@ -376,6 +379,9 @@ class MotorKart:
                     self.seri_nesnesi = None
                     self.saglikli = False
                     return False
+
+                # ✅ DEBUG: Claim sonrası port hala açık mı?
+                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port CLAIM sonrası - is_open={self.seri_nesnesi.is_open}")
 
                 self.saglikli = True
                 self._consecutive_errors = 0
@@ -545,13 +551,25 @@ class MotorKart:
                 return False
 
     def _is_port_ready(self) -> bool:
-        """Port hazır mı?"""
+        """Port hazır mı? - DEBUG ENHANCED"""
         with self._port_lock:
-            return (
-                self.seri_nesnesi is not None 
+            is_ready = (
+                self.seri_nesnesi is not None
                 and self.seri_nesnesi.is_open
                 and self.running
             )
+
+            # ✅ DEBUG: Port durumu detaylı log
+            if not is_ready:
+                serial_ok = self.seri_nesnesi is not None
+                open_ok = self.seri_nesnesi.is_open if serial_ok else False
+                running_ok = self.running
+                log_warning(
+                    f"🔴 [DEBUG-{self.cihaz_adi}] Port NOT ready! "
+                    f"serial={serial_ok}, is_open={open_ok}, running={running_ok}"
+                )
+
+            return is_ready
 
     def _yaz(self):
         """Yazma thread'i - optimized"""
@@ -633,11 +651,17 @@ class MotorKart:
             log_error(f"Parametre gönderme hatası: {e}")
 
     def _dinle(self):
-        """Dinleme thread'i - consecutive error tracking"""
+        """Dinleme thread'i - consecutive error tracking - DEBUG ENHANCED"""
         self._consecutive_errors = 0
-        
+        log_system(f"🟢 [DEBUG-{self.cihaz_adi}] Listen thread BAŞLATILDI")
+
+        loop_count = 0
         while self.running:
             try:
+                loop_count += 1
+                if loop_count % 100 == 0:  # Her 100 loop'ta bir log
+                    log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Listen thread ÇALIŞIYOR (loop: {loop_count})")
+
                 if not self._is_port_ready():
                     time.sleep(0.5)
                     continue
