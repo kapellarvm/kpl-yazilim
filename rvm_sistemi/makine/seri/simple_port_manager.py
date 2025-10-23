@@ -40,9 +40,17 @@ class SimplePortManager:
 
         # Mevcut portları al
         ports = list_ports.comports()
+
+        # DEBUG: Tüm portları logla
+        log_system(f"Sistem portları: {len(ports)} port bulundu")
+        for p in ports:
+            log_system(f"  - {p.device} | {p.description} | {p.hwid}")
+
         compatible_ports = [p for p in ports if self._is_compatible_port(p.device)]
 
         if not compatible_ports:
+            log_warning("Hiçbir uyumlu USB port bulunamadı!")
+            log_warning("Kontrol edin: USB kabloları bağlı mı?")
             return False, "Uyumlu port bulunamadı", {}
 
         log_system(f"{len(compatible_ports)} uyumlu port bulundu")
@@ -52,6 +60,7 @@ class SimplePortManager:
 
         for port_info in compatible_ports:
             port = port_info.device
+            log_system(f"Port test ediliyor: {port}")
 
             # Port'u test et
             device_type = self._identify_device(port)
@@ -59,6 +68,8 @@ class SimplePortManager:
             if device_type:
                 found_cards[device_type] = port
                 log_success(f"{device_type.upper()} kartı bulundu: {port}")
+            else:
+                log_warning(f"{port} - Tanımlanamayan cihaz")
 
         if not found_cards:
             return False, "Tanımlı kart bulunamadı", {}
@@ -93,34 +104,40 @@ class SimplePortManager:
             ser = serial.Serial(
                 port=port,
                 baudrate=self.baudrate,
-                timeout=1
+                timeout=2,
+                write_timeout=2
             )
 
-            # Boot message'ı bekle (zaten çalışıyorsa)
-            time.sleep(0.5)
+            log_system(f"  {port} açıldı, cihaz tanımlanıyor...")
+
+            # ESP32 boot bekle (resetlendiyse)
+            time.sleep(1.5)
 
             # Buffer'ı temizle
             ser.reset_input_buffer()
 
-            # Identify komutu gönder
-            ser.write(b's\n')
-            ser.flush()
-            time.sleep(0.3)
+            # Identify komutu gönder (2 kez dene)
+            for attempt in range(2):
+                ser.write(b's\n')
+                ser.flush()
+                time.sleep(0.5)
 
-            # Cevabı oku
-            if ser.in_waiting > 0:
-                response = ser.readline().decode('utf-8', errors='ignore').strip().lower()
+                # Cevabı oku
+                if ser.in_waiting > 0:
+                    response = ser.readline().decode('utf-8', errors='ignore').strip().lower()
+                    log_system(f"  {port} cevap: '{response}'")
 
-                ser.close()
+                    ser.close()
 
-                if response == "motor":
-                    return "motor"
-                elif response == "sensor":
-                    return "sensor"
+                    if response == "motor":
+                        return "motor"
+                    elif response == "sensor":
+                        return "sensor"
 
+            log_warning(f"  {port} - Cevap alınamadı")
             ser.close()
 
         except (serial.SerialException, OSError) as e:
-            log_warning(f"Port test hatası {port}: {e}")
+            log_warning(f"  {port} test hatası: {e}")
 
         return None
