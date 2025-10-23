@@ -40,7 +40,7 @@ class PortSaglikServisi:
     
     # Konfigürasyon sabitleri - daha sık kontrol
     PING_ARASI_SURE = 3  # Ping kontrolleri arası süre (saniye) - daha sık
-    MAX_PING_HATA = 3    # Maksimum başarısız ping sayısı - daha hızlı
+    MAX_PING_HATA = 5    # Maksimum başarısız ping sayısı - 5 ping başarısızlığında müdahale
     RESET_BEKLEME = 10   # Reset sonrası bekleme süresi
     MAX_RESET_DENEME = 3 # Maksimum reset deneme sayısı
     
@@ -205,11 +205,21 @@ class PortSaglikServisi:
             durum.durum = SaglikDurumu.UYARI
             print(f"⚠️  [PORT-SAĞLIK] {kart_adi.upper()} → UYARI! Son pong: {gecen_sure:.1f}s önce")
         
-        # EK: Her iki kart için özel kontrol - ping başarısızsa yeniden başlat
-        if durum.basarisiz_ping >= 2:  # Daha hızlı müdahale (3'ten 2'ye düşürüldü)
-            print(f"🔧 [PORT-SAĞLIK] {kart_adi.upper()} kartı ping başarısız - yeniden başlatılıyor")
+        # ✅ 5 ping başarısızlığında reconnection mekanizmasını tetikle
+        if durum.basarisiz_ping >= self.MAX_PING_HATA:
+            print(f"🚨 [PORT-SAĞLIK] {kart_adi.upper()} kartı {self.MAX_PING_HATA} kere ping başarısız - RECONNECTION başlatılıyor!")
             log_system(f"{kart_adi.upper()} kartı ping başarısız - yeniden başlatılıyor")
-            self._kartlari_yeniden_baslat({kart_adi: kart.port_adi})
+
+            # ✅ Kartın kendi reconnection mekanizmasını tetikle
+            # Bu USB reset + port arama + yeniden bağlanma yapacak
+            threading.Thread(
+                target=kart._handle_connection_error,
+                daemon=True,
+                name=f"{kart_adi}_reconnect_from_health"
+            ).start()
+
+            # Başarısızlık sayacını sıfırla (reconnection başlatıldı)
+            durum.basarisiz_ping = 0
     
     def _durumlari_degerlendir(self):
         """Kart durumlarını değerlendir ve gerekirse müdahale et"""
