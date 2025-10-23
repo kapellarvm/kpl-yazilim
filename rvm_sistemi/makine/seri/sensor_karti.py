@@ -746,7 +746,19 @@ class SensorKart:
                         pass
                 self.seri_nesnesi = None
                 self.saglikli = False
-            
+
+            # 3.5. Queue'yu temizle - stale komutları önle
+            cleared_count = 0
+            try:
+                while not self.write_queue.empty():
+                    self.write_queue.get_nowait()
+                    cleared_count += 1
+            except queue.Empty:
+                pass
+
+            if cleared_count > 0:
+                log_system(f"{self.cihaz_adi} write queue temizlendi ({cleared_count} stale komut silindi)")
+
             # 4. USB Reset dene (opsiyonel) - SADECE USB_RESETTING durumunda değilse
             if self.port_adi and system_state.get_system_state() != SystemState.USB_RESETTING:
                 self._try_usb_reset(self.port_adi)

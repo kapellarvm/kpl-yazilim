@@ -685,19 +685,23 @@ class KartHaberlesmeServis:
     def baglan(self, cihaz_adi: Optional[str] = None, try_usb_reset: bool = True, max_retries: int = 2, kritik_kartlar: Optional[List[str]] = None) -> Tuple[bool, str, Dict[str, str]]:
         """
         Kartları bul ve bağlan
-        
+
         Args:
             cihaz_adi: Aranacak spesifik cihaz adı (opsiyonel)
             try_usb_reset: I/O hatası durumunda USB reset denensin mi?
             max_retries: Maksimum deneme sayısı (USB reset ile)
             kritik_kartlar: Bulunması gereken kritik kartlar listesi (örn: ["motor", "sensor"])
-            
+
         Returns:
-            Tuple[bool, str, Dict[str, str]]: 
+            Tuple[bool, str, Dict[str, str]]:
                 - Başarı durumu
                 - Mesaj
                 - Bulunan kartlar (cihaz_adi: port)
         """
+        # USB reset başarı flag'i - WITH bloğu dışında kontrol edilecek
+        reset_success = False
+        reset_operation_id = None
+
         # ✅ Thread-safe port arama - sadece bir thread aynı anda arama yapabilir
         with self._scan_lock:
             log_system(f"🔒 Port arama lock alındı (Thread: {threading.current_thread().name})")
@@ -785,22 +789,22 @@ class KartHaberlesmeServis:
                 if operation_id:
                     # Direkt agresif reset dene (daha güvenilir)
                     log_warning("Direkt agresif USB reset deneniyor...")
-                    reset_success = self._reset_all_usb_ports()
-                    
-                    if reset_success:
+                    _reset_result = self._reset_all_usb_ports()
+
+                    if _reset_result:
                         log_success("Agresif USB reset başarılı, portlar yeniden taranacak...")
                         time.sleep(5)  # USB hub reset sonrası daha uzun bekleme
-                        
+
                         # Reset operasyonunu başarılı olarak bitir
                         system_state.finish_reset_operation(operation_id, True)
-                        
+
                         # Cooldown'u temizle
                         system_state.set_reset_cooldown(False)
-                        
-                        log_system(f"🔓 Port arama lock bırakıldı (USB reset için)")
-                        
-                        # Tekrar dene (max_retries-1 ile) - LOCK DIŞINDA REKÜRSİF ÇAĞRI
-                        return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
+
+                        # Flag'leri set et - WITH bloğu dışında yeniden tarama yapılacak
+                        reset_success = True
+                        reset_operation_id = operation_id
+                        log_system(f"✅ USB reset tamamlandı, WITH bloğu dışında yeniden tarama yapılacak")
                     else:
                         # Agresif reset başarısız, yumuşak reset dene
                         log_warning("Agresif reset başarısız, yumuşak reset deneniyor...")
@@ -826,7 +830,13 @@ class KartHaberlesmeServis:
                     log_warning("Reset operasyonu başlatılamadı")
             
             log_system(f"🔓 Port arama lock bırakıldı")
-            return basarili, mesaj, bulunan_kartlar
+
+        # WITH bloğu dışında - lock bırakıldı, şimdi yeniden tarama yap
+        if reset_success and reset_operation_id:
+            log_system(f"🔄 USB reset başarılı, portları yeniden tarıyorum...")
+            return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
+
+        return basarili, mesaj, bulunan_kartlar
     
     def _parallel_port_scan(self, ports: List, target_device: Optional[str] = None) -> Dict[str, str]:
         """
