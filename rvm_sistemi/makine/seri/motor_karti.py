@@ -861,13 +861,14 @@ class MotorKart:
             
             # 3. Portu güvenli kapat
             with self._port_lock:
+                # ✅ CRITICAL FIX: Port release her durumda yapılmalı (is_open check olmadan)
+                # Çünkü I/O error sonrası serial object kapalı olabilir ama registry'de hala claimed
+                if self.port_adi:
+                    system_state.release_port(self.port_adi, self.cihaz_adi)
+
                 if self.seri_nesnesi:
                     try:
                         if self.seri_nesnesi.is_open:
-                            # ✅ Port sahipliğini release et ÖNCE
-                            if self.port_adi:
-                                system_state.release_port(self.port_adi, self.cihaz_adi)
-
                             # ✅ Bekleyen okuma/yazmayı iptal et
                             try:
                                 self.seri_nesnesi.cancel_read()
