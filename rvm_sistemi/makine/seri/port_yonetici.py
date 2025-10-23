@@ -620,8 +620,11 @@ class KartHaberlesmeServis:
                     log_success("USB portları başarıyla resetlendi, 3 saniye bekleniyor...")
                     time.sleep(3)
             else:
-            # Kısa bir bekleme ile portların tamamen serbest bırakılmasını sağla
+                # Kısa bir bekleme ile portların tamamen serbest bırakılmasını sağla
                 time.sleep(0.5)
+                
+            # Cooldown'u temizle
+            system_state.set_reset_cooldown(False)
             
             log_system("Port temizleme işlemi tamamlandı")
             
@@ -704,6 +707,11 @@ class KartHaberlesmeServis:
                 log_warning("USB reset çok erken veya zaten devam ediyor, atlanıyor")
                 return basarili, mesaj, bulunan_kartlar
             
+            # Cooldown kontrolü
+            if system_state.is_reset_cooldown_active():
+                log_warning("Reset cooldown aktif, USB reset atlanıyor")
+                return basarili, mesaj, bulunan_kartlar
+            
             log_warning(f"İlk denemede başarısız (basarili={basarili}, kritik_eksik={kritik_eksik})")
             log_warning(f"USB reset ile tekrar deneniyor ({max_retries} deneme kaldı)")
             
@@ -726,6 +734,9 @@ class KartHaberlesmeServis:
                     # Reset operasyonunu başarılı olarak bitir
                     system_state.finish_reset_operation(operation_id, True)
                     
+                    # Cooldown'u temizle
+                    system_state.set_reset_cooldown(False)
+                    
                     # Tekrar dene (max_retries-1 ile)
                     return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
                 else:
@@ -737,6 +748,9 @@ class KartHaberlesmeServis:
                         
                         # Reset operasyonunu başarılı olarak bitir
                         system_state.finish_reset_operation(operation_id, True)
+                        
+                        # Cooldown'u temizle
+                        system_state.set_reset_cooldown(False)
                         
                         # Tekrar dene (max_retries-1 ile)
                         return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)

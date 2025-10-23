@@ -113,6 +113,11 @@ class SensorKart:
                 log_success(f"{self.cihaz_adi} port bulundu: {self.port_adi}")
                 
                 if self._try_connect_to_port():
+                    # Thread durumunu kontrol et
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} _auto_find_port - thread'ler başarıyla başlatıldı")
+                    else:
+                        log_warning(f"{self.cihaz_adi} _auto_find_port - thread'ler başlatılamadı")
                     return True
             else:
                 log_warning(f"{self.cihaz_adi} otomatik port bulunamadı: {mesaj}")
@@ -141,6 +146,11 @@ class SensorKart:
                 
                 if self._auto_find_port():
                     self._connection_attempts = 0
+                    # Thread durumunu kontrol et
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} _start_background_search - thread'ler başarıyla başlatıldı")
+                    else:
+                        log_warning(f"{self.cihaz_adi} _start_background_search - thread'ler başlatılamadı")
                     return
                 
                 time.sleep(delay)
@@ -177,7 +187,15 @@ class SensorKart:
         self._safe_queue_put("tare", None)
     
     def reset(self): 
+        log_system(f"{self.cihaz_adi} reset komutu gönderiliyor...")
+        # Write thread'in çalışıp çalışmadığını kontrol et
+        if not (self.write_thread and self.write_thread.is_alive()):
+            log_error(f"{self.cihaz_adi} write thread çalışmıyor - reset komutu gönderilemiyor")
+            return False
+        
         self._safe_queue_put("reset", None)
+        log_system(f"{self.cihaz_adi} reset komutu queue'ya eklendi")
+        return True
     
     def ezici_ileri(self): 
         self._safe_queue_put("ezici_ileri", None)
@@ -331,6 +349,12 @@ class SensorKart:
         """Thread başlatma - iyileştirilmiş"""
         with self._port_lock:
             if self.running:
+                log_warning(f"{self.cihaz_adi} thread'ler zaten çalışıyor")
+                return
+            
+            # Port açık değilse thread başlatma
+            if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
+                log_warning(f"{self.cihaz_adi} port açık değil - thread başlatılamıyor")
                 return
             
             self.running = True
@@ -348,10 +372,40 @@ class SensorKart:
                 name=f"{self.cihaz_adi}_write"
             )
             
+            # Thread'leri sırayla başlat
             self.listen_thread.start()
+            time.sleep(0.1)  # Listen thread'in başlaması için bekle
             self.write_thread.start()
+            time.sleep(0.1)  # Write thread'in başlaması için bekle
             
             log_system(f"{self.cihaz_adi} thread'leri başlatıldı")
+            
+            # Thread'lerin başlamasını bekle
+            time.sleep(1.0)  # Thread'lerin başlaması için daha uzun bekle
+            
+            # Thread durumunu kontrol et ve logla
+            if self.thread_durumu_kontrol():
+                log_success(f"{self.cihaz_adi} thread'leri başarıyla başlatıldı")
+            else:
+                log_error(f"{self.cihaz_adi} thread'leri başlatılamadı - yeniden denenecek")
+                # Thread'leri tekrar başlat
+                self._cleanup_threads()
+                time.sleep(0.5)
+                self.listen_thread = threading.Thread(
+                    target=self._dinle, 
+                    daemon=True, 
+                    name=f"{self.cihaz_adi}_listen"
+                )
+                self.write_thread = threading.Thread(
+                    target=self._yaz, 
+                    daemon=True, 
+                    name=f"{self.cihaz_adi}_write"
+                )
+                self.listen_thread.start()
+                time.sleep(0.1)
+                self.write_thread.start()
+                time.sleep(0.1)
+                log_system(f"{self.cihaz_adi} thread'leri tekrar başlatıldı")
 
     def dinlemeyi_durdur(self):
         """Thread durdurma - güvenli"""
@@ -398,6 +452,24 @@ class SensorKart:
         for thread in [self.listen_thread, self.write_thread]:
             if thread and thread.is_alive():
                 thread.join(timeout=0.1)
+    
+    def thread_durumu_kontrol(self):
+        """Thread durumunu kontrol et"""
+        with self._port_lock:
+            listen_ok = self.listen_thread and self.listen_thread.is_alive()
+            write_ok = self.write_thread and self.write_thread.is_alive()
+            
+            if listen_ok and write_ok:
+                log_system(f"{self.cihaz_adi} thread'leri çalışıyor - Listen: {listen_ok}, Write: {write_ok}")
+                return True
+            else:
+                log_warning(f"{self.cihaz_adi} thread durumu - Listen: {listen_ok}, Write: {write_ok}")
+                # Thread'lerin neden çalışmadığını kontrol et
+                if not listen_ok:
+                    log_error(f"{self.cihaz_adi} listen thread çalışmıyor")
+                if not write_ok:
+                    log_error(f"{self.cihaz_adi} write thread çalışmıyor")
+                return False
 
     def _is_port_ready(self) -> bool:
         """Port hazır mı?"""
@@ -411,6 +483,7 @@ class SensorKart:
     def _yaz(self):
         """Yazma thread'i - optimized"""
         komutlar = self._get_komut_sozlugu()
+        log_system(f"{self.cihaz_adi} write thread başlatıldı")
         
         while self.running:
             try:
@@ -421,17 +494,21 @@ class SensorKart:
                     continue
 
                 if command == "exit":
+                    log_system(f"{self.cihaz_adi} write thread çıkıyor")
                     break
                 
                 # Port kontrolü
                 if not self._is_port_ready():
+                    log_warning(f"{self.cihaz_adi} write thread - port hazır değil")
                     time.sleep(0.1)
                     continue
                 
                 # Komut gönder
                 if command in komutlar:
+                    log_system(f"{self.cihaz_adi} write thread - komut gönderiliyor: {command}")
                     self.seri_nesnesi.write(komutlar[command](data) if callable(komutlar[command]) else komutlar[command])
                     self.seri_nesnesi.flush()
+                    log_success(f"{self.cihaz_adi} write thread - komut gönderildi: {command}")
                 
             except (serial.SerialException, OSError) as e:
                 log_error(f"{self.cihaz_adi} yazma hatası: {e}")
@@ -439,6 +516,8 @@ class SensorKart:
                 break
             except Exception as e:
                 log_exception(f"{self.cihaz_adi} yazma thread hatası", exc_info=(type(e), e, e.__traceback__))
+        
+        log_system(f"{self.cihaz_adi} write thread bitti")
 
     def _dinle(self):
         """Dinleme thread'i - consecutive error tracking"""
@@ -507,9 +586,10 @@ class SensorKart:
             current_time = time.time()
             time_since_ping = current_time - self._last_ping_time
             
-            if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
+            if time_since_ping < 120:  # Son 120 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
                 log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
+                self.saglikli = True  # Sağlıklı olarak işaretle
             else:
                 # Ping alınmamışsa, fiziksel bağlantı sorunu
                 log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
@@ -598,6 +678,12 @@ class SensorKart:
                 if self._auto_find_port():
                     self._connection_attempts = 0
                     log_success(f"{self.cihaz_adi} yeniden bağlandı")
+                    
+                    # Thread durumunu kontrol et ve logla
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} reconnection tamamlandı - thread'ler çalışıyor")
+                    else:
+                        log_warning(f"{self.cihaz_adi} reconnection tamamlandı ama thread'ler çalışmıyor")
                     
                     # Başarılı reconnection
                     system_state.finish_reconnection(self.cihaz_adi, True)

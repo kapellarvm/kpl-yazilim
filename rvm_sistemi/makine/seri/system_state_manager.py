@@ -76,9 +76,9 @@ class SystemStateManager:
         self._reconnecting_cards: Set[str] = set()
         self._reconnect_lock = threading.RLock()
         
-        # Timing kontrolü
-        self._last_reset_time = 0
-        self._min_reset_interval = 30  # Minimum 30 saniye aralık
+        # Reset kontrolü - timeout yerine bayrak
+        self._reset_in_progress = False
+        self._reset_cooldown = False
         
         # Thread takibi
         self._active_threads: Dict[str, threading.Thread] = {}
@@ -202,26 +202,22 @@ class SystemStateManager:
         """Reset başlatılabilir mi?"""
         with self._reset_lock:
             # Zaten reset devam ediyorsa hayır
-            if self._active_reset is not None:
+            if self._reset_in_progress:
                 return False
             
-            # Minimum süre geçmemişse hayır
-            current_time = time.time()
-            if current_time - self._last_reset_time < self._min_reset_interval:
-                remaining = self._min_reset_interval - (current_time - self._last_reset_time)
-                log_warning(f"Reset çok erken, {remaining:.1f} saniye bekleyin")
+            # Cooldown durumundaysa hayır
+            if self._reset_cooldown:
                 return False
             
             return True
     
-    def start_reset_operation(self, cards: Set[str], initiated_by: str, timeout: float = 60) -> Optional[str]:
+    def start_reset_operation(self, cards: Set[str], initiated_by: str) -> Optional[str]:
         """
         Reset operasyonu başlat
         
         Args:
             cards: Reset edilecek kartlar
             initiated_by: Kim başlattı
-            timeout: Timeout süresi
             
         Returns:
             Optional[str]: Operation ID veya None (başlatılamazsa)
@@ -230,8 +226,12 @@ class SystemStateManager:
             return None
         
         with self._reset_lock:
+            # Reset bayrağını set et
+            self._reset_in_progress = True
+            
             # Sistem durumunu değiştir
             if not self.set_system_state(SystemState.USB_RESETTING, f"Reset başlatıldı: {initiated_by}"):
+                self._reset_in_progress = False
                 return None
             
             # Reset operasyonu oluştur
@@ -239,7 +239,7 @@ class SystemStateManager:
             self._active_reset = ResetOperation(
                 operation_id=operation_id,
                 start_time=time.time(),
-                timeout=timeout,
+                timeout=0,  # Timeout kaldırıldı
                 cards_involved=cards.copy(),
                 initiated_by=initiated_by
             )
@@ -267,8 +267,13 @@ class SystemStateManager:
                 log_warning(f"Geçersiz reset operasyonu: {operation_id}")
                 return False
             
-            # Zamanı kaydet
-            self._last_reset_time = time.time()
+            # Reset bayrağını temizle
+            self._reset_in_progress = False
+            
+            # Başarısızsa cooldown aktif et
+            if not success:
+                self._reset_cooldown = True
+                log_system("Reset başarısız - cooldown aktif edildi")
             
             # Operasyonu temizle
             cards = self._active_reset.cards_involved.copy()
@@ -291,25 +296,30 @@ class SystemStateManager:
         with self._reset_lock:
             return self._active_reset
     
-    def is_reset_timeout(self) -> bool:
-        """Reset timeout oldu mu?"""
+    def set_reset_cooldown(self, enabled: bool) -> None:
+        """Reset cooldown durumunu ayarla"""
         with self._reset_lock:
-            if self._active_reset is None:
-                return False
-            
-            elapsed = time.time() - self._active_reset.start_time
-            return elapsed > self._active_reset.timeout
+            self._reset_cooldown = enabled
+            if enabled:
+                log_system("Reset cooldown aktif edildi")
+            else:
+                log_system("Reset cooldown deaktif edildi")
+    
+    def is_reset_cooldown_active(self) -> bool:
+        """Reset cooldown aktif mi?"""
+        with self._reset_lock:
+            return self._reset_cooldown
     
     # ============ RECONNECTION YÖNETİMİ ============
     
     def can_start_reconnection(self, card_name: str) -> bool:
         """Kart için reconnection başlatılabilir mi?"""
-        # Sistem meşgulse hayır
-        if self.is_system_busy():
+        # Sistem meşgulse hayır (sadece USB_RESETTING durumunda)
+        if self._system_state == SystemState.USB_RESETTING:
             return False
         
         with self._reconnect_lock:
-            # Zaten reconnecting'se hayır
+            # Zaten reconnecting'se hayır (ama I/O Error durumunda zorla başlat)
             if card_name in self._reconnecting_cards:
                 return False
             
@@ -366,18 +376,15 @@ class SystemStateManager:
         with self._reconnect_lock:
             return card_name in self._reconnecting_cards
     
-    def is_reconnection_timeout(self, timeout_seconds: float = 30.0) -> bool:
-        """RECONNECTING durumu timeout oldu mu?"""
+    def is_reconnection_stuck(self) -> bool:
+        """RECONNECTING durumu takıldı mı?"""
         with self._state_lock:
             if self._system_state != SystemState.RECONNECTING:
                 return False
             
-            # RECONNECTING durumunda 30 saniyeden fazla devam ediyorsa timeout
-            if hasattr(self, '_reconnecting_start_time'):
-                elapsed = time.time() - self._reconnecting_start_time
-                return elapsed > timeout_seconds
-            
-            return False
+            # Reconnecting kartlar var ama hiçbiri başarılı olmamışsa takılmış
+            with self._reconnect_lock:
+                return len(self._reconnecting_cards) > 0
     
     # ============ THREAD YÖNETİMİ ============
     
@@ -456,6 +463,10 @@ class SystemStateManager:
             # Thread'leri temizle
             self.cleanup_dead_threads()
             
+            # Bayrakları temizle
+            self._reset_in_progress = False
+            self._reset_cooldown = False
+            
             log_success("Sistem normal duruma döndürüldü")
             return True
     
@@ -468,7 +479,8 @@ class SystemStateManager:
                 "active_reset": self._active_reset.operation_id if self._active_reset else None,
                 "reconnecting_cards": list(self._reconnecting_cards),
                 "active_threads": list(self.get_active_threads().keys()),
-                "last_reset_time": self._last_reset_time,
+                "reset_in_progress": self._reset_in_progress,
+                "reset_cooldown": self._reset_cooldown,
                 "system_busy": self.is_system_busy()
             }
 

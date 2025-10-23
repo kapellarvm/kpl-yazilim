@@ -38,9 +38,9 @@ class PortSaglikServisi:
     Port sağlık servisi - Motor ve sensör kartlarının sağlığını izler
     """
     
-    # Konfigürasyon sabitleri
-    PING_ARASI_SURE = 5  # Ping kontrolleri arası süre (saniye)
-    MAX_PING_HATA = 5    # Maksimum başarısız ping sayısı
+    # Konfigürasyon sabitleri - daha sık kontrol
+    PING_ARASI_SURE = 3  # Ping kontrolleri arası süre (saniye) - daha sık
+    MAX_PING_HATA = 3    # Maksimum başarısız ping sayısı - daha hızlı
     RESET_BEKLEME = 10   # Reset sonrası bekleme süresi
     MAX_RESET_DENEME = 3 # Maksimum reset deneme sayısı
     
@@ -159,7 +159,7 @@ class PortSaglikServisi:
     
     def _kart_ping_kontrol(self, kart, kart_adi: str):
         """
-        Kart ping kontrolü
+        Kart ping kontrolü - SESLİ VERSİYON
         
         Args:
             kart: Kontrol edilecek kart nesnesi
@@ -167,17 +167,18 @@ class PortSaglikServisi:
         """
         durum = self.kart_durumlari[kart_adi]
         
-        # Ping gönder (sessiz)
+        # Ping gönder (sesli)
+        print(f"📡 [PORT-SAĞLIK] {kart_adi.upper()} → PING gönderiliyor...")
         if kart.ping():
             # Başarılı ping
             if kart.saglikli:
-                # Sadece log'da kaydet, print yapma
+                print(f"✅ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alındı ✓")
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
                 durum.durum = SaglikDurumu.SAGLIKLI
                 return
         
-        # Başarısız ping - sadece bu durumda print yap
+        # Başarısız ping
         durum.basarisiz_ping += 1
         gecen_sure = time.time() - durum.son_pong_zamani
         
@@ -191,11 +192,11 @@ class PortSaglikServisi:
             durum.durum = SaglikDurumu.UYARI
             print(f"⚠️  [PORT-SAĞLIK] {kart_adi.upper()} → UYARI! Son pong: {gecen_sure:.1f}s önce")
         
-        # EK: Motor kartı için özel kontrol - ping başarısızsa yeniden başlat
-        if kart_adi == "motor" and durum.basarisiz_ping >= 3:
-            print(f"🔧 [PORT-SAĞLIK] Motor kartı ping başarısız - yeniden başlatılıyor")
-            log_system("Motor kartı ping başarısız - yeniden başlatılıyor")
-            self._kartlari_yeniden_baslat({"motor": kart.port_adi})
+        # EK: Her iki kart için özel kontrol - ping başarısızsa yeniden başlat
+        if durum.basarisiz_ping >= 2:  # Daha hızlı müdahale (3'ten 2'ye düşürüldü)
+            print(f"🔧 [PORT-SAĞLIK] {kart_adi.upper()} kartı ping başarısız - yeniden başlatılıyor")
+            log_system(f"{kart_adi.upper()} kartı ping başarısız - yeniden başlatılıyor")
+            self._kartlari_yeniden_baslat({kart_adi: kart.port_adi})
     
     def _durumlari_degerlendir(self):
         """Kart durumlarını değerlendir ve gerekirse müdahale et"""
@@ -210,16 +211,6 @@ class PortSaglikServisi:
         # Kritik durum varsa müdahale et
         if kritik_kartlar:
             self._kartlari_resetle(kritik_kartlar)
-        
-        # EK: Motor kartı için özel kontrol - port bulunmuş ama bağlantı kurulamıyorsa
-        if hasattr(self, 'motor_karti') and self.motor_karti:
-            # Motor kartı port bulunmuş ama bağlantı kurulamıyorsa
-            if (hasattr(self.motor_karti, 'port_adi') and 
-                self.motor_karti.port_adi and 
-                not self.motor_karti.saglikli):
-                print(f"🔧 [PORT-SAĞLIK] Motor kartı port bulunmuş ama bağlantı kurulamıyor - yeniden başlatılıyor")
-                log_system("Motor kartı port bulunmuş ama bağlantı kurulamıyor - yeniden başlatılıyor")
-                self._kartlari_yeniden_baslat({"motor": self.motor_karti.port_adi})
     
     def _kartlari_resetle(self, kritik_kartlar: list):
         """
@@ -370,25 +361,75 @@ class PortSaglikServisi:
     
     def _kartlari_yeniden_baslat(self, portlar: dict):
         """
-        Kartları yeniden başlat
+        Kartları yeniden başlat - SENSOR ÖNCE, MOTOR SONRA
         
         Args:
             portlar: Port bilgileri (örn: {"motor": "/dev/ttyUSB0", "sensor": "/dev/ttyUSB1"})
         """
         try:
             print("🔄 [PORT-SAĞLIK] Kartlar yeniden başlatılıyor...")
+            print("📋 [PORT-SAĞLIK] Sıralama: SENSOR ÖNCE, MOTOR SONRA")
             
             # ÖNEMLİ: Kartların otomatik port arama yapmasını engelle
             # Çünkü bu fonksiyon çağrıldığında portlar ZATENbulunmuş durumda
             
-            # Motor kartı
+            # ÖNCE SENSOR KARTI
+            if "sensor" in portlar:
+                print(f"  🔧 Sensor kartı: {portlar['sensor']}")
+                self.sensor_karti.dinlemeyi_durdur()  # Önce mevcut thread'leri durdur
+                time.sleep(0.5)  # Thread'lerin tamamen durması için bekle
+                self.sensor_karti.port_adi = portlar["sensor"]
+                self.sensor_karti._first_connection = True  # İlk bağlantı flag'ini resetle
+                
+                # ÖNCE PORTU AÇ
+                if self.sensor_karti.portu_ac():
+                    print(f"  ✓ Sensor port açıldı: {portlar['sensor']}")
+                    # Sonra thread'leri başlat
+                    self.sensor_karti.dinlemeyi_baslat()
+                    
+                    # Thread'lerin başlamasını bekle
+                    time.sleep(1)
+                    
+                    # Thread durumunu kontrol et
+                    if not self.sensor_karti.thread_durumu_kontrol():
+                        print(f"  ⚠️  Sensor thread'leri düzgün başlamamış, yeniden başlatılıyor")
+                        self.sensor_karti.dinlemeyi_durdur()
+                        time.sleep(0.5)
+                        self.sensor_karti.dinlemeyi_baslat()
+                        time.sleep(1)
+                        # Tekrar kontrol et
+                        if not self.sensor_karti.thread_durumu_kontrol():
+                            print(f"  ❌ Sensor thread'leri hala başlamamış!")
+                            log_error("Sensor thread'leri başlatılamadı")
+                        else:
+                            print(f"  ✅ Sensor thread'leri başarıyla başlatıldı")
+                    
+                    # Sensor kartı için de reset komutu gönder
+                    print(f"  🔄 Sensor kartı resetleniyor...")
+                    self.sensor_karti.reset()
+                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
+                    
+                    print(f"  ✅ Sensor kartı başlatıldı")
+                else:
+                    print(f"  ❌ Sensor portu açılamadı!")
+            
+            # SENSOR KARTI HAZIR OLDUKTAN SONRA MOTOR KARTI
             if "motor" in portlar:
+                # Sensor kartının hazır olmasını bekle
+                if "sensor" in portlar:
+                    print(f"  ⏳ Sensor kartının hazır olması bekleniyor...")
+                    time.sleep(3)  # Sensor kartının tamamen hazır olması için bekle
+                    print(f"  ✅ Sensor kartı hazır, motor kartı başlatılıyor...")
+                
+                # Motor kartı için ek bekleme
+                print(f"  ⏳ Motor kartı boot süreci için ek bekleme...")
+                time.sleep(2)  # Motor kartı boot süreci için ek bekleme
+                
                 print(f"  🔧 Motor kartı: {portlar['motor']}")
                 self.motor_karti.dinlemeyi_durdur()  # Önce mevcut thread'leri durdur
                 time.sleep(0.5)  # Thread'lerin tamamen durması için bekle
                 self.motor_karti.port_adi = portlar["motor"]
                 self.motor_karti._first_connection = True  # İlk bağlantı flag'ini resetle
-                self.motor_karti._is_reconnecting = False  # Reconnect flag'ini sıfırla
                 
                 # ÖNCE PORTU AÇ
                 if self.motor_karti.portu_ac():
@@ -406,12 +447,22 @@ class PortSaglikServisi:
                         time.sleep(0.5)
                         self.motor_karti.dinlemeyi_baslat()
                         time.sleep(1)
-                        self.motor_karti.thread_durumu_kontrol()
+                        # Tekrar kontrol et
+                        if not self.motor_karti.thread_durumu_kontrol():
+                            print(f"  ❌ Motor thread'leri hala başlamamış!")
+                            log_error("Motor thread'leri başlatılamadı")
+                        else:
+                            print(f"  ✅ Motor thread'leri başarıyla başlatıldı")
                     
                     # Motor parametrelerini gönder
                     print(f"  🔄 Motor parametreleri gönderiliyor...")
                     self.motor_karti.parametre_gonder()
                     time.sleep(1)  # Parametrelerin işlenmesi için bekle
+                    
+                    # Motor kartını resetle
+                    print(f"  🔄 Motor kartı resetleniyor...")
+                    self.motor_karti.reset()
+                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
                     
                     # Motorları aktif et
                     print(f"  🔄 Motorlar aktif ediliyor...")
@@ -431,28 +482,10 @@ class PortSaglikServisi:
                 else:
                     print(f"  ❌ Motor portu açılamadı!")
             
-            # Sensor kartı
-            if "sensor" in portlar:
-                print(f"  🔧 Sensor kartı: {portlar['sensor']}")
-                self.sensor_karti.dinlemeyi_durdur()  # Önce mevcut thread'leri durdur
-                time.sleep(0.5)  # Thread'lerin tamamen durması için bekle
-                self.sensor_karti.port_adi = portlar["sensor"]
-                self.sensor_karti._first_connection = True  # İlk bağlantı flag'ini resetle
-                self.sensor_karti._is_reconnecting = False  # Reconnect flag'ini sıfırla
-                
-                # ÖNCE PORTU AÇ
-                if self.sensor_karti.portu_ac():
-                    print(f"  ✓ Sensor port açıldı: {portlar['sensor']}")
-                    # Sonra thread'leri başlat
-                    self.sensor_karti.dinlemeyi_baslat()
-                    print(f"  ✅ Sensor kartı başlatıldı")
-                else:
-                    print(f"  ❌ Sensor portu açılamadı!")
-            
             # Embedded sistemler USB reset script'inde zaten 5 saniye boot bekledi
-            # Sadece kısa bir stabilizasyon beklemesi yeterli
-            print(f"⏳ [PORT-SAĞLIK] Kartların stabilizasyonu için 2 saniye bekleniyor...")
-            time.sleep(2)
+            # Motor kartı boot süreci uzun olabileceği için ek bekleme
+            print(f"⏳ [PORT-SAĞLIK] Kartların stabilizasyonu için 5 saniye bekleniyor...")
+            time.sleep(5)
             print(f"✅ [PORT-SAĞLIK] Kartlar hazır - ping/pong testi başlayacak!")
                     
         except Exception as e:

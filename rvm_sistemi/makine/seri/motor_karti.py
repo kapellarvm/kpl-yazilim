@@ -124,6 +124,19 @@ class MotorKart:
                 # Port bulundu, bağlantı kurmayı dene
                 if self._try_connect_to_port():
                     log_success(f"{self.cihaz_adi} bağlantı kuruldu: {self.port_adi}")
+                    # Thread'lerin başlamasını bekle
+                    time.sleep(0.5)
+                    # Thread durumunu kontrol et
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} _auto_find_port - thread'ler başarıyla başlatıldı")
+                    else:
+                        log_warning(f"{self.cihaz_adi} _auto_find_port - thread'ler başlatılamadı")
+                    
+                    # İlk bağlantı sonrası reset komutu gönder
+                    log_system(f"{self.cihaz_adi} ilk bağlantı sonrası reset komutu gönderiliyor...")
+                    self.reset()
+                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
+                    
                     return True
                 else:
                     log_warning(f"{self.cihaz_adi} port bulundu ama bağlantı kurulamadı: {self.port_adi}")
@@ -158,7 +171,18 @@ class MotorKart:
                 if self._auto_find_port():
                     time.sleep(1)
                     self.parametre_gonder()
+                    
+                    # Arka plan arama sonrası reset komutu gönder
+                    log_system(f"{self.cihaz_adi} arka plan arama sonrası reset komutu gönderiliyor...")
+                    self.reset()
+                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
+                    
                     self._connection_attempts = 0
+                    # Thread durumunu kontrol et
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} _start_background_search - thread'ler başarıyla başlatıldı")
+                    else:
+                        log_warning(f"{self.cihaz_adi} _start_background_search - thread'ler başlatılamadı")
                     return
                 
                 time.sleep(delay)
@@ -197,7 +221,15 @@ class MotorKart:
         self.parametre_gonder()
 
     def reset(self):
+        log_system(f"{self.cihaz_adi} reset komutu gönderiliyor...")
+        # Write thread'in çalışıp çalışmadığını kontrol et
+        if not (self.write_thread and self.write_thread.is_alive()):
+            log_error(f"{self.cihaz_adi} write thread çalışmıyor - reset komutu gönderilemiyor")
+            return False
+        
         self._safe_queue_put("reset", None)
+        log_system(f"{self.cihaz_adi} reset komutu queue'ya eklendi")
+        return True
 
     # Motor kontrol
     def motorlari_aktif_et(self):
@@ -328,6 +360,7 @@ class MotorKart:
         """Thread başlatma - iyileştirilmiş"""
         with self._port_lock:
             if self.running:
+                log_warning(f"{self.cihaz_adi} thread'ler zaten çalışıyor")
                 return
             
             # Port açık değilse thread başlatma
@@ -350,16 +383,40 @@ class MotorKart:
                 name=f"{self.cihaz_adi}_write"
             )
             
+            # Thread'leri sırayla başlat
             self.listen_thread.start()
+            time.sleep(0.1)  # Listen thread'in başlaması için bekle
             self.write_thread.start()
+            time.sleep(0.1)  # Write thread'in başlaması için bekle
             
             log_system(f"{self.cihaz_adi} thread'leri başlatıldı")
             
             # Thread'lerin başlamasını bekle
-            time.sleep(0.5)  # Thread'lerin başlaması için bekle
+            time.sleep(1.0)  # Thread'lerin başlaması için daha uzun bekle
             
-            # Thread durumunu kontrol et
-            self.thread_durumu_kontrol()
+            # Thread durumunu kontrol et ve logla
+            if self.thread_durumu_kontrol():
+                log_success(f"{self.cihaz_adi} thread'leri başarıyla başlatıldı")
+            else:
+                log_error(f"{self.cihaz_adi} thread'leri başlatılamadı - yeniden denenecek")
+                # Thread'leri tekrar başlat
+                self._cleanup_threads()
+                time.sleep(0.5)
+                self.listen_thread = threading.Thread(
+                    target=self._dinle,
+                    daemon=True,
+                    name=f"{self.cihaz_adi}_listen"
+                )
+                self.write_thread = threading.Thread(
+                    target=self._yaz,
+                    daemon=True,
+                    name=f"{self.cihaz_adi}_write"
+                )
+                self.listen_thread.start()
+                time.sleep(0.1)
+                self.write_thread.start()
+                time.sleep(0.1)
+                log_system(f"{self.cihaz_adi} thread'leri tekrar başlatıldı")
 
     def dinlemeyi_durdur(self):
         """Thread durdurma - güvenli"""
@@ -414,10 +471,15 @@ class MotorKart:
             write_ok = self.write_thread and self.write_thread.is_alive()
             
             if listen_ok and write_ok:
-                log_system(f"{self.cihaz_adi} thread'leri çalışıyor")
+                log_system(f"{self.cihaz_adi} thread'leri çalışıyor - Listen: {listen_ok}, Write: {write_ok}")
                 return True
             else:
                 log_warning(f"{self.cihaz_adi} thread durumu - Listen: {listen_ok}, Write: {write_ok}")
+                # Thread'lerin neden çalışmadığını kontrol et
+                if not listen_ok:
+                    log_error(f"{self.cihaz_adi} listen thread çalışmıyor")
+                if not write_ok:
+                    log_error(f"{self.cihaz_adi} write thread çalışmıyor")
                 return False
 
     def _is_port_ready(self) -> bool:
@@ -432,6 +494,7 @@ class MotorKart:
     def _yaz(self):
         """Yazma thread'i - optimized"""
         komutlar = self._get_komut_sozlugu()
+        log_system(f"{self.cihaz_adi} write thread başlatıldı")
         
         while self.running:
             try:
@@ -440,28 +503,53 @@ class MotorKart:
                     command, data = self.write_queue.get(timeout=1)
                 except queue.Empty:
                     continue
-                
+
                 if command == "exit":
+                    log_system(f"{self.cihaz_adi} write thread çıkıyor")
                     break
                 
                 # Port kontrolü
                 if not self._is_port_ready():
+                    log_warning(f"{self.cihaz_adi} write thread - port hazır değil")
                     time.sleep(0.1)
                     continue
                 
                 # Özel parametre gönderme
                 if command == "parametre_gonder":
+                    log_system(f"{self.cihaz_adi} write thread - parametre gönderiliyor")
                     self._send_parameters()
                 elif command in komutlar:
+                    log_system(f"{self.cihaz_adi} write thread - komut gönderiliyor: {command}")
                     self.seri_nesnesi.write(komutlar[command])
                     self.seri_nesnesi.flush()
+                    log_success(f"{self.cihaz_adi} write thread - komut gönderildi: {command}")
                 
             except (serial.SerialException, OSError) as e:
                 log_error(f"{self.cihaz_adi} yazma hatası: {e}")
-                self._handle_connection_error()
-                break
+                # I/O Error sonrası hemen portu kapat
+                with self._port_lock:
+                    if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                        try:
+                            self.seri_nesnesi.close()
+                        except:
+                            pass
+                        self.seri_nesnesi = None
+                        self.saglikli = False
+                
+                # Reconnection'ı ayrı thread'de başlat (write thread'i durdurmadan)
+                threading.Thread(
+                    target=self._handle_connection_error,
+                    daemon=True,
+                    name=f"{self.cihaz_adi}_error_handler"
+                ).start()
+                
+                # Write thread'i durdurma, sadece port hatası için bekle
+                time.sleep(1)
+                continue
             except Exception as e:
                 log_exception(f"{self.cihaz_adi} yazma thread hatası", exc_info=(type(e), e, e.__traceback__))
+        
+        log_system(f"{self.cihaz_adi} write thread bitti - running: {self.running}")
 
     def _send_parameters(self):
         """Motor parametrelerini gönder"""
@@ -550,9 +638,11 @@ class MotorKart:
             current_time = time.time()
             time_since_ping = current_time - self._last_ping_time
             
-            if time_since_ping < 30:  # Son 30 saniye içinde ping alındıysa
+            # Daha uzun süre bekle (120 saniye) - motor kartı boot süreci çok uzun olabilir
+            if time_since_ping < 120:  # Son 120 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
                 log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
+                self.saglikli = True  # Sağlıklı olarak işaretle
             else:
                 # Ping alınmamışsa, fiziksel bağlantı sorunu
                 log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
@@ -569,8 +659,9 @@ class MotorKart:
         """Bağlantı hatası yönetimi - System State Manager ile"""
         # System state manager ile reconnection kontrolü
         if not system_state.can_start_reconnection(self.cihaz_adi):
-            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul")
-            return
+            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul - zorla başlatılıyor")
+            # Zorla reconnection başlat
+            system_state.finish_reconnection(self.cihaz_adi, False)  # Mevcut reconnection'ı bitir
         
         # Reconnection başlat
         if not system_state.start_reconnection(self.cihaz_adi, "I/O Error"):
@@ -580,18 +671,18 @@ class MotorKart:
         try:
             log_system(f"{self.cihaz_adi} bağlantı hatası yönetimi")
             
-            # Thread'leri durdur
-            self.dinlemeyi_durdur()
-            
-            # Portu kapat
+            # Portu kapat (thread'leri durdurmadan önce)
             with self._port_lock:
                 if self.seri_nesnesi and self.seri_nesnesi.is_open:
                     try:
                         self.seri_nesnesi.close()
                     except:
                         pass
-                self.seri_nesnesi = None
-                self.saglikli = False
+                    self.seri_nesnesi = None
+                    self.saglikli = False
+            
+            # Thread'leri durdur
+            self.dinlemeyi_durdur()
             
             # Reconnection thread başlat (tek seferlik)
             thread_name = f"{self.cihaz_adi}_reconnect"
@@ -633,8 +724,20 @@ class MotorKart:
                 if self._auto_find_port():
                     time.sleep(1)
                     self.parametre_gonder()  # Motor parametrelerini tekrar gönder
+                    
+                    # Bağlantı sonrası reset komutu gönder
+                    log_system(f"{self.cihaz_adi} bağlantı sonrası reset komutu gönderiliyor...")
+                    self.reset()
+                    time.sleep(2)  # Reset komutunun işlenmesi için bekle
+                    
                     self._connection_attempts = 0
                     log_success(f"{self.cihaz_adi} yeniden bağlandı")
+                    
+                    # Thread durumunu kontrol et ve logla
+                    if self.thread_durumu_kontrol():
+                        log_system(f"{self.cihaz_adi} reconnection tamamlandı - thread'ler çalışıyor")
+                    else:
+                        log_warning(f"{self.cihaz_adi} reconnection tamamlandı ama thread'ler çalışmıyor")
                     
                     # Başarılı reconnection
                     system_state.finish_reconnection(self.cihaz_adi, True)
