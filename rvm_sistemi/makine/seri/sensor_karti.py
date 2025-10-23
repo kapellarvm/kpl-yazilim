@@ -851,7 +851,9 @@ class SensorKart:
                 
                 if self._auto_find_port():
                     # ✅ Port bulundu, thread'ler başladı
-                    time.sleep(1.0)  # Thread'lerin tam başlaması için bekle
+                    # ESP32 boot için yeterli bekleme (boot mesajları + firmware başlatma)
+                    log_system(f"{self.cihaz_adi} ESP32 boot ve firmware başlatması bekleniyor...")
+                    time.sleep(3.0)  # ESP32'nin tam boot olması için 3 saniye
 
                     # ✅ Ping/Pong ile sensor kartını doğrula
                     log_system(f"{self.cihaz_adi} reconnection doğrulaması - ping/pong testi...")
@@ -864,10 +866,16 @@ class SensorKart:
                             break
                         else:
                             log_warning(f"{self.cihaz_adi} doğrulama denemesi {dogrulama_denemesi + 1}/3 - PONG alınamadı")
-                            time.sleep(0.5)
+                            time.sleep(1.0)  # Denemeler arası bekleme artırıldı
 
                     if not sensor_saglikli:
                         log_error(f"{self.cihaz_adi} doğrulama başarısız - ping/pong çalışmıyor")
+                        # ✅ Portu kapat ve release et, sonra tekrar dene
+                        log_system(f"{self.cihaz_adi} validation başarısız - port kapatılıyor ve release ediliyor")
+                        self.dinlemeyi_durdur()
+                        if self.seri_nesnesi and self.seri_nesnesi.is_open:
+                            self.seri_nesnesi.close()
+                        self.port_yonetici.release_port(self.port_adi, self.cihaz_adi)
                         continue  # Reconnection'ı tekrar dene
 
                     # ✅ Başarılı, bağlantı kuruldu
