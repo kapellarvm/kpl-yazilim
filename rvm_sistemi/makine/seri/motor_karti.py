@@ -7,6 +7,8 @@ import threading
 import queue
 import time
 import serial
+import subprocess
+from pathlib import Path
 from typing import Optional, Callable
 
 from rvm_sistemi.makine.seri.port_yonetici import KartHaberlesmeServis
@@ -295,30 +297,42 @@ class MotorKart:
         self._safe_queue_put("atik_uzunluk", None)
 
     def ping(self):
-        """Ping - sadece mevcut bağlantıyı test et, port arama yapma"""
+        """Ping - sadece mevcut bağlantıyı test et, port arama yapma - İYİLEŞTİRİLMİŞ V2"""
+        # ✅ Reconnect devam ediyorsa ping atma
+        if system_state.is_card_reconnecting(self.cihaz_adi):
+            log_warning(f"⚠️ [MOTOR-PING] Reconnect devam ediyor - ping atlanıyor")
+            return False
+        
         if not self._is_port_ready():
-            log_warning(f"{self.cihaz_adi} port hazır değil - ping atlanıyor")
+            log_warning(f"⚠️ [MOTOR-PING] Port hazır değil - ping atlanıyor")
             return False
         
         # Ping zamanını hemen kaydet (reset bypass için)
         self._last_ping_time = time.time()
         
-        # Mevcut sağlık durumunu kaydet
+        # ✅ Sağlık durumunu ÖNCE False yap (gerçek yanıt gelene kadar)
+        log_system(f"📡 [MOTOR-PING] Ping gönderiliyor... (şu anki sağlık: {self.saglikli})")
         previous_health = self.saglikli
+        self.saglikli = False  # ✅ Yanıt gelene kadar False
         
         # Ping gönder
         self._safe_queue_put("ping", None)
         
-        # PONG cevabını bekle (daha uzun süre)
-        time.sleep(self.PING_TIMEOUT * 2)  # 0.6 saniye bekle
+        # PONG cevabını bekle
+        ping_start = time.time()
+        timeout = self.PING_TIMEOUT * 2  # 0.6 saniye
         
-        # Eğer sağlık durumu değiştiyse (PONG geldi), başarılı
-        if self.saglikli:
-            #log_system(f"{self.cihaz_adi} ping başarılı")
-            return True
+        while time.time() - ping_start < timeout:
+            if self.saglikli:  # PONG geldi
+                elapsed = time.time() - ping_start
+                log_success(f"✅ [MOTOR-PING] PONG alındı ({elapsed:.3f}s)")
+                return True
+            time.sleep(0.05)  # Küçük aralıklarla kontrol et
         
-        # PONG gelmedi, başarısız
-        log_warning(f"{self.cihaz_adi} ping başarısız - port arama yapılmıyor")
+        # Timeout - PONG gelmedi
+        elapsed = time.time() - ping_start
+        log_error(f"❌ [MOTOR-PING] Timeout! PONG gelmedi ({elapsed:.3f}s)")
+        self.saglikli = False  # Kesin başarısız
         return False
 
     def getir_saglik_durumu(self):
@@ -357,21 +371,82 @@ class MotorKart:
             return False
 
     def dinlemeyi_baslat(self):
-        """Thread başlatma - iyileştirilmiş"""
+        """Thread başlatma - iyileştirilmiş - DEADLOCK FIX + ZOMBIE THREAD KONTROLÜ"""
+        # Port kontrolü ve running flag ayarları lock içinde
         with self._port_lock:
-            if self.running:
-                log_warning(f"{self.cihaz_adi} thread'ler zaten çalışıyor")
-                return
-            
             # Port açık değilse thread başlatma
             if not self.seri_nesnesi or not self.seri_nesnesi.is_open:
                 log_warning(f"{self.cihaz_adi} port açık değil - thread başlatılamıyor")
                 return
             
-            self.running = True
-            self._cleanup_threads()
+            # ✅ ZOMBIE THREAD KONTROLÜ
+            # Thread'ler "çalışıyor" görünüyorsa ama gerçekte is_alive() False ise temizle
+            threads_alive = (
+                (self.listen_thread and self.listen_thread.is_alive()) and
+                (self.write_thread and self.write_thread.is_alive())
+            )
             
-            # Thread'leri başlat
+            if self.running and not threads_alive:
+                # Zombie thread durumu - temizle
+                log_warning(f"{self.cihaz_adi} zombie thread tespit edildi - temizleniyor")
+                self.running = False
+                # Lock'u bırak, thread temizliği için
+            elif self.running and threads_alive:
+                # Thread'ler zaten çalışıyor (gerçekten alive)
+                log_warning(f"{self.cihaz_adi} thread'ler zaten çalışıyor")
+                return
+            elif not self.running and threads_alive:
+                # running=False ama thread'ler hala alive - durdur
+                log_warning(f"{self.cihaz_adi} orphan thread'ler bulundu - durduruluyor")
+                self.running = False
+            
+            # Eski thread'leri temizle
+            if self.running:
+                log_system(f"{self.cihaz_adi} eski thread'leri temizleniyor...")
+                self.running = False
+                # Lock'u bırak, thread'lerin durması için
+        
+        # Lock DIŞINDA thread temizliği
+        if not self.running:
+            time.sleep(0.5)  # Thread'lerin durması için bekle
+            self._cleanup_threads()
+        
+        # Lock içinde running flag'i ayarla
+        with self._port_lock:
+            self.running = True
+        
+        # ✅ LOCK DIŞINDA thread'leri başlat (deadlock önleme)
+        # Thread'leri başlat
+        self.listen_thread = threading.Thread(
+            target=self._dinle,
+            daemon=True,
+            name=f"{self.cihaz_adi}_listen"
+        )
+        self.write_thread = threading.Thread(
+            target=self._yaz,
+            daemon=True,
+            name=f"{self.cihaz_adi}_write"
+        )
+        
+        # Thread'leri sırayla başlat
+        self.listen_thread.start()
+        time.sleep(0.1)  # Listen thread'in başlaması için bekle
+        self.write_thread.start()
+        time.sleep(0.1)  # Write thread'in başlaması için bekle
+        
+        log_system(f"{self.cihaz_adi} thread'leri başlatıldı")
+        
+        # Thread'lerin başlamasını bekle
+        time.sleep(0.5)  # Thread'lerin başlaması için bekle
+        
+        # Thread durumunu kontrol et ve logla
+        if self.thread_durumu_kontrol():
+            log_success(f"{self.cihaz_adi} thread'leri başarıyla başlatıldı")
+        else:
+            log_error(f"{self.cihaz_adi} thread'leri başlatılamadı - yeniden denenecek")
+            # Thread'leri tekrar başlat
+            self._cleanup_threads()
+            time.sleep(0.5)
             self.listen_thread = threading.Thread(
                 target=self._dinle,
                 daemon=True,
@@ -382,41 +457,11 @@ class MotorKart:
                 daemon=True,
                 name=f"{self.cihaz_adi}_write"
             )
-            
-            # Thread'leri sırayla başlat
             self.listen_thread.start()
-            time.sleep(0.1)  # Listen thread'in başlaması için bekle
+            time.sleep(0.1)
             self.write_thread.start()
-            time.sleep(0.1)  # Write thread'in başlaması için bekle
-            
-            log_system(f"{self.cihaz_adi} thread'leri başlatıldı")
-            
-            # Thread'lerin başlamasını bekle
-            time.sleep(1.0)  # Thread'lerin başlaması için daha uzun bekle
-            
-            # Thread durumunu kontrol et ve logla
-            if self.thread_durumu_kontrol():
-                log_success(f"{self.cihaz_adi} thread'leri başarıyla başlatıldı")
-            else:
-                log_error(f"{self.cihaz_adi} thread'leri başlatılamadı - yeniden denenecek")
-                # Thread'leri tekrar başlat
-                self._cleanup_threads()
-                time.sleep(0.5)
-                self.listen_thread = threading.Thread(
-                    target=self._dinle,
-                    daemon=True,
-                    name=f"{self.cihaz_adi}_listen"
-                )
-                self.write_thread = threading.Thread(
-                    target=self._yaz,
-                    daemon=True,
-                    name=f"{self.cihaz_adi}_write"
-                )
-                self.listen_thread.start()
-                time.sleep(0.1)
-                self.write_thread.start()
-                time.sleep(0.1)
-                log_system(f"{self.cihaz_adi} thread'leri tekrar başlatıldı")
+            time.sleep(0.1)
+            log_system(f"{self.cihaz_adi} thread'leri tekrar başlatıldı")
 
     def dinlemeyi_durdur(self):
         """Thread durdurma - güvenli"""
@@ -594,9 +639,9 @@ class MotorKart:
                     data = self.seri_nesnesi.readline().decode(errors='ignore').strip()
                     if data:
                         self._consecutive_errors = 0  # Başarılı okuma
+                        # ✅ HAM MESAJ LOGU - Motor kartından gelen tüm mesajlar
+                        log_system(f"🔵 [MOTOR-HAM] >>> '{data}' (uzunluk: {len(data)})")
                         self._process_message(data)
-                        # Mesaj alındığında log yaz
-                        log_system(f"{self.cihaz_adi} mesaj alındı: {data}")
                 else:
                     time.sleep(0.05)
                 
@@ -615,16 +660,21 @@ class MotorKart:
                 time.sleep(1)
 
     def _process_message(self, message: str):
-        """Mesaj işleme"""
+        """Mesaj işleme - İYİLEŞTİRİLMİŞ"""
         if not message or not message.isprintable():
+            log_warning(f"🔴 [MOTOR-HAM] Geçersiz mesaj (boş veya yazılamaz)")
             return
         
         message_lower = message.lower()
         
+        # ✅ Her mesaj için detaylı log
+        log_system(f"🔵 [MOTOR-PROCESS] İşleniyor: '{message}' (lowercase: '{message_lower}')")
+        
         if message_lower == "pong":
+            log_success(f"✅ [MOTOR-PONG] PONG alındı - saglikli = True")
             self.saglikli = True
         elif message_lower == "resetlendi":
-            log_warning(f"{self.cihaz_adi} kart resetlendi")
+            log_warning(f"⚠️ [MOTOR-RESET] Kart resetlendi mesajı alındı")
             
             # İlk bağlantıda gelen reset mesajını bypass et
             if self._first_connection:
@@ -650,18 +700,66 @@ class MotorKart:
                 time.sleep(2)
                 self._handle_connection_error()
         elif self.callback:
+            log_system(f"🔵 [MOTOR-CALLBACK] Callback çağrılıyor: '{message}'")
             try:
                 self.callback(message)
             except Exception as e:
                 log_error(f"{self.cihaz_adi} callback hatası: {e}")
+        else:
+            log_warning(f"🟡 [MOTOR-UNKNOWN] Tanınmayan mesaj (callback yok): '{message}'")
+
+    def _try_usb_reset(self, port_path: str) -> bool:
+        """
+        USB portunu fiziksel reset et
+        
+        Args:
+            port_path: Reset atılacak port yolu
+            
+        Returns:
+            bool: Reset başarılı mı?
+        """
+        try:
+            script_path = Path(__file__).parent / "usb_reset_helper.sh"
+            
+            if not script_path.exists():
+                log_warning(f"USB reset scripti bulunamadı: {script_path}")
+                return False
+            
+            log_system(f"USB reset deneniyor: {port_path}")
+            result = subprocess.run(
+                ['sudo', str(script_path), port_path],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            
+            if result.returncode == 0:
+                log_success(f"USB reset başarılı: {port_path}")
+                time.sleep(2)  # Driver yeniden yüklenmesini bekle
+                return True
+            else:
+                log_warning(f"USB reset başarısız: {result.stderr}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            log_error(f"USB reset timeout: {port_path}")
+            return False
+        except Exception as e:
+            log_error(f"USB reset hatası: {e}")
+            return False
 
     def _handle_connection_error(self):
-        """Bağlantı hatası yönetimi - System State Manager ile"""
+        """Bağlantı hatası yönetimi - System State Manager ile - İYİLEŞTİRİLMİŞ"""
         # System state manager ile reconnection kontrolü
         if not system_state.can_start_reconnection(self.cihaz_adi):
-            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul - zorla başlatılıyor")
-            # Zorla reconnection başlat
-            system_state.finish_reconnection(self.cihaz_adi, False)  # Mevcut reconnection'ı bitir
+            log_warning(f"{self.cihaz_adi} reconnection zaten devam ediyor veya sistem meşgul")
+            # ✅ Eğer sistem USB reset yapıyorsa, bekle
+            if system_state.get_system_state() == SystemState.USB_RESETTING:
+                log_system(f"{self.cihaz_adi} USB reset devam ediyor, reconnection atlanıyor")
+                return
+            # ✅ Mevcut reconnection'ı zorla bitir ve yeniden başlat
+            log_warning(f"{self.cihaz_adi} mevcut reconnection zorla bitiriliyor")
+            system_state.finish_reconnection(self.cihaz_adi, False)
         
         # Reconnection başlat
         if not system_state.start_reconnection(self.cihaz_adi, "I/O Error"):
@@ -671,20 +769,50 @@ class MotorKart:
         try:
             log_system(f"{self.cihaz_adi} bağlantı hatası yönetimi")
             
-            # Portu kapat (thread'leri durdurmadan önce)
-            with self._port_lock:
-                if self.seri_nesnesi and self.seri_nesnesi.is_open:
+            # 1. Thread'leri tam olarak durdur
+            self.running = False  # Tüm thread'lere dur sinyali
+            
+            # 2. Thread'lerin bitmesini bekle (kendini join etmemeye dikkat)
+            current_thread = threading.current_thread()
+            
+            if hasattr(self, 'listen_thread') and self.listen_thread:
+                if self.listen_thread != current_thread and self.listen_thread.is_alive():
+                    log_system(f"{self.cihaz_adi} listen thread'i bekleniyor...")
+                    self.listen_thread.join(timeout=2.0)
+                    
+            if hasattr(self, 'write_thread') and self.write_thread:
+                if self.write_thread != current_thread and self.write_thread.is_alive():
+                    # Exit sinyali gönder
                     try:
-                        self.seri_nesnesi.close()
-                    except:
+                        self.write_queue.put_nowait(("exit", None))
+                    except queue.Full:
                         pass
-                    self.seri_nesnesi = None
-                    self.saglikli = False
+                    log_system(f"{self.cihaz_adi} write thread'i bekleniyor...")
+                    self.write_thread.join(timeout=2.0)
             
-            # Thread'leri durdur
-            self.dinlemeyi_durdur()
+            # 3. Portu güvenli kapat
+            with self._port_lock:
+                if self.seri_nesnesi:
+                    try:
+                        if self.seri_nesnesi.is_open:
+                            # ✅ Bekleyen okuma/yazmayı iptal et
+                            try:
+                                self.seri_nesnesi.cancel_read()
+                                self.seri_nesnesi.cancel_write()
+                            except AttributeError:
+                                pass  # cancel_read/write her zaman mevcut olmayabilir
+                            self.seri_nesnesi.close()
+                    except (OSError, serial.SerialException) as e:
+                        log_warning(f"{self.cihaz_adi} port kapatma hatası: {e}")
+                        pass
+                self.seri_nesnesi = None
+                self.saglikli = False
             
-            # Reconnection thread başlat (tek seferlik)
+            # 4. USB Reset dene (opsiyonel) - SADECE USB_RESETTING durumunda değilse
+            if self.port_adi and system_state.get_system_state() != SystemState.USB_RESETTING:
+                self._try_usb_reset(self.port_adi)
+            
+            # 5. Reconnection thread başlat (tek seferlik)
             thread_name = f"{self.cihaz_adi}_reconnect"
             reconnect_thread = threading.Thread(
                 target=self._reconnect_worker,
@@ -704,7 +832,7 @@ class MotorKart:
             system_state.finish_reconnection(self.cihaz_adi, False)
 
     def _reconnect_worker(self):
-        """Yeniden bağlanma worker'ı - System State Manager ile"""
+        """Yeniden bağlanma worker'ı - System State Manager ile - İYİLEŞTİRİLMİŞ"""
         thread_name = f"{self.cihaz_adi}_reconnect"
         attempts = 0
         base_delay = self.RETRY_BASE_DELAY
@@ -722,6 +850,7 @@ class MotorKart:
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
                 
                 if self._auto_find_port():
+                    # ✅ Başarılı, parametre ve reset komutlarını gönder
                     time.sleep(1)
                     self.parametre_gonder()  # Motor parametrelerini tekrar gönder
                     
@@ -743,9 +872,10 @@ class MotorKart:
                     system_state.finish_reconnection(self.cihaz_adi, True)
                     return
                 
+                log_warning(f"{self.cihaz_adi} bağlanamadı, {delay}s bekliyor...")
                 time.sleep(delay)
             
-            log_error(f"{self.cihaz_adi} yeniden bağlanamadı")
+            log_error(f"{self.cihaz_adi} yeniden bağlanamadı ({self.MAX_RETRY} deneme)")
             # Başarısız reconnection
             system_state.finish_reconnection(self.cihaz_adi, False)
             
@@ -755,6 +885,7 @@ class MotorKart:
         finally:
             # Thread kaydını sil
             system_state.unregister_thread(thread_name)
+            log_system(f"{self.cihaz_adi} reconnect worker sonlandı")
 
     def _get_komut_sozlugu(self):
         """Komut sözlüğü - MEVCUT KOMUTLAR KORUNDU"""

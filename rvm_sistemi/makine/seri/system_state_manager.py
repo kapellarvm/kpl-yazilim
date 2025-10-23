@@ -74,6 +74,7 @@ class SystemStateManager:
         
         # Reconnection takibi
         self._reconnecting_cards: Set[str] = set()
+        self._reconnection_start_times: Dict[str, float] = {}  # ✅ Reconnection timing
         self._reconnect_lock = threading.RLock()
         
         # Reset kontrolü - timeout yerine bayrak
@@ -341,6 +342,7 @@ class SystemStateManager:
         
         with self._reconnect_lock:
             self._reconnecting_cards.add(card_name)
+            self._reconnection_start_times[card_name] = time.time()  # ✅ Başlangıç zamanı kaydet
             self.set_card_state(card_name, CardState.RECONNECTING, reason)
             
             log_system(f"Reconnection başlatıldı [{card_name}]: {reason}")
@@ -363,6 +365,12 @@ class SystemStateManager:
             
             self._reconnecting_cards.remove(card_name)
             
+            # ✅ Başlangıç zamanını temizle
+            if card_name in self._reconnection_start_times:
+                duration = time.time() - self._reconnection_start_times[card_name]
+                del self._reconnection_start_times[card_name]
+                log_system(f"Reconnection süresi [{card_name}]: {duration:.1f}s")
+            
             if success:
                 self.set_card_state(card_name, CardState.CONNECTED, "Reconnection başarılı")
             else:
@@ -375,6 +383,23 @@ class SystemStateManager:
         """Kart reconnecting durumunda mı?"""
         with self._reconnect_lock:
             return card_name in self._reconnecting_cards
+    
+    def get_reconnection_duration(self, card_name: str) -> float:
+        """
+        Reconnection ne kadar süredir devam ediyor?
+        
+        Args:
+            card_name: Kart adı
+            
+        Returns:
+            float: Süre (saniye), reconnection yoksa 0.0
+        """
+        with self._reconnect_lock:
+            if card_name not in self._reconnecting_cards:
+                return 0.0
+            
+            start_time = self._reconnection_start_times.get(card_name, time.time())
+            return time.time() - start_time
     
     def is_reconnection_stuck(self) -> bool:
         """RECONNECTING durumu takıldı mı?"""

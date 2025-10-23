@@ -190,9 +190,9 @@ async def main():
     product_update_task = asyncio.create_task(urun_guncelleyici.baslat())
     
     # Uyku modu servisini başlat
-    uyku_modu_servisi.sistem_referans_ayarla(oturum_var.sistem)
-    uyku_modu_servisi.uyku_kontrol_baslat()
-    log_system("Uyku modu servisi başlatıldı - 15 dakika sonra otomatik uyku modu")
+    #uyku_modu_servisi.sistem_referans_ayarla(oturum_var.sistem)
+    #uyku_modu_servisi.uyku_kontrol_baslat()
+    #log_system("Uyku modu servisi başlatıldı - 15 dakika sonra otomatik uyku modu")
     
     # Port sağlık servisini başlat (AKTİF)
     port_saglik_servisi = PortSaglikServisi(motor, sensor)
@@ -213,7 +213,7 @@ async def main():
     # Sunucu kapandığında her şeyi durdur
     await heartbeat_servis.stop_heartbeat()
     await voltage_power_monitoring_servis.stop_monitoring()
-    uyku_modu_servisi.uyku_kontrol_durdur()
+    #uyku_modu_servisi.uyku_kontrol_durdur()
     if port_saglik_servisi:
         port_saglik_servisi.servisi_durdur()
     log_system("Tüm servisler durduruldu")

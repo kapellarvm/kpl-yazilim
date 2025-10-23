@@ -316,6 +316,9 @@ class KartHaberlesmeServis:
         self.connection = SerialConnection(baudrate)
         self.communicator = DeviceCommunicator()
         
+        # ✅ Port arama için global lock (aynı anda sadece 1 thread arama yapabilir)
+        self._scan_lock = threading.Lock()
+        
         log_system(f"Kart Haberleşme Servisi başlatıldı - Sistem: {self.system}")
     
     def _reset_usb_port(self, port_device: str) -> bool:
@@ -383,18 +386,38 @@ class KartHaberlesmeServis:
                 return False
             
             log_system("TÜM USB portları resetleniyor...")
+            
+            # ✅ ÖNEMLİ: Reset öncesi TÜM portları tamamen kapat
+            log_system("Reset öncesi tüm portlar kapatılıyor...")
+            ports = self.scanner.get_available_ports()
+            closed_count = 0
+            for port_info in ports:
+                if self.scanner.is_compatible_port(port_info.device):
+                    try:
+                        # Portu açıp hemen kapatarak serbest bırak
+                        test_ser = serial.Serial(port_info.device, timeout=0.1)
+                        test_ser.close()
+                        closed_count += 1
+                        log_system(f"  ✓ {port_info.device} kapatıldı")
+                        time.sleep(0.1)  # Port tam kapansın
+                    except:
+                        pass  # Zaten kapalı veya erişilemez
+            
+            log_system(f"Reset öncesi {closed_count} port kapatıldı")
+            time.sleep(1)  # Portların tamamen serbest kalması için bekle
+            
             # Sudo ile çalıştır (program zaten sudo ile çalışıyor olabilir)
             try:
-                # Önce sudo olmadan dene
+                # Timeout'u 60 saniyeye çıkar (daha güvenli)
                 result = subprocess.run([reset_all_script], 
-                                     capture_output=True, text=True, timeout=30)
+                                     capture_output=True, text=True, timeout=60)
                 if result.returncode != 0 and "Permission denied" in result.stderr:
                     # Permission hatası varsa sudo ile dene
                     log_warning("Permission hatası, sudo ile deneniyor...")
                     result = subprocess.run(['sudo', reset_all_script], 
-                                         capture_output=True, text=True, timeout=30)
+                                         capture_output=True, text=True, timeout=60)
             except subprocess.TimeoutExpired:
-                log_error("USB reset timeout!")
+                log_error("USB reset timeout (60s)!")
                 return False
             
             if result.returncode == 0:
@@ -405,7 +428,7 @@ class KartHaberlesmeServis:
                         log_system(f"  {line}")
                 
                 # Reset sonrası autosuspend'i kapat
-                time.sleep(1)  # USB cihazların yeniden tanınması için bekle
+                time.sleep(2)  # USB cihazların yeniden tanınması için daha uzun bekle
                 self._disable_usb_autosuspend()
                 
                 return True
@@ -427,23 +450,51 @@ class KartHaberlesmeServis:
         try:
             log_system("Yumuşak USB reset başlatılıyor...")
             
+            # ✅ ÖNCELİKLE: Tüm portları kapat (sürücü kaldırmadan önce)
+            log_system("Sürücü kaldırılmadan önce tüm portlar kapatılıyor...")
+            ports = self.scanner.get_available_ports()
+            for port_info in ports:
+                if self.scanner.is_compatible_port(port_info.device):
+                    try:
+                        test_ser = serial.Serial(port_info.device, timeout=0.1)
+                        test_ser.close()
+                        log_system(f"  ✓ {port_info.device} kapatıldı")
+                        time.sleep(0.1)
+                    except:
+                        pass
+            
+            time.sleep(1)  # Portların tamamen kapanması için bekle
+            
             # CH341 sürücüsünü yeniden yükle
+            log_system("CH341 sürücüsü kaldırılıyor...")
             result = subprocess.run(['modprobe', '-r', 'ch341'], 
-                                 capture_output=True, text=True)
+                                 capture_output=True, text=True, timeout=10)
             if result.returncode != 0:
                 log_warning(f"CH341 sürücüsü kaldırılamadı: {result.stderr}")
+                # Zorla kaldırmayı dene
+                log_system("Zorla kaldırma deneniyor...")
+                result = subprocess.run(['rmmod', '-f', 'ch341'], 
+                                     capture_output=True, text=True, timeout=10)
+                if result.returncode != 0:
+                    log_error(f"CH341 sürücüsü zorla kaldırılamadı: {result.stderr}")
+                    return False
             
-            time.sleep(1)  # Kısa bekleme
+            time.sleep(2)  # Sürücünün tamamen kaldırılması için bekle
             
+            log_system("CH341 sürücüsü yükleniyor...")
             result = subprocess.run(['modprobe', 'ch341'], 
-                                 capture_output=True, text=True)
+                                 capture_output=True, text=True, timeout=10)
             if result.returncode != 0:
                 log_error(f"CH341 sürücüsü yüklenemedi: {result.stderr}")
                 return False
             
             log_success("CH341 sürücüsü başarıyla yeniden yüklendi")
+            time.sleep(2)  # Yeni portların oluşması için bekle
             return True
             
+        except subprocess.TimeoutExpired:
+            log_error("Yumuşak USB reset timeout")
+            return False
         except Exception as e:
             log_error(f"Yumuşak USB reset hatası: {e}")
             return False
@@ -647,104 +698,98 @@ class KartHaberlesmeServis:
                 - Mesaj
                 - Bulunan kartlar (cihaz_adi: port)
         """
-        # İlk deneme
-        log_system(f"Kart arama başlatıldı (Deneme 1/{max_retries+1})")
-        
-        # İlk önce USB autosuspend'i kapat (sadece ilk denemede)
-        if max_retries == 2:  # İlk deneme
-            self._disable_usb_autosuspend()
-            # Ek olarak shell script ile de dene
-            self._run_autosuspend_script()
-        
-        # İlk olarak tüm portları kapat
-        self._close_all_ports(try_usb_reset=try_usb_reset)
-        
-        start_time = time.time()
-        log_system(f"Kart arama başlatıldı - Hedef: {cihaz_adi or 'Tümü'}")
-        
-        # Mevcut portları al
-        ports = self.scanner.get_available_ports()
-        if not ports:
-            log_error("Hiçbir seri port bulunamadı!")
-            return False, "Hiçbir seri port bulunamadı!", {}
-        
-        # Uyumlu portları filtrele
-        compatible_ports = [
-            p for p in ports 
-            if self.scanner.is_compatible_port(p.device)
-        ]
-        
-        if not compatible_ports:
-            log_warning("Uyumlu port bulunamadı")
-            return False, "Uyumlu port bulunamadı!", {}
-        
-        log_system(f"{len(compatible_ports)} uyumlu port bulundu")
-        
-        # Paralel port tarama
-        discovered_devices = self._parallel_port_scan(compatible_ports, cihaz_adi)
-        
-        # Sonuçları değerlendir
-        elapsed_time = time.time() - start_time
-        basarili, mesaj, bulunan_kartlar = self._evaluate_results(discovered_devices, cihaz_adi, elapsed_time)
-        
-        # Kritik kartları kontrol et
-        kritik_eksik = False
-        if kritik_kartlar:
-            eksik_kartlar = [kart for kart in kritik_kartlar if kart not in bulunan_kartlar]
-            if eksik_kartlar:
-                kritik_eksik = True
-                log_warning(f"Kritik kartlar eksik: {eksik_kartlar}")
-        
-        # Başarısızsa VEYA kritik kart eksikse, USB reset dene
-        # ANCAK sadece sistem durumu NORMAL ise ve reset devam etmiyorsa
-        if (not basarili or kritik_eksik) and try_usb_reset and max_retries > 0:
-            # System state kontrolü - çoklu reset'i engelle
-            if system_state.is_system_busy():
-                log_warning("Sistem meşgul (reset/reconnection devam ediyor), USB reset atlanıyor")
-                return basarili, mesaj, bulunan_kartlar
+        # ✅ Thread-safe port arama - sadece bir thread aynı anda arama yapabilir
+        with self._scan_lock:
+            log_system(f"🔒 Port arama lock alındı (Thread: {threading.current_thread().name})")
             
-            if not system_state.can_start_reset():
-                log_warning("USB reset çok erken veya zaten devam ediyor, atlanıyor")
-                return basarili, mesaj, bulunan_kartlar
+            # İlk deneme
+            log_system(f"Kart arama başlatıldı (Deneme 1/{max_retries+1})")
             
-            # Cooldown kontrolü
-            if system_state.is_reset_cooldown_active():
-                log_warning("Reset cooldown aktif, USB reset atlanıyor")
-                return basarili, mesaj, bulunan_kartlar
+            # İlk önce USB autosuspend'i kapat (sadece ilk denemede)
+            if max_retries == 2:  # İlk deneme
+                self._disable_usb_autosuspend()
+                # Ek olarak shell script ile de dene
+                self._run_autosuspend_script()
             
-            log_warning(f"İlk denemede başarısız (basarili={basarili}, kritik_eksik={kritik_eksik})")
-            log_warning(f"USB reset ile tekrar deneniyor ({max_retries} deneme kaldı)")
+            # İlk olarak tüm portları kapat
+            self._close_all_ports(try_usb_reset=try_usb_reset)
             
-            # Reset operasyonu başlat
-            reset_cards = set(kritik_kartlar) if kritik_kartlar else {"motor", "sensor"}
-            operation_id = system_state.start_reset_operation(
-                cards=reset_cards,
-                initiated_by="port_manager"
-            )
+            start_time = time.time()
+            log_system(f"Kart arama başlatıldı - Hedef: {cihaz_adi or 'Tümü'}")
             
-            if operation_id:
-                # Direkt agresif reset dene (daha güvenilir)
-                log_warning("Direkt agresif USB reset deneniyor...")
-                reset_success = self._reset_all_usb_ports()
+            # Mevcut portları al
+            ports = self.scanner.get_available_ports()
+            if not ports:
+                log_error("Hiçbir seri port bulunamadı!")
+                log_system(f"🔓 Port arama lock bırakıldı")
+                return False, "Hiçbir seri port bulunamadı!", {}
+            
+            # Uyumlu portları filtrele
+            compatible_ports = [
+                p for p in ports 
+                if self.scanner.is_compatible_port(p.device)
+            ]
+            
+            if not compatible_ports:
+                log_warning("Uyumlu port bulunamadı")
+                log_system(f"🔓 Port arama lock bırakıldı")
+                return False, "Uyumlu port bulunamadı!", {}
+            
+            log_system(f"{len(compatible_ports)} uyumlu port bulundu")
+            
+            # Paralel port tarama
+            discovered_devices = self._parallel_port_scan(compatible_ports, cihaz_adi)
+            
+            # Sonuçları değerlendir
+            elapsed_time = time.time() - start_time
+            basarili, mesaj, bulunan_kartlar = self._evaluate_results(discovered_devices, cihaz_adi, elapsed_time)
+            
+            # Kritik kartları kontrol et
+            kritik_eksik = False
+            if kritik_kartlar:
+                eksik_kartlar = [kart for kart in kritik_kartlar if kart not in bulunan_kartlar]
+                if eksik_kartlar:
+                    kritik_eksik = True
+                    log_warning(f"Kritik kartlar eksik: {eksik_kartlar}")
+            
+            # Başarısızsa VEYA kritik kart eksikse, USB reset dene
+            # ANCAK sadece sistem durumu NORMAL ise ve reset devam etmiyorsa
+            if (not basarili or kritik_eksik) and try_usb_reset and max_retries > 0:
+                # System state kontrolü - çoklu reset'i engelle
+                if system_state.is_system_busy():
+                    log_warning("Sistem meşgul (reset/reconnection devam ediyor), USB reset atlanıyor")
+                    log_system(f"🔓 Port arama lock bırakıldı")
+                    return basarili, mesaj, bulunan_kartlar
                 
-                if reset_success:
-                    log_success("Agresif USB reset başarılı, portlar yeniden taranacak...")
-                    time.sleep(5)  # USB hub reset sonrası daha uzun bekleme
+                if not system_state.can_start_reset():
+                    log_warning("USB reset çok erken veya zaten devam ediyor, atlanıyor")
+                    log_system(f"🔓 Port arama lock bırakıldı")
+                    return basarili, mesaj, bulunan_kartlar
+                
+                # Cooldown kontrolü
+                if system_state.is_reset_cooldown_active():
+                    log_warning("Reset cooldown aktif, USB reset atlanıyor")
+                    log_system(f"🔓 Port arama lock bırakıldı")
+                    return basarili, mesaj, bulunan_kartlar
+                
+                log_warning(f"İlk denemede başarısız (basarili={basarili}, kritik_eksik={kritik_eksik})")
+                log_warning(f"USB reset ile tekrar deneniyor ({max_retries} deneme kaldı)")
+                
+                # Reset operasyonu başlat
+                reset_cards = set(kritik_kartlar) if kritik_kartlar else {"motor", "sensor"}
+                operation_id = system_state.start_reset_operation(
+                    cards=reset_cards,
+                    initiated_by="port_manager"
+                )
+                
+                if operation_id:
+                    # Direkt agresif reset dene (daha güvenilir)
+                    log_warning("Direkt agresif USB reset deneniyor...")
+                    reset_success = self._reset_all_usb_ports()
                     
-                    # Reset operasyonunu başarılı olarak bitir
-                    system_state.finish_reset_operation(operation_id, True)
-                    
-                    # Cooldown'u temizle
-                    system_state.set_reset_cooldown(False)
-                    
-                    # Tekrar dene (max_retries-1 ile)
-                    return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
-                else:
-                    # Agresif reset başarısız, yumuşak reset dene
-                    log_warning("Agresif reset başarısız, yumuşak reset deneniyor...")
-                    if self._soft_usb_reset():
-                        log_success("Yumuşak USB reset başarılı, portlar yeniden taranacak...")
-                        time.sleep(3)  # Portların oluşması için bekle
+                    if reset_success:
+                        log_success("Agresif USB reset başarılı, portlar yeniden taranacak...")
+                        time.sleep(5)  # USB hub reset sonrası daha uzun bekleme
                         
                         # Reset operasyonunu başarılı olarak bitir
                         system_state.finish_reset_operation(operation_id, True)
@@ -752,16 +797,36 @@ class KartHaberlesmeServis:
                         # Cooldown'u temizle
                         system_state.set_reset_cooldown(False)
                         
-                        # Tekrar dene (max_retries-1 ile)
+                        log_system(f"🔓 Port arama lock bırakıldı (USB reset için)")
+                        
+                        # Tekrar dene (max_retries-1 ile) - LOCK DIŞINDA REKÜRSİF ÇAĞRI
                         return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
                     else:
-                        log_error("Her iki USB reset yöntemi de başarısız oldu")
-                        # Reset operasyonunu başarısız olarak bitir
-                        system_state.finish_reset_operation(operation_id, False)
-            else:
-                log_warning("Reset operasyonu başlatılamadı")
-        
-        return basarili, mesaj, bulunan_kartlar
+                        # Agresif reset başarısız, yumuşak reset dene
+                        log_warning("Agresif reset başarısız, yumuşak reset deneniyor...")
+                        if self._soft_usb_reset():
+                            log_success("Yumuşak USB reset başarılı, portlar yeniden taranacak...")
+                            time.sleep(3)  # Portların oluşması için bekle
+                            
+                            # Reset operasyonunu başarılı olarak bitir
+                            system_state.finish_reset_operation(operation_id, True)
+                            
+                            # Cooldown'u temizle
+                            system_state.set_reset_cooldown(False)
+                            
+                            log_system(f"🔓 Port arama lock bırakıldı (yumuşak reset için)")
+                            
+                            # Tekrar dene (max_retries-1 ile) - LOCK DIŞINDA REKÜRSİF ÇAĞRI
+                            return self.baglan(cihaz_adi=cihaz_adi, try_usb_reset=False, max_retries=max_retries-1, kritik_kartlar=kritik_kartlar)
+                        else:
+                            log_error("Her iki USB reset yöntemi de başarısız oldu")
+                            # Reset operasyonunu başarısız olarak bitir
+                            system_state.finish_reset_operation(operation_id, False)
+                else:
+                    log_warning("Reset operasyonu başlatılamadı")
+            
+            log_system(f"🔓 Port arama lock bırakıldı")
+            return basarili, mesaj, bulunan_kartlar
     
     def _parallel_port_scan(self, ports: List, target_device: Optional[str] = None) -> Dict[str, str]:
         """
