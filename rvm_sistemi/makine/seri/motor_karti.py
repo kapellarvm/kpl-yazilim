@@ -379,6 +379,28 @@ class MotorKart:
                 # ✅ DEBUG: Claim sonrası port hala açık mı?
                 log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port CLAIM sonrası - is_open={self.seri_nesnesi.is_open}")
 
+                # ✅ ESP32 BOOT HANDSHAKE - Firmware'in başlatma protokolünü tamamla
+                # ESP32 firmware setup() içinde 'b' komutu bekliyor
+                log_system(f"{self.cihaz_adi} ESP32 boot handshake başlatılıyor...")
+                time.sleep(0.5)  # ESP32'nin "resetlendi" mesajını göndermesi için bekle
+
+                try:
+                    # Buffer'daki "resetlendi" mesajını temizle
+                    if self.seri_nesnesi.in_waiting > 0:
+                        _ = self.seri_nesnesi.read(self.seri_nesnesi.in_waiting)
+
+                    # 'b' komutunu gönder - ESP32 setup() döngüsünden çıkması için
+                    self.seri_nesnesi.write(b'b\n')
+                    self.seri_nesnesi.flush()
+                    log_success(f"{self.cihaz_adi} ESP32'ye 'b' komutu gönderildi")
+
+                    # ESP32'nin setup'ı tamamlaması için bekle
+                    # Kalibrasyon ve diğer başlatma işlemleri ~2-3 saniye sürüyor
+                    time.sleep(3.0)
+                    log_success(f"{self.cihaz_adi} ESP32 boot handshake tamamlandı")
+                except Exception as e:
+                    log_warning(f"{self.cihaz_adi} ESP32 handshake hatası: {e}")
+
                 self.saglikli = True
                 self._consecutive_errors = 0
                 return True
