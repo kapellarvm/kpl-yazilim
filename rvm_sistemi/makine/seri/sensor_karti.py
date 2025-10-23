@@ -270,42 +270,34 @@ class SensorKart:
         self._safe_queue_put("guvenlik_kart_reset", None)
 
     def ping(self, bypass_reconnection_check=False):
-        """Ping - sadece mevcut bağlantıyı test et, port arama yapma - İYİLEŞTİRİLMİŞ V2"""
-        # ✅ Reconnect devam ediyorsa ping atma (bypass_reconnection_check=True ile geçilebilir)
+        """Ping - sadece mevcut bağlantıyı test et"""
+        # Reconnect devam ediyorsa ping atma
         if not bypass_reconnection_check and system_state.is_card_reconnecting(self.cihaz_adi):
-            log_warning(f"⚠️ [SENSOR-PING] Reconnect devam ediyor - ping atlanıyor")
             return False
-        
+
         if not self._is_port_ready():
-            log_warning(f"⚠️ [SENSOR-PING] Port hazır değil - ping atlanıyor")
             return False
-        
-        # Ping zamanını hemen kaydet (reset bypass için)
+
+        # Ping zamanını kaydet (reset bypass için)
         self._last_ping_time = time.time()
-        
-        # ✅ Sağlık durumunu ÖNCE False yap (gerçek yanıt gelene kadar)
-        log_system(f"📡 [SENSOR-PING] Ping gönderiliyor... (şu anki sağlık: {self.saglikli})")
-        previous_health = self.saglikli
-        self.saglikli = False  # ✅ Yanıt gelene kadar False
-        
+
+        # Sağlık durumunu False yap (gerçek yanıt gelene kadar)
+        self.saglikli = False
+
         # Ping gönder
         self._safe_queue_put("ping", None)
-        
+
         # PONG cevabını bekle
         ping_start = time.time()
         timeout = self.PING_TIMEOUT * 2  # 0.6 saniye
-        
+
         while time.time() - ping_start < timeout:
             if self.saglikli:  # PONG geldi
-                elapsed = time.time() - ping_start
-                log_success(f"✅ [SENSOR-PING] PONG alındı ({elapsed:.3f}s)")
                 return True
-            time.sleep(0.05)  # Küçük aralıklarla kontrol et
-        
+            time.sleep(0.05)
+
         # Timeout - PONG gelmedi
-        elapsed = time.time() - ping_start
-        log_error(f"❌ [SENSOR-PING] Timeout! PONG gelmedi ({elapsed:.3f}s)")
-        self.saglikli = False  # Kesin başarısız
+        self.saglikli = False
         return False
 
     def getir_saglik_durumu(self):
@@ -358,19 +350,13 @@ class SensorKart:
 
                 log_success(f"{self.cihaz_adi} port açıldı: {self.port_adi}")
 
-                # ✅ DEBUG: Port gerçekten açık mı kontrol et
-                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port AÇILDI - is_open={self.seri_nesnesi.is_open}, port={self.seri_nesnesi.port}")
-
-                # ✅ Port sahipliğini claim et - TEMİZ MİMARİ ÇÖZÜM
+                # Port sahipliğini claim et
                 if not system_state.claim_port(self.port_adi, self.cihaz_adi):
                     log_error(f"{self.cihaz_adi} port sahipliği alınamadı: {self.port_adi}")
                     self.seri_nesnesi.close()
                     self.seri_nesnesi = None
                     self.saglikli = False
                     return False
-
-                # ✅ DEBUG: Claim sonrası port hala açık mı?
-                log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Port CLAIM sonrası - is_open={self.seri_nesnesi.is_open}")
 
                 self.saglikli = True
                 self._consecutive_errors = 0
@@ -540,25 +526,13 @@ class SensorKart:
                 return False
 
     def _is_port_ready(self) -> bool:
-        """Port hazır mı? - DEBUG ENHANCED"""
+        """Port hazır mı?"""
         with self._port_lock:
-            is_ready = (
+            return (
                 self.seri_nesnesi is not None
                 and self.seri_nesnesi.is_open
                 and self.running
             )
-
-            # ✅ DEBUG: Port durumu detaylı log
-            if not is_ready:
-                serial_ok = self.seri_nesnesi is not None
-                open_ok = self.seri_nesnesi.is_open if serial_ok else False
-                running_ok = self.running
-                log_warning(
-                    f"🔴 [DEBUG-{self.cihaz_adi}] Port NOT ready! "
-                    f"serial={serial_ok}, is_open={open_ok}, running={running_ok}"
-                )
-
-            return is_ready
 
     def _yaz(self):
         """Yazma thread'i - optimized"""
@@ -583,12 +557,10 @@ class SensorKart:
                     time.sleep(0.1)
                     continue
                 
-                # Komut gönder
+                # Komut gönder (sessiz)
                 if command in komutlar:
-                    log_system(f"{self.cihaz_adi} write thread - komut gönderiliyor: {command}")
                     self.seri_nesnesi.write(komutlar[command](data) if callable(komutlar[command]) else komutlar[command])
                     self.seri_nesnesi.flush()
-                    log_success(f"{self.cihaz_adi} write thread - komut gönderildi: {command}")
                 
             except (serial.SerialException, OSError) as e:
                 log_error(f"{self.cihaz_adi} yazma hatası: {e}")
@@ -618,11 +590,11 @@ class SensorKart:
                     self._handle_connection_error()
                     break
                 
-                # Veri oku
+                # Veri oku (sessiz)
                 if waiting > 0:
                     data = self.seri_nesnesi.readline().decode(errors='ignore').strip()
                     if data:
-                        self._consecutive_errors = 0  # Başarılı okuma
+                        self._consecutive_errors = 0
                         self._process_message(data)
                 else:
                     time.sleep(0.05)
@@ -642,45 +614,49 @@ class SensorKart:
                 time.sleep(1)
 
     def _process_message(self, message: str):
-        """Mesaj işleme"""
+        """Mesaj işleme - Sadeleştirilmiş"""
         if not message or not message.isprintable():
-            return
-        
+            return  # Geçersiz mesajlar sessizce ignore et
+
         message_lower = message.lower()
-        
+
         if message_lower == "pong":
+            # Başarılı ping - sessiz (noise azaltma)
             self.saglikli = True
         elif message_lower == "resetlendi":
-            log_warning(f"{self.cihaz_adi} kart resetlendi")
+            log_warning(f"{self.cihaz_adi.upper()} kartı resetlendi")
 
-            
             # İlk bağlantıda gelen reset mesajını bypass et
             if self._first_connection:
-                log_system(f"{self.cihaz_adi} - İlk bağlantı reset mesajı, bypass ediliyor")
                 self._first_connection = False
                 self.saglikli = True
                 return
-            
+
             # Seçici bypass: Sadece gömülü sistemin otomatik resetini bypass et
-            # Fiziksel bağlantı sorunlarında hala reset yap
             current_time = time.time()
             time_since_ping = current_time - self._last_ping_time
-            
+
             if time_since_ping < 120:  # Son 120 saniye içinde ping alındıysa
                 # Gömülü sistem reseti - bypass et
-                log_warning(f"{self.cihaz_adi} - Gömülü sistem reseti tespit edildi, bypass ediliyor (ping: {time_since_ping:.1f}s önce)")
-                self.saglikli = True  # Sağlıklı olarak işaretle
+                self.saglikli = True
             else:
-                # Ping alınmamışsa, fiziksel bağlantı sorunu
-                log_warning(f"{self.cihaz_adi} - Fiziksel bağlantı sorunu tespit edildi, reset yapılıyor (ping: {time_since_ping:.1f}s önce)")
+                # Fiziksel bağlantı sorunu
+                log_warning(f"{self.cihaz_adi.upper()} - Fiziksel bağlantı sorunu, reset yapılıyor")
                 self.saglikli = False
                 time.sleep(2)
                 self._handle_connection_error()
         elif self.callback:
+            # Callback'e giden mesajları sadeleştir - sadece önemli olanları logla
+            important_messages = ['agirlik', 'doluluk', 'kilitlendi', 'acildi', 'guvenlik', 'manyetik', 'bme']
+            if any(imp in message_lower for imp in important_messages):
+                log_system(f"SENSOR: {message}")  # Sade format
             try:
                 self.callback(message)
             except Exception as e:
                 log_error(f"{self.cihaz_adi} callback hatası: {e}")
+        else:
+            # Callback yoksa ve tanınmayan mesaj - sessiz (noise azaltma)
+            pass
 
     def _try_usb_reset(self, port_path: str) -> bool:
         """

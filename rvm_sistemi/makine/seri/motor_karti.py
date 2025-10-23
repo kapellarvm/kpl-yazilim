@@ -614,13 +614,11 @@ class MotorKart:
                 
                 # Özel parametre gönderme
                 if command == "parametre_gonder":
-                    log_system(f"{self.cihaz_adi} write thread - parametre gönderiliyor")
                     self._send_parameters()
                 elif command in komutlar:
-                    log_system(f"{self.cihaz_adi} write thread - komut gönderiliyor: {command}")
+                    # Komut gönder (sessiz)
                     self.seri_nesnesi.write(komutlar[command])
                     self.seri_nesnesi.flush()
-                    log_success(f"{self.cihaz_adi} write thread - komut gönderildi: {command}")
                 
             except (serial.SerialException, OSError) as e:
                 log_error(f"{self.cihaz_adi} yazma hatası: {e}")
@@ -677,8 +675,7 @@ class MotorKart:
         while self.running:
             try:
                 loop_count += 1
-                if loop_count % 100 == 0:  # Her 100 loop'ta bir log
-                    log_system(f"🔵 [DEBUG-{self.cihaz_adi}] Listen thread ÇALIŞIYOR (loop: {loop_count})")
+                # Loop debug log kaldırıldı - gereksiz noise
 
                 if not self._is_port_ready():
                     time.sleep(0.5)
@@ -698,8 +695,6 @@ class MotorKart:
                     data = self.seri_nesnesi.readline().decode(errors='ignore').strip()
                     if data:
                         self._consecutive_errors = 0  # Başarılı okuma
-                        # ✅ HAM MESAJ LOGU - Motor kartından gelen tüm mesajlar
-                        log_system(f"🔵 [MOTOR-HAM] >>> '{data}' (uzunluk: {len(data)})")
                         self._process_message(data)
                 else:
                     time.sleep(0.05)
@@ -719,21 +714,17 @@ class MotorKart:
                 time.sleep(1)
 
     def _process_message(self, message: str):
-        """Mesaj işleme - İYİLEŞTİRİLMİŞ"""
+        """Mesaj işleme - Sadeleştirilmiş"""
         if not message or not message.isprintable():
-            log_warning(f"🔴 [MOTOR-HAM] Geçersiz mesaj (boş veya yazılamaz)")
-            return
-        
+            return  # Geçersiz mesajlar sessizce ignore et
+
         message_lower = message.lower()
-        
-        # ✅ Her mesaj için detaylı log
-        log_system(f"🔵 [MOTOR-PROCESS] İşleniyor: '{message}' (lowercase: '{message_lower}')")
-        
+
         if message_lower == "pong":
-            log_success(f"✅ [MOTOR-PONG] PONG alındı - saglikli = True")
+            # Başarılı ping - sessiz (noise azaltma)
             self.saglikli = True
         elif message_lower == "resetlendi":
-            log_warning(f"⚠️ [MOTOR-RESET] Kart resetlendi mesajı alındı")
+            log_warning(f"{self.cihaz_adi.upper()} kartı resetlendi")
             
             # İlk bağlantıda gelen reset mesajını bypass et
             if self._first_connection:
@@ -759,13 +750,17 @@ class MotorKart:
                 time.sleep(2)
                 self._handle_connection_error()
         elif self.callback:
-            log_system(f"🔵 [MOTOR-CALLBACK] Callback çağrılıyor: '{message}'")
+            # Callback'e giden mesajları sadeleştir - sadece önemli olanları logla
+            important_messages = ['guc var', 'guc kesildi', 'ymk', 'ymh', 'smk', 'ykt', 'skt', 'kmk']
+            if any(imp in message_lower for imp in important_messages):
+                log_system(f"MOTOR: {message}")  # Sade format
             try:
                 self.callback(message)
             except Exception as e:
                 log_error(f"{self.cihaz_adi} callback hatası: {e}")
         else:
-            log_warning(f"🟡 [MOTOR-UNKNOWN] Tanınmayan mesaj (callback yok): '{message}'")
+            # Callback yoksa ve tanınmayan mesaj - sessiz (noise azaltma)
+            pass
 
     def _try_usb_reset(self, port_path: str) -> bool:
         """
