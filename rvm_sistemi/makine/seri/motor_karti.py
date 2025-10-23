@@ -293,42 +293,35 @@ class MotorKart:
         self._safe_queue_put("atik_uzunluk", None)
 
     def ping(self, bypass_reconnection_check=False):
-        """Ping - sadece mevcut bağlantıyı test et, port arama yapma - İYİLEŞTİRİLMİŞ V2"""
-        # ✅ Reconnect devam ediyorsa ping atma (bypass_reconnection_check=True ile geçilebilir)
+        """Ping - sadece mevcut bağlantıyı test et"""
+        # Reconnect devam ediyorsa ping atma
         if not bypass_reconnection_check and system_state.is_card_reconnecting(self.cihaz_adi):
-            log_warning(f"⚠️ [MOTOR-PING] Reconnect devam ediyor - ping atlanıyor")
             return False
-        
+
         if not self._is_port_ready():
-            log_warning(f"⚠️ [MOTOR-PING] Port hazır değil - ping atlanıyor")
             return False
-        
-        # Ping zamanını hemen kaydet (reset bypass için)
+
+        # Ping zamanını kaydet (reset bypass için)
         self._last_ping_time = time.time()
-        
-        # ✅ Sağlık durumunu ÖNCE False yap (gerçek yanıt gelene kadar)
-        log_system(f"📡 [MOTOR-PING] Ping gönderiliyor... (şu anki sağlık: {self.saglikli})")
-        previous_health = self.saglikli
-        self.saglikli = False  # ✅ Yanıt gelene kadar False
-        
+
+        # Sağlık durumunu False yap (gerçek yanıt gelene kadar)
+        self.saglikli = False
+
         # Ping gönder
         self._safe_queue_put("ping", None)
-        
+
         # PONG cevabını bekle
         ping_start = time.time()
         timeout = self.PING_TIMEOUT * 2  # 0.6 saniye
-        
+
         while time.time() - ping_start < timeout:
             if self.saglikli:  # PONG geldi
-                elapsed = time.time() - ping_start
-                log_success(f"✅ [MOTOR-PING] PONG alındı ({elapsed:.3f}s)")
                 return True
-            time.sleep(0.05)  # Küçük aralıklarla kontrol et
-        
-        # Timeout - PONG gelmedi
-        elapsed = time.time() - ping_start
-        log_error(f"❌ [MOTOR-PING] Timeout! PONG gelmedi ({elapsed:.3f}s)")
-        self.saglikli = False  # Kesin başarısız
+            time.sleep(0.05)
+
+        # Timeout - PONG gelmedi (sadece hata durumunda log)
+        log_error(f"{self.cihaz_adi.upper()} ping timeout")
+        self.saglikli = False
         return False
 
     def getir_saglik_durumu(self):

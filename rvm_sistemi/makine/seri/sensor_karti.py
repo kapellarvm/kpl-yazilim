@@ -296,7 +296,8 @@ class SensorKart:
                 return True
             time.sleep(0.05)
 
-        # Timeout - PONG gelmedi
+        # Timeout - PONG gelmedi (sadece hata durumunda log)
+        log_error(f"{self.cihaz_adi.upper()} ping timeout")
         self.saglikli = False
         return False
 

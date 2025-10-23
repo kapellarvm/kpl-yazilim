@@ -176,17 +176,14 @@ class PortSaglikServisi:
                 # Yine de ping atma, reconnection worker devam etsin
                 return
         
-        # Ping gönder (sesli)
-        print(f"📡 [PORT-SAĞLIK] {kart_adi.upper()} → PING gönderiliyor...")
+        # Ping gönder (sessiz - başarı durumunda log yok)
         if kart.ping():
             # Başarılı ping
             if kart.saglikli:
-                print(f"✅ [PORT-SAĞLIK] {kart_adi.upper()} → PONG alındı ✓")
-
                 # ✅ Recovery detection: UYARI/KRITIK'ten SAGLIKLI'ya geçiş = reconnection başarılı
                 if durum.durum != SaglikDurumu.SAGLIKLI:
                     durum.son_reconnection_zamani = time.time()
-                    log_system(f"[PORT-SAĞLIK] {kart_adi.upper()} recovery başarılı - cooldown periyodu başladı")
+                    log_success(f"{kart_adi.upper()} recovery başarılı - cooldown periyodu başladı")
 
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
