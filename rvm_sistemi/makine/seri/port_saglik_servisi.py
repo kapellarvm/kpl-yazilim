@@ -14,6 +14,7 @@ from rvm_sistemi.makine.seri.system_state_manager import system_state, SystemSta
 from rvm_sistemi.utils.logger import (
     log_system, log_error, log_success, log_warning
 )
+from rvm_sistemi.makine.senaryolar import uyari
 
 
 class SaglikDurumu(Enum):
@@ -271,9 +272,10 @@ class PortSaglikServisi:
         else:
             current_status = "partial"  # Bazı kartlar henüz bağlı değil
 
-        # Durum değişmişse görsel mesaj göster
+        # Durum değişmişse görsel mesaj göster ve uyarı kontrolü yap
         if current_status != self._last_health_status:
             if current_status == "healthy":
+                # Her iki kart da sağlıklı - Başarı mesajı + Uyarı kapat
                 print("\n" + "="*70)
                 print("✅ SİSTEM SAĞLIKLI - TÜM KARTLAR BAĞLI VE ÇALIŞIYOR")
                 print("="*70)
@@ -281,10 +283,58 @@ class PortSaglikServisi:
                 print(f"  🟢 SENSOR KARTI : Bağlı ve sağlıklı")
                 print("="*70 + "\n")
                 log_success("Sistem tamamen sağlıklı - Tüm kartlar çalışıyor")
+
+                # Uyarıyı kapat
+                try:
+                    uyari.uyari_kapat()
+                    log_system("Kart bağlantı uyarısı kapatıldı")
+                except Exception as e:
+                    log_error(f"Uyarı kapatma hatası: {e}")
+
             elif current_status == "warning":
-                print(f"\n⚠️  UYARI: {', '.join([k.upper() for k in uyari_kartlar])} - Bağlantı sorunları tespit edildi\n")
+                # Uyarı durumu - Uyarı göster
+                uyari_mesaj = f"{', '.join([k.upper() for k in uyari_kartlar])} kartı bağlanıyor"
+                print(f"\n⚠️  UYARI: {uyari_mesaj}\n")
+                log_warning(f"Kart bağlantı uyarısı: {uyari_mesaj}")
+
+                # Uyarı ekranı göster
+                try:
+                    uyari.uyari_goster(mesaj="Bağlantı Yapılıyor Lütfen Bekleyiniz", sure=0)
+                    log_system("Kart bağlantı uyarısı gösterildi")
+                except Exception as e:
+                    log_error(f"Uyarı gösterme hatası: {e}")
+
             elif current_status == "critical":
-                print(f"\n🚨 KRİTİK: {', '.join([k.upper() for k in kritik_kartlar])} - Acil müdahale gerekli!\n")
+                # Kritik durum - Uyarı göster
+                kritik_mesaj = f"{', '.join([k.upper() for k in kritik_kartlar])} kartı kritik durumda"
+                print(f"\n🚨 KRİTİK: {kritik_mesaj}\n")
+                log_error(f"Kritik kart durumu: {kritik_mesaj}")
+
+                # Uyarı ekranı göster
+                try:
+                    uyari.uyari_goster(mesaj="Bağlantı Yapılıyor Lütfen Bekleyiniz", sure=0)
+                    log_system("Kritik durum uyarısı gösterildi")
+                except Exception as e:
+                    log_error(f"Uyarı gösterme hatası: {e}")
+
+            elif current_status == "partial":
+                # Bazı kartlar henüz bağlı değil - Uyarı göster
+                bagli_olmayanlar = []
+                for kart_adi, durum in self.kart_durumlari.items():
+                    if durum.durum == SaglikDurumu.BAGLANTI_YOK:
+                        bagli_olmayanlar.append(kart_adi)
+
+                if bagli_olmayanlar:
+                    partial_mesaj = f"{', '.join([k.upper() for k in bagli_olmayanlar])} kartı bekleniyor"
+                    print(f"\n⏳ BAŞLANGIÇ: {partial_mesaj}\n")
+                    log_system(f"Kart bekleniyor: {partial_mesaj}")
+
+                    # Uyarı ekranı göster
+                    try:
+                        uyari.uyari_goster(mesaj="Bağlantı Yapılıyor Lütfen Bekleyiniz", sure=0)
+                        log_system("Başlangıç uyarısı gösterildi")
+                    except Exception as e:
+                        log_error(f"Uyarı gösterme hatası: {e}")
 
             self._last_health_status = current_status
 
