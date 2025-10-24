@@ -386,7 +386,7 @@ class MotorKart:
                     log_warning(f"{self.cihaz_adi} Yeni firmware yüklü değilse handshake çalışmaz")
                     log_system(f"{self.cihaz_adi} Basit boot bekleme moduna geçiliyor...")
                     # Eski firmware için basit bekleme
-                    time.sleep(5.0)  # ESP32 boot + kalibrasyon süresi
+                    time.sleep(3.0)  # ESP32 boot + kalibrasyon süresi
                     log_system(f"{self.cihaz_adi} Boot bekleme tamamlandı (fallback mode)")
                     # Devam et, PONG ile doğrulanacak
 
@@ -566,7 +566,7 @@ class MotorKart:
                 and self.running
             )
 
-    def _esp32_boot_handshake(self, timeout_seconds: float = 10.0) -> bool:
+    def _esp32_boot_handshake(self, timeout_seconds: float = 4.0) -> bool:
         """
         ESP32 ile boot handshake protokolü gerçekleştirir.
 
@@ -611,7 +611,7 @@ class MotorKart:
                             log_system(f"{self.cihaz_adi} → 'b' komutu gönderildi")
 
                             # ESP32'nin yanıtlarını bekle (yino, kino, yono, Baslatiliyor...)
-                            yanit_timeout = time.time() + 5.0
+                            yanit_timeout = time.time() + 2.0
                             beklenen_yanitlar = ["yino", "kino", "yono"]
                             alinan_yanitlar = []
 

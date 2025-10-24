@@ -866,7 +866,7 @@ def giris_iade_et(sebep: str):
     print(f"{'='*60}")
     print(f"Sebep: {sebep}")
     print(f"{'='*60}\n")
-    
+    uyari.uyari_goster(mesaj=f"Lütfen şişeyi geri alınız : {sebep}", sure=0)
     log_error(f"Giriş iadesi: {sebep}")
     sistem.kabul_yonu = False
     sistem.motor_ref.konveyor_geri()
