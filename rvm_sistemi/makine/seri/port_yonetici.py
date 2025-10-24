@@ -386,10 +386,28 @@ class KartHaberlesmeServis:
                 return False
             
             log_system("TÜM USB portları resetleniyor...")
-            
-            # ✅ ÖNEMLİ: Reset öncesi TÜM portları tamamen kapat
-            log_system("Reset öncesi tüm portlar kapatılıyor...")
+
+            # ✅ KRİTİK: Reset öncesi TÜM port ownership'lerini ZORLA release et
+            # Bu sayede çalışan kartlar (örn: sensor) thread'lerini durduracak
+            log_system("Reset öncesi tüm port ownership'ler ZORLA release ediliyor...")
             ports = self.scanner.get_available_ports()
+            released_count = 0
+            for port_info in ports:
+                if self.scanner.is_compatible_port(port_info.device):
+                    port_owner = system_state.get_port_owner(port_info.device)
+                    if port_owner:
+                        log_warning(f"  ⚠️ {port_info.device} ownership [{port_owner}] ZORLA release ediliyor (USB reset için)")
+                        system_state.release_port(port_info.device, port_owner)
+                        released_count += 1
+
+            if released_count > 0:
+                log_system(f"  → {released_count} port ownership release edildi")
+                # Kartların thread'lerini durdurmalarını bekle
+                log_system("  → Kartların thread'lerini durdurması bekleniyor (3s)...")
+                time.sleep(3.0)  # Thread'lerin güvenle durması için yeterli süre
+
+            # ✅ Şimdi tüm portları tamamen kapat
+            log_system("Reset öncesi tüm portlar kapatılıyor...")
             closed_count = 0
             for port_info in ports:
                 if self.scanner.is_compatible_port(port_info.device):
