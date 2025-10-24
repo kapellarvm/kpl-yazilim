@@ -164,13 +164,15 @@ else
     echo "    ✅ Touchscreen ve kamera korundu (resetlenmedi)"
 fi
 
-# Metod 4: CH341 kernel modülü yeniden yükleme KALDIRILDI
-# Sebep: Modül yeniden yüklenirken bazen sadece 1 port oluşuyor (2 bekleniyor)
-# Adım 1 ve 2 zaten yeterli - kernel modül resetine gerek yok
+# Metod 4: CH341 kernel modülü yeniden yükleme - KOŞULLU
+# Normal durumda: Adım 1,2,3 yeterli - kernel modül resetine gerek yok
+# Motor şok durumunda: 10 saniye sonra hala 2 port yoksa kernel modül reload yapılır
+# Bu sayede motor kartı fiziksel çıkar-tak gibi tamamen resetlenir
 echo ""
-echo "⚡ Adım 4: Kernel modül reset atlandı (port oluşum sorununu önlemek için)"
-echo "    ℹ️  Kernel modül resetlemek yerine sadece unbind/bind ve authorize kullanılıyor"
-echo "    └─ Adım 1 ve 2 yeterli - modül resetine gerek yok"
+echo "⚡ Adım 4: Kernel modül reload - Koşullu (motor şok durumu için)"
+echo "    ℹ️  Normal durumda: Adım 1-3 yeterli, kernel modül resetine gerek yok"
+echo "    ℹ️  Motor şok durumunda: 10s sonra 2 port yoksa kernel modül reload yapılır"
+echo "    └─ Bu sayede motor kartı USB bus'a geri getirilir"
 
 # Portların yeniden oluşmasını bekle
 echo ""
@@ -189,9 +191,11 @@ for i in {1..20}; do
         break
     fi
     
-    # 10 saniye sonra hala port yoksa CH341 modülünü tekrar yükle
-    if [ "$i" -eq 10 ] && [ "$PORT_COUNT" -eq 0 ]; then
-        echo "    🔧 10 saniye sonra port yok, CH341 modülü tekrar yükleniyor..."
+    # 10 saniye sonra hala 2 port yoksa CH341 modülünü tekrar yükle
+    # Motor şoktayken USB bus'a gelmiyor, kernel modül reload gerekli
+    if [ "$i" -eq 10 ] && [ "$PORT_COUNT" -lt 2 ]; then
+        echo "    🔧 10 saniye sonra $PORT_COUNT port var (2 bekleniyor), CH341 modülü tekrar yükleniyor..."
+        echo "    ℹ️  Motor kartı şoktan kurtarmak için kernel modül reload yapılıyor..."
         rmmod ch341 2>/dev/null
         sleep 2
         modprobe ch341 2>/dev/null
