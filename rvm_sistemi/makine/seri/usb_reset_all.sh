@@ -144,9 +144,9 @@ if [ -e "/sys/bus/usb/devices/usb3/authorized" ]; then
 
     # Touchscreen rotation script'i çağır
     echo "    ├─ Touchscreen rotation script çağrılıyor..."
-    ROTATION_SCRIPT="/home/sshuser/projects/kpl-yazilim/scripts/rotate_touchscreen.sh"
+    ROTATION_SCRIPT="/home/kioskuser/rotate_touchscreen.sh"
     if [ -x "$ROTATION_SCRIPT" ]; then
-        su - sshuser -c "DISPLAY=:0 $ROTATION_SCRIPT" &
+        su - kioskuser -c "DISPLAY=:0 $ROTATION_SCRIPT" &
         echo "    └─ Rotation script başlatıldı (arka planda çalışıyor)"
     else
         echo "    └─ ⚠️  Rotation script bulunamadı: $ROTATION_SCRIPT"
