@@ -822,22 +822,33 @@ class SensorKart:
             system_state.finish_reconnection(self.cihaz_adi, False)
 
     def _reconnect_worker(self):
-        """Yeniden bağlanma worker'ı - System State Manager ile - İYİLEŞTİRİLMİŞ"""
+        """Yeniden bağlanma worker'ı - Progressive backoff + persistent counter"""
         thread_name = f"{self.cihaz_adi}_reconnect"
-        attempts = 0
+        local_attempts = 0  # Loop counter (bu reconnection session için)
         base_delay = self.RETRY_BASE_DELAY
-        
+
         try:
-            while attempts < self.MAX_RETRY:
+            while local_attempts < 15:  # Maksimum 15 deneme (3 phase x 5)
+                # ✅ KRİTİK: Her deneme başında JSON counter increment
+                total_attempts = system_state.increment_reconnection_attempt(self.cihaz_adi)
+                phase = system_state.get_reconnection_phase(self.cihaz_adi)
+
+                # ✅ EMERGENCY check - 16+ attempts
+                if total_attempts >= 16:
+                    log_error(f"⛔ {self.cihaz_adi.upper()} EMERGENCY: 15 deneme başarısız oldu!")
+                    log_error(f"   Makine servis dışı - Teknik servis gerekli")
+                    system_state.set_system_state(SystemState.EMERGENCY, f"{self.cihaz_adi} 15 deneme başarısız")
+                    break
+
                 # Sistem durumu kontrolü
                 if system_state.get_system_state() == SystemState.EMERGENCY:
                     log_warning(f"{self.cihaz_adi} reconnection iptal edildi - Emergency mode")
                     break
-                
-                attempts += 1
-                delay = min(base_delay * (2 ** (attempts - 1)), self.MAX_RETRY_DELAY)
-                
-                log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
+
+                local_attempts += 1
+                delay = min(base_delay * (2 ** (local_attempts - 1)), self.MAX_RETRY_DELAY)
+
+                log_system(f"{self.cihaz_adi} yeniden bağlanma {total_attempts}/15 (Phase {phase}, deneme #{local_attempts} bu session)")
 
                 # Sensor için basit reconnection - hub reset'e gerek yok (motor gibi donanımsal sorun yok)
                 # Sadece port arama ve bağlantı yeterli
@@ -881,14 +892,47 @@ class SensorKart:
                     else:
                         log_warning(f"{self.cihaz_adi} reconnection tamamlandı ama thread'ler çalışmıyor")
 
+                    # ✅ KRİTİK: Başarılı reconnection - JSON counter SIFIRLA!
+                    # Bu çok önemli, yoksa eski attempt'ler birikir ve sistem çöp olur
+                    system_state.reset_reconnection_attempts(self.cihaz_adi)
+
                     # Başarılı reconnection
                     system_state.finish_reconnection(self.cihaz_adi, True)
                     return
 
                 log_warning(f"{self.cihaz_adi} bağlanamadı, {delay}s bekliyor...")
                 time.sleep(delay)
-            
-            log_error(f"{self.cihaz_adi} yeniden bağlanamadı ({self.MAX_RETRY} deneme)")
+
+                # ✅ PHASE-BASED WAIT/REBOOT LOGIC
+                # Her 5 deneme sonrası kontrol yap
+                if total_attempts == 5:
+                    # Phase 1 tamamlandı → 5 dakika bekle
+                    log_warning(f"⏳ {self.cihaz_adi.upper()} Phase 1 tamamlandı (5 deneme başarısız)")
+                    log_warning(f"   5 dakika bekleniyor... (geçici sorun olabilir)")
+                    log_warning(f"   Kablo kontrol edin, servis çağırın")
+
+                    # 5 dakika = 300 saniye (loop ile, erken çıkış mümkün)
+                    for wait_sec in range(300):
+                        if system_state.get_system_state() == SystemState.EMERGENCY:
+                            break  # Emergency olursa beklemeden çık
+                        time.sleep(1)
+
+                    log_system(f"✅ {self.cihaz_adi.upper()} 5 dakika bekleme tamamlandı, Phase 2 başlıyor...")
+
+                elif total_attempts == 10:
+                    # Phase 2 tamamlandı → Reboot
+                    log_error(f"🔄 {self.cihaz_adi.upper()} Phase 2 tamamlandı (10 deneme başarısız)")
+                    log_error(f"   Sistem yeniden başlatılıyor... (sudo reboot)")
+                    log_error(f"   Reboot sonrası Phase 3 başlayacak (son 5 deneme)")
+
+                    # JSON kaydedildi (increment_reconnection_attempt sayesinde)
+                    # Reboot yap - program baştan başlayacak, JSON'dan okuyacak
+                    import os
+                    os.system("sudo reboot")
+                    # Reboot başladı, bu thread kapanacak
+                    break
+
+            log_error(f"{self.cihaz_adi} yeniden bağlanamadı (15 deneme tamamlandı)")
 
             # ✅ Zombie port claim'i temizle - başarısız reconnection'dan sonra
             if self.port_adi:
