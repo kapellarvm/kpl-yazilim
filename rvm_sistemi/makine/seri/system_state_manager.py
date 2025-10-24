@@ -385,14 +385,20 @@ class SystemStateManager:
             if success:
                 self.set_card_state(card_name, CardState.CONNECTED, "Reconnection başarılı")
 
-                # ✅ UYARI KAPATMA: Başarılı reconnection sonrası
-                # Eğer BAŞKA HİÇBİR kart reconnecting değilse uyarı kapat
+                # ✅ UYARI KAPATMA VE SİSTEM DURUMU: Başarılı reconnection sonrası
+                # Eğer BAŞKA HİÇBİR kart reconnecting değilse uyarı kapat ve sistem NORMAL'e dön
                 if not self._reconnecting_cards:  # Artık hiçbir kart reconnecting değil
                     try:
                         uyari.uyari_kapat()
                         log_system(f"{card_name.upper()} reconnection sonrası uyarı kapatıldı (tüm kartlar bağlandı)")
                     except Exception as e:
                         log_error(f"Uyarı kapatma hatası: {e}")
+
+                    # ✅ KRİTİK: Tüm kartlar bağlandı, sistem NORMAL duruma dönsün
+                    # USB Health Monitor bypass'tan çıkabilsin
+                    if self._system_state == SystemState.RECONNECTING:
+                        self.set_system_state(SystemState.NORMAL, f"Tüm kartlar reconnection tamamlandı ({card_name} son kart)")
+                        log_system(f"✅ Sistem NORMAL duruma döndü - Tüm reconnection işlemleri tamamlandı")
             else:
                 self.set_card_state(card_name, CardState.ERROR, "Reconnection başarısız")
 
