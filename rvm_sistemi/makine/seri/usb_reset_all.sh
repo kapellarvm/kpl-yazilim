@@ -118,13 +118,51 @@ for usb_dev in /sys/bus/usb/devices/*/; do
 done
 echo "    └─ $REAUTH_COUNT cihaz yeniden authorize edildi"
 
-# Metod 3: USB Hub Reset KALDIRILDI
-# Sebep: Hub resetlemek tüm hub'daki cihazları etkiler (dokunmatik ekran dahil)
-# Adım 1 ve 2 zaten yeterli - CH340/CH341 cihazlarını resetliyor
+# Metod 3: CH340/CH341 cihazlarını device-level reset yap
+# Sebep: Motor kartı donanımsal sorunlu, geri besleme ile şoka giriyor
+# Çözüm: Her cihazı ayrı ayrı resetle (fiziki çıkar-tak gibi) ama touchscreen/camera'ya dokunma
 echo ""
-echo "⚡ Adım 3: USB Hub reset atlandı (dokunmatik ekranı korumak için)"
-echo "    ℹ️  Hub reset yerine sadece CH340/CH341 cihazları resetlendi"
-echo "    └─ Adım 1 ve 2 yeterli - hub resetine gerek yok"
+echo "⚡ Adım 3: CH340/CH341 cihazlarını fiziksel resetle (device-level)..."
+
+USBRESET_PATH="$(dirname "$0")/usbreset"
+if [ ! -x "$USBRESET_PATH" ]; then
+    echo "    ❌ usbreset bulunamadı: $USBRESET_PATH"
+    echo "    ⚠️  Device-level reset atlanıyor"
+else
+    echo "    ℹ️  Her CH340/CH341 cihazı ayrı ayrı resetleniyor (fiziki çıkar-tak gibi)"
+
+    DEVICE_RESET_COUNT=0
+    for usb_dev in /sys/bus/usb/devices/*/; do
+        if [ -e "$usb_dev/idVendor" ]; then
+            VENDOR=$(cat "$usb_dev/idVendor" 2>/dev/null)
+            if [ "$VENDOR" = "1a86" ]; then
+                DEVICE_ID=$(basename "$usb_dev")
+                BUSNUM=$(cat "$usb_dev/busnum" 2>/dev/null)
+                DEVNUM=$(cat "$usb_dev/devnum" 2>/dev/null)
+
+                if [ ! -z "$BUSNUM" ] && [ ! -z "$DEVNUM" ]; then
+                    USB_PATH=$(printf "/dev/bus/usb/%03d/%03d" $BUSNUM $DEVNUM)
+
+                    if [ -e "$USB_PATH" ]; then
+                        echo "    ├─ Device reset: $DEVICE_ID ($USB_PATH)"
+                        $USBRESET_PATH "$USB_PATH" 2>/dev/null
+                        if [ $? -eq 0 ]; then
+                            DEVICE_RESET_COUNT=$((DEVICE_RESET_COUNT + 1))
+                            echo "    ✓ Başarılı: $DEVICE_ID"
+                        else
+                            echo "    ✗ Başarısız: $DEVICE_ID"
+                        fi
+                        sleep 1  # Her reset arasında bekleme
+                    fi
+                fi
+            fi
+        fi
+    done
+
+    echo "    └─ $DEVICE_RESET_COUNT CH340/CH341 cihazı device-level resetlendi"
+    echo "    ✅ Motor kartı fiziksel resetlendi (şoktan kurtarıldı)"
+    echo "    ✅ Touchscreen ve kamera korundu (resetlenmedi)"
+fi
 
 # Metod 4: CH341 kernel modülü yeniden yükleme KALDIRILDI
 # Sebep: Modül yeniden yüklenirken bazen sadece 1 port oluşuyor (2 bekleniyor)
