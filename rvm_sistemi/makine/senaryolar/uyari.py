@@ -62,6 +62,7 @@ def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
             "--disable-blink-features=PaintHolding",
             "--blink-settings=preferredColorScheme=0",
             "--disable-web-security",
+            "--user-data-dir=/tmp/chromium-uyari",  # Benzersiz data-dir (bakım ile çakışma önleme)
             "--disable-dev-shm-usage",
             "--disable-software-rasterizer",
             # SMOOTH RENDERING

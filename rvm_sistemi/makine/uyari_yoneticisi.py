@@ -65,6 +65,7 @@ class UyariYoneticisi:
                 "--no-first-run",
                 "--no-default-browser-check",
                 "--disable-web-security",
+                "--user-data-dir=/tmp/chromium-uyari",  # Benzersiz data-dir (bakım ile çakışma önleme)
                 "--disable-features=VizDisplayCompositor",
                 "--enable-gpu-rasterization",
                 "--enable-zero-copy",
