@@ -5,6 +5,8 @@ Tüm USB reset ve reconnection işlemlerini merkezi olarak yönetir
 
 import threading
 import time
+import json
+import os
 from enum import Enum
 from typing import Dict, Optional, Set
 from dataclasses import dataclass
@@ -95,6 +97,12 @@ class SystemStateManager:
         self.touchscreen_device_num: Optional[str] = None  # "075" veya None
         self.camera_device_num: Optional[str] = None       # "002" veya None
         self._usb_baseline_lock = threading.RLock()
+
+        # ✅ RECONNECTION ATTEMPT TRACKING - Persistent JSON counter
+        # Phases: 1 (attempts 1-5), 2 (attempts 6-10), 3 (attempts 11-15)
+        # Emergency: attempts >= 16
+        self._reconnection_state_file = "/tmp/rvm_reconnection_state.json"
+        self._reconnection_state_lock = threading.RLock()
 
         self._initialized = True
         log_system("System State Manager başlatıldı")
@@ -750,6 +758,143 @@ class SystemStateManager:
         """
         with self._usb_baseline_lock:
             return (self.touchscreen_device_num, self.camera_device_num)
+
+    # ============ RECONNECTION ATTEMPT TRACKING (PERSISTENT JSON) ============
+
+    def _load_reconnection_state(self) -> dict:
+        """
+        JSON dosyasından reconnection state'i yükle
+
+        Returns:
+            dict: {"motor": {"attempts": 0, "last_attempt_time": 123456}, ...}
+        """
+        try:
+            if os.path.exists(self._reconnection_state_file):
+                with open(self._reconnection_state_file, 'r') as f:
+                    return json.load(f)
+        except Exception as e:
+            log_warning(f"Reconnection state yüklenemedi: {e}")
+
+        # Default boş state
+        return {}
+
+    def _save_reconnection_state(self, state: dict):
+        """
+        Reconnection state'i JSON dosyasına kaydet
+
+        Args:
+            state: State dictionary
+        """
+        try:
+            with open(self._reconnection_state_file, 'w') as f:
+                json.dump(state, f, indent=2)
+        except Exception as e:
+            log_error(f"Reconnection state kaydedilemedi: {e}")
+
+    def get_reconnection_attempts(self, card_name: str) -> int:
+        """
+        Kartın toplam reconnection attempt sayısını döndür
+
+        Args:
+            card_name: Kart adı (motor, sensor)
+
+        Returns:
+            int: Attempt sayısı (0-15+)
+        """
+        with self._reconnection_state_lock:
+            state = self._load_reconnection_state()
+            return state.get(card_name, {}).get("attempts", 0)
+
+    def increment_reconnection_attempt(self, card_name: str) -> int:
+        """
+        Kartın reconnection attempt sayısını +1 artır ve kaydet
+
+        Args:
+            card_name: Kart adı (motor, sensor)
+
+        Returns:
+            int: Yeni attempt sayısı
+        """
+        with self._reconnection_state_lock:
+            state = self._load_reconnection_state()
+
+            if card_name not in state:
+                state[card_name] = {"attempts": 0, "last_attempt_time": 0}
+
+            state[card_name]["attempts"] += 1
+            state[card_name]["last_attempt_time"] = time.time()
+
+            self._save_reconnection_state(state)
+
+            new_count = state[card_name]["attempts"]
+            log_system(f"📊 {card_name.upper()} reconnection attempt: {new_count}")
+
+            return new_count
+
+    def reset_reconnection_attempts(self, card_name: str):
+        """
+        ✅ KRİTİK: Kartın reconnection attempt sayısını SIFIRLA
+
+        Bu fonksiyon BAŞARILI bağlantıda MUTLAKA çağrılmalı!
+        Yoksa sistem çöp olur (eski attempt'ler birikerek EMERGENCY'ye gider)
+
+        Args:
+            card_name: Kart adı (motor, sensor)
+        """
+        with self._reconnection_state_lock:
+            state = self._load_reconnection_state()
+
+            if card_name in state:
+                old_attempts = state[card_name].get("attempts", 0)
+                state[card_name] = {"attempts": 0, "last_attempt_time": time.time()}
+                self._save_reconnection_state(state)
+
+                if old_attempts > 0:
+                    log_success(f"✅ {card_name.upper()} reconnection counter SIFIRLANDI (eski: {old_attempts} → yeni: 0)")
+            else:
+                # Hiç yoksa da kaydet (ilk başarılı bağlantı)
+                state[card_name] = {"attempts": 0, "last_attempt_time": time.time()}
+                self._save_reconnection_state(state)
+
+    def should_enter_emergency(self, card_name: str) -> bool:
+        """
+        Kart EMERGENCY durumuna geçmeli mi kontrol et
+
+        Args:
+            card_name: Kart adı (motor, sensor)
+
+        Returns:
+            bool: attempts >= 16 ise True
+        """
+        attempts = self.get_reconnection_attempts(card_name)
+        return attempts >= 16
+
+    def get_reconnection_phase(self, card_name: str) -> int:
+        """
+        Kartın hangi reconnection phase'inde olduğunu döndür
+
+        Args:
+            card_name: Kart adı (motor, sensor)
+
+        Returns:
+            int: Phase numarası (1, 2, 3, veya 4=EMERGENCY)
+                - Phase 1: attempts 1-5
+                - Phase 2: attempts 6-10
+                - Phase 3: attempts 11-15
+                - Phase 4: attempts >= 16 (EMERGENCY)
+        """
+        attempts = self.get_reconnection_attempts(card_name)
+
+        if attempts == 0:
+            return 0  # Hiç attempt olmamış
+        elif attempts <= 5:
+            return 1  # Phase 1
+        elif attempts <= 10:
+            return 2  # Phase 2
+        elif attempts <= 15:
+            return 3  # Phase 3
+        else:
+            return 4  # EMERGENCY
 
 
 # Global instance
