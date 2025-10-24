@@ -79,7 +79,7 @@ class USBHealthMonitor:
                 current_state = system_state.get_system_state()
                 if current_state != SystemState.NORMAL:
                     # Reconnect/reset devam ediyor, izleme yapma
-                    # log_system(f"⏸️  [USB-HEALTH] Bypass - Sistem durumu: {current_state.value}")
+                    log_system(f"⏸️  [USB-HEALTH] Bypass - Sistem durumu: {current_state.value}")
                     time.sleep(self.check_interval)
                     continue
 
@@ -123,6 +123,12 @@ class USBHealthMonitor:
             if motor_reconnecting or sensor_reconnecting:
                 # Motor/sensor reconnection devam ediyor, touchscreen değişimi beklenir
                 # USB Health Monitor müdahale etmemeli (sonsuz döngü riski!)
+                reconnecting_cards = []
+                if motor_reconnecting:
+                    reconnecting_cards.append("motor")
+                if sensor_reconnecting:
+                    reconnecting_cards.append("sensor")
+                log_system(f"⏸️  [USB-HEALTH] Bypass - Kart reconnection: {', '.join(reconnecting_cards)}")
                 return
 
             # Mevcut baseline'ı al
@@ -281,15 +287,21 @@ class USBHealthMonitor:
                     # ✅ KRİTİK: Recovery sonrası baseline güncelle (sonsuz döngü önleme)
                     # USB reset touchscreen/camera device numaralarını değiştirmiş olabilir
                     # Baseline'ı hemen güncelle ki bir sonraki kontrol döngüsünde tekrar tetikleme
-                    time.sleep(2)  # USB cihazlarının re-enumerate olması için kısa bekleme
-                    log_system(f"🔄 [USB-HEALTH] Baseline güncelleniyor (recovery sonrası)...")
-                    system_state.update_usb_baseline()
+                    try:
+                        time.sleep(2)  # USB cihazlarının re-enumerate olması için kısa bekleme
+                        log_system(f"🔄 [USB-HEALTH] Baseline güncelleniyor (recovery sonrası)...")
+                        system_state.update_usb_baseline()
 
-                    # Counter'ları sıfırla
-                    self.touchscreen_none_count = 0
-                    self.camera_none_count = 0
+                        # Counter'ları sıfırla
+                        self.touchscreen_none_count = 0
+                        self.camera_none_count = 0
 
-                    log_system(f"✅ [USB-HEALTH] Recovery tamamlandı - Baseline güncellendi")
+                        log_system(f"✅ [USB-HEALTH] Recovery tamamlandı - Baseline güncellendi")
+                    except Exception as baseline_err:
+                        log_error(f"❌ [USB-HEALTH] Baseline güncelleme hatası: {baseline_err}")
+                        # Counter'ları yine de sıfırla (recovery yapıldı, sadece baseline update başarısız)
+                        self.touchscreen_none_count = 0
+                        self.camera_none_count = 0
                 else:
                     log_error(f"❌ [USB-HEALTH] {device_name.upper()} için USB reset başarısız: {result.stderr}")
             else:
