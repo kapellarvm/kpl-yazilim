@@ -377,27 +377,15 @@ class MotorKart:
                     self.saglikli = False
                     return False
 
-                # ✅ ESP32 BOOT HANDSHAKE - Firmware'in başlatma protokolünü tamamla
-                # ESP32 firmware setup() içinde 'b' komutu bekliyor
-                log_system(f"{self.cihaz_adi} ESP32 boot handshake başlatılıyor...")
-                time.sleep(0.5)  # ESP32'nin "resetlendi" mesajını göndermesi için bekle
-
-                try:
-                    # Buffer'daki "resetlendi" mesajını temizle
-                    if self.seri_nesnesi.in_waiting > 0:
-                        _ = self.seri_nesnesi.read(self.seri_nesnesi.in_waiting)
-
-                    # 'b' komutunu gönder - ESP32 setup() döngüsünden çıkması için
-                    self.seri_nesnesi.write(b'b\n')
-                    self.seri_nesnesi.flush()
-                    log_success(f"{self.cihaz_adi} ESP32'ye 'b' komutu gönderildi")
-
-                    # ESP32'nin setup'ı tamamlaması için bekle
-                    # Kalibrasyon ve diğer başlatma işlemleri ~2-3 saniye sürüyor
-                    time.sleep(3.0)
-                    log_success(f"{self.cihaz_adi} ESP32 boot handshake tamamlandı")
-                except Exception as e:
-                    log_warning(f"{self.cihaz_adi} ESP32 handshake hatası: {e}")
+                # ✅ ESP32 BOOT HANDSHAKE - Yeni protokol: ready/b handshake
+                # ESP32 sürekli "ready" mesajı gönderir, Python 'b' ile yanıt verir
+                if not self._esp32_boot_handshake(timeout_seconds=15.0):
+                    log_error(f"{self.cihaz_adi} ESP32 boot handshake başarısız!")
+                    self.seri_nesnesi.close()
+                    system_state.release_port(self.port_adi, self.cihaz_adi)
+                    self.seri_nesnesi = None
+                    self.saglikli = False
+                    return False
 
                 self.saglikli = True
                 self._consecutive_errors = 0
@@ -574,6 +562,100 @@ class MotorKart:
                 and self.seri_nesnesi.is_open
                 and self.running
             )
+
+    def _esp32_boot_handshake(self, timeout_seconds: float = 10.0) -> bool:
+        """
+        ESP32 ile boot handshake protokolü gerçekleştirir.
+
+        ESP32 setup() fonksiyonu sürekli "ready" mesajı gönderir.
+        Python bu mesajı alınca 'b' komutu gönderir.
+        ESP32 kalibrasyon başlatır ve "yino", "kino", "yono" mesajları gönderir.
+
+        Args:
+            timeout_seconds: Maksimum bekleme süresi
+
+        Returns:
+            True: Handshake başarılı
+            False: Timeout veya hata
+        """
+        start_time = time.time()
+        ready_alindi = False
+
+        log_system(f"{self.cihaz_adi} ESP32 boot handshake başlatılıyor...")
+
+        try:
+            # Önce buffer'ı temizle
+            self.seri_nesnesi.reset_input_buffer()
+            self.seri_nesnesi.reset_output_buffer()
+
+            while time.time() - start_time < timeout_seconds:
+                try:
+                    # ESP32'den "ready" mesajını bekle
+                    if self.seri_nesnesi.in_waiting > 0:
+                        line = self.seri_nesnesi.readline().decode('utf-8', errors='ignore').strip()
+
+                        if line == "ready":
+                            log_system(f"{self.cihaz_adi} ✅ ESP32 'ready' mesajı alındı")
+                            ready_alindi = True
+
+                            # 'b' komutu gönder
+                            self.seri_nesnesi.write(b'b\n')
+                            self.seri_nesnesi.flush()
+                            log_system(f"{self.cihaz_adi} → 'b' komutu gönderildi")
+
+                            # ESP32'nin yanıtlarını bekle (yino, kino, yono, Baslatiliyor...)
+                            yanit_timeout = time.time() + 5.0
+                            beklenen_yanitlar = ["yino", "kino", "yono"]
+                            alinan_yanitlar = []
+
+                            while time.time() < yanit_timeout:
+                                if self.seri_nesnesi.in_waiting > 0:
+                                    yanit = self.seri_nesnesi.readline().decode('utf-8', errors='ignore').strip()
+
+                                    if yanit:
+                                        log_system(f"{self.cihaz_adi} ← ESP32: {yanit}")
+
+                                    if yanit in beklenen_yanitlar:
+                                        alinan_yanitlar.append(yanit)
+
+                                    if "Baslatiliyor" in yanit or "baslatiliyor" in yanit.lower():
+                                        # Kalibrasyon başladı, başarılı sayılır
+                                        # Kalibrasyonun tamamlanması için ek süre bekle
+                                        log_system(f"{self.cihaz_adi} ESP32 kalibrasyon başladı, tamamlanması bekleniyor...")
+                                        time.sleep(5.0)  # Kalibrasyon süresi (~5s)
+                                        log_success(f"{self.cihaz_adi} ESP32 boot handshake BAŞARILI")
+                                        return True
+
+                                time.sleep(0.01)
+
+                            # Yanıtlar geldi mi kontrol et (Baslatiliyor mesajı gelmese bile)
+                            if len(alinan_yanitlar) >= 2:
+                                # En azından 2 yanıt aldıysak kabul edilebilir
+                                log_system(f"{self.cihaz_adi} ESP32 kalibrasyon tamamlanması bekleniyor...")
+                                time.sleep(5.0)  # Kalibrasyon süresi
+                                log_success(f"{self.cihaz_adi} ESP32 boot handshake BAŞARILI (partial)")
+                                return True
+                            else:
+                                log_warning(f"{self.cihaz_adi} ESP32 yanıtları eksik: {alinan_yanitlar}")
+                                return False
+
+                    time.sleep(0.05)
+
+                except Exception as e:
+                    log_error(f"{self.cihaz_adi} Handshake okuma hatası: {e}")
+                    return False
+
+            # Timeout
+            if not ready_alindi:
+                log_error(f"{self.cihaz_adi} ESP32 boot handshake TIMEOUT - 'ready' mesajı alınamadı ({timeout_seconds}s)")
+            else:
+                log_error(f"{self.cihaz_adi} ESP32 boot handshake TIMEOUT - Yanıt alamama ({timeout_seconds}s)")
+
+            return False
+
+        except Exception as e:
+            log_error(f"{self.cihaz_adi} ESP32 boot handshake hatası: {e}")
+            return False
 
     def _yaz(self):
         """Yazma thread'i - optimized"""
