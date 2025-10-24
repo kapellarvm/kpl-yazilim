@@ -64,7 +64,25 @@ async def konveyor_dur():
         motor.konveyor_dur()
         return SuccessResponse(message="Konveyör durduruldu")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Konveyör durdurma hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Konveyör dur hatası: {str(e)}")
+
+@router.post("/status-test")
+async def status_test():
+    """Motor kartına 's' komutu gönderir ve 'motor' cevabını bekler"""
+    try:
+        motor = get_motor_kart()
+        if not motor:
+            raise HTTPException(status_code=500, detail="Motor kartı bağlantısı yok")
+        
+        # Status test fonksiyonunu çağır
+        result = motor.status_test()
+        
+        if result:
+            return SuccessResponse(message="Status test başarılı - motor cevabı alındı")
+        else:
+            raise HTTPException(status_code=500, detail="Status test başarısız - motor cevabı alınamadı")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Status test hatası: {str(e)}")
 
 @router.post("/yonlendirici-plastik")
 async def yonlendirici_plastik():

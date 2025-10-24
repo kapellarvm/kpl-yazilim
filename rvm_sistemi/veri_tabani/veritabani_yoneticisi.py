@@ -74,11 +74,19 @@ def urunleri_kaydet(products):
             print(f"📦 Eski ürün verileri temizleniyor... (Mevcut: {eski_urun_sayisi})")
             cursor.execute("DELETE FROM products")
             
-            # 3. Adım: Yeni ürün listesini ekle
-            print(f"📥 {product_count} adet yeni ürün veritabanına kaydediliyor...")
+            # 3. Adım: Duplicate kontrol et
+            barkod_listesi = [p.get('barcode') for p in products]
+            unique_barkodlar = set(barkod_listesi)
+            duplicate_sayisi = len(barkod_listesi) - len(unique_barkodlar)
+
+            if duplicate_sayisi > 0:
+                print(f"⚠️  API'den {duplicate_sayisi} adet duplicate barkod geldi (otomatik düzeltiliyor)")
+
+            # 4. Adım: Yeni ürün listesini ekle (duplicate barkodları otomatik değiştir)
+            print(f"📥 {len(unique_barkodlar)} adet benzersiz ürün veritabanına kaydediliyor...")
             for product in products:
                 cursor.execute("""
-                    INSERT INTO products (barcode, material, packMinWeight, packMaxWeight, packMinWidth, packMaxWidth, packMinHeight, packMaxHeight)
+                    INSERT OR REPLACE INTO products (barcode, material, packMinWeight, packMaxWeight, packMinWidth, packMaxWidth, packMinHeight, packMaxHeight)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     product.get('barcode'),
@@ -91,7 +99,7 @@ def urunleri_kaydet(products):
                     product.get('packMaxHeight')
                 ))
             
-            # 4. Adım: Güncelleme geçmişini kaydet
+            # 5. Adım: Güncelleme geçmişini kaydet
             cursor.execute("""
                 INSERT INTO update_history (update_timestamp, product_count, source, status, notes)
                 VALUES (?, ?, ?, ?, ?)

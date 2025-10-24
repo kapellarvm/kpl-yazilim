@@ -11,13 +11,14 @@ from ...utils.logger import log_oturum_var, log_error, log_success, log_warning,
 from ...dimdb.hata_kodlari import AcceptPackageResultCodes, hata_kodu_al, hata_mesaji_al
 
 # ==================== SABITLER ====================
-AGIRLIK_TOLERANSI = 20  # gram
-UZUNLUK_TOLERANSI = 10  # mm
-GENISLIK_TOLERANSI = 10  # mm
-UZUNLUK_DOGRULAMA_TOLERANSI = 20  # mm
+AGIRLIK_TOLERANSI = 200  # gram
+UZUNLUK_TOLERANSI = 100  # mm
+GENISLIK_TOLERANSI = 100  # mm
+UZUNLUK_DOGRULAMA_TOLERANSI = 200  # mm
 LOJIK_DONGU_BEKLEME = 0.005  # saniye
 UZUNLUK_OLCUM_BEKLEME = 0.05  # saniye
 OTURUM_BASLANGIC_BEKLEME = 2  # saniye
+print("XXXXXXXXXXXXXXXXXX-----MEVLANA MOD AÇIK !!!!------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
 MATERYAL_ISIMLERI = {
     1: "PET",
@@ -48,6 +49,8 @@ class SistemDurumu:
     iade_etildi: bool = False
     lojik_thread_basladi: bool = False
     konveyor_durum_kontrol: bool = False
+    
+
     yonlendirici_iade: bool = False
     yonlendirici_calisiyor: bool = False
     iade_lojik: bool = False
@@ -94,6 +97,9 @@ class SistemDurumu:
         "userId": None,
         "paket_uuid_map": {}
     })
+    
+    # Uyku modu durumu
+    uyku_modu_aktif: bool = False
     
     # UPS Durumu
     ups_kesintisi: bool = False
@@ -668,7 +674,7 @@ def lojik_yoneticisi():
                 sistem.motor_ref.konveyor_dur()
                 yonlendirici_hareket()
             
-            # Yönlendirici sahtecilik kontrolü
+            '''# Yönlendirici sahtecilik kontrolü
             if sistem.yonlendirici_calisiyor and (sistem.ysi_lojik or sistem.yso_lojik):
                 sistem.son_islenen_urun = None
                 sistem.motor_ref.yonlendirici_dur()
@@ -677,6 +683,8 @@ def lojik_yoneticisi():
                 sistem.iade_lojik = True
                 sistem.iade_sebep = "Sahtecilik algılandı"
                 sistem_temizle()
+
+            '''
             
             # YMK - Yönlendirici Motor Konumda
             if sistem.yonlendirici_konumda:
@@ -872,6 +880,13 @@ def mesaj_isle(mesaj: str):
     
     # Oturum başlatma
     if mesaj == "oturum_var":
+        # Port sağlık servisini durdur
+        from .. import kart_referanslari
+        port_saglik = kart_referanslari.port_saglik_servisi_al()
+        if port_saglik:
+            port_saglik.oturum_durumu_guncelle(oturum_var=True)
+            log_system("Port sağlık servisi duraklatıldı - Oturum aktif")
+        
         if not sistem.lojik_thread_basladi:
             print(f"\n{'*'*60}")
             print(f"🟢 OTURUM BAŞLATILIYOR")
@@ -974,5 +989,13 @@ def sistem_kapat():
     log_system("Sistem kapatılıyor...")
     sistem.sistem_calisma_durumu = False
     time.sleep(0.1)
+    
+    # Port sağlık servisini başlat
+    from .. import kart_referanslari
+    port_saglik = kart_referanslari.port_saglik_servisi_al()
+    if port_saglik:
+        port_saglik.oturum_durumu_guncelle(oturum_var=False)
+        log_system("Port sağlık servisi devam ediyor - Oturum kapandı")
+    
     print(f"✅ Sistem güvenli bir şekilde kapatıldı\n")
     log_success("Sistem güvenli bir şekilde kapatıldı")

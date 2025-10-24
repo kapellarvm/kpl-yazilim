@@ -7,6 +7,7 @@ import asyncio
 import time
 from ...dimdb import dimdb_istemcisi
 from ...utils.logger import log_dimdb, log_error, log_system, log_success, log_warning, log_heartbeat
+from ...utils.terminal import ok, warn, err, status
 
 
 class HeartbeatServis:
@@ -26,7 +27,7 @@ class HeartbeatServis:
     async def start_heartbeat(self) -> None:
         """Heartbeat sistemini başlatır"""
         if self.is_running:
-            print("⚠️ [DİM-DB] Heartbeat sistemi zaten çalışıyor")
+            warn("DİM-DB", "Heartbeat sistemi zaten çalışıyor")
             log_warning("Heartbeat sistemi zaten çalışıyor - başlatma atlandı")
             return
             
@@ -36,14 +37,14 @@ class HeartbeatServis:
         self.successful_heartbeats = 0
         self.failed_heartbeats = 0
         self.heartbeat_task = asyncio.create_task(self.heartbeat_loop())
-        print("✅ [DİM-DB] Heartbeat sistemi başlatıldı")
+        ok("DİM-DB", "Heartbeat sistemi başlatıldı")
         log_system(f"Heartbeat sistemi başlatıldı - Interval: {self.heartbeat_interval}s, Max Errors: {self.max_consecutive_errors}")
         log_heartbeat(f"Servis başlatıldı - Task ID: {id(self.heartbeat_task)}, Başlangıç zamanı: {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     async def stop_heartbeat(self) -> None:
         """Heartbeat sistemini durdurur"""
         if not self.is_running:
-            print("⚠️ [DİM-DB] Heartbeat sistemi zaten durmuş")
+            warn("DİM-DB", "Heartbeat sistemi zaten durmuş")
             log_warning("Heartbeat sistemi zaten durmuş - durdurma atlandı")
             return
             
@@ -64,7 +65,7 @@ class HeartbeatServis:
             
             self.heartbeat_task = None
         
-        print("🛑 [DİM-DB] Heartbeat sistemi durduruldu")
+        status("DİM-DB", "Heartbeat sistemi durduruldu", level="stop")
         
         # Final istatistikleri logla
         if self.start_time:
@@ -97,7 +98,7 @@ class HeartbeatServis:
                 self.successful_heartbeats += 1
                 success_rate = (self.successful_heartbeats / self.total_heartbeats) * 100
                 
-                print(f"✅ [DİM-DB] Heartbeat gönderildi ({duration:.2f}s)")
+                ok("DİM-DB", f"Heartbeat gönderildi ({duration:.2f}s)")
                 log_success(f"Heartbeat başarıyla gönderildi - Süre: {duration:.2f}s, Döngü: #{loop_count}")
                 log_heartbeat(f"Performans - Gönderim süresi: {duration:.3f}s, Başarı oranı: {success_rate:.1f}%")
                 
@@ -108,7 +109,7 @@ class HeartbeatServis:
                 await asyncio.sleep(self.heartbeat_interval)
                 
             except asyncio.CancelledError:
-                print("🛑 [DİM-DB] Heartbeat döngüsü iptal edildi")
+                status("DİM-DB", "Heartbeat döngüsü iptal edildi", level="stop")
                 log_heartbeat(f"Döngü iptal edildi - Toplam döngü: {loop_count}")
                 break
             except Exception as e:
@@ -116,14 +117,14 @@ class HeartbeatServis:
                 self.failed_heartbeats += 1
                 error_rate = (self.failed_heartbeats / self.total_heartbeats) * 100
                 error_msg = f"Heartbeat hatası - Döngü: #{loop_count}, Hata: {self.consecutive_errors}/{self.max_consecutive_errors}, Hata oranı: {error_rate:.1f}%, Detay: {str(e)}"
-                print(f"❌ [DİM-DB] Heartbeat hatası ({self.consecutive_errors}/{self.max_consecutive_errors}): {e}")
+                err("DİM-DB", f"Heartbeat hatası ({self.consecutive_errors}/{self.max_consecutive_errors}): {e}")
                 log_error(error_msg)
                 
                 # Çok fazla ardışık hata varsa daha uzun bekle
                 if self.consecutive_errors >= self.max_consecutive_errors:
                     wait_time = self.heartbeat_interval * 2
                     warning_msg = f"Çok fazla ardışık hata! {wait_time} saniye bekleniyor... (Hata sayısı: {self.consecutive_errors})"
-                    print(f"⚠️ [DİM-DB] {warning_msg}")
+                    warn("DİM-DB", warning_msg)
                     log_warning(warning_msg)
                     log_heartbeat(f"Uzun bekleme başlatıldı - {wait_time}s")
                     await asyncio.sleep(wait_time)

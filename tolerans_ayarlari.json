@@ -1,0 +1,7 @@
+{
+  "uzunluk_toleransi": 0,
+  "genislik_toleransi": 0,
+  "metal_agirlik_toleransi": 5,
+  "plastik_agirlik_toleransi": 5,
+  "cam_agirlik_toleransi": 10
+}
