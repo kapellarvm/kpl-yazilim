@@ -518,10 +518,19 @@ class KartHaberlesmeServis:
             
             if result.returncode == 0:
                 log_success("USB autosuspend shell script başarılı")
-                # Çıktıyı logla
+                # Sadece özet satırları logla (Yöntem 1-3 sonuçları ve başarı mesajı)
                 for line in result.stdout.split('\n'):
-                    if line.strip():
-                        log_system(f"  {line}")
+                    line = line.strip()
+                    if not line:
+                        continue
+                    # Sadece önemli özet satırları logla
+                    if any(keyword in line for keyword in [
+                        "Yöntem 1:", "Yöntem 2:", "Yöntem 3:",
+                        "USB Autosuspend başarıyla kapatıldı"
+                    ]):
+                        # Yöntem 4 ve 5'i atla (GRUB ve udev detayları)
+                        if "Yöntem 4:" not in line and "Yöntem 5:" not in line:
+                            log_system(f"  {line}")
                 return True
             else:
                 log_warning(f"USB autosuspend shell script hatası: {result.stderr}")
