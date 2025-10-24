@@ -126,20 +126,13 @@ echo "⚡ Adım 3: USB Hub reset atlandı (dokunmatik ekranı korumak için)"
 echo "    ℹ️  Hub reset yerine sadece CH340/CH341 cihazları resetlendi"
 echo "    └─ Adım 1 ve 2 yeterli - hub resetine gerek yok"
 
-# Metod 4: CH341 kernel modülünü yeniden yükle
+# Metod 4: CH341 kernel modülü yeniden yükleme KALDIRILDI
+# Sebep: Modül yeniden yüklenirken bazen sadece 1 port oluşuyor (2 bekleniyor)
+# Adım 1 ve 2 zaten yeterli - kernel modül resetine gerek yok
 echo ""
-echo "⚡ Adım 4: CH341 kernel modülünü yeniden yükle..."
-if lsmod | grep -q ch341; then
-    echo "    ├─ Modül kaldırılıyor: ch341"
-    rmmod ch341 2>/dev/null
-    sleep 2
-    echo "    ├─ Modül yükleniyor: ch341"
-    modprobe ch341 2>/dev/null
-    echo "    └─ Modül yeniden yüklendi"
-else
-    echo "    └─ CH341 modülü yüklü değil, yükleniyor..."
-    modprobe ch341 2>/dev/null
-fi
+echo "⚡ Adım 4: Kernel modül reset atlandı (port oluşum sorununu önlemek için)"
+echo "    ℹ️  Kernel modül resetlemek yerine sadece unbind/bind ve authorize kullanılıyor"
+echo "    └─ Adım 1 ve 2 yeterli - modül resetine gerek yok"
 
 # Portların yeniden oluşmasını bekle
 echo ""
