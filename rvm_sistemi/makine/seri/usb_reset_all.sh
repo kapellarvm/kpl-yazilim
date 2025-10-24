@@ -118,19 +118,13 @@ for usb_dev in /sys/bus/usb/devices/*/; do
 done
 echo "    └─ $REAUTH_COUNT cihaz yeniden authorize edildi"
 
-# Metod 3: USB Hub Reset (SADECE USB3 hub'ı - güvenli)
+# Metod 3: USB Hub Reset KALDIRILDI
+# Sebep: Hub resetlemek tüm hub'daki cihazları etkiler (dokunmatik ekran dahil)
+# Adım 1 ve 2 zaten yeterli - CH340/CH341 cihazlarını resetliyor
 echo ""
-echo "⚡ Adım 3: USB3 Hub reset (CH340/CH341 cihazları için)..."
-if [ -e "/sys/bus/usb/devices/usb3/authorized" ]; then
-    echo "    ├─ USB3 hub deauthorize ediliyor..."
-    echo 0 > /sys/bus/usb/devices/usb3/authorized 2>/dev/null
-    sleep 3
-    echo "    ├─ USB3 hub authorize ediliyor..."
-    echo 1 > /sys/bus/usb/devices/usb3/authorized 2>/dev/null
-    echo "    └─ USB3 hub reset tamamlandı"
-else
-    echo "    └─ USB3 hub bulunamadı, atlanıyor"
-fi
+echo "⚡ Adım 3: USB Hub reset atlandı (dokunmatik ekranı korumak için)"
+echo "    ℹ️  Hub reset yerine sadece CH340/CH341 cihazları resetlendi"
+echo "    └─ Adım 1 ve 2 yeterli - hub resetine gerek yok"
 
 # Metod 4: CH341 kernel modülünü yeniden yükle
 echo ""
