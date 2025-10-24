@@ -125,8 +125,25 @@ else
     done
 
     echo "    └─ $DEVICE_RESET_COUNT CH340/CH341 cihazı device-level resetlendi"
-    echo "    ✅ Motor kartı fiziksel resetlendi (şoktan kurtarıldı)"
-    echo "    ✅ Touchscreen ve kamera korundu (resetlenmedi)"
+fi
+
+# Metod 3.5: USB Hub Reset (Motor kartı şok durumu için - KRİTİK!)
+# Device-level reset yetmiyorsa, hub'ı tamamen resetle (güç döngüsü simülasyonu)
+echo ""
+echo "⚡ Adım 3.5: USB3 Hub reset (Motor kartı şok durumu için)..."
+if [ -e "/sys/bus/usb/devices/usb3/authorized" ]; then
+    echo "    ℹ️  Hub reset motor kartını güç döngüsünden geçirir"
+    echo "    ⚠️  NOT: Touchscreen 3 saniye yanıt vermez (kabul edilebilir)"
+    echo "    ├─ USB3 hub deauthorize ediliyor..."
+    echo 0 > /sys/bus/usb/devices/usb3/authorized 2>/dev/null
+    sleep 3  # Kapasitörler boşalsın, motor kartı tamamen sıfırlansın
+    echo "    ├─ USB3 hub authorize ediliyor..."
+    echo 1 > /sys/bus/usb/devices/usb3/authorized 2>/dev/null
+    echo "    └─ USB3 hub reset tamamlandı"
+    echo "    ✅ Motor kartı güç döngüsünden geçti (şoktan kurtarıldı)"
+    echo "    ⚠️  Touchscreen 5 saniye içinde rotation ile geri dönecek"
+else
+    echo "    └─ USB3 hub bulunamadı, atlanıyor"
 fi
 
 # Metod 4: CH341 kernel modülü yeniden yükleme - KOŞULLU

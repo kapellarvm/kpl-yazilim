@@ -379,13 +379,16 @@ class MotorKart:
 
                 # ✅ ESP32 BOOT HANDSHAKE - Yeni protokol: ready/b handshake
                 # ESP32 sürekli "ready" mesajı gönderir, Python 'b' ile yanıt verir
-                if not self._esp32_boot_handshake(timeout_seconds=15.0):
-                    log_error(f"{self.cihaz_adi} ESP32 boot handshake başarısız!")
-                    self.seri_nesnesi.close()
-                    system_state.release_port(self.port_adi, self.cihaz_adi)
-                    self.seri_nesnesi = None
-                    self.saglikli = False
-                    return False
+                # GEÇICI: Eski firmware ile uyumluluk için handshake başarısızlığı tolere edilir
+                handshake_basarili = self._esp32_boot_handshake(timeout_seconds=15.0)
+                if not handshake_basarili:
+                    log_warning(f"{self.cihaz_adi} ESP32 boot handshake başarısız - eski firmware olabilir")
+                    log_warning(f"{self.cihaz_adi} Yeni firmware yüklü değilse handshake çalışmaz")
+                    log_system(f"{self.cihaz_adi} Basit boot bekleme moduna geçiliyor...")
+                    # Eski firmware için basit bekleme
+                    time.sleep(5.0)  # ESP32 boot + kalibrasyon süresi
+                    log_system(f"{self.cihaz_adi} Boot bekleme tamamlandı (fallback mode)")
+                    # Devam et, PONG ile doğrulanacak
 
                 self.saglikli = True
                 self._consecutive_errors = 0
