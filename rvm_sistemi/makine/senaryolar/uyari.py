@@ -144,49 +144,109 @@ def uyari_goster(mesaj="Lütfen şişeyi alınız", sure=2):
         uyari_chromium_process = None
 
 def uyari_kapat():
-    """Uyarı ekranını kapatır"""
+    """Uyarı ekranını kapatır - AGRESİF KAPATMA STRATEJİSİ"""
     global uyari_chromium_process, uyari_timer
     print("[Uyarı Modu] Uyarı ekranı kapatılıyor...")
-    
+
     try:
         import subprocess
         import time
-        
+
         if uyari_chromium_process:
             try:
                 # Process'in PID'sini al
                 pid = uyari_chromium_process.pid
                 print(f"[Uyarı Modu] Uyarı Chromium kapatılıyor (PID: {pid})...")
-                
-                # kioskuser'ın sahip olduğu tüm chromium process'lerini bul ve uyarı process'ini kapat
-                # Önce SIGTERM ile nazikçe kapat
-                subprocess.run([
+
+                # ✅ STRATEJI 1: Spesifik uyarı pattern'i ile kapat
+                result = subprocess.run([
                     "sudo", "-u", "kioskuser",
                     "pkill", "-TERM", "-f", "chromium-browser.*4321/uyari"
                 ], capture_output=True, timeout=2)
-                
+                print(f"[Uyarı Modu] SIGTERM sonuç: returncode={result.returncode}")
+
                 time.sleep(0.5)
-                
-                # Hala çalışıyorsa SIGKILL ile zorla kapat
-                subprocess.run([
+
+                # SIGKILL ile zorla kapat
+                result = subprocess.run([
                     "sudo", "-u", "kioskuser",
                     "pkill", "-KILL", "-f", "chromium-browser.*4321/uyari"
                 ], capture_output=True, timeout=2)
-                
+                print(f"[Uyarı Modu] SIGKILL sonuç: returncode={result.returncode}")
+
+                time.sleep(0.3)
+
+                # ✅ STRATEJI 2: wmctrl ile window kapat
+                try:
+                    subprocess.run([
+                        "sudo", "-u", "kioskuser",
+                        "bash", "-c",
+                        "DISPLAY=:0 wmctrl -c 'Uyarı' 2>/dev/null || true"
+                    ], capture_output=True, timeout=2)
+                    print("[Uyarı Modu] wmctrl ile window kapatma denendi")
+                except Exception as e:
+                    print(f"[Uyarı Modu] wmctrl hatası (göz ardı edilebilir): {e}")
+
+                # ✅ STRATEJI 3: Son çare - PID ile kapat
+                try:
+                    result = subprocess.run([
+                        "bash", "-c",
+                        "ps aux | grep -E 'kioskuser.*chromium.*uyari' | grep -v grep | awk '{print $2}'"
+                    ], capture_output=True, text=True, timeout=2)
+
+                    if result.stdout.strip():
+                        pids = result.stdout.strip().split('\n')
+                        print(f"[Uyarı Modu] Bulunan uyarı PID'leri: {pids}")
+                        for uyari_pid in pids:
+                            if uyari_pid:
+                                try:
+                                    subprocess.run(["sudo", "kill", "-9", uyari_pid], timeout=1)
+                                    print(f"[Uyarı Modu] PID {uyari_pid} SIGKILL ile kapatıldı")
+                                except Exception:
+                                    pass
+                    else:
+                        print("[Uyarı Modu] Uyarı process'i bulunamadı (zaten kapalı)")
+                except Exception as e:
+                    print(f"[Uyarı Modu] Process arama hatası: {e}")
+
                 uyari_chromium_process = None
-                print("[Uyarı Modu] Uyarı Chromium kapatıldı")
+                print("[Uyarı Modu] ✅ Uyarı Chromium kapatma işlemi tamamlandı")
             except Exception as e:
                 print(f"[Uyarı Modu] Process sonlandırma hatası: {e}")
         else:
-            print("[Uyarı Modu] Uyarı Chromium zaten kapalı")
-            
+            print("[Uyarı Modu] Uyarı Chromium process referansı yok")
+
+            # Zombi process kontrolü
+            try:
+                result = subprocess.run([
+                    "bash", "-c",
+                    "ps aux | grep -E 'kioskuser.*chromium.*uyari' | grep -v grep | awk '{print $2}'"
+                ], capture_output=True, text=True, timeout=2)
+
+                if result.stdout.strip():
+                    pids = result.stdout.strip().split('\n')
+                    print(f"[Uyarı Modu] Zombi uyarı process'leri bulundu: {pids}")
+                    for uyari_pid in pids:
+                        if uyari_pid:
+                            try:
+                                subprocess.run(["sudo", "kill", "-9", uyari_pid], timeout=1)
+                                print(f"[Uyarı Modu] Zombi PID {uyari_pid} temizlendi")
+                            except Exception:
+                                pass
+                else:
+                    print("[Uyarı Modu] Hiçbir uyarı process'i çalışmıyor")
+            except Exception as e:
+                print(f"[Uyarı Modu] Zombi process kontrolü hatası: {e}")
+
         # Timer'ı temizle
         if uyari_timer:
             uyari_timer.cancel()
             uyari_timer = None
-            
+
+        print("[Uyarı Modu] ✅ Uyarı kapatma tamamlandı")
+
     except Exception as e:
-        print(f"[Uyarı Modu] Uyarı kapatma hatası: {e}")
+        print(f"[Uyarı Modu] ❌ Uyarı kapatma hatası: {e}")
 
 def uyari_moduna_gir():
     """Uyarı moduna girildiğinde çalışır - Bu fonksiyon durum makinesi için"""

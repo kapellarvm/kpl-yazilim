@@ -1004,10 +1004,15 @@ class MotorKart:
 
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
 
-                # Motor kartı donanımsal sorunlu - reconnect'te HEMEN USB reset zorla
-                # Çünkü şoktayken port bulunuyor ama ESP32 yanıt vermiyor
-                force_usb_reset = True  # Her zaman USB reset zorla (reconnect durumunda)
-                log_system(f"{self.cihaz_adi} → USB reset ZORLANIYOR (motor kartı donanımsal sorunu için)")
+                # ✅ ADAPTİF HUB RESET STRATEJİSİ
+                # İlk 3 denemede basit reconnect (sensörü etkilemez)
+                # Başarısız olursa hub reset (motor şok durumundan kurtarır)
+                if attempts <= 3:
+                    force_usb_reset = False
+                    log_system(f"{self.cihaz_adi} → Basit reconnect deneniyor (hub reset yok, sensor korunuyor)")
+                else:
+                    force_usb_reset = True
+                    log_warning(f"{self.cihaz_adi} → Basit reconnect başarısız, HUB RESET deneniyor (motor şok durumu)")
 
                 if self._auto_find_port(force_usb_reset=force_usb_reset):
                     # ✅ Port bulundu, thread'ler başladı

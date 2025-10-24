@@ -106,48 +106,108 @@ class UyariYoneticisi:
             return False
 
     def uyari_kapat(self) -> bool:
-        """Uyarı ekranını kapatır"""
+        """Uyarı ekranını kapatır - AGRESİF KAPATMA STRATEJİSİ"""
         print("[Uyarı Yöneticisi] Uyarı ekranı kapatılıyor...")
-        
+
         try:
             if self.uyari_chromium_process:
                 try:
                     # Process'in PID'sini al
                     pid = self.uyari_chromium_process.pid
                     print(f"[Uyarı Yöneticisi] Uyarı Chromium kapatılıyor (PID: {pid})...")
-                    
-                    # kioskuser'ın sahip olduğu tüm chromium process'lerini bul ve uyarı process'ini kapat
-                    # Önce SIGTERM ile nazikçe kapat
-                    subprocess.run([
+
+                    # ✅ STRATEJI 1: Spesifik uyarı pattern'i ile kapat
+                    result = subprocess.run([
                         "sudo", "-u", "kioskuser",
                         "pkill", "-TERM", "-f", "chromium-browser.*4321/uyari"
                     ], capture_output=True, timeout=2)
-                    
+                    print(f"[Uyarı Yöneticisi] SIGTERM sonuç: returncode={result.returncode}")
+
                     time.sleep(0.5)
-                    
-                    # Hala çalışıyorsa SIGKILL ile zorla kapat
-                    subprocess.run([
+
+                    # SIGKILL ile zorla kapat
+                    result = subprocess.run([
                         "sudo", "-u", "kioskuser",
                         "pkill", "-KILL", "-f", "chromium-browser.*4321/uyari"
                     ], capture_output=True, timeout=2)
-                    
+                    print(f"[Uyarı Yöneticisi] SIGKILL sonuç: returncode={result.returncode}")
+
+                    time.sleep(0.3)
+
+                    # ✅ STRATEJI 2: Hala çalışıyorsa, tüm uyarı window'larını kapat (wmctrl ile)
+                    try:
+                        subprocess.run([
+                            "sudo", "-u", "kioskuser",
+                            "bash", "-c",
+                            "DISPLAY=:0 wmctrl -c 'Uyarı' 2>/dev/null || true"
+                        ], capture_output=True, timeout=2)
+                        print("[Uyarı Yöneticisi] wmctrl ile window kapatma denendi")
+                    except Exception as e:
+                        print(f"[Uyarı Yöneticisi] wmctrl hatası (göz ardı edilebilir): {e}")
+
+                    # ✅ STRATEJI 3: Son çare - tüm kioskuser chromium process'lerinden uyarı URL'li olanları kapat
+                    try:
+                        # Chromium process'lerini listele ve uyarı URL'li olanları bul
+                        result = subprocess.run([
+                            "bash", "-c",
+                            "ps aux | grep -E 'kioskuser.*chromium.*uyari' | grep -v grep | awk '{print $2}'"
+                        ], capture_output=True, text=True, timeout=2)
+
+                        if result.stdout.strip():
+                            pids = result.stdout.strip().split('\n')
+                            print(f"[Uyarı Yöneticisi] Bulunan uyarı PID'leri: {pids}")
+                            for uyari_pid in pids:
+                                if uyari_pid:
+                                    try:
+                                        subprocess.run(["sudo", "kill", "-9", uyari_pid], timeout=1)
+                                        print(f"[Uyarı Yöneticisi] PID {uyari_pid} SIGKILL ile kapatıldı")
+                                    except Exception:
+                                        pass
+                        else:
+                            print("[Uyarı Yöneticisi] Uyarı process'i bulunamadı (zaten kapalı)")
+                    except Exception as e:
+                        print(f"[Uyarı Yöneticisi] Process arama hatası: {e}")
+
                     self.uyari_chromium_process = None
-                    print("[Uyarı Yöneticisi] Uyarı Chromium kapatıldı")
+                    print("[Uyarı Yöneticisi] ✅ Uyarı Chromium kapatma işlemi tamamlandı")
                 except Exception as e:
                     print(f"[Uyarı Yöneticisi] Process sonlandırma hatası: {e}")
             else:
-                print("[Uyarı Yöneticisi] Uyarı Chromium zaten kapalı")
-                
+                print("[Uyarı Yöneticisi] Uyarı Chromium process referansı yok")
+
+                # Yine de çalışan uyarı process'leri olabilir, kontrol et
+                try:
+                    result = subprocess.run([
+                        "bash", "-c",
+                        "ps aux | grep -E 'kioskuser.*chromium.*uyari' | grep -v grep | awk '{print $2}'"
+                    ], capture_output=True, text=True, timeout=2)
+
+                    if result.stdout.strip():
+                        pids = result.stdout.strip().split('\n')
+                        print(f"[Uyarı Yöneticisi] Zombi uyarı process'leri bulundu: {pids}")
+                        for uyari_pid in pids:
+                            if uyari_pid:
+                                try:
+                                    subprocess.run(["sudo", "kill", "-9", uyari_pid], timeout=1)
+                                    print(f"[Uyarı Yöneticisi] Zombi PID {uyari_pid} temizlendi")
+                                except Exception:
+                                    pass
+                    else:
+                        print("[Uyarı Yöneticisi] Hiçbir uyarı process'i çalışmıyor")
+                except Exception as e:
+                    print(f"[Uyarı Yöneticisi] Zombi process kontrolü hatası: {e}")
+
             # Timer'ı temizle
             if self.uyari_timer:
                 self.uyari_timer.cancel()
                 self.uyari_timer = None
-                
+
             self.aktif_uyari = False
+            print("[Uyarı Yöneticisi] ✅ Uyarı kapatma tamamlandı - aktif_uyari=False")
             return True
-            
+
         except Exception as e:
-            print(f"[Uyarı Yöneticisi] Uyarı kapatma hatası: {e}")
+            print(f"[Uyarı Yöneticisi] ❌ Uyarı kapatma hatası: {e}")
             return False
 
     def uyari_durumu(self) -> dict:
