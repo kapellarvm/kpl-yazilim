@@ -142,18 +142,37 @@ class PortSaglikServisi:
     
     def _kartlari_kontrol_et(self):
         """Tüm kartların sağlık kontrolü"""
+
+        # ✅ YENİ STRATEJİ: Herhangi bir kart reconnecting ise HER İKİ KARTIN da ping'ini DURDUR
+        # Neden?
+        # 1. Stabilizasyon: Bir kart reconnect sırasında diğerini rahatsız etme
+        # 2. Esneklik: Sensör için gelecekte hub reset gerekirse hazır altyapı
+        # 3. Temiz loglar: Reconnection sırasında gereksiz ping timeout'ları önle
+        motor_reconnecting = system_state.is_card_reconnecting("motor")
+        sensor_reconnecting = system_state.is_card_reconnecting("sensor")
+
+        if motor_reconnecting or sensor_reconnecting:
+            reconnecting_kartlar = []
+            if motor_reconnecting:
+                reconnecting_kartlar.append("MOTOR")
+            if sensor_reconnecting:
+                reconnecting_kartlar.append("SENSOR")
+
+            print(f"⏸️  [PORT-SAĞLIK] Reconnection devam ediyor ({', '.join(reconnecting_kartlar)}) - TÜM ping işlemleri durduruldu")
+            return  # İkisine de ping atma - stabilizasyon için bekle
+
         # Motor kartı kontrolü
         self._kart_ping_kontrol(
             kart=self.motor_karti,
             kart_adi="motor"
         )
-        
+
         # Sensör kartı kontrolü
         self._kart_ping_kontrol(
             kart=self.sensor_karti,
             kart_adi="sensor"
         )
-        
+
         # Durumları değerlendir
         self._durumlari_degerlendir()
     
