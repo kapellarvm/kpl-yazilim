@@ -141,7 +141,16 @@ if [ -e "/sys/bus/usb/devices/usb3/authorized" ]; then
     echo 1 > /sys/bus/usb/devices/usb3/authorized 2>/dev/null
     echo "    └─ USB3 hub reset tamamlandı"
     echo "    ✅ Motor kartı güç döngüsünden geçti (şoktan kurtarıldı)"
-    echo "    ⚠️  Touchscreen 5 saniye içinde rotation ile geri dönecek"
+
+    # Touchscreen rotation script'i çağır
+    echo "    ├─ Touchscreen rotation script çağrılıyor..."
+    ROTATION_SCRIPT="/home/sshuser/projects/kpl-yazilim/scripts/rotate_touchscreen.sh"
+    if [ -x "$ROTATION_SCRIPT" ]; then
+        su - sshuser -c "DISPLAY=:0 $ROTATION_SCRIPT" &
+        echo "    └─ Rotation script başlatıldı (arka planda çalışıyor)"
+    else
+        echo "    └─ ⚠️  Rotation script bulunamadı: $ROTATION_SCRIPT"
+    fi
 else
     echo "    └─ USB3 hub bulunamadı, atlanıyor"
 fi
