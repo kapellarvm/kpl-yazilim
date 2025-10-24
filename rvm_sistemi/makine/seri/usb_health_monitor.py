@@ -33,6 +33,15 @@ class USBHealthMonitor:
         self.monitor_thread: Optional[threading.Thread] = None
         self.check_interval = 10  # saniye
 
+        # None tolerance tracking (geçici None'ları ignore etmek için)
+        self.touchscreen_none_count = 0
+        self.camera_none_count = 0
+        self.max_none_tolerance = 2  # 2 kontrol döngüsü (20 saniye) bekle
+
+        # İlk başlangıç gecikmesi
+        self.startup_delay = 5  # Program başladıktan 5 saniye sonra başla
+        self.startup_time = time.time()
+
         log_system("USB Health Monitor oluşturuldu")
 
     def start(self):
@@ -92,8 +101,30 @@ class USBHealthMonitor:
 
         Baseline ile mevcut durumu karşılaştırır.
         Değişim tespit edilirse agresif reset tetikler.
+
+        Önemli kontroller:
+        1. İlk başlangıç gecikmesi (cihazlar tamamen boot olsun)
+        2. Reconnection state kontrolü (motor/sensor reconnection sırasında bypass)
+        3. None tolerance (geçici None'ları ignore et)
         """
         try:
+            # ✅ Kontrol 1: İlk başlangıç gecikmesi
+            elapsed = time.time() - self.startup_time
+            if elapsed < self.startup_delay:
+                # İlk 5 saniye sessizce bekle
+                return
+
+            # ✅ Kontrol 2: Reconnection state kontrolü
+            # Motor veya sensor reconnecting durumundaysa BYPASS
+            # Çünkü motor/sensor USB hub reset yaparken touchscreen değişimi NORMAL yan etki
+            motor_reconnecting = system_state.is_card_reconnecting("motor")
+            sensor_reconnecting = system_state.is_card_reconnecting("sensor")
+
+            if motor_reconnecting or sensor_reconnecting:
+                # Motor/sensor reconnection devam ediyor, touchscreen değişimi beklenir
+                # USB Health Monitor müdahale etmemeli (sonsuz döngü riski!)
+                return
+
             # Mevcut baseline'ı al
             baseline_touchscreen, baseline_camera = system_state.get_usb_baseline()
 
@@ -108,21 +139,58 @@ class USBHealthMonitor:
             current_touchscreen = self._get_device_number("2575:0001")
             current_camera = self._get_device_number("2bdf:0001")
 
+            # ✅ Kontrol 3: None tolerance (geçici None'ları ignore et)
+            # Hub reset sırasında cihazlar geçici kaybolabilir
+
             # Touchscreen kontrolü
             if current_touchscreen != baseline_touchscreen:
-                log_warning(f"⚡ [USB-HEALTH] Touchscreen device değişimi tespit edildi!")
-                log_warning(f"   Baseline: {baseline_touchscreen}")
-                log_warning(f"   Mevcut:   {current_touchscreen}")
+                # None durumu özel - geçici kaybolma olabilir
+                if current_touchscreen is None:
+                    self.touchscreen_none_count += 1
+                    if self.touchscreen_none_count <= self.max_none_tolerance:
+                        # Henüz tolerance limitinde, bekle
+                        log_warning(f"⚠️  [USB-HEALTH] Touchscreen geçici kayboldu (None), bekleniyor... ({self.touchscreen_none_count}/{self.max_none_tolerance})")
+                        return
+                    # Tolerance limit aşıldı, gerçek sorun var
+                    log_warning(f"⚡ [USB-HEALTH] Touchscreen device değişimi tespit edildi!")
+                    log_warning(f"   Baseline: {baseline_touchscreen}")
+                    log_warning(f"   Mevcut:   {current_touchscreen} (kalıcı kayıp)")
+                else:
+                    # Device numarası değişti (None değil)
+                    log_warning(f"⚡ [USB-HEALTH] Touchscreen device değişimi tespit edildi!")
+                    log_warning(f"   Baseline: {baseline_touchscreen}")
+                    log_warning(f"   Mevcut:   {current_touchscreen}")
+
                 self._trigger_recovery("touchscreen", baseline_touchscreen, current_touchscreen)
                 return  # Recovery tetiklendi, döngüye geri dön
+            else:
+                # Touchscreen sağlıklı, none counter'ı sıfırla
+                self.touchscreen_none_count = 0
 
             # Camera kontrolü
             if current_camera != baseline_camera:
-                log_warning(f"⚡ [USB-HEALTH] Camera device değişimi tespit edildi!")
-                log_warning(f"   Baseline: {baseline_camera}")
-                log_warning(f"   Mevcut:   {current_camera}")
+                # None durumu özel - geçici kaybolma olabilir
+                if current_camera is None:
+                    self.camera_none_count += 1
+                    if self.camera_none_count <= self.max_none_tolerance:
+                        # Henüz tolerance limitinde, bekle
+                        log_warning(f"⚠️  [USB-HEALTH] Camera geçici kayboldu (None), bekleniyor... ({self.camera_none_count}/{self.max_none_tolerance})")
+                        return
+                    # Tolerance limit aşıldı, gerçek sorun var
+                    log_warning(f"⚡ [USB-HEALTH] Camera device değişimi tespit edildi!")
+                    log_warning(f"   Baseline: {baseline_camera}")
+                    log_warning(f"   Mevcut:   {current_camera} (kalıcı kayıp)")
+                else:
+                    # Device numarası değişti (None değil)
+                    log_warning(f"⚡ [USB-HEALTH] Camera device değişimi tespit edildi!")
+                    log_warning(f"   Baseline: {baseline_camera}")
+                    log_warning(f"   Mevcut:   {current_camera}")
+
                 self._trigger_recovery("camera", baseline_camera, current_camera)
                 return  # Recovery tetiklendi, döngüye geri dön
+            else:
+                # Camera sağlıklı, none counter'ı sıfırla
+                self.camera_none_count = 0
 
             # Hiçbir değişim yok - sessizce devam
             # log_system(f"✅ [USB-HEALTH] Cihazlar sağlıklı (T:{current_touchscreen}, C:{current_camera})")
@@ -178,9 +246,16 @@ class USBHealthMonitor:
         log_warning(f"🚨 [USB-HEALTH] {device_name.upper()} reconnect tespit edildi!")
         log_warning(f"   Recovery başlatılıyor: {baseline} → {current}")
 
-        # State tekrar kontrol et (race condition önleme)
+        # ✅ Kritik: State tekrar kontrol et (race condition önleme)
         if system_state.get_system_state() != SystemState.NORMAL:
             log_warning("   Reset zaten devam ediyor, recovery iptal edildi")
+            return
+
+        # ✅ Kritik: Motor/sensor reconnection tekrar kontrol et
+        # Recovery başlatmadan hemen önce tekrar kontrol (timing hassas)
+        if system_state.is_card_reconnecting("motor") or system_state.is_card_reconnecting("sensor"):
+            log_warning("   Motor/sensor reconnection başladı, USB Health Monitor recovery iptal edildi")
+            log_warning("   Motor/sensor zaten hub reset yapacak, touchscreen değişimi normal yan etki")
             return
 
         # Agresif USB reset tetikle (direkt script çağır - motor/sensor reconnection ile aynı yöntem)
@@ -202,7 +277,19 @@ class USBHealthMonitor:
 
                 if result.returncode == 0:
                     log_system(f"✅ [USB-HEALTH] {device_name.upper()} için USB reset tamamlandı")
-                    # Baseline güncellenecek (reset sonrası otomatik)
+
+                    # ✅ KRİTİK: Recovery sonrası baseline güncelle (sonsuz döngü önleme)
+                    # USB reset touchscreen/camera device numaralarını değiştirmiş olabilir
+                    # Baseline'ı hemen güncelle ki bir sonraki kontrol döngüsünde tekrar tetikleme
+                    time.sleep(2)  # USB cihazlarının re-enumerate olması için kısa bekleme
+                    log_system(f"🔄 [USB-HEALTH] Baseline güncelleniyor (recovery sonrası)...")
+                    system_state.update_usb_baseline()
+
+                    # Counter'ları sıfırla
+                    self.touchscreen_none_count = 0
+                    self.camera_none_count = 0
+
+                    log_system(f"✅ [USB-HEALTH] Recovery tamamlandı - Baseline güncellendi")
                 else:
                     log_error(f"❌ [USB-HEALTH] {device_name.upper()} için USB reset başarısız: {result.stderr}")
             else:
