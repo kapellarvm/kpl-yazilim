@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Dict, Optional, Set
 from dataclasses import dataclass
 from rvm_sistemi.utils.logger import log_system, log_warning, log_error, log_success
+from rvm_sistemi.makine.senaryolar import uyari
 
 
 class SystemState(Enum):
@@ -377,9 +378,18 @@ class SystemStateManager:
             
             if success:
                 self.set_card_state(card_name, CardState.CONNECTED, "Reconnection başarılı")
+
+                # ✅ UYARI KAPATMA: Başarılı reconnection sonrası
+                # Eğer BAŞKA HİÇBİR kart reconnecting değilse uyarı kapat
+                if not self._reconnecting_cards:  # Artık hiçbir kart reconnecting değil
+                    try:
+                        uyari.uyari_kapat()
+                        log_system(f"{card_name.upper()} reconnection sonrası uyarı kapatıldı (tüm kartlar bağlandı)")
+                    except Exception as e:
+                        log_error(f"Uyarı kapatma hatası: {e}")
             else:
                 self.set_card_state(card_name, CardState.ERROR, "Reconnection başarısız")
-            
+
             log_system(f"Reconnection bitti [{card_name}]: {'başarılı' if success else 'başarısız'}")
             return True
     

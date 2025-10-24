@@ -210,6 +210,22 @@ class PortSaglikServisi:
                     log_success(f"{kart_adi.upper()} recovery başarılı - cooldown periyodu başladı")
                     log_system(f"{kart_adi.upper()} için {reconnection_cooldown}s boyunca ping timeout ignore edilecek (ESP32 boot süreci)")
 
+                    # ✅ UYARI KAPATMA: Eğer HİÇBİR kart reconnecting değilse uyarı kapat
+                    # Mantık: Bu kart SAGLIKLI'ya geçti. Diğer kartlar da reconnecting değilse sistem OK
+                    herhangi_reconnecting = False
+                    for kontrol_kart_adi in self.kart_durumlari.keys():
+                        if system_state.is_card_reconnecting(kontrol_kart_adi):
+                            herhangi_reconnecting = True
+                            break
+
+                    if not herhangi_reconnecting:
+                        # Hiçbir kart reconnecting değil, uyarı kapat
+                        try:
+                            uyari.uyari_kapat()
+                            log_system(f"{kart_adi.upper()} recovery sonrası uyarı kapatıldı (hiçbir kart reconnecting değil)")
+                        except Exception as e:
+                            log_error(f"Uyarı kapatma hatası: {e}")
+
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
                 durum.durum = SaglikDurumu.SAGLIKLI
