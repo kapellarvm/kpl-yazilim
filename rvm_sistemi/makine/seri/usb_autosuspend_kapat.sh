@@ -19,54 +19,54 @@ log_error() {
 log_info "USB Autosuspend kapatılıyor..."
 
 # Yöntem 1: Tüm USB cihazları için autosuspend'i kapat
-log_info "Yöntem 1: USB cihazları için autosuspend kapatılıyor..."
+DEVICE_COUNT=0
 for device in /sys/bus/usb/devices/*/power/control; do
     if [ -f "$device" ]; then
         echo "on" | sudo tee "$device" > /dev/null 2>&1 || true
-        log_info "  - $(dirname "$device" | xargs basename): autosuspend kapatıldı"
+        DEVICE_COUNT=$((DEVICE_COUNT + 1))
     fi
 done
+log_info "Yöntem 1: $DEVICE_COUNT USB cihazı için autosuspend kapatıldı"
 
 # Yöntem 2: USB autolevel'i kapat
-log_info "Yöntem 2: USB autolevel kapatılıyor..."
+AUTOLEVEL_COUNT=0
 for device in /sys/bus/usb/devices/*/power/autosuspend; do
     if [ -f "$device" ]; then
         echo "-1" | sudo tee "$device" > /dev/null 2>&1 || true
+        AUTOLEVEL_COUNT=$((AUTOLEVEL_COUNT + 1))
     fi
 done
+log_info "Yöntem 2: $AUTOLEVEL_COUNT USB cihazı için autolevel kapatıldı"
 
 # Yöntem 3: CH340/CH341 için özel ayarlar
-log_info "Yöntem 3: CH340/CH341 sürücüsü için özel ayarlar..."
+CH340_COUNT=0
 for device in /sys/bus/usb/devices/*/; do
     if [ -f "$device/idVendor" ] && [ -f "$device/idProduct" ]; then
         vendor=$(cat "$device/idVendor" 2>/dev/null)
         product=$(cat "$device/idProduct" 2>/dev/null)
-        
+
         # CH340/CH341 chip'i (Vendor ID: 1a86)
         if [ "$vendor" == "1a86" ]; then
-            dev_name=$(basename "$device")
-            log_info "  - CH340/CH341 bulundu: $dev_name"
-            
+            CH340_COUNT=$((CH340_COUNT + 1))
+
             # Autosuspend kapat
             if [ -f "$device/power/control" ]; then
                 echo "on" | sudo tee "$device/power/control" > /dev/null 2>&1
-                log_success "    ✓ Autosuspend kapatıldı"
             fi
-            
+
             # Autosuspend delay'i maksimuma çıkar
             if [ -f "$device/power/autosuspend_delay_ms" ]; then
                 echo "2147483647" | sudo tee "$device/power/autosuspend_delay_ms" > /dev/null 2>&1
-                log_success "    ✓ Autosuspend delay maksimuma çıkarıldı"
             fi
-            
+
             # Persist ayarı
             if [ -f "$device/power/persist" ]; then
                 echo "1" | sudo tee "$device/power/persist" > /dev/null 2>&1
-                log_success "    ✓ Persist aktif edildi"
             fi
         fi
     fi
 done
+log_info "Yöntem 3: $CH340_COUNT CH340/CH341 cihazı için özel ayarlar yapıldı"
 
 # Yöntem 4: Kernel parametresi kontrolü
 log_info "Yöntem 4: Kernel parametreleri kontrol ediliyor..."
