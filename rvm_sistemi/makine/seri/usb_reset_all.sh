@@ -11,49 +11,14 @@ echo "ℹ️  Korunan: Tüm diğer USB cihazlar (kamera, touch vb.)"
 echo "ℹ️  Yöntem: Vendor ID bazlı güvenli filtreleme"
 echo "═══════════════════════════════════════"
 
-# Metod 1: Tüm USB seri kartlarını unbind/bind yap
+# Metod 1: Unbind/Bind DEVRE DIŞI (port oluşum sorununa sebep oluyor)
+# Sebep: Unbind sonrası bind işlemi başarısız oluyor, sadece 1 port dönüyor
+# Çözüm: Direkt Adım 2 (deauthorize/authorize) ve Adım 3 (device reset) kullan
 echo ""
-echo "⚡ Adım 1: Tüm USB seri sürücülerini resetle..."
-if [ -d "/sys/bus/usb-serial/drivers/ch341-uart" ]; then
-    # Önce mevcut tüm CH341 cihazlarını unbind et
-    for device in /sys/bus/usb-serial/drivers/ch341-uart/*; do
-        if [[ "$(basename $device)" == *":"* ]]; then
-            DEVICE_NAME=$(basename "$device")
-            echo "    ├─ CH341 unbind: $DEVICE_NAME"
-            echo -n "$DEVICE_NAME" > /sys/bus/usb-serial/drivers/ch341-uart/unbind 2>/dev/null
-        fi
-    done
-    echo "    └─ Tüm CH341 cihazları unbind edildi"
-    
-    sleep 3  # Daha uzun bekleme
-    
-    # CH341 cihazlarını tek tek bind et
-    BIND_COUNT=0
-    for device in /sys/bus/usb/devices/*/; do
-        if [ -e "$device/idVendor" ] && [ "$(cat $device/idVendor)" = "1a86" ]; then
-            DEVICE_ID=$(basename "$device")
-            if [ -d "$device/$DEVICE_ID:1.0" ]; then
-                echo "    ├─ CH341 bind: $DEVICE_ID:1.0"
-                echo -n "$DEVICE_ID:1.0" > /sys/bus/usb-serial/drivers/ch341-uart/bind 2>/dev/null
-                if [ $? -eq 0 ]; then
-                    BIND_COUNT=$((BIND_COUNT + 1))
-                    echo "    ✓ Başarılı: $DEVICE_ID:1.0"
-                else
-                    echo "    ✗ Başarısız: $DEVICE_ID:1.0"
-                fi
-                sleep 1  # Her bind arasında bekleme
-            fi
-        fi
-    done
-    echo "    └─ $BIND_COUNT CH341 cihazı bind edildi"
-    
-    # Eğer bind başarısızsa, new_id ile zorla ekle
-    if [ $BIND_COUNT -lt 2 ]; then
-        echo "    🔧 CH341 new_id ile zorla ekleniyor..."
-        echo "1a86 7523" > /sys/bus/usb-serial/drivers/ch341-uart/new_id 2>/dev/null
-        sleep 2
-    fi
-fi
+echo "⚡ Adım 1: USB seri driver unbind/bind atlandı"
+echo "    ℹ️  Unbind/bind bazen sadece 1 port oluşturuyordu"
+echo "    ℹ️  Adım 2 (deauthorize/authorize) ve Adım 3 (device reset) daha güvenli"
+echo "    └─ Direkt cihaz-seviyesi resetle devam ediliyor"
 
 # Metod 2: SADECE USB-Serial cihazlarını deauthorize/authorize yap
 echo ""
