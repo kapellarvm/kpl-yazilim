@@ -158,22 +158,23 @@ class PortSaglikServisi:
             if sensor_reconnecting:
                 reconnecting_kartlar.append("SENSOR")
 
-            print(f"⏸️  [PORT-SAĞLIK] Reconnection devam ediyor ({', '.join(reconnecting_kartlar)}) - TÜM ping işlemleri durduruldu")
-            return  # İkisine de ping atma - stabilizasyon için bekle
+            print(f"⏸️  [PORT-SAĞLIK] Reconnection devam ediyor ({', '.join(reconnecting_kartlar)}) - Ping atlanıyor, durum değerlendiriliyor")
+            # ⚠️ CRITICAL FIX: return YAPMA! _durumlari_degerlendir() çağrılmalı ki uyarı ekranı açılsın
+            # Ping atlamak için her kart için zaten is_card_reconnecting() kontrolü var (satır 191)
+        else:
+            # Motor kartı kontrolü
+            self._kart_ping_kontrol(
+                kart=self.motor_karti,
+                kart_adi="motor"
+            )
 
-        # Motor kartı kontrolü
-        self._kart_ping_kontrol(
-            kart=self.motor_karti,
-            kart_adi="motor"
-        )
+            # Sensör kartı kontrolü
+            self._kart_ping_kontrol(
+                kart=self.sensor_karti,
+                kart_adi="sensor"
+            )
 
-        # Sensör kartı kontrolü
-        self._kart_ping_kontrol(
-            kart=self.sensor_karti,
-            kart_adi="sensor"
-        )
-
-        # Durumları değerlendir
+        # Durumları değerlendir - MUTLAKA ÇAĞRILMALI (reconnection durumunda da uyarı göstermek için)
         self._durumlari_degerlendir()
     
     def _kart_ping_kontrol(self, kart, kart_adi: str):
