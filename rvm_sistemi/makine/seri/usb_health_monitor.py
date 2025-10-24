@@ -192,8 +192,8 @@ class USBHealthMonitor:
                 # Camera sağlıklı, none counter'ı sıfırla
                 self.camera_none_count = 0
 
-            # Hiçbir değişim yok - sessizce devam
-            # log_system(f"✅ [USB-HEALTH] Cihazlar sağlıklı (T:{current_touchscreen}, C:{current_camera})")
+            # Hiçbir değişim yok - sağlıklı durum
+            log_system(f"🔍 [USB-HEALTH] Kontrol: Touchscreen={current_touchscreen} (Baseline={baseline_touchscreen}), Camera={current_camera} (Baseline={baseline_camera}) - Sağlıklı ✅")
 
         except Exception as e:
             log_error(f"USB cihaz kontrolü hatası: {e}")
