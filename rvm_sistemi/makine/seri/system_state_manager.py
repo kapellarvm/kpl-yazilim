@@ -696,14 +696,14 @@ class SystemStateManager:
                     if "2575:0001" in line:  # Touchscreen
                         # Device numarasını parse et
                         parts = line.split()
-                        if len(parts) >= 4 and parts[1] == "Bus" and parts[3] == "Device":
-                            device_str = parts[4].rstrip(':')  # "075:"
+                        if len(parts) >= 4 and parts[0] == "Bus" and parts[2] == "Device":
+                            device_str = parts[3].rstrip(':')  # "075:" -> "075"
                             touchscreen_num = device_str
 
                     elif "2bdf:0001" in line:  # Camera
                         parts = line.split()
-                        if len(parts) >= 4 and parts[1] == "Bus" and parts[3] == "Device":
-                            device_str = parts[4].rstrip(':')
+                        if len(parts) >= 4 and parts[0] == "Bus" and parts[2] == "Device":
+                            device_str = parts[3].rstrip(':')  # "002:" -> "002"
                             camera_num = device_str
 
                 # Baseline'ı güncelle

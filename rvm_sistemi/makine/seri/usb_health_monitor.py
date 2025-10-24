@@ -156,8 +156,8 @@ class USBHealthMonitor:
                 if vendor_product in line:
                     # Örnek: Bus 003 Device 075: ID 2575:0001 Weida Hi-Tech Co., Ltd. CoolTouch® System
                     parts = line.split()
-                    if len(parts) >= 4 and parts[1] == "Bus" and parts[3] == "Device":
-                        device_str = parts[4].rstrip(':')  # "075:"
+                    if len(parts) >= 4 and parts[0] == "Bus" and parts[2] == "Device":
+                        device_str = parts[3].rstrip(':')  # "075:" -> "075"
                         return device_str
 
             return None  # Cihaz bulunamadı
