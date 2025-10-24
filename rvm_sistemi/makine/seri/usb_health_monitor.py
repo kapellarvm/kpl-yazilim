@@ -263,7 +263,7 @@ class USBHealthMonitor:
             import os
             script_path = os.path.join(
                 os.path.dirname(__file__),
-                "usb_reset_ch340.sh"
+                "usb_reset_all.sh"  # Tüm USB portlarını resetle (motor/sensor ile aynı script)
             )
 
             if os.path.exists(script_path):
