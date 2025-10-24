@@ -105,10 +105,22 @@ class SensorKart:
             system_state.set_card_state(self.cihaz_adi, CardState.ERROR, f"Port açılamadı: {self.port_adi}")
             return False
 
-    def _auto_find_port(self) -> bool:
-        """Otomatik port bulma"""
+    def _auto_find_port(self, force_usb_reset: bool = False) -> bool:
+        """
+        Otomatik port bulma
+
+        Args:
+            force_usb_reset: USB reset zorla (True: hub reset dahil, False: sadece port arama)
+
+        Returns:
+            bool: Port bulundu ve bağlandı mı?
+        """
         try:
-            basarili, mesaj, portlar = self.port_yoneticisi.baglan(cihaz_adi=self.cihaz_adi)
+            # Sensor için force_usb_reset genellikle False (motor gibi donanımsal sorun yok)
+            basarili, mesaj, portlar = self.port_yoneticisi.baglan(
+                cihaz_adi=self.cihaz_adi,
+                try_usb_reset=force_usb_reset  # USB reset'i sadece gerektiğinde yap
+            )
             
             if basarili and self.cihaz_adi in portlar:
                 self.port_adi = portlar[self.cihaz_adi]
@@ -826,8 +838,10 @@ class SensorKart:
                 delay = min(base_delay * (2 ** (attempts - 1)), self.MAX_RETRY_DELAY)
                 
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
-                
-                if self._auto_find_port():
+
+                # Sensor için basit reconnection - hub reset'e gerek yok (motor gibi donanımsal sorun yok)
+                # Sadece port arama ve bağlantı yeterli
+                if self._auto_find_port(force_usb_reset=False):
                     # ✅ Port bulundu, thread'ler başladı
                     # ESP32 boot için yeterli bekleme (boot mesajları + firmware başlatma)
                     log_system(f"{self.cihaz_adi} ESP32 boot ve firmware başlatması bekleniyor...")

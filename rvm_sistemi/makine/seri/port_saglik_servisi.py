@@ -160,12 +160,13 @@ class PortSaglikServisi:
     def _kart_ping_kontrol(self, kart, kart_adi: str):
         """
         Kart ping kontrolü - RECONNECTION BYPASS - SESLİ VERSİYON
-        
+
         Args:
             kart: Kontrol edilecek kart nesnesi
             kart_adi: Kart adı (motor/sensor)
         """
         durum = self.kart_durumlari[kart_adi]
+        reconnection_cooldown = 10  # saniye - ESP32 boot süreci için
         
         # ✅ RECONNECTION DEVAM EDİYORSA PING ATMA (minimum 30s bekle)
         if system_state.is_card_reconnecting(kart_adi):
@@ -188,6 +189,7 @@ class PortSaglikServisi:
                 if durum.durum != SaglikDurumu.SAGLIKLI:
                     durum.son_reconnection_zamani = time.time()
                     log_success(f"{kart_adi.upper()} recovery başarılı - cooldown periyodu başladı")
+                    log_system(f"{kart_adi.upper()} için {reconnection_cooldown}s boyunca ping timeout ignore edilecek (ESP32 boot süreci)")
 
                 durum.son_pong_zamani = time.time()
                 durum.basarisiz_ping = 0
@@ -198,7 +200,6 @@ class PortSaglikServisi:
 
         # ✅ COOLDOWN KONTROLÜ: Son reconnection'dan sonra 10 saniye geçmediyse ping timeout ignore et
         # ESP32 boot süreci 3-5 saniye sürdüğü için ilk ping'ler timeout alabilir
-        reconnection_cooldown = 10  # saniye
         if durum.son_reconnection_zamani > 0:
             cooldown_suresi = time.time() - durum.son_reconnection_zamani
             if cooldown_suresi < reconnection_cooldown:

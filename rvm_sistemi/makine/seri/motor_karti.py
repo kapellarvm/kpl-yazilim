@@ -597,6 +597,10 @@ class MotorKart:
                     if self.seri_nesnesi.in_waiting > 0:
                         line = self.seri_nesnesi.readline().decode('utf-8', errors='ignore').strip()
 
+                        # DEBUG: Tüm gelen mesajları göster
+                        if line:
+                            print(f"🔍 [MOTOR-HANDSHAKE] HAM MESAJ: '{line}'")
+
                         if line == "ready":
                             log_system(f"{self.cihaz_adi} ✅ ESP32 'ready' mesajı alındı")
                             ready_alindi = True
