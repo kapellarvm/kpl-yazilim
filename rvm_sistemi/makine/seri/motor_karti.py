@@ -915,10 +915,10 @@ class MotorKart:
 
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
 
-                # Motor kartı donanımsal sorunlu - ilk denemede başarısızsa USB reset zorla
-                force_usb_reset = attempts > 1
-                if force_usb_reset:
-                    log_system(f"{self.cihaz_adi} → USB reset ZORLANIYOR (motor kartı donanımsal sorunu için)")
+                # Motor kartı donanımsal sorunlu - reconnect'te HEMEN USB reset zorla
+                # Çünkü şoktayken port bulunuyor ama ESP32 yanıt vermiyor
+                force_usb_reset = True  # Her zaman USB reset zorla (reconnect durumunda)
+                log_system(f"{self.cihaz_adi} → USB reset ZORLANIYOR (motor kartı donanımsal sorunu için)")
 
                 if self._auto_find_port(force_usb_reset=force_usb_reset):
                     # ✅ Port bulundu, thread'ler başladı
