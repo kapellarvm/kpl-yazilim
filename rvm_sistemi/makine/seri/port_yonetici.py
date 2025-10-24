@@ -444,11 +444,16 @@ class KartHaberlesmeServis:
                 for line in result.stdout.split('\n'):
                     if line.strip():
                         log_system(f"  {line}")
-                
+
                 # Reset sonrası autosuspend'i kapat
                 time.sleep(2)  # USB cihazların yeniden tanınması için daha uzun bekle
                 self._disable_usb_autosuspend()
-                
+
+                # ✅ USB BASELINE GÜNCELLEME
+                # Reset tamamlandı, yeni device numaralarını baseline olarak kaydet
+                log_system("USB baseline güncelleniyor...")
+                system_state.update_usb_baseline()
+
                 return True
             else:
                 log_error(f"USB toplu reset hatası: {result.stderr}")

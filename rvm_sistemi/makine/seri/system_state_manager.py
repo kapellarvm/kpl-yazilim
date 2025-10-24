@@ -90,6 +90,12 @@ class SystemStateManager:
         self._owned_ports: Dict[str, tuple[str, float]] = {}  # port -> (card_name, claim_timestamp)
         self._port_lock = threading.RLock()
 
+        # ✅ USB DEVICE TRACKING - Touchscreen & Camera sağlık izleme
+        # Agresif reset sonrası güncellenir (update_usb_baseline)
+        self.touchscreen_device_num: Optional[str] = None  # "075" veya None
+        self.camera_device_num: Optional[str] = None       # "002" veya None
+        self._usb_baseline_lock = threading.RLock()
+
         self._initialized = True
         log_system("System State Manager başlatıldı")
     
@@ -650,6 +656,94 @@ class SystemStateManager:
         """
         with self._port_lock:
             return {port: owner for port, (owner, _) in self._owned_ports.items()}
+
+    # ============ USB DEVICE BASELINE MANAGEMENT ============
+
+    def update_usb_baseline(self):
+        """
+        USB cihaz baseline'ını güncelle (Touchscreen & Camera)
+
+        Bu metod agresif reset tamamlandıktan SONRA çağrılır.
+        Mevcut USB device numaralarını alır ve baseline olarak kaydeder.
+        USB health monitor bu baseline'a bakarak reconnect tespit eder.
+
+        İzlenen cihazlar:
+        - Touchscreen: 2575:0001 (CoolTouch® System)
+        - Camera: 2bdf:0001 (Hikrobot MV-CS004-10UC)
+        """
+        import subprocess
+
+        with self._usb_baseline_lock:
+            try:
+                # lsusb çalıştır
+                result = subprocess.run(
+                    ["lsusb"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+
+                if result.returncode != 0:
+                    log_error("USB baseline güncelleme başarısız - lsusb çalışmadı")
+                    return
+
+                # Parse et
+                touchscreen_num = None
+                camera_num = None
+
+                for line in result.stdout.strip().split('\n'):
+                    # Örnek: Bus 003 Device 075: ID 2575:0001 Weida Hi-Tech Co., Ltd. CoolTouch® System
+                    if "2575:0001" in line:  # Touchscreen
+                        # Device numarasını parse et
+                        parts = line.split()
+                        if len(parts) >= 4 and parts[1] == "Bus" and parts[3] == "Device":
+                            device_str = parts[4].rstrip(':')  # "075:"
+                            touchscreen_num = device_str
+
+                    elif "2bdf:0001" in line:  # Camera
+                        parts = line.split()
+                        if len(parts) >= 4 and parts[1] == "Bus" and parts[3] == "Device":
+                            device_str = parts[4].rstrip(':')
+                            camera_num = device_str
+
+                # Baseline'ı güncelle
+                old_touchscreen = self.touchscreen_device_num
+                old_camera = self.camera_device_num
+
+                self.touchscreen_device_num = touchscreen_num
+                self.camera_device_num = camera_num
+
+                # Log
+                if touchscreen_num:
+                    if old_touchscreen != touchscreen_num:
+                        log_system(f"🔍 [USB-BASELINE] Touchscreen baseline güncellendi: {old_touchscreen} → {touchscreen_num}")
+                    else:
+                        log_system(f"🔍 [USB-BASELINE] Touchscreen baseline: {touchscreen_num}")
+                else:
+                    log_warning("🔍 [USB-BASELINE] Touchscreen bulunamadı")
+
+                if camera_num:
+                    if old_camera != camera_num:
+                        log_system(f"🔍 [USB-BASELINE] Camera baseline güncellendi: {old_camera} → {camera_num}")
+                    else:
+                        log_system(f"🔍 [USB-BASELINE] Camera baseline: {camera_num}")
+                else:
+                    log_warning("🔍 [USB-BASELINE] Camera bulunamadı")
+
+            except subprocess.TimeoutExpired:
+                log_error("USB baseline güncelleme timeout")
+            except Exception as e:
+                log_error(f"USB baseline güncelleme hatası: {e}")
+
+    def get_usb_baseline(self) -> tuple[Optional[str], Optional[str]]:
+        """
+        Mevcut USB baseline'ı döndür
+
+        Returns:
+            tuple: (touchscreen_device_num, camera_device_num)
+        """
+        with self._usb_baseline_lock:
+            return (self.touchscreen_device_num, self.camera_device_num)
 
 
 # Global instance

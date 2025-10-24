@@ -15,6 +15,8 @@ from rvm_sistemi.makine.modbus.modbus_istemci import GA500ModbusClient
 from rvm_sistemi.makine.modbus.modbus_kontrol import init_motor_kontrol
 from rvm_sistemi.api.servisler.uyku_modu_servisi import uyku_modu_servisi
 from rvm_sistemi.makine.seri.port_saglik_servisi import PortSaglikServisi
+from rvm_sistemi.makine.seri.usb_health_monitor import usb_health_monitor
+from rvm_sistemi.makine.seri.system_state_manager import system_state
 
 
 motor = None
@@ -197,11 +199,18 @@ async def main():
     # Port sağlık servisini başlat (AKTİF)
     port_saglik_servisi = PortSaglikServisi(motor, sensor)
     port_saglik_servisi.servisi_baslat()
-    
+
     # Merkezi referans sistemine kaydet
     kart_referanslari.port_saglik_servisi_referansini_ayarla(port_saglik_servisi)
-    
+
     log_system("Port sağlık servisi başlatıldı - Arka planda ping/pong kontrolü aktif")
+
+    # USB Health Monitor başlat (Touchscreen & Camera izleme)
+    # İlk baseline'ı set et
+    log_system("USB Health Monitor başlatılıyor...")
+    system_state.update_usb_baseline()  # İlk baseline
+    usb_health_monitor.start()  # İzleme döngüsünü başlat
+    log_system("USB Health Monitor başlatıldı - Touchscreen & Camera izleniyor")
     '''
     log_system("RVM Sistemi Arka Plan Servisleri Başlatılıyor...")
     log_system("Uvicorn sunucusu http://0.0.0.0:4321 adresinde başlatılıyor.")
@@ -216,6 +225,7 @@ async def main():
     #uyku_modu_servisi.uyku_kontrol_durdur()
     if port_saglik_servisi:
         port_saglik_servisi.servisi_durdur()
+    usb_health_monitor.stop()  # USB health monitor durdur
     log_system("Tüm servisler durduruldu")
     product_update_task.cancel()
     urun_guncelleyici.durdur()
