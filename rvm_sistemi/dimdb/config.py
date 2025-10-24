@@ -21,9 +21,10 @@ class RVMConfig:
             self.SECRET_KEY = os.getenv('RVM_SECRET_KEY', 'null')
             self.RVM_ID = os.getenv('RVM_ID', '')
             self.BASE_URL = os.getenv('RVM_BASE_URL', 'http://192.168.53.1:5432')
+            self.MAKINE_SINIFI = os.getenv('RVM_MAKINE_SINIFI', '')
             
-            # Eğer RVM_ID boşsa tekrar kurulum yap
-            if not self.RVM_ID:
+            # Eğer RVM_ID veya MAKINE_SINIFI boşsa tekrar kurulum yap
+            if not self.RVM_ID or not self.MAKINE_SINIFI:
                 self._interactive_setup()
     
     def _interactive_setup(self):
@@ -33,6 +34,9 @@ class RVMConfig:
         
         # RVM ID girişi
         self.RVM_ID = self._get_rvm_id()
+        
+        # Makine sınıfı seçimi
+        self.MAKINE_SINIFI = self._get_makine_sinifi()
         
         # Kurulum onayı
         self._confirm_setup()
@@ -82,11 +86,60 @@ class RVMConfig:
                 else:
                     print("⚠️  Lütfen 'y' veya 'n' giriniz!")
     
+    def _get_makine_sinifi(self):
+        """Makine sınıfı seçimi ve doğrulama"""
+        while True:
+            print("\n🏭 MAKİNE SINIFI SEÇİMİ")
+            print("─" * 25)
+            print("\n1️⃣  KPL-04 (CAM KIRICI VAR)")
+            print("2️⃣  KPL-05 (CAM KIRICI YOK)")
+            print("─" * 25)
+            
+            secim = input("\n💻 Makine sınıfını seçiniz (1 veya 2): ").strip()
+            
+            if secim == "1":
+                makine_sinifi = "KPL-04"
+                print(f"\n📝 Seçilen makine sınıfı: {makine_sinifi} (CAM KIRICI VAR)")
+                print("─" * 40)
+                
+                while True:
+                    confirm = input("✅ Doğru mu? (y/n): ").strip().lower()
+                    if confirm == 'y':
+                        print(f"\n🎯 Makine sınıfı onaylandı: {makine_sinifi}")
+                        print("─" * 40)
+                        return makine_sinifi
+                    elif confirm == 'n':
+                        print("\n🔄 Yeni makine sınıfı seçiniz...\n")
+                        break
+                    else:
+                        print("⚠️  Lütfen 'y' veya 'n' giriniz!")
+                        
+            elif secim == "2":
+                makine_sinifi = "KPL-05"
+                print(f"\n📝 Seçilen makine sınıfı: {makine_sinifi} (CAM KIRICI YOK)")
+                print("─" * 40)
+                
+                while True:
+                    confirm = input("✅ Doğru mu? (y/n): ").strip().lower()
+                    if confirm == 'y':
+                        print(f"\n🎯 Makine sınıfı onaylandı: {makine_sinifi}")
+                        print("─" * 40)
+                        return makine_sinifi
+                    elif confirm == 'n':
+                        print("\n🔄 Yeni makine sınıfı seçiniz...\n")
+                        break
+                    else:
+                        print("⚠️  Lütfen 'y' veya 'n' giriniz!")
+            else:
+                print("\n❌ Geçersiz seçim! Lütfen 1 veya 2 giriniz.")
+                print("🔄 Tekrar deneyin...\n")
+    
     def _confirm_setup(self):
         """Kurulum onayı"""
         print("\n📋 KURULUM ÖZETİ")
         print("─" * 20)
         print(f"\n🏷️  RVM ID: {self.RVM_ID}")
+        print(f"🏭 MAKİNE SINIFI: {self.MAKINE_SINIFI}")
         print("🔐 SECRET KEY: null")
         print("🌐 BASE URL: http://192.168.53.1:5432")
         print("\n─" * 3)
@@ -124,6 +177,7 @@ class RVMConfig:
         print("="*60)
         
         print(f"\n🎯 RVM ID: {self.RVM_ID}")
+        print(f"🏭 MAKİNE SINIFI: {self.MAKINE_SINIFI}")
         print("📁 Konfigürasyon dosyası: .env")
         print("🚀 Sistem başlatılıyor...")
         print("\n─" * 3)
@@ -144,6 +198,7 @@ class RVMConfig:
 # Bu dosya otomatik oluşturulmuştur
 
 RVM_ID={self.RVM_ID}
+RVM_MAKINE_SINIFI={self.MAKINE_SINIFI}
 RVM_SECRET_KEY={self.SECRET_KEY}
 RVM_BASE_URL={self.BASE_URL}
 """
@@ -159,6 +214,7 @@ RVM_BASE_URL={self.BASE_URL}
         return {
             'SECRET_KEY': self.SECRET_KEY,
             'RVM_ID': self.RVM_ID,
+            'MAKINE_SINIFI': self.MAKINE_SINIFI,
             'BASE_URL': self.BASE_URL
         }
 

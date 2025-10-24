@@ -4,6 +4,7 @@
 motor = None
 sensor = None
 ac_motor_kontrol = None
+port_saglik_servisi = None
 
 def motor_referansini_ayarla(motor_instance):
     """Motor kartı referansını ayarlar"""
@@ -34,3 +35,12 @@ def ac_motor_kontrol_referansini_ayarla(ac_motor_instance):
 def ac_motor_kontrol_al():
     """AC Motor kontrol referansını döndürür"""
     return ac_motor_kontrol
+
+def port_saglik_servisi_referansini_ayarla(port_saglik_instance):
+    """Port Sağlık Servisi referansını ayarlar"""
+    global port_saglik_servisi
+    port_saglik_servisi = port_saglik_instance
+
+def port_saglik_servisi_al():
+    """Port Sağlık Servisi referansını döndürür"""
+    return port_saglik_servisi

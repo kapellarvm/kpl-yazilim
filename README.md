@@ -76,6 +76,63 @@ python ana.py
 - **Motor Kontrolü**: Modbus RTU
 - **Sensör**: Seri port haberleşmesi
 - **Veritabanı**: SQLite (yerel) + DİM-DB (merkezi)
+- **Elektrik Kesintisi Tespiti**: Bus voltage monitoring (300V eşik)
+
+## ⚡ Elektrik Kesintisi Tespiti
+
+Sistem artık **bus voltage monitoring** ile elektrik kesintisini tespit eder:
+
+### 🔧 Voltage Monitoring Özellikleri
+
+- **Eşik Değeri**: 300V (ayarlanabilir)
+- **Hysteresis**: 50V (300V altı kesinti, 350V üstü normal)
+- **Tespit Süresi**: 2 ardışık düşük voltaj okuması (1 saniye)
+- **Monitoring Interval**: 0.5 saniye (Modbus verisi yarım saniyede bir geliyor)
+- **Veri Kaynağı**: Modbus DC bus voltage register'ı
+- **Başlangıç Bypass**: 20 saniye (yanlış alarm önleme)
+
+### 📊 Monitoring Parametreleri
+
+```python
+# voltage_power_monitoring.py içinde
+voltage_threshold = 300.0      # Volt - Kesinti tespit eşiği
+hysteresis_threshold = 50.0    # Volt - Hysteresis değeri
+history_size = 5               # Son 5 okumayı sakla
+
+# Başlangıç bypass parametreleri
+startup_bypass_duration = 20.0     # Saniye - Zaman bazlı bypass
+```
+
+### 🛡️ Başlangıç Bypass Mekanizması
+
+Sistem başlangıcında yanlış alarm vermemek için güvenli bypass:
+
+1. **Zaman Bazlı Bypass**: İlk 20 saniye hiç alarm vermez
+2. **Bypass Tamamlandıktan Sonra**: Normal monitoring başlar
+
+### 🧪 Test Etme
+
+```bash
+# Sistem durumunu kontrol et
+python -c "
+from rvm_sistemi.api.servisler.voltage_power_monitoring import voltage_power_monitoring_servis
+status = voltage_power_monitoring_servis.get_status()
+print('Voltage Threshold:', status['voltage_threshold'], 'V')
+print('Last Voltage:', status['last_voltage'], 'V')
+print('Power Connected:', status['power_connected'])
+print('Startup Bypass Active:', status['startup_bypass_active'])
+"
+
+# Başlangıç bypass durumunu izle
+python -c "
+import time
+from rvm_sistemi.api.servisler.voltage_power_monitoring import voltage_power_monitoring_servis
+for i in range(10):
+    status = voltage_power_monitoring_servis.get_status()
+    print(f'[{i+1:2d}] Bypass: {status[\"startup_bypass_active\"]} | Voltage: {status[\"last_voltage\"]}V')
+    time.sleep(1)
+"
+```
 
 ## 📞 Destek
 

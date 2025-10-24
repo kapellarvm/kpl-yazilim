@@ -166,6 +166,36 @@ function showMessage(text, isError = false) {
     console.log(isError ? 'ERROR:' : 'SUCCESS:', text);
 }
 
+// Uyarı ekranı gösterme fonksiyonu
+async function uyariEkraniGoster() {
+    try {
+        console.log('⚠️ Modbus Ready uyarı ekranı gösteriliyor...');
+        
+        //const uyariMesaji = "⚠️ ACİL DURUM BUTONU AKTİF<br>Güvenlik nedeniyle tüm motorlar durduruldu.";
+        
+        const response = await fetch(`${API_BASE}/uyari/goster`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mesaj: uyariMesaji,
+                sure: 0,  // 10 saniye göster
+                suresiz: false
+            })
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            console.log('✅ Uyarı ekranı başarıyla gösterildi');
+        } else {
+            console.warn('⚠️ Uyarı ekranı gösterilemedi:', data.message);
+        }
+    } catch (error) {
+        console.error('❌ Uyarı ekranı hatası:', error);
+    }
+}
+
 function ozellikAktifDegil() {
     showMessage('Bu özellik henüz aktif değil', true);
 }
@@ -199,7 +229,9 @@ async function bakimModuToggle() {
                 // Bakım modu aktifken motorları iptal et (güvenlik için)
                 motorlariIptalEt();
                 // Bakım modu aktifken periyodik güncellemeleri başlat
-                startPeriodicUpdates();
+                 startPeriodicUpdates();
+                 // Emniyet sensörü durumlarını sorgula - 1.5 saniye sonra
+                 setTimeout(() => queryEmniySensorDurum(), 1000);
             } else {
                 btn.textContent = '⚙ Bakım Modu: Pasif';
                 btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
@@ -1187,6 +1219,100 @@ function setupMotorControls() {
             motorKontrol('motorlari-iptal');
         });
     }
+    
+    // Konveyör Test Butonu
+    const conveyorTestBtn = document.getElementById('conveyor-test-btn');
+    if (conveyorTestBtn) {
+        conveyorTestBtn.addEventListener('click', () => {
+            if (conveyorTestBtn.disabled) return;
+            
+            // Test butonunu geçici olarak devre dışı bırak
+            conveyorTestBtn.disabled = true;
+            conveyorTestBtn.textContent = '🔄 Test Çalışıyor...';
+            
+            // Animasyonu başlat
+            if (conveyorAnimation) {
+                conveyorAnimation.classList.add('conveyor-running-forward');
+                conveyorAnimation.classList.remove('conveyor-running-backward');
+            }
+            
+            // Motor kontrolü çağır
+            motorKontrol('konveyor-ileri').then(() => {
+                // 3 saniye sonra butonu tekrar aktif et
+                setTimeout(() => {
+                    conveyorTestBtn.disabled = false;
+                    conveyorTestBtn.textContent = '🧪 Test - Konveyör İleri';
+                    
+                    // Animasyonu durdur
+                    if (conveyorAnimation) {
+                        conveyorAnimation.classList.remove('conveyor-running-forward', 'conveyor-running-backward');
+                    }
+                    
+                    // Motoru durdur
+                    motorKontrol('konveyor-dur');
+                }, 3000);
+            }).catch((error) => {
+                console.error('Test butonu hatası:', error);
+                conveyorTestBtn.disabled = false;
+                conveyorTestBtn.textContent = '🧪 Test - Konveyör İleri';
+                
+                // Animasyonu durdur
+                if (conveyorAnimation) {
+                    conveyorAnimation.classList.remove('conveyor-running-forward', 'conveyor-running-backward');
+                }
+            });
+        });
+    }
+    
+    // Status Test Butonu
+    const statusTestBtn = document.getElementById('status-test-btn');
+    if (statusTestBtn) {
+        statusTestBtn.addEventListener('click', async () => {
+            if (statusTestBtn.disabled) return;
+            
+            // Test butonunu geçici olarak devre dışı bırak
+            statusTestBtn.disabled = true;
+            statusTestBtn.textContent = '🔄 Test Çalışıyor...';
+            
+            try {
+                // Status test API'sini çağır
+                const response = await fetch(`${API_BASE}/motor/status-test`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage('✅ Status test başarılı - Motor cevabı alındı', false);
+                    statusTestBtn.textContent = '✅ Test Başarılı';
+                    statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    statusTestBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                } else {
+                    showMessage('❌ Status test başarısız: ' + data.message, true);
+                    statusTestBtn.textContent = '❌ Test Başarısız';
+                    statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    statusTestBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+                }
+            } catch (error) {
+                console.error('Status test hatası:', error);
+                showMessage('❌ Status test hatası: ' + error.message, true);
+                statusTestBtn.textContent = '❌ Test Hatası';
+                statusTestBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                statusTestBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            }
+            
+            // 3 saniye sonra butonu tekrar aktif et
+            setTimeout(() => {
+                statusTestBtn.disabled = false;
+                statusTestBtn.textContent = '🔍 Status Test (s)';
+                statusTestBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'bg-red-600', 'hover:bg-red-700');
+                statusTestBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+            }, 3000);
+        });
+    }
 }
 
 // Henüz aktif olmayan özellikler için placeholder fonksiyonlar
@@ -1559,25 +1685,50 @@ function handleSensorMessage(message) {
         case 'g/msup':
             // Üst kapak açık
             updateLidStatus('top-sensor', false);
-            showMessage('🔓 Üst kapak açık', true);
+            console.log('🔓 Üst kapak açık');
             break;
         case 'g/msua':
             // Üst kapak kapalı
             updateLidStatus('top-sensor', true);
-            showMessage('🔒 Üst kapak kapalı', true);
+            console.log('🔒 Üst kapak kapalı');
             break;
         case 'g/msap':
             // Alt kapak açık
             updateLidStatus('bottom-sensor', false);
-            showMessage('🔓 Alt kapak açık', true);
+            console.log('🔓 Alt kapak açık');
             break;
         case 'g/msaa':
             // Alt kapak kapalı
             updateLidStatus('bottom-sensor', true);
-            showMessage('🔒 Alt kapak kapalı', true);
+            console.log('🔒 Alt kapak kapalı');
             break;
         default:
             console.log('Bilinmeyen sensör mesajı:', message);
+    }
+}
+
+// Emniyet sensörü durumunu sorgula
+async function queryEmniySensorDurum() {
+    try {
+        console.log('🔐 Emniyet sensörü durumları sorgulanıyor...');
+        
+        // Üst kapak durumunu sorgula
+        const responseUst = await fetch(`${API_BASE}/sensor/komut-gonder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ komut: 'msud' })
+        });
+        
+        // Alt kapak durumunu sorgula  
+        const responseAlt = await fetch(`${API_BASE}/sensor/komut-gonder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ komut: 'msad' })
+        });
+        
+        console.log('✅ Emniyet sensörü durum sorgusu gönderildi');
+    } catch (error) {
+        console.error('❌ Emniyet sensörü durum sorgulama hatası:', error);
     }
 }
 
@@ -2193,6 +2344,7 @@ function initializeBakim() {
     setupMotorControls();
     setupPlaceholderFunctions();
     setupSafetyControls();
+    toleransSekmesiKurulum();
     
     // İlk durum güncellemesi
     sistemDurumunuGuncelle();
@@ -2243,6 +2395,10 @@ async function diagnosticBaslat() {
 async function tumMotorlarDur() {
     try {
         console.log('🛑 Tüm motorlar durduruluyor (Modbus ready HAYIR)');
+        
+        // Önce uyarı ekranını göster
+        await uyariEkraniGoster();
+        
         const response = await fetch(`${API_BASE}/motor/motorlari-iptal`, {
             method: 'POST',
             headers: {
@@ -2666,6 +2822,9 @@ async function runScenario(scenario) {
 document.addEventListener('DOMContentLoaded', () => {
     initializeBakim();
     
+    // Tolerans ayarlarını yükle
+    toleransAyarlariYukle();
+    
     // Sayfa kapatılırken tüm işlemleri durdur (güvenlik için)
     window.addEventListener('beforeunload', function() {
         console.log('🛑 Sayfa kapatılıyor - tüm bakım işlemleri durduruluyor...');
@@ -3065,7 +3224,6 @@ function setupMagneticSensor(prefix) {
     const visual = document.getElementById(`${prefix}-visual`);
     const statusLed = document.getElementById(`${prefix}-status-led`);
     const statusText = document.getElementById(`${prefix}-status-text`);
-    const testBtn = document.getElementById(`${prefix}-test-btn`);
     
     if (!visual || !statusLed || !statusText) return null;
     
@@ -3086,28 +3244,6 @@ function setupMagneticSensor(prefix) {
         statusText.classList.remove('text-green-400');
         statusText.classList.add('text-red-400');
     };
-    
-    // Test butonu event listener'ı
-    if (testBtn) {
-        testBtn.addEventListener('click', async () => {
-            try {
-                const sensorTipi = prefix === 'top-sensor' ? 'ust' : 'alt';
-                const response = await fetch(`${API_BASE}/guvenlik/sensor-test?sensor_tipi=${sensorTipi}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    showMessage(data.message);
-                } else {
-                    showMessage(data.message, true);
-                }
-            } catch (error) {
-                showMessage(`Sensör test hatası: ${error.message}`, true);
-            }
-        });
-    }
     
     return { setActive, setPassive };
 }
@@ -3637,4 +3773,155 @@ function stopAllOperations() {
     }
     
     console.log('✅ Tüm işlemler durduruldu');
+}
+
+// ===========================================
+// TOLERANS AYARLARI FONKSİYONLARI
+// ===========================================
+
+// Varsayılan tolerans sabitleri
+const VARSAYILAN_TOLERANSLAR = {
+    uzunluk_toleransi: 100,  // mm
+    genislik_toleransi: 100, // mm
+    metal_agirlik_toleransi: 300,  // gr
+    plastik_agirlik_toleransi: 100, // gr
+    cam_agirlik_toleransi: 150,  // gr
+};
+
+// Tolerans ayarlarını yükle
+async function toleransAyarlariYukle() {
+    try {
+        console.log('📊 Tolerans ayarları yükleniyor...');
+        
+        const response = await fetch(`${API_BASE}/tolerans/ayarlar`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            // Mevcut toleransları input alanlarına yükle
+            Object.keys(VARSAYILAN_TOLERANSLAR).forEach(key => {
+                const input = document.getElementById(key.replace(/_/g, '-'));
+                if (input) {
+                    // 0 değerini kabul et
+                    input.value = data.ayarlar[key] !== undefined && data.ayarlar[key] !== null ? 
+                        data.ayarlar[key] : VARSAYILAN_TOLERANSLAR[key];
+                }
+            });
+            
+            // Mevcut değerleri göster
+            mevcutDegerleriGuncelle(data.ayarlar);
+            
+            console.log('✅ Tolerans ayarları yüklendi');
+        } else {
+            console.warn('⚠️ Tolerans ayarları yüklenemedi:', data.message);
+        }
+    } catch (error) {
+        console.error('❌ Tolerans ayarları yükleme hatası:', error);
+    }
+}
+
+// Mevcut değerleri güncelle
+function mevcutDegerleriGuncelle(ayarlar) {
+    try {
+        // Tüm toleransları güncelle
+        Object.keys(VARSAYILAN_TOLERANSLAR).forEach(key => {
+            const el = document.getElementById(`${key.replace(/_/g, '-')}-mevcut`);
+            if (el) {
+                const deger = ayarlar[key] !== undefined && ayarlar[key] !== null ? 
+                    ayarlar[key] : VARSAYILAN_TOLERANSLAR[key];
+                const birim = key.includes('agirlik') ? 'gram' : 'mm';
+                el.textContent = `Şu anki değer: ${deger} ${birim}`;
+            }
+        });
+        
+        console.log('✅ Mevcut değerler güncellendi');
+    } catch (error) {
+        console.error('❌ Mevcut değerleri güncelleme hatası:', error);
+    }
+}
+
+// Tolerans ayarlarını kaydet
+async function toleransAyarlariKaydet() {
+    try {
+        console.log('💾 Tolerans ayarları kaydediliyor...');
+        
+        // Input değerlerini al
+        const ayarlar = {};
+        Object.keys(VARSAYILAN_TOLERANSLAR).forEach(key => {
+            const input = document.getElementById(key.replace(/_/g, '-'));
+            if (input) {
+                const value = parseInt(input.value);
+                // 0 değerini kabul et
+                ayarlar[key] = !isNaN(value) ? value : VARSAYILAN_TOLERANSLAR[key];
+            } else {
+                ayarlar[key] = VARSAYILAN_TOLERANSLAR[key];
+            }
+        });
+        
+        // Değer kontrolü
+        for (const [key, value] of Object.entries(ayarlar)) {
+            if (isNaN(value) || value < 0) {
+                showMessage(`❌ Geçersiz değer: ${key}`, true);
+                return;
+            }
+        }
+        
+        const response = await fetch(`${API_BASE}/tolerans/ayarlar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(ayarlar)
+        });
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            console.log('✅ Tolerans ayarları kaydedildi');
+            showMessage('✅ Tolerans ayarları başarıyla kaydedildi', false);
+            
+            // Mevcut değerleri güncelle
+            mevcutDegerleriGuncelle(ayarlar);
+        } else {
+            console.warn('⚠️ Tolerans ayarları kaydedilemedi:', data.message);
+            showMessage('⚠️ Tolerans ayarları kaydedilemedi: ' + data.message, true);
+        }
+    } catch (error) {
+        console.error('❌ Tolerans ayarları kaydetme hatası:', error);
+        showMessage('❌ Tolerans ayarları kaydetme hatası: ' + error.message, true);
+    }
+}
+
+// Tolerans sekmesi için event listener'ları kur
+function toleransSekmesiKurulum() {
+    // Kaydet butonu
+    const kaydetBtn = document.getElementById('tolerans-kaydet-btn');
+    if (kaydetBtn) {
+        kaydetBtn.addEventListener('click', toleransAyarlariKaydet);
+    }
+    
+    // Input değer değişikliklerini dinle
+    const inputIds = [
+        'uzunluk-toleransi', 'genislik-toleransi',
+        'cam-agirlik-toleransi', 'metal-agirlik-toleransi', 'plastik-agirlik-toleransi'
+    ];
+    
+    inputIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('change', () => {
+                console.log(`📝 ${id} değeri değiştirildi: ${input.value}`);
+                
+                // Mevcut değeri güncelle
+                const mevcutEl = document.getElementById(`${id}-mevcut`);
+                if (mevcutEl) {
+                    const birim = id.includes('agirlik') ? 'gram' : 'mm';
+                    mevcutEl.textContent = `Şu anki değer: ${input.value} ${birim}`;
+                }
+            });
+        }
+    });
 }

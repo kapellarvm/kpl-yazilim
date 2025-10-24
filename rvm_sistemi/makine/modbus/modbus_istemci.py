@@ -14,12 +14,19 @@ except ImportError:
     except ImportError:
         from pymodbus.client import ModbusSerialClient
 
+from ...utils.terminal import section, status, ok, warn, err, step
+from ...dimdb.config import config
+
 class GA500ModbusClient:
     """GA500 Modbus RTU Client - GUI kodundaki frekans mantığı ile"""
     
     def __init__(self, port=None, baudrate=9600, 
                  stopbits=1, parity='N', bytesize=8, timeout=1,
                  logger=None, callback=None, cihaz_adi="modbus"):
+        
+        # Makine sınıfını al
+        self.makine_sinifi = config.MAKINE_SINIFI
+        self.kirici_var_mi = self.makine_sinifi == "KPL-04"  # True: KPL-04 (Kırıcılı), False: KPL-05 (Kırıcısız)
         
         # Port otomatik tespit edilecek - genişletilmiş port listesi
         if port is None:
@@ -30,7 +37,10 @@ class GA500ModbusClient:
             ]
         else:
             self.port_list = [port]
-        self.port = None  # Başarılı port burada saklanacak
+        
+        # Başarılı portlar burada saklanacak
+        self.ezici_port = None  # Ezici motor portu
+        self.kirici_port = None  # Kırıcı motor portu (sadece KPL-04)
         self.baudrate = baudrate
         self.stopbits = stopbits
         self.parity = parity
@@ -54,7 +64,19 @@ class GA500ModbusClient:
         # Thread-based sürekli okuma için
         self.reading_thread = None
         self.stop_reading = False
-        self.status_data = {1: {}}  # Sadece ezici motor (slave 1)
+        
+        # Status data - makine tipine göre
+        self.status_data = {1: {}}  # Ezici motor (slave 1)
+        if self.kirici_var_mi:  # True: KPL-04 (Kırıcılı), False: KPL-05 (Kırıcısız)
+            self.status_data[2] = {}  # Kırıcı motor (slave 2, sadece KPL-04)
+        
+        # Modbus client'ları
+        self.ezici_client = None  # Ezici motor client'ı
+        self.kirici_client = None  # Kırıcı motor client'ı (sadece KPL-04)
+        
+        # Bağlantı durumları
+        self.ezici_connected = False
+        self.kirici_connected = False
         
         # GA500 registerleri - GUI kodundan
         self.CONTROL_REGISTER = 0x0001  # RUN_REG = 1 
@@ -74,10 +96,36 @@ class GA500ModbusClient:
         
     def connect(self):
         """Modbus bağlantısını başlat ve sürücüleri resetle - Port otomatik tespit"""
+        
+        # Önce ezici motor bağlantısını dene
+        self.logger.info("🔍 Ezici motor portu aranıyor...")
+        ezici_success = self._connect_drive(1, "Ezici")
+        if not ezici_success:
+            self.logger.error("❌ Ezici motor bağlantısı başarısız!")
+            return False
+        
+        # KPL-04 için kırıcı motor bağlantısını da dene
+        if self.kirici_var_mi:
+            self.logger.info("🔍 Kırıcı motor portu aranıyor...")
+            kirici_success = self._connect_drive(2, "Kırıcı")
+            if not kirici_success:
+                self.logger.error("❌ Kırıcı motor bağlantısı başarısız!")
+                # Ezici bağlantısını da kapat
+                if self.ezici_client:
+                    self.ezici_client.close()
+                    self.ezici_connected = False
+                return False
+        
+        # Tüm bağlantılar başarılı
+        self.is_connected = True
+        return True
+    
+    def _connect_drive(self, slave_id, drive_name):
+        """Belirli bir sürücü için port arama ve bağlantı"""
         for test_port in self.port_list:
             try:
-                # Modbus bağlantısı deneniyor - sadece log dosyasına yazılır
-                self.client = ModbusSerialClient(
+                # Modbus bağlantısı deneniyor
+                client = ModbusSerialClient(
                     method='rtu',
                     port=test_port,
                     baudrate=self.baudrate,
@@ -87,32 +135,35 @@ class GA500ModbusClient:
                     timeout=self.timeout
                 )
                 
-                if self.client.connect():
+                if client.connect():
                     # Basit bir test ile bağlantıyı doğrula
-                    test_result = self.client.read_holding_registers(address=0x0020, count=1, unit=1)
+                    test_result = client.read_holding_registers(address=0x0020, count=1, unit=slave_id)
                     if not test_result.isError():
-                        self.port = test_port  # Başarılı portu kaydet
-                        self.is_connected = True
-                        # Modbus bağlantısı başarılı - sadece log dosyasına yazılır
+                        # Başarılı portu kaydet
+                        if slave_id == 1:
+                            self.ezici_port = test_port
+                            self.ezici_client = client
+                            self.ezici_connected = True
+                        else:
+                            self.kirici_port = test_port
+                            self.kirici_client = client
+                            self.kirici_connected = True
                         
-                        # SÜRÜCÜYE RESET GÖNDER - Sürekli haberleşme için gerekli
-                        # Reset işlemi - sadece log dosyasına yazılır
-                        self.reset(1)  # Ezici sürücüsünü resetle
+                        self.logger.info(f"✅ {drive_name} motor portu bulundu: {test_port}")
                         
-                        # Reset tamamlandı - sadece log dosyasına yazılır
+                        # SÜRÜCÜYE RESET GÖNDER
+                        self.reset(slave_id)
                         return True
                     else:
-                        # Port bulunamadı - sadece log dosyasına yazılır
-                        self.client.close()
+                        client.close()
                 else:
-                    # Port bağlantı hatası - sadece log dosyasına yazılır
                     pass
                     
             except Exception as e:
                 self.logger.warning(f"⚠️ {test_port} bağlantı hatası: {e}")
-                
+        
         # Hiçbir port çalışmazsa
-        self.logger.error("❌ Hiçbir Modbus portuna bağlanılamadı!")
+        self.logger.error(f"❌ {drive_name} motor portu bulunamadı!")
         self.logger.error("📋 Denenen portlar: " + ", ".join(self.port_list))
         return False
     
@@ -124,32 +175,58 @@ class GA500ModbusClient:
             # UPS kesintisi tespit edildi - hemen işlemleri başlat
             self._trigger_ups_power_failure()
             
-            # Mevcut bağlantıyı kapat
-            if self.client and self.is_connected:
-                self.client.close()
-                self.is_connected = False
+            # Mevcut bağlantıları kapat
+            if self.ezici_client and self.ezici_connected:
+                self.ezici_client.close()
+                self.ezici_connected = False
             
-            # Kısa bekleme
-            time.sleep(1)
+            if self.kirici_var_mi and self.kirici_client and self.kirici_connected:
+                self.kirici_client.close()
+                self.kirici_connected = False
             
-            # Mevcut başarılı portu önce dene, sonra diğerlerini
-            if self.port:
-                # Önceki başarılı port varsa önce onu dene
-                test_ports = [self.port]
-                # Sonra diğer portları ekle
+            self.is_connected = False
+            
+            # Yeniden bağlantı parametreleri
+            max_retries = 5  # Maksimum deneme sayısı
+            retry_delay = 5  # Denemeler arası bekleme süresi (saniye)
+            current_retry = 0
+            
+            while current_retry < max_retries:
+                current_retry += 1
+                self.logger.info(f"🔄 Yeniden bağlantı denemesi {current_retry}/{max_retries}")
+                
+                # Port listesini başarılı portlara göre düzenle
+                test_ports = []
+                
+                # Ezici portu varsa önce onu dene
+                if self.ezici_port:
+                    test_ports.append(self.ezici_port)
+                
+                # Kırıcı portu varsa sonra onu dene
+                if self.kirici_var_mi and self.kirici_port:
+                    test_ports.append(self.kirici_port)
+                
+                # Diğer portları ekle
                 for p in self.port_list:
-                    if p != self.port:
+                    if p not in test_ports:
                         test_ports.append(p)
+                
                 self.port_list = test_ports
-                self.logger.info(f"🔄 Port sırası güncellendi: {self.port_list}")
+                self.logger.info(f"🔍 Port sırası: {self.port_list}")
+                
+                # Yeniden bağlan
+                if self.connect():
+                    self.logger.info(f"✅ Yeniden bağlantı başarılı (Deneme {current_retry})")
+                    return True
+                
+                # Başarısız deneme sonrası bekle
+                if current_retry < max_retries:
+                    self.logger.warning(f"⏳ {retry_delay} saniye sonra tekrar denenecek...")
+                    time.sleep(retry_delay)
             
-            # Yeniden bağlan
-            if self.connect():
-                self.logger.info("✅ Yeniden bağlantı başarılı")
-                return True
-            else:
-                self.logger.error("❌ Yeniden bağlantı başarısız")
-                return False
+            # Tüm denemeler başarısız
+            self.logger.error(f"❌ {max_retries} deneme sonrası bağlantı kurulamadı!")
+            return False
                 
         except Exception as e:
             self.logger.error(f"❌ Yeniden bağlantı hatası: {e}")
@@ -161,10 +238,7 @@ class GA500ModbusClient:
             import asyncio
             from ...api.servisler.ups_power_handlers import handle_power_failure
             
-            print(f"\n{'='*60}")
-            print(f"⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!")
-            print(f"🔌 UPS çalışıyor - Acil işlemler başlatılıyor")
-            print(f"{'='*60}")
+            section("⚡ ELEKTRİK KESİNTİSİ TESPİT EDİLDİ!", "UPS çalışıyor - Acil işlemler başlatılıyor")
             
             # Asenkron fonksiyonu çalıştır
             loop = asyncio.new_event_loop()
@@ -173,55 +247,87 @@ class GA500ModbusClient:
             loop.close()
             
         except Exception as e:
-            print(f"❌ [UPS KESİNTİSİ] İşlem hatası: {e}")
+            err("UPS KESİNTİSİ", f"İşlem hatası: {e}")
             self.logger.error(f"UPS kesintisi işleme hatası: {e}")
     
     def disconnect(self):
-        """Modbus bağlantısını kapat"""
+        """Modbus bağlantılarını kapat"""
         try:
+            # Sürekli okuma thread'ini durdur
             self.stop_reading = True
             if self.reading_thread and self.reading_thread.is_alive():
                 self.reading_thread.join(timeout=2)
-                
-            if self.client and self.is_connected:
-                self.client.close()
-                self.is_connected = False
-                self.logger.info("🔌 Modbus bağlantısı kapatıldı")
+            
+            # Ezici motor bağlantısını kapat
+            if self.ezici_client and self.ezici_connected:
+                self.ezici_client.close()
+                self.ezici_connected = False
+                self.logger.info("🔌 Ezici motor bağlantısı kapatıldı")
+            
+            # Kırıcı motor bağlantısını kapat (KPL-04)
+            if self.kirici_var_mi and self.kirici_client and self.kirici_connected:
+                self.kirici_client.close()
+                self.kirici_connected = False
+                self.logger.info("🔌 Kırıcı motor bağlantısı kapatıldı")
+            
+            self.is_connected = False
+            
         except Exception as e:
             self.logger.error(f"❌ Bağlantı kapatma hatası: {e}")
     
     def set_frequency(self, slave_id, frequency):
         """Frekans değerini ayarla (Hz) - GUI kodundaki mantık"""
         try:
-            # Frekans ayarlanıyor - sadece log dosyasına yazılır
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return False
+            
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return False
+            
             # GUI kodundaki gibi: hz * 100 (0.01 Hz çözünürlük)
             freq_value = int(frequency * 100)
             
-            result = self.client.write_register(self.FREQUENCY_REGISTER, freq_value, unit=slave_id)
+            result = client.write_register(self.FREQUENCY_REGISTER, freq_value, unit=slave_id)
             if not result.isError():
-                # Frekans ayarlandı - sadece log dosyasına yazılır
+                self.logger.info(f"✅ Motor {slave_id}: Frekans ayarlandı ({frequency} Hz)")
                 return True
             else:
-                # Register yazma hatası - sadece log dosyasına yazılır
+                self.logger.error(f"❌ Motor {slave_id}: Frekans ayarlama hatası")
                 self._handle_connection_error()
                 return False
                 
         except Exception as e:
-            # Frekans ayarlama hatası - sadece log dosyasına yazılır
+            self.logger.error(f"❌ Frekans ayarlama hatası: {e}")
             self._handle_connection_error()
             return False
     
     def run_forward(self, slave_id):
         """İleri yönde çalıştır"""
         try:
-            self.logger.info(f"▶️ Sürücü {slave_id}: İleri çalıştırma")
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return False
             
-            result = self.client.write_register(self.CONTROL_REGISTER, self.CMD_FORWARD, unit=slave_id)
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return False
+            
+            self.logger.info(f"▶️ Motor {slave_id}: İleri çalıştırma")
+            
+            result = client.write_register(self.CONTROL_REGISTER, self.CMD_FORWARD, unit=slave_id)
             if not result.isError():
-                self.logger.info(f"✅ Sürücü {slave_id}: İleri çalıştırıldı")
+                self.logger.info(f"✅ Motor {slave_id}: İleri çalıştırıldı")
                 return True
             else:
-                self.logger.error(f"❌ İleri çalıştırma hatası: {result}")
+                self.logger.error(f"❌ Motor {slave_id}: İleri çalıştırma hatası")
                 self._handle_connection_error()
                 return False
                 
@@ -233,14 +339,25 @@ class GA500ModbusClient:
     def stop(self, slave_id):
         """Motoru durdur"""
         try:
-            self.logger.info(f"⏹️ Sürücü {slave_id}: Durdurma")
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return False
             
-            result = self.client.write_register(self.CONTROL_REGISTER, self.CMD_STOP, unit=slave_id)
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return False
+            
+            self.logger.info(f"⏹️ Motor {slave_id}: Durdurma")
+            
+            result = client.write_register(self.CONTROL_REGISTER, self.CMD_STOP, unit=slave_id)
             if not result.isError():
-                self.logger.info(f"✅ Sürücü {slave_id}: Durduruldu")
+                self.logger.info(f"✅ Motor {slave_id}: Durduruldu")
                 return True
             else:
-                self.logger.error(f"❌ Durdurma hatası: {result}")
+                self.logger.error(f"❌ Motor {slave_id}: Durdurma hatası")
                 self._handle_connection_error()
                 return False
                 
@@ -252,50 +369,73 @@ class GA500ModbusClient:
     def reset(self, slave_id):
         """Sürücüyü resetle - Bağlantı için gerekli"""
         try:
-            # Reset atılıyor - sadece log dosyasına yazılır
-            result = self.client.write_register(self.CONTROL_REGISTER, self.CMD_RESET, unit=slave_id)
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return False
+            
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return False
+            
+            self.logger.info(f"🔄 Motor {slave_id}: Reset atılıyor...")
+            
+            result = client.write_register(self.CONTROL_REGISTER, self.CMD_RESET, unit=slave_id)
             if not result.isError():
-                # Reset tamamlandı - sadece log dosyasına yazılır
                 time.sleep(0.5)  # Reset sonrası bekleme
+                self.logger.info(f"✅ Motor {slave_id}: Reset tamamlandı")
                 return True
             else:
-                # Reset register yazma hatası - sadece log dosyasına yazılır
+                self.logger.error(f"❌ Motor {slave_id}: Reset hatası")
                 self._handle_connection_error()
                 return False
                 
         except Exception as e:
-            # Reset hatası - sadece log dosyasına yazılır
+            self.logger.error(f"❌ Reset hatası: {e}")
             self._handle_connection_error()
             return False
     
     def clear_fault(self, slave_id):
         """Arıza durumunu temizle - GA500 için arıza reset"""
         try:
-            self.logger.info(f"🔧 Sürücü {slave_id}: Arıza temizleniyor...")
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return False
+            
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return False
+            
+            self.logger.info(f"🔧 Motor {slave_id}: Arıza temizleniyor...")
             
             # Önce reset gönder
-            reset_result = self.client.write_register(self.CONTROL_REGISTER, self.CMD_RESET, unit=slave_id)
+            reset_result = client.write_register(self.CONTROL_REGISTER, self.CMD_RESET, unit=slave_id)
             if reset_result.isError():
-                self.logger.error(f"❌ Arıza reset hatası: {reset_result}")
+                self.logger.error(f"❌ Motor {slave_id}: Arıza reset hatası")
                 self._handle_connection_error()
                 return False
             
             time.sleep(0.5)  # Reset sonrası bekleme
             
             # Arıza durumunu kontrol et
-            status_result = self.client.read_holding_registers(address=self.STATUS_REGISTER, count=1, unit=slave_id)
+            status_result = client.read_holding_registers(address=self.STATUS_REGISTER, count=1, unit=slave_id)
             if not status_result.isError():
                 status = status_result.registers[0]
                 fault_bit = status & 0x8  # Bit 3: Arıza durumu
                 
                 if fault_bit == 0:
-                    self.logger.info(f"✅ Sürücü {slave_id}: Arıza temizlendi")
+                    self.logger.info(f"✅ Motor {slave_id}: Arıza temizlendi")
                     return True
                 else:
-                    self.logger.warning(f"⚠️ Sürücü {slave_id}: Arıza hala mevcut, tekrar deneyiniz")
+                    self.logger.warning(f"⚠️ Motor {slave_id}: Arıza hala mevcut, tekrar deneyiniz")
                     return False
             else:
-                self.logger.error(f"❌ Durum okuma hatası: {status_result}")
+                self.logger.error(f"❌ Motor {slave_id}: Durum okuma hatası")
                 self._handle_connection_error()
                 return False
                 
@@ -309,12 +449,23 @@ class GA500ModbusClient:
         status_data = {}
         
         try:
+            # Makine tipine göre kontrol
+            if slave_id == 2 and not self.kirici_var_mi:
+                self.logger.error("❌ Bu makinede kırıcı motor yok! (KPL-05)")
+                return {}
+            
+            # Doğru client'ı seç
+            client = self.ezici_client if slave_id == 1 else self.kirici_client
+            if not client:
+                self.logger.error(f"❌ Motor {slave_id} client'ı bulunamadı!")
+                return {}
+            
             with self.lock:
                 # GUI kodundaki gibi register okuma
-                r1 = self.client.read_holding_registers(address=self.MON_BASE, count=5, unit=slave_id)
-                r2 = self.client.read_holding_registers(address=self.DCBUS_REG, count=1, unit=slave_id)
-                r3 = self.client.read_holding_registers(address=self.STATUS_REGISTER, count=1, unit=slave_id)
-                r4 = self.client.read_holding_registers(address=self.TEMP_REG, count=1, unit=slave_id)
+                r1 = client.read_holding_registers(address=self.MON_BASE, count=5, unit=slave_id)
+                r2 = client.read_holding_registers(address=self.DCBUS_REG, count=1, unit=slave_id)
+                r3 = client.read_holding_registers(address=self.STATUS_REGISTER, count=1, unit=slave_id)
+                r4 = client.read_holding_registers(address=self.TEMP_REG, count=1, unit=slave_id)
             
             # Verileri parse et - ac_surucu_v1.py kodundaki doğru mantık
             if r1 and r2 and r3 and r4 and not (r1.isError() or r2.isError() or r3.isError() or r4.isError()):
@@ -374,7 +525,7 @@ class GA500ModbusClient:
                     'description': 'Sıcaklık'
                 }
             else:
-                self.logger.error(f"❌ Register okuma hatası - Slave {slave_id}")
+                self.logger.error(f"❌ Motor {slave_id}: Register okuma hatası")
                 # Register okuma hatası durumunda yeniden bağlantı dene
                 self._handle_connection_error()
                 
@@ -389,45 +540,93 @@ class GA500ModbusClient:
         """Sürekli okuma worker thread'i"""
         consecutive_errors = 0
         max_errors = 3  # 3 ardışık hata sonrası yeniden bağlan
+        reconnect_attempt = 0
         
-        while not self.stop_reading and self.is_connected:
+        # Yeniden bağlantı aralıkları (saniye)
+        retry_intervals = [
+            10,     # İlk 10 deneme: 10 saniye aralıkla
+            30,     # Sonraki 10 deneme: 30 saniye aralıkla
+            60,     # Sonraki 10 deneme: 1 dakika aralıkla
+            300     # Sonraki denemeler: 5 dakika aralıkla
+        ]
+        
+        while not self.stop_reading:
             try:
+                # Bağlantı yoksa yeniden bağlanmayı dene
+                if not self.is_connected:
+                    reconnect_attempt += 1
+                    
+                    # Deneme sayısına göre bekleme süresini belirle
+                    if reconnect_attempt <= 10:
+                        wait_time = retry_intervals[0]
+                        phase = "Faz 1"
+                    elif reconnect_attempt <= 20:
+                        wait_time = retry_intervals[1]
+                        phase = "Faz 2"
+                    elif reconnect_attempt <= 30:
+                        wait_time = retry_intervals[2]
+                        phase = "Faz 3"
+                    else:
+                        wait_time = retry_intervals[3]
+                        phase = "Faz 4"
+                    
+                    self.logger.warning(f"⚡ Bağlantı kopuk. {phase}: Deneme {reconnect_attempt} ({wait_time} saniye aralıkla)")
+                    
+                    if self._handle_connection_error():
+                        self.logger.info("✅ Bağlantı yeniden kuruldu!")
+                        reconnect_attempt = 0  # Başarılı bağlantı sonrası sayacı sıfırla
+                        consecutive_errors = 0
+                    else:
+                        self.logger.warning(f"⏳ {wait_time} saniye sonra tekrar denenecek...")
+                        time.sleep(wait_time)
+                        continue
+                
                 success = True
-                # Sadece ezici motor (slave 1) için okuma
-                slave_id = 1
+                
+                # Ezici motor okuma (her zaman)
                 if self.stop_reading:
                     break
-                    
-                # Status registerlerini oku
-                status = self.read_status_registers(slave_id)
                 
-                # Eğer boş data dönerse (hata durumu)
-                if not status:
+                # Ezici motor status'unu oku
+                ezici_status = self.read_status_registers(1)
+                if not ezici_status:
                     success = False
                 else:
                     # Thread-safe veri güncelleme
                     with self.lock:
-                        self.status_data[slave_id] = status
+                        self.status_data[1] = ezici_status
                     
                     # Konsola yazdır ve callback'e gönder
-                    modbus_veri = self.print_status(slave_id, status)
-
-                    if modbus_veri:
-                        # Callback'i tetikle - sensör kartı mantığı
-                        if self.callback:
+                    modbus_veri = self.print_status(1, ezici_status)
+                    if modbus_veri and self.callback:
+                        try:
+                            veri_str = "s1:" + ",".join([f"{k}:{v}" for k, v in modbus_veri.items()])
+                            self.callback(veri_str)
+                        except Exception as e:
+                            self.logger.error(f"❌ Ezici callback hatası: {e}")
+                
+                # Kırıcı motor okuma (sadece KPL-04)
+                if self.kirici_var_mi and self.kirici_connected:
+                    kirici_status = self.read_status_registers(2)
+                    if not kirici_status:
+                        success = False
+                    else:
+                        # Thread-safe veri güncelleme
+                        with self.lock:
+                            self.status_data[2] = kirici_status
+                        
+                        # Konsola yazdır ve callback'e gönder
+                        modbus_veri = self.print_status(2, kirici_status)
+                        if modbus_veri and self.callback:
                             try:
-                                # String format: "s1:freq_ref:25.0,freq_out:24.8,current:2.1,status:ÇALIŞIYOR"
-                                veri_str = f"s{slave_id}:" + ",".join([f"{k}:{v}" for k, v in modbus_veri.items()])
+                                veri_str = "s2:" + ",".join([f"{k}:{v}" for k, v in modbus_veri.items()])
                                 self.callback(veri_str)
                             except Exception as e:
-                                self.logger.error(f"❌ Callback hatası: {e}")
-
-                    else:
-                        # Veri okunamadı - sadece log dosyasına yazılır
-                        pass
+                                self.logger.error(f"❌ Kırıcı callback hatası: {e}")
 
                 if success:
                     consecutive_errors = 0  # Başarılı okuma, error sayacını sıfırla
+                    reconnect_attempt = 0  # Başarılı okuma sonrası yeniden bağlantı sayacını da sıfırla
                 
                 else:
                     consecutive_errors += 1
@@ -437,7 +636,8 @@ class GA500ModbusClient:
                     if consecutive_errors >= max_errors:
                         self.logger.error(f"❌ {max_errors} ardışık okuma hatası, yeniden bağlanıyor...")
                         consecutive_errors = 0
-                        self._handle_connection_error()
+                        if not self._handle_connection_error():
+                            self.is_connected = False  # Bağlantı başarısız, ana döngü yeniden deneyecek
                 
                 # 0.5 saniye bekle
                 time.sleep(0.5)
@@ -500,6 +700,26 @@ class GA500ModbusClient:
         }
         
         return modbus_data
+    
+    def get_bus_voltage(self, slave_id=1):
+        """Bus voltage değerini döndürür - Voltage monitoring için"""
+        try:
+            if not self.is_connected:
+                return None
+                
+            # Status register'larını oku
+            status_data = self.read_status_registers(slave_id)
+            
+            if status_data and 'dc_bus_voltage' in status_data:
+                voltage_data = status_data['dc_bus_voltage']
+                voltage_value = voltage_data.get('value', None)
+                return voltage_value
+            else:
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"Bus voltage okuma hatası: {e}")
+            return None
     
     def start_continuous_reading(self):
         """Sürekli okuma thread'ini başlat"""
