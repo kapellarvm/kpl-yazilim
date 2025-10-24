@@ -183,18 +183,30 @@ class USBHealthMonitor:
             log_warning("   Reset zaten devam ediyor, recovery iptal edildi")
             return
 
-        # Agresif USB reset tetikle
+        # Agresif USB reset tetikle (direkt script çağır - motor/sensor reconnection ile aynı yöntem)
         try:
-            from rvm_sistemi.makine.seri.port_yonetici import PortYonetici
+            import os
+            script_path = os.path.join(
+                os.path.dirname(__file__),
+                "usb_reset_ch340.sh"
+            )
 
-            port_manager = PortYonetici()
-            success = port_manager.reset_all_usb_ports()
+            if os.path.exists(script_path):
+                log_system(f"🔧 [USB-HEALTH] {device_name.upper()} için USB reset başlatılıyor...")
+                result = subprocess.run(
+                    ['sudo', script_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
 
-            if success:
-                log_system(f"✅ [USB-HEALTH] {device_name.upper()} için USB reset tamamlandı")
-                # Baseline güncellenecek (reset sonrası otomatik)
+                if result.returncode == 0:
+                    log_system(f"✅ [USB-HEALTH] {device_name.upper()} için USB reset tamamlandı")
+                    # Baseline güncellenecek (reset sonrası otomatik)
+                else:
+                    log_error(f"❌ [USB-HEALTH] {device_name.upper()} için USB reset başarısız: {result.stderr}")
             else:
-                log_error(f"❌ [USB-HEALTH] {device_name.upper()} için USB reset başarısız")
+                log_error(f"❌ [USB-HEALTH] USB reset script bulunamadı: {script_path}")
 
         except Exception as e:
             log_error(f"USB recovery tetikleme hatası ({device_name}): {e}")
