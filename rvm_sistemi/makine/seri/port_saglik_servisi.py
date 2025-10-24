@@ -290,10 +290,11 @@ class PortSaglikServisi:
 
         # Kart durumlarını topla
         for kart_adi, durum in self.kart_durumlari.items():
-            # ✅ FIX: Eğer kart reconnecting durumunda ise healthy sayma
+            # ✅ FIX: Eğer kart reconnecting durumunda ise UYARI olarak say (healthy DEĞİL)
             if system_state.is_card_reconnecting(kart_adi):
-                # Reconnection devam ediyor, partial olarak say
-                continue  # Healthy veya uyarı listesine ekleme
+                # Reconnection devam ediyor, uyarı ekranı göster
+                uyari_kartlar.append(kart_adi)
+                continue  # Healthy listesine ekleme
 
             if durum.durum == SaglikDurumu.KRITIK:
                 kritik_kartlar.append(kart_adi)
