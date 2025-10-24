@@ -114,10 +114,21 @@ class MotorKart:
             system_state.set_card_state(self.cihaz_adi, CardState.ERROR, f"Port açılamadı: {self.port_adi}")
             return False
 
-    def _auto_find_port(self) -> bool:
-        """Otomatik port bulma"""
+    def _auto_find_port(self, force_usb_reset: bool = False) -> bool:
+        """
+        Otomatik port bulma
+
+        Args:
+            force_usb_reset: Motor kartı için USB reset zorla (donanımsal sorun için)
+        """
         try:
-            basarili, mesaj, portlar = self.port_yoneticisi.baglan(cihaz_adi=self.cihaz_adi)
+            # Motor kartı için kritik_kartlar parametresi ekle
+            # Bu sayede port bulunamasa bile USB reset yapılacak
+            kritik_kartlar = ["motor"] if force_usb_reset else None
+            basarili, mesaj, portlar = self.port_yoneticisi.baglan(
+                cihaz_adi=self.cihaz_adi,
+                kritik_kartlar=kritik_kartlar
+            )
             
             if basarili and self.cihaz_adi in portlar:
                 self.port_adi = portlar[self.cihaz_adi]
@@ -901,10 +912,15 @@ class MotorKart:
                 
                 attempts += 1
                 delay = min(base_delay * (2 ** (attempts - 1)), self.MAX_RETRY_DELAY)
-                
+
                 log_system(f"{self.cihaz_adi} yeniden bağlanma {attempts}/{self.MAX_RETRY}")
-                
-                if self._auto_find_port():
+
+                # Motor kartı donanımsal sorunlu - ilk denemede başarısızsa USB reset zorla
+                force_usb_reset = attempts > 1
+                if force_usb_reset:
+                    log_system(f"{self.cihaz_adi} → USB reset ZORLANIYOR (motor kartı donanımsal sorunu için)")
+
+                if self._auto_find_port(force_usb_reset=force_usb_reset):
                     # ✅ Port bulundu, thread'ler başladı
                     # ESP32 boot için yeterli bekleme (boot mesajları + firmware başlatma)
                     log_system(f"{self.cihaz_adi} ESP32 boot ve firmware başlatması bekleniyor...")
